@@ -44,7 +44,8 @@ public class MLPPeerGroup extends MLPAbstractGroup implements Serializable {
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits group ID, which is generated on
+	 * save.
 	 * 
 	 * @param name
 	 *            Group name

@@ -65,6 +65,14 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 		// no-arg constructor
 	}
 
+	/**
+	 * This constructor accepts the required fields; i.e., the minimum that the user
+	 * must supply to create a valid instance. Omits group ID, which is generated on
+	 * save.
+	 * 
+	 * @param name
+	 *            Group name
+	 */
 	public MLPAbstractGroup(String name) {
 		if (name == null)
 			throw new IllegalArgumentException("Null not permitted");

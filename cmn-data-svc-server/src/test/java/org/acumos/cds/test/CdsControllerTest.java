@@ -595,7 +595,7 @@ public class CdsControllerTest {
 
 			// Also check that Spring doesn't truncate last path variable
 			final String tagName1 = Long.toString(new Date().getTime()) + ".tag.1";
-			final String tagName2 =  Long.toString(new Date().getTime()) + ".tag.2";
+			final String tagName2 = Long.toString(new Date().getTime()) + ".tag.2";
 			MLPTag tag1 = new MLPTag(tagName1);
 			MLPTag tag2 = new MLPTag(tagName2);
 			tag1 = client.createTag(tag1);
@@ -782,7 +782,9 @@ public class CdsControllerTest {
 			Assert.assertNotNull(doc);
 
 			try {
-				client.createDocument(new MLPDocument(doc.getDocumentId(), "name", "uri", 100, "user"));
+				MLPDocument doc2 = new MLPDocument("name", "uri", 100, "user");
+				doc2.setDocumentId(doc.getDocumentId());
+				client.createDocument(doc2);
 				throw new Exception("Unexpected success");
 			} catch (HttpStatusCodeException ex) {
 				logger.info("Failed to create new doc with existing ID as expected");
@@ -856,9 +858,9 @@ public class CdsControllerTest {
 
 			logger.info("Querying for solutions by tags");
 			String[] allTags = new String[] { tagName1 };
-			String[] anyTags = null; //new String[] { tagName2 };
-			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, allTags, anyTags, new RestPageRequest(0, 2));
+			String[] anyTags = null; // new String[] { tagName2 };
+			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPortalSolutionsByKwAndTags(null, true,
+					null, null, null, allTags, anyTags, new RestPageRequest(0, 2));
 			logger.info("Found models by tag total " + allAnyTagsSearchResult.getTotalElements());
 			Assert.assertTrue(allAnyTagsSearchResult != null && allAnyTagsSearchResult.getNumberOfElements() > 0);
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
@@ -3418,14 +3420,7 @@ public class CdsControllerTest {
 			logger.info("get document failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPDocument doc = new MLPDocument("bogusId", "name", "uri", 100, "bogusUserId");
-			doc = client.createDocument(doc);
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("create document failed as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			MLPDocument doc = new MLPDocument("bogusId", "name", "uri", 100, "bogusUserId");
+			MLPDocument doc = new MLPDocument("name", "uri", 100, "bogusUserId");
 			client.updateDocument(doc);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {

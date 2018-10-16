@@ -200,12 +200,12 @@ public interface SolutionSearchService {
 			String[] tags, Pageable pageable);
 
 	/**
-	 * Gets a page of solutions with a change after the specified date to benefit
-	 * the Federation feature. A match is found if the solution's modified field, an
-	 * associated revision's modified field, or an associated artifact's modified
-	 * field has a value larger than the specified date. Only finds solutions that
-	 * have 1+ revision(s) and in turn 1+ artifact(s). A freshly created solution
-	 * with no revisions will not be found.
+	 * Gets a page of solutions with recent modifications. The following entities
+	 * are searched for a modified field value that is greater than or equal to the
+	 * specified value: solution, revision, revision description, revision document
+	 * and artifact. Only finds solutions that have 1+ revision(s) and in turn 1+
+	 * artifact(s); i.e., a freshly created solution with no revisions will not be
+	 * found.
 	 * 
 	 * @param active
 	 *            Active status: true or false; required
@@ -218,7 +218,8 @@ public interface SolutionSearchService {
 	 *            including null (not the 4-character sequence "null"); ignored if
 	 *            null or empty
 	 * @param modifiedDate
-	 *            Last-modified date
+	 *            The threshold value used in the search. Entities with modification
+	 *            dates prior to (smaller than) this point in time are ignored.
 	 * @param pageable
 	 *            Page and sort info
 	 * @return Page of matches

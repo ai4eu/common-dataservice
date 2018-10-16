@@ -236,7 +236,7 @@ public class DomainTest extends AbstractModelTest {
 
 	@Test
 	public void testMLPDocument() {
-		MLPDocument m = new MLPDocument(s1, s1, s1, i1, s1);
+		MLPDocument m = new MLPDocument(s1, s1, i1, s1);
 		m = new MLPDocument();
 		m.setCreated(d1);
 		m.setDocumentId(s1);
@@ -255,7 +255,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPDocument(null, null, null, 0, null);
+			new MLPDocument(null, null, 0, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

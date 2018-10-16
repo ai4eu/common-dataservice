@@ -77,7 +77,8 @@ public class MLPRoleFunction extends MLPTimestampedEntity implements Serializabl
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits role function ID, which is
+	 * generated on save.
 	 * 
 	 * @param roleId
 	 *            Role ID

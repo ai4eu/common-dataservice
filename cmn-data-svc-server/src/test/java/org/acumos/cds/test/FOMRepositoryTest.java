@@ -24,16 +24,21 @@ import java.util.Date;
 import java.util.List;
 
 import org.acumos.cds.AccessTypeCode;
-import org.acumos.cds.ValidationStatusCode;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionFOM;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.ArtifactRepository;
+import org.acumos.cds.repository.DocumentRepository;
+import org.acumos.cds.repository.RevisionDescriptionRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
+import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionFOMRepository;
 import org.acumos.cds.repository.SolutionRepository;
@@ -55,7 +60,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 /**
  * Tests the domain models that have complex mappings.
  */
-@SuppressWarnings("deprecation")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FOMRepositoryTest {
@@ -65,6 +69,10 @@ public class FOMRepositoryTest {
 	@Autowired
 	private ArtifactRepository artifactRepository;
 	@Autowired
+	private DocumentRepository documentRepository;
+	@Autowired
+	private RevisionDescriptionRepository descriptionRepository;
+	@Autowired
 	private SolutionRevisionRepository revisionRepository;
 	@Autowired
 	private SolutionRepository solutionRepository;
@@ -72,6 +80,8 @@ public class FOMRepositoryTest {
 	private SolutionFOMRepository solutionFOMRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
+	@Autowired
+	private SolRevDocMapRepository solRevDocMapRepository;
 	@Autowired
 	private SolUserAccMapRepository solUserAccMapRepository;
 	@Autowired
@@ -90,11 +100,13 @@ public class FOMRepositoryTest {
 		MLPSolution cs = null;
 		MLPSolutionRevision cr = null;
 		MLPArtifact ca = null;
-		MLPSolRevArtMap map = null;
+		MLPRevisionDescription rd = null;
+		MLPDocument cd = null;
+		MLPSolRevArtMap revArtMap = null;
+		MLPSolRevDocMap revDocMap = null;
 		MLPSolUserAccMap accMap = null;
 		final String name = "name";
 		final String accCode = AccessTypeCode.PR.name();
-		final String valCode = ValidationStatusCode.NV.name();
 
 		if (setupTeardown) {
 			// Create entities for query
@@ -115,7 +127,7 @@ public class FOMRepositoryTest {
 			cs = solutionRepository.save(cs);
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 
-			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), accCode, valCode);
+			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), accCode, "NV");
 			cr = revisionRepository.save(cr);
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
 			logger.info("Created solution revision {}", cr.getRevisionId());
@@ -125,9 +137,23 @@ public class FOMRepositoryTest {
 			Assert.assertNotNull(ca.getArtifactId());
 			logger.info("Created artifact {}", ca);
 
-			map = new MLPSolRevArtMap(cr.getRevisionId(), ca.getArtifactId());
-			map = solRevArtMapRepository.save(map);
-			logger.info("Created sol-rev-art map {}", map);
+			revArtMap = new MLPSolRevArtMap(cr.getRevisionId(), ca.getArtifactId());
+			revArtMap = solRevArtMapRepository.save(revArtMap);
+			logger.info("Created sol-rev-art map {}", revArtMap);
+
+			rd = new MLPRevisionDescription(cr.getRevisionId(), "PB", "Some description");
+			rd = descriptionRepository.save(rd);
+			Assert.assertNotNull(rd.getCreated());
+			logger.info("Created description {}", rd);
+
+			cd = new MLPDocument("docName", "http://uri", 123, cu.getUserId());
+			cd = documentRepository.save(cd);
+			Assert.assertNotNull(cd.getDocumentId());
+			logger.info("Created document {}", cd);
+
+			revDocMap = new MLPSolRevDocMap(cr.getRevisionId(), "PB", cd.getDocumentId());
+			revDocMap = solRevDocMapRepository.save(revDocMap);
+			logger.info("Created sol-rev-doc map {}", revDocMap);
 
 			accMap = new MLPSolUserAccMap(cs.getSolutionId(), cu2.getUserId());
 			accMap = solUserAccMapRepository.save(accMap);
@@ -144,7 +170,6 @@ public class FOMRepositoryTest {
 		String[] empty = new String[0];
 		String[] nameKw = new String[] { name }; // substring of solution name
 		String[] accTypes = new String[] { accCode };
-		String[] valCodes = new String[] { valCode };
 		Date modifiedDate = new Date();
 		modifiedDate.setTime(modifiedDate.getTime() - 60 * 1000);
 
@@ -154,11 +179,11 @@ public class FOMRepositoryTest {
 
 		logger.info("Querying for FOM via findPortalSolutions method");
 		Page<MLPSolution> byName = solutionSearchService.findPortalSolutions(nameKw, empty, true, empty, empty,
-				accTypes, valCodes, empty, empty, empty, pageable);
+				accTypes, null, empty, empty, empty, pageable);
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
 
-		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, valCodes,
+		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, null,
 				modifiedDate, pageable);
 		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());
@@ -166,14 +191,17 @@ public class FOMRepositoryTest {
 		// Find by user and Hibernate constraint - user2 owns no solutions but has
 		// access
 		Page<MLPSolution> byUser = solutionSearchService.findUserSolutions(nameKw, empty, true, cu2.getUserId(), empty,
-				empty, valCodes, empty, pageable);
+				empty, null, empty, pageable);
 		Assert.assertTrue(byUser != null && byUser.getNumberOfElements() > 0);
 		logger.info("Found sols by user via criteria: size {}", byUser.getContent().size());
 
 		if (setupTeardown) {
 			// Clean up
 			solUserAccMapRepository.delete(accMap);
-			solRevArtMapRepository.delete(map);
+			solRevDocMapRepository.delete(revDocMap);
+			solRevArtMapRepository.delete(revArtMap);
+			documentRepository.delete(cd);
+			descriptionRepository.delete(rd);
 			artifactRepository.delete(ca);
 			revisionRepository.delete(cr);
 			solutionRepository.delete(cs);

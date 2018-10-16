@@ -119,7 +119,8 @@ public class MLPStepResult implements MLPEntity, Serializable {
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits step result ID, which is
+	 * generated on save.
 	 * 
 	 * @param stepTypeCode
 	 *            Step type code

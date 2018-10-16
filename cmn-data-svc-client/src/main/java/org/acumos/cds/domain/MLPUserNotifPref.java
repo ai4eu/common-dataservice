@@ -76,7 +76,8 @@ public class MLPUserNotifPref implements MLPEntity, Serializable {
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits record ID, which is generated
+	 * on save.
 	 * 
 	 * @param userId
 	 *            notification recipient

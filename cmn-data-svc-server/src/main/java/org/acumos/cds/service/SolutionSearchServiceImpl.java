@@ -96,6 +96,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	private final String ownerAlias = "ownr";
 	private final String accAlias = "acc";
 	private final String descsAlias = "descs";
+	private final String docsAlias = "docs";
 	private final String solutionId = "solutionId";
 	// Aliases used in subquery for required tags
 	private final String solAlias = "sol";
@@ -323,6 +324,10 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		criteria.createAlias("revisions", revAlias);
 		// A revision should ALWAYS have artifacts
 		criteria.createAlias(revAlias + ".artifacts", artAlias);
+		// A revision MAY have descriptions
+		criteria.createAlias(revAlias + ".descriptions", descsAlias, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		// A revision MAY have documents
+		criteria.createAlias(revAlias + ".documents", docsAlias, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 		// Attributes on the solution
 		criteria.add(Restrictions.eq("active", active));
 		if (accessTypeCode != null && accessTypeCode.length > 0)
@@ -333,10 +338,14 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		// Unfortunately this requires hard-coded field names
 		Criterion solModified = Restrictions.ge("modified", date);
 		Criterion revModified = Restrictions.ge(revAlias + ".modified", date);
+		Criterion descModified = Restrictions.ge(descsAlias + ".modified", date);
+		Criterion docModified = Restrictions.ge(docsAlias + ".modified", date);
 		Criterion artModified = Restrictions.ge(artAlias + ".modified", date);
 		Disjunction itemModifiedAfter = Restrictions.disjunction();
 		itemModifiedAfter.add(solModified);
 		itemModifiedAfter.add(revModified);
+		itemModifiedAfter.add(descModified);
+		itemModifiedAfter.add(docModified);
 		itemModifiedAfter.add(artModified);
 		criteria.add(itemModifiedAfter);
 

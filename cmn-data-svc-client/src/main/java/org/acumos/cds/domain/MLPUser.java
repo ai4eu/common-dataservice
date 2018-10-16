@@ -232,7 +232,8 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits user ID, which is generated on
+	 * save.
 	 * 
 	 * @param loginName
 	 *            user name

@@ -107,6 +107,20 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 	@JoinColumn(name = REVISION_ID_COL_NAME, referencedColumnName = MLPRevisionDescription.REVISION_ID_COL_NAME)
 	private Set<MLPRevisionDescription> descriptions = new HashSet<>(0);
 
+	/**
+	 * A revision may have many documents. A two-column mapping table connects them.
+	 * Bidirectional mapping.
+	 * 
+	 * Use default LAZY fetch. This is only used for searching (never fetched, never
+	 * serialized as JSON).
+	 */
+	@ManyToMany
+	@JoinTable(name = MLPSolRevDocMap.TABLE_NAME, //
+			joinColumns = { @JoinColumn(name = MLPSolRevDocMap.REVISION_ID_COL_NAME) }, //
+			inverseJoinColumns = { @JoinColumn(name = MLPSolRevDocMap.DOCUMENT_ID_COL_NAME) } //
+	)
+	private Set<MLPDocument> documents = new HashSet<>(0);
+
 	public MLPSolutionFOM getSolution() {
 		return solution;
 	}

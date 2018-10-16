@@ -87,10 +87,9 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits document ID, which is generated
+	 * on save.
 	 * 
-	 * @param documentId
-	 *            Document ID
 	 * @param name
 	 *            File name
 	 * @param uri
@@ -98,11 +97,11 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 * @param size
 	 *            Size of document in bytes
 	 */
-	public MLPAbstractDocument(String documentId, String name, String uri, int size) {
-		if (documentId == null || name == null || uri == null)
+	public MLPAbstractDocument(String name, String uri, int size) {
+		if (name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
-		this.documentId = documentId;
 		this.name = name;
+		this.uri = uri;
 		this.size = size;
 	}
 

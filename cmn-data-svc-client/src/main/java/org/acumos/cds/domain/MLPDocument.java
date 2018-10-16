@@ -65,10 +65,9 @@ public class MLPDocument extends MLPAbstractDocument implements Serializable {
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
-	 * must supply to create a valid instance.
+	 * must supply to create a valid instance. Omits document ID, which is generated
+	 * on save.
 	 * 
-	 * @param documentId
-	 *            Version string
 	 * @param name
 	 *            Name
 	 * @param uri
@@ -78,8 +77,8 @@ public class MLPDocument extends MLPAbstractDocument implements Serializable {
 	 * @param userId
 	 *            User ID
 	 */
-	public MLPDocument(String documentId, String name, String uri, int size, String userId) {
-		super(documentId, name, uri, size);
+	public MLPDocument(String name, String uri, int size, String userId) {
+		super(name, uri, size);
 		if (userId == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.userId = userId;
