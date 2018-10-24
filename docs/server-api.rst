@@ -16,23 +16,20 @@
 .. limitations under the License.
 .. ===============LICENSE_END=========================================================
 
-.. Acumos Common Data Service documentation master
+==============================
+Common Data Service Server API
+==============================
 
-===================
-Common Data Service
-===================
+This page provides a static view of the methods in the CDS server.  Please note that a
+running CDS server provides a more useful version of this information.  View the details
+at a URL like the following, but check the server configuration for the exact port number
+(e.g., "8000") and context root (e.g., "ccds") to use::
 
+    http://localhost:8000/ccds/swagger-ui.html
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+CDS API in Athena Release
+-------------------------
 
-   overview.rst
-   requirements.rst
-   client.rst
-   server.rst
-   server-api.rst
-   migrate.rst
-   release-notes.rst
+This lists the methods in version 1.18.4, which is part of the Athena release.
 
-* :ref:`search`
+.. swaggerv2doc:: cds-api-docs-1.18.4.json
