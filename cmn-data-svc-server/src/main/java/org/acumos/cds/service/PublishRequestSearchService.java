@@ -36,12 +36,13 @@ public interface PublishRequestSearchService {
 	 * on the isOr parameter.
 	 * 
 	 * @param queryParameters
-	 *            field-name, field-value pairs. Value may be scalar or array.
+	 *                            field-name, field-value pairs. Value may be scalar
+	 *                            or array.
 	 * @param isOr
-	 *            If true, the query is a disjunction ("or"); otherwise the query is
-	 *            a conjunction ("and").
+	 *                            If true, the query is a disjunction ("or");
+	 *                            otherwise the query is a conjunction ("and").
 	 * @param pageable
-	 *            Page and sort criteria
+	 *                            Page and sort criteria
 	 * @return List of instances, which may be empty.
 	 */
 	Page<MLPPublishRequest> findPublishRequests(Map<String, Object> queryParameters, boolean isOr, Pageable pageable);

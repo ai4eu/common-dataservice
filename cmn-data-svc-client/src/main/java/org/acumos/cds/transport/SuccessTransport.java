@@ -39,9 +39,9 @@ public class SuccessTransport implements MLPTransportModel {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param status
-	 *            Status code
+	 *                   Status code
 	 * @param data
-	 *            Data to transport
+	 *                   Data to transport
 	 */
 	public SuccessTransport(int status, Object data) {
 		this.status = status;

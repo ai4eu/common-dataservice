@@ -33,7 +33,7 @@ public interface UserRepository extends PagingAndSortingRepository<MLPUser, Stri
 	 * Finds users for which loging name OR email address match.
 	 * 
 	 * @param name
-	 *            Login name or email address; both fields are checked.
+	 *                 Login name or email address; both fields are checked.
 	 * @return MLPUser
 	 */
 	@Query("SELECT u FROM MLPUser u " //
@@ -45,9 +45,9 @@ public interface UserRepository extends PagingAndSortingRepository<MLPUser, Stri
 	 * last name, login name.
 	 * 
 	 * @param searchTerm
-	 *            fragment to find in the name fields
+	 *                        fragment to find in the name fields
 	 * @param pageRequest
-	 *            page and sort information
+	 *                        page and sort information
 	 * @return Iterable of MLPUser
 	 */
 	@Query("SELECT u FROM MLPUser u " //

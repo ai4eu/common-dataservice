@@ -42,11 +42,11 @@ public class UsersRoleRequest implements MLPTransportModel {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param isAdd
-	 *            If true, add users to role; if false, remove from role.
+	 *                    If true, add users to role; if false, remove from role.
 	 * @param userIds
-	 *            List of users to update
+	 *                    List of users to update
 	 * @param roleId
-	 *            Role ID
+	 *                    Role ID
 	 */
 	public UsersRoleRequest(boolean isAdd, List<String> userIds, String roleId) {
 		this.isAdd = isAdd;

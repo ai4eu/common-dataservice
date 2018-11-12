@@ -36,9 +36,9 @@ public interface NotificationRepository extends PagingAndSortingRepository<MLPNo
 	 * includes the viewed date, which is null if the user has not read it.
 	 * 
 	 * @param userId
-	 *            User ID
+	 *                     User ID
 	 * @param pageable
-	 *            PageRequest
+	 *                     PageRequest
 	 * @return Page of notification objects
 	 */
 	@Query(value = "select new org.acumos.cds.domain.MLPUserNotification" //

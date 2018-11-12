@@ -123,13 +123,13 @@ public class MLPStepResult implements MLPEntity, Serializable {
 	 * generated on save.
 	 * 
 	 * @param stepTypeCode
-	 *            Step type code
+	 *                         Step type code
 	 * @param name
-	 *            Step name
+	 *                         Step name
 	 * @param statusCode
-	 *            Step status code
+	 *                         Step status code
 	 * @param startDate
-	 *            Start date
+	 *                         Start date
 	 */
 	public MLPStepResult(String stepTypeCode, String name, String statusCode, Date startDate) {
 		if (stepTypeCode == null || name == null || statusCode == null || startDate == null)
@@ -144,7 +144,7 @@ public class MLPStepResult implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPStepResult(MLPStepResult that) {
 		this.artifactId = that.artifactId;

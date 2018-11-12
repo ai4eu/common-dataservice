@@ -36,7 +36,7 @@ public interface ArtifactRepository extends PagingAndSortingRepository<MLPArtifa
 	 * a single revision is expected to be modest.
 	 *
 	 * @param revisionId
-	 *            solution revision ID
+	 *                       solution revision ID
 	 * @return Iterable of MLPArtifact
 	 */
 	@Query(value = "select a from MLPArtifact a, MLPSolRevArtMap m " //
@@ -48,9 +48,9 @@ public interface ArtifactRepository extends PagingAndSortingRepository<MLPArtifa
 	 * Finds artifacts using a LIKE query on the text columns NAME and DESCRIPTION.
 	 * 
 	 * @param searchTerm
-	 *            fragment to find in text columns
+	 *                        fragment to find in text columns
 	 * @param pageRequest
-	 *            Start index, page size, sort criteria
+	 *                        Start index, page size, sort criteria
 	 * @return Iterable of MLPArtifact
 	 */
 	@Query("SELECT s FROM MLPArtifact s " //

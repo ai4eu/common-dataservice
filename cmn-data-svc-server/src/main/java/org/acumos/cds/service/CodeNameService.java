@@ -35,7 +35,7 @@ public interface CodeNameService {
 	 * Gets the list of code-name pairs in the specified value set.
 	 * 
 	 * @param type
-	 *            Name of the code-name value set; e.g., Toolkit Type.
+	 *                 Name of the code-name value set; e.g., Toolkit Type.
 	 * @return List of MLPCodeNamePair objects
 	 */
 	List<MLPCodeNamePair> getCodeNamePairs(CodeNameType type);
@@ -44,9 +44,9 @@ public interface CodeNameService {
 	 * Validates the specified code against the specified value set.
 	 * 
 	 * @param code
-	 *            Code to check
+	 *                 Code to check
 	 * @param type
-	 *            Name of the code-name value set; e.g., Toolkit Type.
+	 *                 Name of the code-name value set; e.g., Toolkit Type.
 	 * @return true if the code is known, otherwise false
 	 */
 	boolean validateCode(String code, CodeNameType type);

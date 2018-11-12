@@ -61,7 +61,7 @@ public class MLPTag implements MLPEntity, Serializable {
 	 * must supply to create a valid instance.
 	 * 
 	 * @param tag
-	 *            The tag
+	 *                The tag
 	 */
 	public MLPTag(String tag) {
 		if (tag == null || tag.length() == 0)
@@ -73,7 +73,7 @@ public class MLPTag implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPTag(MLPTag that) {
 		this.tag = that.tag;

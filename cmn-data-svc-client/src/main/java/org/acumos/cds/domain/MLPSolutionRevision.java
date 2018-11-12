@@ -73,15 +73,15 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	 * on save.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                                 Solution ID
 	 * @param version
-	 *            User-assigned version string
+	 *                                 User-assigned version string
 	 * @param userId
-	 *            User ID
+	 *                                 User ID
 	 * @param accessTypeCode
-	 *            Access type code
+	 *                                 Access type code
 	 * @param validationStatusCode
-	 *            Validation status code
+	 *                                 Validation status code
 	 */
 	public MLPSolutionRevision(String solutionId, String version, String userId, String accessTypeCode,
 			String validationStatusCode) {
@@ -96,7 +96,7 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionRevision(MLPSolutionRevision that) {
 		super(that);

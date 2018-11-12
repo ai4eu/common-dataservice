@@ -31,7 +31,7 @@ public interface RoleRepository extends PagingAndSortingRepository<MLPRole, Stri
 	 * Finds all roles for the specified userId.
 	 * 
 	 * @param userId
-	 *            User ID
+	 *                   User ID
 	 * @return Iterable of role objects
 	 */
 	@Query(value = "select r from MLPRole r, MLPUserRoleMap m" //

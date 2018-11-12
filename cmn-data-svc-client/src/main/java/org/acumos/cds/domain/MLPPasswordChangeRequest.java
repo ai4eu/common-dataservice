@@ -56,9 +56,9 @@ public class MLPPasswordChangeRequest implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param oldLoginPass
-	 *            Old password clear text
+	 *                         Old password clear text
 	 * @param newLoginPass
-	 *            New password clear text
+	 *                         New password clear text
 	 */
 	public MLPPasswordChangeRequest(String oldLoginPass, String newLoginPass) {
 		if (oldLoginPass == null || newLoginPass == null)
@@ -71,7 +71,7 @@ public class MLPPasswordChangeRequest implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPasswordChangeRequest(MLPPasswordChangeRequest that) {
 		this.newLoginPass = that.newLoginPass;

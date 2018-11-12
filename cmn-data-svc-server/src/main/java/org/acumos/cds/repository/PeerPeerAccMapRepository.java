@@ -37,7 +37,7 @@ public interface PeerPeerAccMapRepository
 	 * There must be a better way than this nested query.
 	 * 
 	 * @param peerId
-	 *            Peer ID
+	 *                   Peer ID
 	 * @return List of accessible peers
 	 */
 	@Query("SELECT p FROM MLPPeer p WHERE p.peerId IN  "//

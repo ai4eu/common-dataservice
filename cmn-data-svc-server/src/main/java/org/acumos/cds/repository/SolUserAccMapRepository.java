@@ -38,7 +38,7 @@ public interface SolUserAccMapRepository
 	 * Gets all users that have access to the specified solution.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @return Iterable of MLPUser
 	 */
 	@Query(value = "SELECT u FROM MLPUser u, MLPSolUserAccMap m " //
@@ -50,9 +50,9 @@ public interface SolUserAccMapRepository
 	 * Gets a page of solutions to which the specified user has access.
 	 * 
 	 * @param userId
-	 *            User ID
+	 *                        User ID
 	 * @param pageRequest
-	 *            Pageable
+	 *                        Pageable
 	 * @return Page of MLPSolution
 	 */
 	@Query(value = "SELECT s FROM MLPSolution s, MLPSolUserAccMap m " //
@@ -64,7 +64,7 @@ public interface SolUserAccMapRepository
 	 * Deletes all entries for the specified solution ID.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 */
 	@Modifying
 	@Transactional // throws exception without this

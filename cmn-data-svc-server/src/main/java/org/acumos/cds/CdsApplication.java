@@ -50,9 +50,9 @@ public class CdsApplication implements ApplicationContextAware {
 	 * of Spring Runner.
 	 * 
 	 * @param args
-	 *            Command line
+	 *                 Command line
 	 * @throws IOException
-	 *             If JSON is present but cannot be parsed
+	 *                         If JSON is present but cannot be parsed
 	 */
 	public static void main(String[] args) throws IOException {
 		final String springApplicationJson = System.getenv(CONFIG_ENV_VAR_NAME);

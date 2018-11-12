@@ -68,9 +68,9 @@ public class MLPSolRevArtMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param revisionId
-		 *            revision ID
+		 *                       revision ID
 		 * @param artifactId
-		 *            artifact ID
+		 *                       artifact ID
 		 */
 		public SolRevArtMapPK(String revisionId, String artifactId) {
 			this.revisionId = revisionId;
@@ -114,9 +114,9 @@ public class MLPSolRevArtMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param revisionId
-	 *            revision ID
+	 *                       revision ID
 	 * @param artifactId
-	 *            artifact ID
+	 *                       artifact ID
 	 */
 	public MLPSolRevArtMap(String revisionId, String artifactId) {
 		if (revisionId == null || artifactId == null)
@@ -129,7 +129,7 @@ public class MLPSolRevArtMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolRevArtMap(MLPSolRevArtMap that) {
 		this.artifactId = that.artifactId;

@@ -125,7 +125,7 @@ public class ONAPLogAdapter {
 	 * Construct adapter.
 	 *
 	 * @param logger
-	 *            non-null logger.
+	 *                   non-null logger.
 	 */
 	public ONAPLogAdapter(final Logger logger) {
 		this.mLogger = checkNotNull(logger);
@@ -150,11 +150,11 @@ public class ONAPLogAdapter {
 	 * Report <tt>ENTERING</tt> marker.
 	 *
 	 * @param request
-	 *            non-null incoming request (wrapper).
+	 *                      non-null incoming request (wrapper).
 	 * @param format
-	 *            SLF4J format string
+	 *                      SLF4J format string
 	 * @param arguments
-	 *            Optional arguments as referenced in the format string
+	 *                      Optional arguments as referenced in the format string
 	 * @return this.
 	 */
 	public ONAPLogAdapter entering(final RequestAdapter<?> request, String format, Object... arguments) {
@@ -169,7 +169,7 @@ public class ONAPLogAdapter {
 	 * Report <tt>ENTERING</tt> marker.
 	 *
 	 * @param request
-	 *            non-null incoming request.
+	 *                    non-null incoming request.
 	 * @return this.
 	 */
 	public ONAPLogAdapter entering(final HttpServletRequest request) {
@@ -202,7 +202,7 @@ public class ONAPLogAdapter {
 	 * the requisite ONAP headers.
 	 *
 	 * @param sync
-	 *            whether synchronous.
+	 *                 whether synchronous.
 	 * @return invocation ID to be passed with invocation.
 	 */
 	public UUID invoke(final ONAPLogConstants.InvocationMode sync) {
@@ -226,9 +226,9 @@ public class ONAPLogAdapter {
 	 * logging headers automatically.
 	 *
 	 * @param builder
-	 *            request builder, for setting headers.
+	 *                    request builder, for setting headers.
 	 * @param sync
-	 *            whether synchronous, nullable.
+	 *                    whether synchronous, nullable.
 	 * @return invocation ID to be passed with invocation.
 	 */
 	public UUID invoke(final RequestBuilder<?> builder, final ONAPLogConstants.InvocationMode sync) {
@@ -256,8 +256,8 @@ public class ONAPLogAdapter {
 	 * Report vanilla <tt>INVOKE</tt> marker.
 	 *
 	 * @param builder
-	 *            builder for downstream requests, if you want the standard ONAP
-	 *            headers to be added automatically.
+	 *                    builder for downstream requests, if you want the standard
+	 *                    ONAP headers to be added automatically.
 	 * @return invocation ID to be passed with invocation.
 	 */
 	public UUID invoke(final RequestBuilder<?> builder) {
@@ -277,7 +277,7 @@ public class ONAPLogAdapter {
 	 * Override {@link ServiceDescriptor}.
 	 * 
 	 * @param d
-	 *            non-null override.
+	 *              non-null override.
 	 * @return this.
 	 */
 	public ONAPLogAdapter setServiceDescriptor(final ServiceDescriptor d) {
@@ -298,7 +298,7 @@ public class ONAPLogAdapter {
 	 * Override {@link ResponseDescriptor}.
 	 * 
 	 * @param d
-	 *            non-null override.
+	 *              non-null override.
 	 * @return this.
 	 */
 	public ONAPLogAdapter setResponseDescriptor(final ResponseDescriptor d) {
@@ -319,7 +319,7 @@ public class ONAPLogAdapter {
 	 * {@link #exiting}. Then it would be easier to do, but it would mean more work.
 	 *
 	 * @param request
-	 *            incoming HTTP request.
+	 *                    incoming HTTP request.
 	 * @return this.
 	 */
 	protected ONAPLogAdapter setEnteringMDCs(final RequestAdapter<?> request) {
@@ -363,9 +363,9 @@ public class ONAPLogAdapter {
 	 * Dependency-free nullcheck.
 	 *
 	 * @param in
-	 *            to be checked.
-	 * @param <T>
-	 *            argument (and return) type.
+	 *               to be checked.
+	 * @param    <T>
+	 *               argument (and return) type.
 	 * @return input arg.
 	 */
 	protected static <T> T checkNotNull(final T in) {
@@ -379,7 +379,7 @@ public class ONAPLogAdapter {
 	 * Dependency-free string default.
 	 *
 	 * @param in
-	 *            to be filtered.
+	 *               to be filtered.
 	 * @return input string or null.
 	 */
 	protected static String defaultToEmpty(final Object in) {
@@ -393,7 +393,7 @@ public class ONAPLogAdapter {
 	 * Dependency-free string default.
 	 *
 	 * @param in
-	 *            to be filtered.
+	 *               to be filtered.
 	 * @return input string or null.
 	 */
 	protected static String defaultToUUID(final String in) {
@@ -426,7 +426,7 @@ public class ONAPLogAdapter {
 		 * Set name.
 		 * 
 		 * @param name
-		 *            <tt>ServiceName</tt>.
+		 *                 <tt>ServiceName</tt>.
 		 * @return this.
 		 */
 		public ServiceDescriptor setServiceName(final String name) {
@@ -438,7 +438,7 @@ public class ONAPLogAdapter {
 		 * Set name.
 		 * 
 		 * @param uuid
-		 *            <tt>InstanceUUID</tt>.
+		 *                 <tt>InstanceUUID</tt>.
 		 * @return this.
 		 */
 		public ServiceDescriptor setServiceUUID(final String uuid) {
@@ -478,7 +478,7 @@ public class ONAPLogAdapter {
 		 * Setter.
 		 *
 		 * @param code
-		 *            response (error) code.
+		 *                 response (error) code.
 		 * @return this.
 		 */
 		public ResponseDescriptor setResponseCode(final String code) {
@@ -490,7 +490,7 @@ public class ONAPLogAdapter {
 		 * Setter.
 		 *
 		 * @param description
-		 *            response description.
+		 *                        response description.
 		 * @return this.
 		 */
 		public ResponseDescriptor setResponseDescription(final String description) {
@@ -502,7 +502,7 @@ public class ONAPLogAdapter {
 		 * Setter.
 		 *
 		 * @param severity
-		 *            response outcome severity.
+		 *                     response outcome severity.
 		 * @return this.
 		 */
 		public ResponseDescriptor setResponseSeverity(final Level severity) {
@@ -514,7 +514,7 @@ public class ONAPLogAdapter {
 		 * Setter.
 		 *
 		 * @param status
-		 *            response overall status.
+		 *                   response overall status.
 		 * @return this.
 		 */
 		public ResponseDescriptor setResponseStatus(final ONAPLogConstants.ResponseStatus status) {
@@ -559,7 +559,7 @@ public class ONAPLogAdapter {
 		 * Get header by name.
 		 * 
 		 * @param name
-		 *            header name.
+		 *                 header name.
 		 * @return header value, or null.
 		 */
 		String getHeader(String name);
@@ -599,7 +599,7 @@ public class ONAPLogAdapter {
 		 * Construct adapter for HTTP request.
 		 * 
 		 * @param request
-		 *            to be wrapped;
+		 *                    to be wrapped;
 		 */
 		public HttpServletRequestAdapter(final HttpServletRequest request) {
 			this.mRequest = checkNotNull(request);
@@ -655,9 +655,9 @@ public class ONAPLogAdapter {
 		 * Set HTTP header.
 		 * 
 		 * @param name
-		 *            header name.
+		 *                  header name.
 		 * @param value
-		 *            header value.
+		 *                  header value.
 		 * @return this.
 		 */
 		T setHeader(String name, String value);

@@ -142,7 +142,7 @@ public class SolutionController extends AbstractController {
 	 * singleton, but what about threads?
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 */
 	private void updateSolutionDownloadStats(String solutionId) {
 		Long count = solutionDownloadRepository.getSolutionDownloadCount(solutionId);
@@ -161,7 +161,7 @@ public class SolutionController extends AbstractController {
 	 * singleton, but what about threads?
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 */
 	private void updateSolutionRatingStats(String solutionId) {
 		Long count = solutionRatingRepository.getSolutionRatingCount(solutionId);

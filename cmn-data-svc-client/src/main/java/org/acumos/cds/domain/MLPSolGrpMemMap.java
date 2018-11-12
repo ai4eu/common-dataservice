@@ -70,9 +70,9 @@ public class MLPSolGrpMemMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param groupId
-		 *            group ID
+		 *                       group ID
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 */
 		public SolGrpMemMapPK(Long groupId, String solutionId) {
 			this.groupId = groupId;
@@ -129,9 +129,9 @@ public class MLPSolGrpMemMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 *
 	 * @param groupId
-	 *            group ID
+	 *                       group ID
 	 * @param solutionId
-	 *            solution ID
+	 *                       solution ID
 	 */
 	public MLPSolGrpMemMap(Long groupId, String solutionId) {
 		if (groupId == null || solutionId == null)
@@ -144,7 +144,7 @@ public class MLPSolGrpMemMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolGrpMemMap(MLPSolGrpMemMap that) {
 		this.created = that.created;

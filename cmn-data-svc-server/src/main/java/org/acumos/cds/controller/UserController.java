@@ -170,11 +170,11 @@ public class UserController extends AbstractController {
 	 * approach?
 	 * 
 	 * @param credentials
-	 *            User name and authentication token
+	 *                           User name and authentication token
 	 * @param credentialType
-	 *            type of credential to check
+	 *                           type of credential to check
 	 * @param response
-	 *            HttpServletResponse
+	 *                           HttpServletResponse
 	 */
 	private Object checkUserCredentials(LoginTransport credentials, CredentialType credentialType,
 			HttpServletResponse response) {
@@ -474,7 +474,7 @@ public class UserController extends AbstractController {
 	 * Supports rudimentary decryption to avoid storing clear text in database.
 	 * 
 	 * @param encryptedMessage
-	 *            Cipher text
+	 *                             Cipher text
 	 * @return clear text
 	 */
 	private String decryptWithJasypt(String encryptedMessage) {
@@ -487,7 +487,7 @@ public class UserController extends AbstractController {
 	 * Supports rudimentary encryption to avoid storing clear text in database.
 	 * 
 	 * @param clearText
-	 *            Clear text
+	 *                      Clear text
 	 * @return cipher text
 	 */
 	private String encryptWithJasypt(String clearText) {
@@ -680,11 +680,11 @@ public class UserController extends AbstractController {
 
 	/**
 	 * @param userId
-	 *            user ID
+	 *                     user ID
 	 * @param roleId
-	 *            role to drop
+	 *                     role to drop
 	 * @param response
-	 *            HttpServletResponse
+	 *                     HttpServletResponse
 	 * @return Success indicator
 	 */
 	@ApiOperation(value = "Drops a role from the user. Returns bad request if an ID is not found.", response = SuccessTransport.class)

@@ -80,9 +80,9 @@ public class MLPThread implements MLPEntity, Serializable {
 	 * on save.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                       Revision ID
 	 */
 	public MLPThread(String solutionId, String revisionId) {
 		if (solutionId == null || revisionId == null)
@@ -95,7 +95,7 @@ public class MLPThread implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPThread(MLPThread that) {
 		this.revisionId = that.revisionId;

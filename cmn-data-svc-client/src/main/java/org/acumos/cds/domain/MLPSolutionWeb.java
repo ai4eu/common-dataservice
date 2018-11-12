@@ -97,7 +97,7 @@ public class MLPSolutionWeb implements MLPEntity, Serializable {
 	 * must supply to create a valid instance.
 	 * 
 	 * @param solutionId
-	 *            ID of solution
+	 *                       ID of solution
 	 */
 	public MLPSolutionWeb(String solutionId) {
 		if (solutionId == null)
@@ -109,7 +109,7 @@ public class MLPSolutionWeb implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionWeb(MLPSolutionWeb that) {
 		this.downloadCount = that.downloadCount;

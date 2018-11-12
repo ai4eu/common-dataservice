@@ -40,9 +40,9 @@ public class LoginTransport implements MLPTransportModel {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param name
-	 *            Login name
+	 *                 Login name
 	 * @param pass
-	 *            Login password or token in clear text.
+	 *                 Login password or token in clear text.
 	 */
 	public LoginTransport(String name, String pass) {
 		this.name = name;

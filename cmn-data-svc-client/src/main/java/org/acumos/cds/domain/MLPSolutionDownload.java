@@ -92,11 +92,11 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 	 * on save.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param artifactId
-	 *            Artifact ID
+	 *                       Artifact ID
 	 * @param userId
-	 *            User ID
+	 *                       User ID
 	 */
 	public MLPSolutionDownload(String solutionId, String artifactId, String userId) {
 		if (solutionId == null || artifactId == null || userId == null)
@@ -110,7 +110,7 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionDownload(MLPSolutionDownload that) {
 		this.artifactId = that.artifactId;

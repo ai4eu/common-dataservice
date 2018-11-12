@@ -36,9 +36,9 @@ public interface PeerGrpMemMapRepository
 	 * mapping table.
 	 * 
 	 * @param groupId
-	 *            Peer group ID
+	 *                     Peer group ID
 	 * @param pageable
-	 *            Page and sort criteria
+	 *                     Page and sort criteria
 	 * @return Page of MLPPeer
 	 */
 	@Query(value = "select p from MLPPeer p, MLPPeerGrpMemMap m " //

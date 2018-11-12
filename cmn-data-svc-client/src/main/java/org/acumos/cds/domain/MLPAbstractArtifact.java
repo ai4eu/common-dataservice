@@ -106,15 +106,15 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 	 * on save.
 	 * 
 	 * @param version
-	 *            Version string
+	 *                             Version string
 	 * @param artifactTypeCode
-	 *            Valid artifact type code
+	 *                             Valid artifact type code
 	 * @param name
-	 *            Name
+	 *                             Name
 	 * @param uri
-	 *            URI
+	 *                             URI
 	 * @param size
-	 *            Length
+	 *                             Length
 	 */
 	public MLPAbstractArtifact(String version, String artifactTypeCode, String name, String uri, int size) {
 		if (version == null || artifactTypeCode == null || name == null || uri == null)
@@ -130,7 +130,7 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPAbstractArtifact(MLPAbstractArtifact that) {
 		super(that);
@@ -158,8 +158,8 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 
 	/**
 	 * @param artifactTypeCode
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.ArtifactTypeCode#toString()}.
+	 *                             A value obtained by calling
+	 *                             {@link org.acumos.cds.ArtifactTypeCode#toString()}.
 	 */
 	public void setArtifactTypeCode(String artifactTypeCode) {
 		this.artifactTypeCode = artifactTypeCode;

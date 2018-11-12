@@ -71,9 +71,9 @@ public class MLPSiteConfig extends MLPTimestampedEntity implements Serializable 
 	 * must supply to create a valid instance.
 	 * 
 	 * @param configKey
-	 *            Row ID
+	 *                        Row ID
 	 * @param configValue
-	 *            Configuration block, validated as JSON
+	 *                        Configuration block, validated as JSON
 	 * 
 	 */
 	public MLPSiteConfig(String configKey, String configValue) {
@@ -87,7 +87,7 @@ public class MLPSiteConfig extends MLPTimestampedEntity implements Serializable 
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSiteConfig(MLPSiteConfig that) {
 		super(that);

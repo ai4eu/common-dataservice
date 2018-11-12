@@ -40,9 +40,9 @@ public class AuthorTransport {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param name
-	 *            name to transport.
+	 *                    name to transport.
 	 * @param contact
-	 *            contact to transport.
+	 *                    contact to transport.
 	 */
 	public AuthorTransport(String name, String contact) {
 		this.name = name;

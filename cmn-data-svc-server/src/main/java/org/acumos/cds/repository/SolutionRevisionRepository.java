@@ -33,9 +33,9 @@ public interface SolutionRevisionRepository extends PagingAndSortingRepository<M
 	 * Finds solution revisions using a LIKE query on the DESCRIPTION field.
 	 * 
 	 * @param searchTerm
-	 *            fragment to find in the descriptions
+	 *                        fragment to find in the descriptions
 	 * @param pageRequest
-	 *            Page and sort criteria
+	 *                        Page and sort criteria
 	 * @return Iterable of MLPSolutionRevision with matching text.
 	 */
 	@Query("SELECT s FROM MLPSolutionRevision s WHERE LOWER(s.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
@@ -50,7 +50,7 @@ public interface SolutionRevisionRepository extends PagingAndSortingRepository<M
 	 * expected to be modest.
 	 * 
 	 * @param solutionIds
-	 *            Array of solution IDs
+	 *                        Array of solution IDs
 	 * @return Iterable of MLPSolutionRevision
 	 */
 	Iterable<MLPSolutionRevision> findBySolutionIdIn(@Param("solutionIds") String[] solutionIds);
@@ -62,7 +62,7 @@ public interface SolutionRevisionRepository extends PagingAndSortingRepository<M
 	 * a single artifact is expected to be modest.
 	 * 
 	 * @param artifactId
-	 *            artifact ID
+	 *                       artifact ID
 	 * @return Iterable of MLPSolutionRevision
 	 */
 	@Query(value = "select r from MLPSolutionRevision r, MLPSolRevArtMap m " //

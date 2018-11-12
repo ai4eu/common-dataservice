@@ -68,9 +68,9 @@ public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param principalPeerGroupId
-		 *            peer group ID
+		 *                                 peer group ID
 		 * @param resourcePeerGroupId
-		 *            peer group ID
+		 *                                 peer group ID
 		 */
 		public PeerPeerAccMapPK(Long principalPeerGroupId, Long resourcePeerGroupId) {
 			this.principalPeerGroupId = principalPeerGroupId;
@@ -129,9 +129,9 @@ public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
 	 *
 	 * 
 	 * @param principalPeerGroupId
-	 *            peer group ID
+	 *                                 peer group ID
 	 * @param resourcePeerGroupId
-	 *            peer group ID
+	 *                                 peer group ID
 	 */
 	public MLPPeerPeerAccMap(Long principalPeerGroupId, Long resourcePeerGroupId) {
 		if (principalPeerGroupId == null || resourcePeerGroupId == null)
@@ -144,7 +144,7 @@ public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeerPeerAccMap(MLPPeerPeerAccMap that) {
 		this.principalPeerGroupId = that.principalPeerGroupId;

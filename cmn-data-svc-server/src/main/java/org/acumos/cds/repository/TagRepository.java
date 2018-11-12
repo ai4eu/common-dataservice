@@ -34,7 +34,7 @@ public interface TagRepository extends PagingAndSortingRepository<MLPTag, String
 	 * expected to be modest.
 	 * 
 	 * @param solutionId
-	 *            solution ID
+	 *                       solution ID
 	 * @return Iterable of MLPTag
 	 */
 	@Query(value = "select t from MLPTag t, MLPSolTagMap m " //

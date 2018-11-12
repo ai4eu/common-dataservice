@@ -40,13 +40,15 @@ public abstract class AbstractSearchServiceImpl {
 	 * Populates a criteria object for Hibernate.
 	 * 
 	 * @param criteria
-	 *            Criteria object to extend
+	 *                            Criteria object to extend
 	 * @param queryParameters
-	 *            Map of field name - field value pairs. Value may be a scalar or
-	 *            array. An "equals" criterion is created for scalar values. An "in"
-	 *            criterion is created for array values.
+	 *                            Map of field name - field value pairs. Value may
+	 *                            be a scalar or array. An "equals" criterion is
+	 *                            created for scalar values. An "in" criterion is
+	 *                            created for array values.
 	 * @param isOr
-	 *            If true, treat the query as a disjunction; else as a conjunction.
+	 *                            If true, treat the query as a disjunction; else as
+	 *                            a conjunction.
 	 */
 	protected void buildCriteria(Criteria criteria, Map<String, ? extends Object> queryParameters, boolean isOr) {
 		Junction junction = isOr ? Restrictions.disjunction() : Restrictions.conjunction();
@@ -70,9 +72,9 @@ public abstract class AbstractSearchServiceImpl {
 	 * list, with special handling ("isNull") for null.
 	 * 
 	 * @param fieldName
-	 *            POJO field name
+	 *                      POJO field name
 	 * @param values
-	 *            Set of values; null is permitted
+	 *                      Set of values; null is permitted
 	 * @return Criterion
 	 */
 	protected Criterion buildEqualsListCriterion(String fieldName, Object[] values) {
@@ -91,11 +93,12 @@ public abstract class AbstractSearchServiceImpl {
 	 * not permitted.
 	 * 
 	 * @param fieldName
-	 *            POJO field name
+	 *                      POJO field name
 	 * @param values
-	 *            String values; null is forbidden
+	 *                      String values; null is forbidden
 	 * @param isOr
-	 *            If true, treat the query as a disjunction; else as a conjunction.
+	 *                      If true, treat the query as a disjunction; else as a
+	 *                      conjunction.
 	 * @return Criterion
 	 */
 	protected Criterion buildLikeListCriterion(String fieldName, String[] values, boolean isOr) {
@@ -113,9 +116,9 @@ public abstract class AbstractSearchServiceImpl {
 	 * Adds page-request criteria to the criteria.
 	 * 
 	 * @param criteria
-	 *            Criteria
+	 *                     Criteria
 	 * @param pageable
-	 *            Pageable
+	 *                     Pageable
 	 */
 	protected void applyPageableCriteria(Criteria criteria, Pageable pageable) {
 		applyFirstMaxCriteria(criteria, pageable);
@@ -127,9 +130,9 @@ public abstract class AbstractSearchServiceImpl {
 	 * Adds first row and page size criteria to the criteria.
 	 * 
 	 * @param criteria
-	 *            Criteria
+	 *                     Criteria
 	 * @param pageable
-	 *            Pageable
+	 *                     Pageable
 	 */
 	protected void applyFirstMaxCriteria(Criteria criteria, Pageable pageable) {
 		criteria.setFirstResult(pageable.getOffset());
@@ -140,9 +143,9 @@ public abstract class AbstractSearchServiceImpl {
 	 * Adds sort criteria to the criteria.
 	 * 
 	 * @param criteria
-	 *            Criteria
+	 *                     Criteria
 	 * @param pageable
-	 *            Pageable
+	 *                     Pageable
 	 */
 	protected void applySortCriteria(Criteria criteria, Pageable pageable) {
 		Iterator<Sort.Order> orderIter = pageable.getSort().iterator();

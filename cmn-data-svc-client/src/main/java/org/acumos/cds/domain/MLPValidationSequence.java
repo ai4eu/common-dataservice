@@ -65,9 +65,9 @@ public class MLPValidationSequence extends MLPTimestampedEntity implements Seria
 		 * Convenience constructor
 		 * 
 		 * @param sequence
-		 *            Sequence
+		 *                        Sequence
 		 * @param valTypeCode
-		 *            validation type code
+		 *                        validation type code
 		 */
 		public ValidationSequencePK(Integer sequence, String valTypeCode) {
 			this.sequence = sequence;
@@ -118,9 +118,9 @@ public class MLPValidationSequence extends MLPTimestampedEntity implements Seria
 	 * must supply to create a valid instance.
 	 * 
 	 * @param sequence
-	 *            Sequence
+	 *                        Sequence
 	 * @param valTypeCode
-	 *            validation type code
+	 *                        validation type code
 	 */
 	public MLPValidationSequence(Integer sequence, String valTypeCode) {
 		if (sequence == null || valTypeCode == null)
@@ -133,7 +133,7 @@ public class MLPValidationSequence extends MLPTimestampedEntity implements Seria
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPValidationSequence(MLPValidationSequence that) {
 		super(that);

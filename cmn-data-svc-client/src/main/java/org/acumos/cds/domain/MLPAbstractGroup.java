@@ -71,7 +71,7 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 	 * save.
 	 * 
 	 * @param name
-	 *            Group name
+	 *                 Group name
 	 */
 	public MLPAbstractGroup(String name) {
 		if (name == null)
@@ -83,7 +83,7 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPAbstractGroup(MLPAbstractGroup that) {
 		super(that);
@@ -101,7 +101,7 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 
 	/**
 	 * @param groupId
-	 *            the groupId to set
+	 *                    the groupId to set
 	 */
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
@@ -116,7 +116,7 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 
 	/**
 	 * @param name
-	 *            the name to set
+	 *                 the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -131,7 +131,7 @@ public abstract class MLPAbstractGroup extends MLPTimestampedEntity {
 
 	/**
 	 * @param description
-	 *            the description to set
+	 *                        the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;

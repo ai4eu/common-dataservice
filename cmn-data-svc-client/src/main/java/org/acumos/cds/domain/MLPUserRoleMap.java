@@ -64,9 +64,9 @@ public class MLPUserRoleMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param userId
-		 *            user ID
+		 *                   user ID
 		 * @param roleId
-		 *            role ID
+		 *                   role ID
 		 */
 		public UserRoleMapPK(String userId, String roleId) {
 			this.userId = userId;
@@ -111,9 +111,9 @@ public class MLPUserRoleMap implements MLPEntity, Serializable {
 	 * must supply to create a valid instance.
 	 * 
 	 * @param userId
-	 *            user ID
+	 *                   user ID
 	 * @param roleId
-	 *            role ID
+	 *                   role ID
 	 */
 	public MLPUserRoleMap(String userId, String roleId) {
 		if (userId == null || roleId == null)
@@ -126,7 +126,7 @@ public class MLPUserRoleMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPUserRoleMap(MLPUserRoleMap that) {
 		this.userId = that.userId;

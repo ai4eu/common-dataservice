@@ -62,17 +62,17 @@ public class MLPArtifact extends MLPAbstractArtifact implements Serializable {
 	 * on save.
 	 * 
 	 * @param version
-	 *            Version string
+	 *                             Version string
 	 * @param artifactTypeCode
-	 *            Valid artifact type code
+	 *                             Valid artifact type code
 	 * @param name
-	 *            Name
+	 *                             Name
 	 * @param uri
-	 *            URI
+	 *                             URI
 	 * @param userId
-	 *            User ID
+	 *                             User ID
 	 * @param size
-	 *            Length
+	 *                             Length
 	 */
 	public MLPArtifact(String version, String artifactTypeCode, String name, String uri, String userId, int size) {
 		super(version, artifactTypeCode, name, uri, size);
@@ -85,7 +85,7 @@ public class MLPArtifact extends MLPAbstractArtifact implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPArtifact(MLPArtifact that) {
 		super(that);

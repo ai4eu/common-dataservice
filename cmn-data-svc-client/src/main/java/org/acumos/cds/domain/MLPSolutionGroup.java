@@ -49,7 +49,7 @@ public class MLPSolutionGroup extends MLPAbstractGroup implements Serializable {
 	 * save.
 	 * 
 	 * @param name
-	 *            Group name
+	 *                 Group name
 	 */
 	public MLPSolutionGroup(String name) {
 		super(name);
@@ -59,7 +59,7 @@ public class MLPSolutionGroup extends MLPAbstractGroup implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionGroup(MLPSolutionGroup that) {
 		super(that);

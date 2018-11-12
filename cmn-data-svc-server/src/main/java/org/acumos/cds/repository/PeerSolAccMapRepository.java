@@ -33,9 +33,9 @@ public interface PeerSolAccMapRepository
 	 * and solution groups.
 	 * 
 	 * @param peerId
-	 *            Peer ID
+	 *                       Peer ID
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @return count of paths that grant the access
 	 */
 	@Query("SELECT count(pg.groupId) FROM MLPPeerGrpMemMap pg, MLPPeerSolAccMap ps, MLPSolGrpMemMap sg " //

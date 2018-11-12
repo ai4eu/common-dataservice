@@ -107,13 +107,13 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	 * generated on save.
 	 * 
 	 * @param peerId
-	 *            Peer ID
+	 *                       Peer ID
 	 * @param userId
-	 *            User ID, the operator
+	 *                       User ID, the operator
 	 * @param scopeType
-	 *            Peer subscription scope type
+	 *                       Peer subscription scope type
 	 * @param accessType
-	 *            Peer subscription access type
+	 *                       Peer subscription access type
 	 */
 	public MLPPeerSubscription(String peerId, String userId, String scopeType, String accessType) {
 		if (peerId == null || userId == null || scopeType == null || accessType == null)
@@ -128,7 +128,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeerSubscription(MLPPeerSubscription that) {
 		super(that);
@@ -193,7 +193,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param refreshInterval
-	 *            seconds
+	 *                            seconds
 	 */
 	public void setRefreshInterval(Long refreshInterval) {
 		this.refreshInterval = refreshInterval;
@@ -208,7 +208,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param maxArtifactSize
-	 *            bytes
+	 *                            bytes
 	 */
 	public void setMaxArtifactSize(Long maxArtifactSize) {
 		this.maxArtifactSize = maxArtifactSize;
@@ -220,8 +220,8 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param scopeType
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.SubscriptionScopeCode#toString()}.
+	 *                      A value obtained by calling
+	 *                      {@link org.acumos.cds.SubscriptionScopeCode#toString()}.
 	 */
 	public void setScopeType(String scopeType) {
 		this.scopeType = scopeType;
@@ -233,8 +233,8 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param accessType
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.AccessTypeCode#toString()}.
+	 *                       A value obtained by calling
+	 *                       {@link org.acumos.cds.AccessTypeCode#toString()}.
 	 */
 	public void setAccessType(String accessType) {
 		this.accessType = accessType;

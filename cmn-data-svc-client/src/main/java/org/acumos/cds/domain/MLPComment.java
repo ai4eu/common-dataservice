@@ -85,11 +85,11 @@ public class MLPComment extends MLPTimestampedEntity implements Serializable {
 	 * on save.
 	 * 
 	 * @param threadId
-	 *            Thread ID
+	 *                     Thread ID
 	 * @param userId
-	 *            User ID of author
+	 *                     User ID of author
 	 * @param text
-	 *            Comment text
+	 *                     Comment text
 	 */
 	public MLPComment(String threadId, String userId, String text) {
 		if (threadId == null || userId == null || text == null)
@@ -103,7 +103,7 @@ public class MLPComment extends MLPTimestampedEntity implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPComment(MLPComment that) {
 		super(that);

@@ -39,9 +39,9 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	 * Finds solutions using a LIKE query on the text columns NAME and DESCRIPTION.
 	 * 
 	 * @param searchTerm
-	 *            fragment to find in text columns
+	 *                        fragment to find in text columns
 	 * @param pageRequest
-	 *            Page and sort criteria
+	 *                        Page and sort criteria
 	 * @return Page of MLPSolution
 	 */
 	@Query("SELECT s FROM MLPSolution s " //
@@ -53,9 +53,9 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	 * Gets all solutions that use the specified tag.
 	 * 
 	 * @param tag
-	 *            Tag string
+	 *                        Tag string
 	 * @param pageRequest
-	 *            Page and sort criteria
+	 *                        Page and sort criteria
 	 * @return Page of MLPSolution
 	 */
 	@Query(value = "SELECT s FROM MLPSolution s, MLPSolTagMap m " //
@@ -72,9 +72,9 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	 * used to select a distinct set of rows.
 	 * 
 	 * @param peerId
-	 *            Peer ID
+	 *                        Peer ID
 	 * @param pageRequest
-	 *            Page and sort criteria
+	 *                        Page and sort criteria
 	 * @return Page of MLPSolution, which may be empty
 	 */
 	@Query(value = "SELECT s FROM MLPSolution s WHERE s.active = true and s.solutionId in "

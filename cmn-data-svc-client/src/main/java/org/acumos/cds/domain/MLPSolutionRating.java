@@ -63,9 +63,9 @@ public class MLPSolutionRating extends MLPTimestampedEntity implements Serializa
 		 * Convenience constructor
 		 * 
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 * @param userId
-		 *            user ID
+		 *                       user ID
 		 */
 		public SolutionRatingPK(String solutionId, String userId) {
 			this.solutionId = solutionId;
@@ -129,11 +129,11 @@ public class MLPSolutionRating extends MLPTimestampedEntity implements Serializa
 	 * must supply to create a valid instance.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param userId
-	 *            User ID
+	 *                       User ID
 	 * @param rating
-	 *            Numeric rating
+	 *                       Numeric rating
 	 */
 	public MLPSolutionRating(String solutionId, String userId, Integer rating) {
 		if (solutionId == null || userId == null || rating == null)
@@ -147,7 +147,7 @@ public class MLPSolutionRating extends MLPTimestampedEntity implements Serializa
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionRating(MLPSolutionRating that) {
 		super(that);

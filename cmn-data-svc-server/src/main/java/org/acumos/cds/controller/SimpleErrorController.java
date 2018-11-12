@@ -57,7 +57,7 @@ public class SimpleErrorController implements ErrorController {
 	 * Constructor
 	 * 
 	 * @param errorAttributes
-	 *            error attributes must not be null
+	 *                            error attributes must not be null
 	 */
 	@Autowired
 	public SimpleErrorController(ErrorAttributes errorAttributes) {
@@ -74,7 +74,7 @@ public class SimpleErrorController implements ErrorController {
 	 * Builds a map with error details
 	 * 
 	 * @param aRequest
-	 *            HttpServletRequest
+	 *                     HttpServletRequest
 	 * @return Map of String to Object
 	 */
 	@RequestMapping(CCDSConstants.ERROR_PATH)

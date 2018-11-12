@@ -70,9 +70,9 @@ public class MLPPeerSolAccMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param peerGroupId
-		 *            peer group ID
+		 *                        peer group ID
 		 * @param solGroupId
-		 *            solution group ID
+		 *                        solution group ID
 		 */
 		public PeerSolAccMapPK(Long peerGroupId, Long solGroupId) {
 			this.peerGroupId = peerGroupId;
@@ -135,11 +135,11 @@ public class MLPPeerSolAccMap implements MLPEntity, Serializable {
 	 *
 	 * 
 	 * @param peerGroupId
-	 *            peer group ID
+	 *                        peer group ID
 	 * @param solGroupId
-	 *            solution group ID
+	 *                        solution group ID
 	 * @param granted
-	 *            Access granted
+	 *                        Access granted
 	 */
 	public MLPPeerSolAccMap(Long peerGroupId, Long solGroupId, boolean granted) {
 		if (peerGroupId == null || solGroupId == null)
@@ -153,7 +153,7 @@ public class MLPPeerSolAccMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeerSolAccMap(MLPPeerSolAccMap that) {
 		this.created = that.created;

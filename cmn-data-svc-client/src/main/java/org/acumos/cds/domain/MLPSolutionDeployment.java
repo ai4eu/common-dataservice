@@ -100,13 +100,13 @@ public class MLPSolutionDeployment extends MLPTimestampedEntity implements Seria
 	 * generated on save.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                                 Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                                 Revision ID
 	 * @param userId
-	 *            User ID
+	 *                                 User ID
 	 * @param deploymentStatusCode
-	 *            Value from the table
+	 *                                 Value from the table
 	 */
 	public MLPSolutionDeployment(String solutionId, String revisionId, String userId, String deploymentStatusCode) {
 		if (solutionId == null || revisionId == null || userId == null || deploymentStatusCode == null)
@@ -121,7 +121,7 @@ public class MLPSolutionDeployment extends MLPTimestampedEntity implements Seria
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionDeployment(MLPSolutionDeployment that) {
 		super(that);

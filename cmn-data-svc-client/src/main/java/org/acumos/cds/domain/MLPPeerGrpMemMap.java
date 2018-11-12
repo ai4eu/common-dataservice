@@ -70,9 +70,9 @@ public class MLPPeerGrpMemMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param groupId
-		 *            group ID
+		 *                    group ID
 		 * @param peerId
-		 *            Peer ID
+		 *                    Peer ID
 		 */
 		public PeerGrpMemMapPK(Long groupId, String peerId) {
 			this.groupId = groupId;
@@ -129,9 +129,9 @@ public class MLPPeerGrpMemMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 *
 	 * @param groupId
-	 *            group ID
+	 *                    group ID
 	 * @param peerId
-	 *            Peerution ID
+	 *                    Peerution ID
 	 */
 	public MLPPeerGrpMemMap(Long groupId, String peerId) {
 		if (groupId == null || peerId == null)
@@ -144,7 +144,7 @@ public class MLPPeerGrpMemMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeerGrpMemMap(MLPPeerGrpMemMap that) {
 		this.created = that.created;

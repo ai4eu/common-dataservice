@@ -65,7 +65,7 @@ public abstract class AbstractController {
 	 * constraints.
 	 * 
 	 * @param thrown
-	 *            Exception
+	 *                   Exception
 	 * @return A ConstraintViolationException if found in the exception-cause stack,
 	 *         otherwise the original argument.
 	 */
@@ -95,11 +95,11 @@ public abstract class AbstractController {
 	 * Validates the specified code against the specified type
 	 * 
 	 * @param code
-	 *            Code value
+	 *                 Code value
 	 * @param type
-	 *            Value set name
+	 *                 Value set name
 	 * @throws IllegalArgumentException
-	 *             if the code is null or not recognized
+	 *                                      if the code is null or not recognized
 	 */
 	protected void validateCode(String code, CodeNameType type) {
 		if (code == null)
@@ -112,7 +112,7 @@ public abstract class AbstractController {
 	 * Adds entries to the tags table as needed.
 	 * 
 	 * @param tags
-	 *            Collection of tags
+	 *                 Collection of tags
 	 */
 	protected void createMissingTags(Collection<MLPTag> tags) {
 		for (MLPTag tag : tags) {

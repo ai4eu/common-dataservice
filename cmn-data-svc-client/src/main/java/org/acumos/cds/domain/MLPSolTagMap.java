@@ -69,9 +69,9 @@ public class MLPSolTagMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 * @param tag
-		 *            Tag
+		 *                       Tag
 		 */
 		public SolTagMapPK(String solutionId, String tag) {
 			this.solutionId = solutionId;
@@ -123,9 +123,9 @@ public class MLPSolTagMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param solutionId
-	 *            solution ID
+	 *                       solution ID
 	 * @param tag
-	 *            Tag
+	 *                       Tag
 	 */
 	public MLPSolTagMap(String solutionId, String tag) {
 		if (solutionId == null || tag == null)
@@ -138,7 +138,7 @@ public class MLPSolTagMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolTagMap(MLPSolTagMap that) {
 		this.solutionId = that.solutionId;

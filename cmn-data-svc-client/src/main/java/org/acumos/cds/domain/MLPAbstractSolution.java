@@ -138,9 +138,9 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	 * on save.
 	 * 
 	 * @param name
-	 *            Solution Name
+	 *                   Solution Name
 	 * @param active
-	 *            Boolean flag
+	 *                   Boolean flag
 	 */
 	public MLPAbstractSolution(String name, boolean active) {
 		if (name == null)
@@ -153,7 +153,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPAbstractSolution(MLPAbstractSolution that) {
 		super(that);
@@ -206,7 +206,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	 * @deprecated Use the per-access-type description on the revision instead.
 	 * 
 	 * @param desc
-	 *            Description
+	 *                 Description
 	 */
 	@Deprecated
 	public void setDescription(String desc) {
@@ -227,8 +227,8 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 
 	/**
 	 * @param modelTypeCode
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.ModelTypeCode#toString()}.
+	 *                          A value obtained by calling
+	 *                          {@link org.acumos.cds.ModelTypeCode#toString()}.
 	 */
 	public void setModelTypeCode(String modelTypeCode) {
 		this.modelTypeCode = modelTypeCode;
@@ -240,8 +240,8 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 
 	/**
 	 * @param toolkitTypeCode
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.ToolkitTypeCode#toString()}.
+	 *                            A value obtained by calling
+	 *                            {@link org.acumos.cds.ToolkitTypeCode#toString()}.
 	 */
 	public void setToolkitTypeCode(String toolkitTypeCode) {
 		this.toolkitTypeCode = toolkitTypeCode;

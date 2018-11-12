@@ -59,7 +59,7 @@ public abstract class MLPTimestampedEntity implements MLPEntity {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPTimestampedEntity(MLPTimestampedEntity that) {
 		this.created = that.created;

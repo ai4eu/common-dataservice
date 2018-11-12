@@ -69,13 +69,13 @@ public class MLPDocument extends MLPAbstractDocument implements Serializable {
 	 * on save.
 	 * 
 	 * @param name
-	 *            Name
+	 *                   Name
 	 * @param uri
-	 *            URI where the document can be accessed
+	 *                   URI where the document can be accessed
 	 * @param size
-	 *            Size of the document in bytes
+	 *                   Size of the document in bytes
 	 * @param userId
-	 *            User ID
+	 *                   User ID
 	 */
 	public MLPDocument(String name, String uri, int size, String userId) {
 		super(name, uri, size);
@@ -88,7 +88,7 @@ public class MLPDocument extends MLPAbstractDocument implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPDocument(MLPDocument that) {
 		super(that);

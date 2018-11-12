@@ -80,11 +80,11 @@ public class MLPUserNotifPref implements MLPEntity, Serializable {
 	 * on save.
 	 * 
 	 * @param userId
-	 *            notification recipient
+	 *                             notification recipient
 	 * @param notfDelvMechCode
-	 *            user preferred notification delivery mechanism
+	 *                             user preferred notification delivery mechanism
 	 * @param msgSeverityCode
-	 *            message severity code
+	 *                             message severity code
 	 */
 	public MLPUserNotifPref(String userId, String notfDelvMechCode, String msgSeverityCode) {
 		if (userId == null || notfDelvMechCode == null || msgSeverityCode == null)
@@ -98,7 +98,7 @@ public class MLPUserNotifPref implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPUserNotifPref(MLPUserNotifPref that) {
 		this.msgSeverityCode = that.msgSeverityCode;

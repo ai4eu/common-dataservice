@@ -150,9 +150,9 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 * resulting FOM solution objects to plain solution objects.
 	 * 
 	 * @param criteria
-	 *            Criteria to evaluate
+	 *                     Criteria to evaluate
 	 * @param pageable
-	 *            Page and sort criteria
+	 *                     Page and sort criteria
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")

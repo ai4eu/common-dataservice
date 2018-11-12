@@ -100,13 +100,13 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	 * on save.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                          Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                          Revision ID
 	 * @param requestUserId
-	 *            Request user ID
+	 *                          Request user ID
 	 * @param statusCode
-	 *            Request status code
+	 *                          Request status code
 	 */
 	public MLPPublishRequest(String solutionId, String revisionId, String requestUserId, String statusCode) {
 		if (solutionId == null || revisionId == null || requestUserId == null || statusCode == null)
@@ -121,7 +121,7 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPublishRequest(MLPPublishRequest that) {
 		super(that);

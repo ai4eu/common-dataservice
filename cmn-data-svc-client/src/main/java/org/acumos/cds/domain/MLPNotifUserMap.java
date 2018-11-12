@@ -64,9 +64,9 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 		 * Builds an instance with the required fields.
 		 * 
 		 * @param notificationId
-		 *            Notification ID
+		 *                           Notification ID
 		 * @param userId
-		 *            User ID
+		 *                           User ID
 		 */
 		public NotifUserMapPK(String notificationId, String userId) {
 			this.notificationId = notificationId;
@@ -117,9 +117,9 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 	 * Builds an instance with the required fields.
 	 * 
 	 * @param notificationId
-	 *            Notification ID
+	 *                           Notification ID
 	 * @param userId
-	 *            User ID
+	 *                           User ID
 	 */
 	public MLPNotifUserMap(String notificationId, String userId) {
 		if (notificationId == null || userId == null)
@@ -132,7 +132,7 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPNotifUserMap(MLPNotifUserMap that) {
 		this.notificationId = that.notificationId;

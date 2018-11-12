@@ -81,7 +81,7 @@ public class RestPageResponse<T> extends PageImpl<T> {
 	 * Builds an object with the specified list.
 	 * 
 	 * @param content
-	 *            List of content
+	 *                    List of content
 	 */
 	public RestPageResponse(List<T> content) {
 		super(content);
@@ -93,11 +93,11 @@ public class RestPageResponse<T> extends PageImpl<T> {
 	 * Builds an object with the specified content.
 	 * 
 	 * @param content
-	 *            List of content
+	 *                     List of content
 	 * @param pageable
-	 *            Object that implements Pageable
+	 *                     Object that implements Pageable
 	 * @param total
-	 *            Total count of elements in all pages
+	 *                     Total count of elements in all pages
 	 */
 	public RestPageResponse(List<T> content, Pageable pageable, long total) {
 		super(content, pageable, total);

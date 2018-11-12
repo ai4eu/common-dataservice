@@ -40,9 +40,9 @@ public class ErrorTransport implements MLPTransportModel {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param statusCode
-	 *            Integer value like 400
+	 *                       Integer value like 400
 	 * @param errMsg
-	 *            Explanation
+	 *                       Explanation
 	 */
 	public ErrorTransport(int statusCode, String errMsg) {
 		this(statusCode, errMsg, null);
@@ -53,11 +53,12 @@ public class ErrorTransport implements MLPTransportModel {
 	 * of the exception.
 	 * 
 	 * @param statusCode
-	 *            Integer value like 500
+	 *                       Integer value like 500
 	 * @param errMsg
-	 *            Explanation
+	 *                       Explanation
 	 * @param exception
-	 *            Exception that should be reported; optional and ignored if null.
+	 *                       Exception that should be reported; optional and ignored
+	 *                       if null.
 	 */
 	public ErrorTransport(int statusCode, String errMsg, Exception exception) {
 		this.status = statusCode;

@@ -129,21 +129,21 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 * save.
 	 * 
 	 * @param name
-	 *            Peer name
+	 *                                 Peer name
 	 * @param subjectName
-	 *            X.509 subject name
+	 *                                 X.509 subject name
 	 * @param apiUrl
-	 *            API URL
+	 *                                 API URL
 	 * @param isSelf
-	 *            Is the entry this site
+	 *                                 Is the entry this site
 	 * @param isLocal
-	 *            Is the entry local
+	 *                                 Is the entry local
 	 * @param contact1
-	 *            Primary contact details
+	 *                                 Primary contact details
 	 * @param statusCode
-	 *            Peer status code
+	 *                                 Peer status code
 	 * @param validationStatusCode
-	 *            Peer validation code
+	 *                                 Peer validation code
 	 */
 	public MLPPeer(String name, String subjectName, String apiUrl, boolean isSelf, boolean isLocal, String contact1,
 			String statusCode, String validationStatusCode) {
@@ -164,7 +164,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeer(MLPPeer that) {
 		super(that);
@@ -190,7 +190,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param peerId
-	 *            the peerId to set
+	 *                   the peerId to set
 	 */
 	public void setPeerId(String peerId) {
 		this.peerId = peerId;
@@ -205,7 +205,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param name
-	 *            the name to set
+	 *                 the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -220,7 +220,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param subjectName
-	 *            the name to set
+	 *                        the name to set
 	 */
 	public void setSubjectName(String subjectName) {
 		this.subjectName = subjectName;
@@ -235,7 +235,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param description
-	 *            the description to set
+	 *                        the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -250,7 +250,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param apiUrl
-	 *            the apiUrl to set
+	 *                   the apiUrl to set
 	 */
 	public void setApiUrl(String apiUrl) {
 		this.apiUrl = apiUrl;
@@ -265,7 +265,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param webUrl
-	 *            the webUrl to set
+	 *                   the webUrl to set
 	 */
 	public void setWebUrl(String webUrl) {
 		this.webUrl = webUrl;
@@ -280,7 +280,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param isSelf
-	 *            the isSelf to set
+	 *                   the isSelf to set
 	 */
 	public void setSelf(boolean isSelf) {
 		this.isSelf = isSelf;
@@ -295,7 +295,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param isLocal
-	 *            the isLocal to set
+	 *                    the isLocal to set
 	 */
 	public void setLocal(boolean isLocal) {
 		this.isLocal = isLocal;
@@ -310,7 +310,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param contact1
-	 *            the contact1 to set
+	 *                     the contact1 to set
 	 */
 	public void setContact1(String contact1) {
 		this.contact1 = contact1;
@@ -322,8 +322,8 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param statusCode
-	 *            A value obtained by calling
-	 *            {@link org.acumos.cds.PeerStatusCode#toString()}.
+	 *                       A value obtained by calling
+	 *                       {@link org.acumos.cds.PeerStatusCode#toString()}.
 	 */
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
@@ -335,7 +335,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param validationStatusCode
-	 *            The validation status code
+	 *                                 The validation status code
 	 */
 	public void setValidationStatusCode(String validationStatusCode) {
 		this.validationStatusCode = validationStatusCode;

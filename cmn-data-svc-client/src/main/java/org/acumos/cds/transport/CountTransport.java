@@ -38,7 +38,7 @@ public class CountTransport implements MLPTransportModel {
 	 * Builds an object with the specified value.
 	 * 
 	 * @param count
-	 *            Count value to transport.
+	 *                  Count value to transport.
 	 */
 	public CountTransport(Long count) {
 		this.count = count;

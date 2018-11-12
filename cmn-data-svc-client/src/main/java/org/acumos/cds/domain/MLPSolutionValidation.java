@@ -65,11 +65,11 @@ public class MLPSolutionValidation extends MLPTimestampedEntity implements Seria
 		 * Convenience constructor
 		 * 
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 * @param revisionId
-		 *            revision ID
+		 *                       revision ID
 		 * @param taskId
-		 *            task ID
+		 *                       task ID
 		 */
 		public SolutionValidationPK(String solutionId, String revisionId, String taskId) {
 			this.solutionId = solutionId;
@@ -148,13 +148,13 @@ public class MLPSolutionValidation extends MLPTimestampedEntity implements Seria
 	 * must supply to create a valid instance.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                               Solution ID
 	 * @param revisionId
-	 *            RevisionID
+	 *                               RevisionID
 	 * @param taskId
-	 *            Task ID
+	 *                               Task ID
 	 * @param validationTypeCode
-	 *            Validation type code
+	 *                               Validation type code
 	 */
 	public MLPSolutionValidation(String solutionId, String revisionId, String taskId, String validationTypeCode) {
 		if (solutionId == null || revisionId == null || taskId == null || validationTypeCode == null)
@@ -169,7 +169,7 @@ public class MLPSolutionValidation extends MLPTimestampedEntity implements Seria
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionValidation(MLPSolutionValidation that) {
 		super(that);

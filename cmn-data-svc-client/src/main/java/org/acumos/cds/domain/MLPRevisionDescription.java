@@ -74,9 +74,9 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 		 * Convenience constructor
 		 * 
 		 * @param revisionId
-		 *            revision ID
+		 *                           revision ID
 		 * @param accessTypeCode
-		 *            access type code
+		 *                           access type code
 		 */
 		public RevDescPK(String revisionId, String accessTypeCode) {
 			this.revisionId = revisionId;
@@ -151,11 +151,11 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 * must supply to create a valid instance.
 	 * 
 	 * @param revisionId
-	 *            Revision ID
+	 *                           Revision ID
 	 * @param accessTypeCode
-	 *            Access type code appropriate for the site
+	 *                           Access type code appropriate for the site
 	 * @param description
-	 *            Description text
+	 *                           Description text
 	 */
 	public MLPRevisionDescription(String revisionId, String accessTypeCode, String description) {
 		if (revisionId == null || accessTypeCode == null || description == null)
@@ -169,7 +169,7 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPRevisionDescription(MLPRevisionDescription that) {
 		super(that);

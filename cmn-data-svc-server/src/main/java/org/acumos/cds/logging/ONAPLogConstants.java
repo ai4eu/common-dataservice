@@ -64,9 +64,9 @@ public final class ONAPLogConstants {
 		 * Build nested, detached marker.
 		 * 
 		 * @param m1
-		 *            top token.
+		 *               top token.
 		 * @param m2
-		 *            sub-token.
+		 *               sub-token.
 		 * @return detached Marker.
 		 */
 		private static Marker build(final String m1, final String m2) {
@@ -209,9 +209,9 @@ public final class ONAPLogConstants {
 		 * Construct enum.
 		 *
 		 * @param s
-		 *            enum value.
+		 *              enum value.
 		 * @param m
-		 *            corresponding Marker.
+		 *              corresponding Marker.
 		 */
 		InvocationMode(final String s, final Marker m) {
 			this.mString = s;

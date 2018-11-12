@@ -236,11 +236,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * save.
 	 * 
 	 * @param loginName
-	 *            user name
+	 *                      user name
 	 * @param email
-	 *            email address
+	 *                      email address
 	 * @param active
-	 *            boolean flag
+	 *                      boolean flag
 	 */
 	public MLPUser(String loginName, String email, boolean active) {
 		if (loginName == null || email == null)
@@ -254,7 +254,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPUser(MLPUser that) {
 		super(that);
@@ -352,7 +352,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Sets the login hash.
 	 * 
 	 * @param hash
-	 *            The hash
+	 *                 The hash
 	 */
 	public void setLoginHash(String hash) {
 		this.loginHash = hash;
@@ -453,7 +453,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * have been created previously.
 	 * 
 	 * @param tags
-	 *            Set of MLPTag
+	 *                 Set of MLPTag
 	 */
 	public void setTags(Set<MLPTag> tags) {
 		this.tags = tags;

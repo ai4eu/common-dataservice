@@ -44,9 +44,9 @@ public class RestPageRequest {
 	 * Convenience constructor that sets the field-to-direction map to null.
 	 * 
 	 * @param page
-	 *            Page to fetch indexed from zero
+	 *                 Page to fetch indexed from zero
 	 * @param size
-	 *            Size of page
+	 *                 Size of page
 	 */
 	public RestPageRequest(int page, int size) {
 		this(page, size, (String[]) null);
@@ -56,11 +56,11 @@ public class RestPageRequest {
 	 * Convenience constructor
 	 * 
 	 * @param page
-	 *            Page to fetch, indexed from zero
+	 *                   Page to fetch, indexed from zero
 	 * @param size
-	 *            Size of page
+	 *                   Size of page
 	 * @param fields
-	 *            Sort fields, defaults to ascending order
+	 *                   Sort fields, defaults to ascending order
 	 */
 	public RestPageRequest(int page, int size, String... fields) {
 		this.page = page;
@@ -75,11 +75,11 @@ public class RestPageRequest {
 	/**
 	 * 
 	 * @param page
-	 *            Page to fetch indexed from zero
+	 *                          Page to fetch indexed from zero
 	 * @param size
-	 *            Size of page
+	 *                          Size of page
 	 * @param fieldToDirMap
-	 *            Sort fields and direction ("ASC" or "DESC")
+	 *                          Sort fields and direction ("ASC" or "DESC")
 	 */
 	public RestPageRequest(int page, int size, Map<String, String> fieldToDirMap) {
 		this.page = page;

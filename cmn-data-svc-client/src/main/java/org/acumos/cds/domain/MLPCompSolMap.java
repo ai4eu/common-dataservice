@@ -64,9 +64,9 @@ public class MLPCompSolMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param parentId
-		 *            solution ID
+		 *                     solution ID
 		 * @param childId
-		 *            solution ID
+		 *                     solution ID
 		 */
 		public CompSolMapPK(String parentId, String childId) {
 			this.parentId = parentId;
@@ -118,9 +118,9 @@ public class MLPCompSolMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param parentId
-	 *            solution ID
+	 *                     solution ID
 	 * @param childId
-	 *            child ID
+	 *                     child ID
 	 */
 	public MLPCompSolMap(String parentId, String childId) {
 		if (parentId == null || childId == null)
@@ -133,7 +133,7 @@ public class MLPCompSolMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPCompSolMap(MLPCompSolMap that) {
 		this.parentId = that.parentId;

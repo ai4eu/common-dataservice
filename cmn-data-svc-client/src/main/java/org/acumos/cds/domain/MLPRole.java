@@ -84,9 +84,9 @@ public class MLPRole extends MLPTimestampedEntity implements Serializable {
 	 * save.
 	 * 
 	 * @param name
-	 *            Role name
+	 *                   Role name
 	 * @param active
-	 *            True if active
+	 *                   True if active
 	 */
 	public MLPRole(String name, boolean active) {
 		if (name == null)
@@ -99,7 +99,7 @@ public class MLPRole extends MLPTimestampedEntity implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPRole(MLPRole that) {
 		super(that);

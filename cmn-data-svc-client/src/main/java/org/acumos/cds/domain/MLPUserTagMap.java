@@ -69,9 +69,9 @@ public class MLPUserTagMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param userId
-		 *            user ID
+		 *                   user ID
 		 * @param tag
-		 *            Tag
+		 *                   Tag
 		 */
 		public UserTagMapPK(String userId, String tag) {
 			this.userId = userId;
@@ -123,9 +123,9 @@ public class MLPUserTagMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param userId
-	 *            solution ID
+	 *                   solution ID
 	 * @param tag
-	 *            Tag
+	 *                   Tag
 	 */
 	public MLPUserTagMap(String userId, String tag) {
 		if (userId == null || tag == null)
@@ -138,7 +138,7 @@ public class MLPUserTagMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPUserTagMap(MLPUserTagMap that) {
 		this.userId = that.userId;

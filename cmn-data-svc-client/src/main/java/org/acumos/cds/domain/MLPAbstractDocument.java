@@ -91,11 +91,11 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 * on save.
 	 * 
 	 * @param name
-	 *            File name
+	 *                 File name
 	 * @param uri
-	 *            URI where document can be accessed
+	 *                 URI where document can be accessed
 	 * @param size
-	 *            Size of document in bytes
+	 *                 Size of document in bytes
 	 */
 	public MLPAbstractDocument(String name, String uri, int size) {
 		if (name == null || uri == null)
@@ -109,7 +109,7 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPAbstractDocument(MLPAbstractDocument that) {
 		super(that);

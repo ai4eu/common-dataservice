@@ -131,11 +131,11 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * on save.
 	 * 
 	 * @param version
-	 *            User-assigned version string
+	 *                                 User-assigned version string
 	 * @param accessTypeCode
-	 *            Access type code
+	 *                                 Access type code
 	 * @param validationStatusCode
-	 *            Validation status code
+	 *                                 Validation status code
 	 */
 	public MLPAbstractSolutionRevision(String version, String accessTypeCode, String validationStatusCode) {
 		if (version == null || accessTypeCode == null || validationStatusCode == null)
@@ -149,7 +149,7 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPAbstractSolutionRevision(MLPAbstractSolutionRevision that) {
 		super(that);
@@ -186,7 +186,7 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * @deprecated Use the per-access-type description instead.
 	 * 
 	 * @param description
-	 *            Description
+	 *                        Description
 	 */
 	@Deprecated
 	public void setDescription(String description) {
@@ -275,8 +275,9 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * Sets the authors. Converts the set of objects to the internal storage format.
 	 * 
 	 * @param authors
-	 *            Set of author (name, contact) pairs. Must not contain the
-	 *            character {@link #AUTHOR_PAIR_SEP} nor {@link #AUTHOR_ROW_SEP}.
+	 *                    Set of author (name, contact) pairs. Must not contain the
+	 *                    character {@link #AUTHOR_PAIR_SEP} nor
+	 *                    {@link #AUTHOR_ROW_SEP}.
 	 */
 	public void setAuthors(AuthorTransport[] authors) {
 		StringBuilder sb = new StringBuilder();

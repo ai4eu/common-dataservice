@@ -48,7 +48,7 @@ public class MLPPeerGroup extends MLPAbstractGroup implements Serializable {
 	 * save.
 	 * 
 	 * @param name
-	 *            Group name
+	 *                 Group name
 	 */
 	public MLPPeerGroup(String name) {
 		super(name);
@@ -58,7 +58,7 @@ public class MLPPeerGroup extends MLPAbstractGroup implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPPeerGroup(MLPPeerGroup that) {
 		super(that);

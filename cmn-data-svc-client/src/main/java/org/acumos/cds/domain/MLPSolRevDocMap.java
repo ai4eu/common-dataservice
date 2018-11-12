@@ -69,11 +69,11 @@ public class MLPSolRevDocMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param revisionId
-		 *            revision ID
+		 *                           revision ID
 		 * @param accessTypeCode
-		 *            public, private etc.
+		 *                           public, private etc.
 		 * @param documentId
-		 *            document ID
+		 *                           document ID
 		 */
 		public SolRevDocMapPK(String revisionId, String accessTypeCode, String documentId) {
 			this.revisionId = revisionId;
@@ -126,11 +126,11 @@ public class MLPSolRevDocMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param revisionId
-	 *            revision ID
+	 *                           revision ID
 	 * @param accessTypeCode
-	 *            access type code
+	 *                           access type code
 	 * @param documentId
-	 *            document ID
+	 *                           document ID
 	 */
 	public MLPSolRevDocMap(String revisionId, String accessTypeCode, String documentId) {
 		if (revisionId == null || accessTypeCode == null || documentId == null)
@@ -144,7 +144,7 @@ public class MLPSolRevDocMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolRevDocMap(MLPSolRevDocMap that) {
 		this.revisionId = that.revisionId;

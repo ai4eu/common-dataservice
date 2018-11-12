@@ -68,9 +68,9 @@ public class MLPSolUserAccMap implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 * @param userId
-		 *            user ID
+		 *                       user ID
 		 */
 		public SolUserAccessMapPK(String solutionId, String userId) {
 			this.solutionId = solutionId;
@@ -114,9 +114,9 @@ public class MLPSolUserAccMap implements MLPEntity, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param solutionId
-	 *            solution ID
+	 *                       solution ID
 	 * @param userId
-	 *            user ID
+	 *                       user ID
 	 */
 	public MLPSolUserAccMap(String solutionId, String userId) {
 		if (solutionId == null || userId == null)
@@ -129,7 +129,7 @@ public class MLPSolUserAccMap implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolUserAccMap(MLPSolUserAccMap that) {
 		this.solutionId = that.solutionId;

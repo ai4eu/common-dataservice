@@ -35,9 +35,9 @@ public interface DocumentRepository extends CrudRepository<MLPDocument, String> 
 	 * a single revision and access type is expected to be modest.
 	 *
 	 * @param revisionId
-	 *            solution revision ID
+	 *                           solution revision ID
 	 * @param accessTypeCode
-	 *            access type code
+	 *                           access type code
 	 * @return Iterable of MLPDocument
 	 */
 	@Query(value = "select d from MLPDocument d, MLPSolRevDocMap m " //

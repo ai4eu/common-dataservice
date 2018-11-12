@@ -64,9 +64,9 @@ public class MLPSolutionFavorite implements MLPEntity, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param solutionId
-		 *            solution ID
+		 *                       solution ID
 		 * @param userId
-		 *            user ID
+		 *                       user ID
 		 */
 		public SolutionFavoritePK(String solutionId, String userId) {
 			this.solutionId = solutionId;
@@ -116,9 +116,9 @@ public class MLPSolutionFavorite implements MLPEntity, Serializable {
 	 * must supply to create a valid instance.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param userId
-	 *            User ID
+	 *                       User ID
 	 */
 	public MLPSolutionFavorite(String solutionId, String userId) {
 		if (solutionId == null || userId == null)
@@ -131,7 +131,7 @@ public class MLPSolutionFavorite implements MLPEntity, Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolutionFavorite(MLPSolutionFavorite that) {
 		this.solutionId = that.solutionId;

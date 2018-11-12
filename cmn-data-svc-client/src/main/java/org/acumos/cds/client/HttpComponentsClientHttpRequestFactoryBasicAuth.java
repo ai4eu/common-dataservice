@@ -44,7 +44,7 @@ public class HttpComponentsClientHttpRequestFactoryBasicAuth extends HttpCompone
 
 	/**
 	 * @param host
-	 *            HttpHost
+	 *                 HttpHost
 	 */
 	public HttpComponentsClientHttpRequestFactoryBasicAuth(HttpHost host) {
 		this.host = host;

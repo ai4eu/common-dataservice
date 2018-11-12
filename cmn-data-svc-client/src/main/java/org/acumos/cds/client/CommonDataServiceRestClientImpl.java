@@ -177,7 +177,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		 * https://blog.bandwidth.com/a-recipe-for-adding-correlation-ids-in-java-microservices/
 		 * 
 		 * @param n
-		 *            Number to encode
+		 *              Number to encode
 		 * @return Long encoded as base 62
 		 */
 		private String encodeBase62(long n) {
@@ -211,13 +211,13 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * constructor.
 	 * 
 	 * @param webapiUrl
-	 *            URL of the web endpoint with hostname and port
+	 *                      URL of the web endpoint with hostname and port
 	 * @param user
-	 *            user name; ignored if null
+	 *                      user name; ignored if null
 	 * @param pass
-	 *            password; ignored if null
+	 *                      password; ignored if null
 	 * @param proxyUrl
-	 *            URL of the proxy with hostname and port; ignored if null
+	 *                      URL of the proxy with hostname and port; ignored if null
 	 */
 	public CommonDataServiceRestClientImpl(final String webapiUrl, final String user, final String pass,
 			final String proxyUrl) {
@@ -273,9 +273,9 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * {@link #getInstance(String, RestTemplate)} instead of this constructor.
 	 * 
 	 * @param webapiUrl
-	 *            URL of the web endpoint
+	 *                         URL of the web endpoint
 	 * @param restTemplate
-	 *            REST template to use for connections
+	 *                         REST template to use for connections
 	 */
 	public CommonDataServiceRestClientImpl(final String webapiUrl, final RestTemplate restTemplate) {
 		if (webapiUrl == null || restTemplate == null)
@@ -295,11 +295,11 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * credentials. This factory method should be used instead of a constructor.
 	 * 
 	 * @param webapiUrl
-	 *            URL of the web endpoint with host and port
+	 *                      URL of the web endpoint with host and port
 	 * @param user
-	 *            user name; ignored if null
+	 *                      user name; ignored if null
 	 * @param pass
-	 *            password; ignored if null
+	 *                      password; ignored if null
 	 * @return Instance of ICommonDataServiceRestClient
 	 */
 	public static ICommonDataServiceRestClient getInstance(String webapiUrl, String user, String pass) {
@@ -312,13 +312,13 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * constructor.
 	 * 
 	 * @param webapiUrl
-	 *            URL of the web endpoint with host and port
+	 *                      URL of the web endpoint with host and port
 	 * @param user
-	 *            user name; ignored if null
+	 *                      user name; ignored if null
 	 * @param pass
-	 *            password; ignored if null
+	 *                      password; ignored if null
 	 * @param proxyUrl
-	 *            URL of the proxy with hostname and port
+	 *                      URL of the proxy with hostname and port
 	 * @return Instance of ICommonDataServiceRestClient
 	 */
 	public static ICommonDataServiceRestClient getInstance(String webapiUrl, String user, String pass,
@@ -331,9 +331,9 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * This factory method should be used instead of a constructor.
 	 * 
 	 * @param webapiUrl
-	 *            URL of the web endpoint with host and port
+	 *                         URL of the web endpoint with host and port
 	 * @param restTemplate
-	 *            REST template
+	 *                         REST template
 	 * @return Instance of ICommonDataServiceRestClient
 	 */
 	public static ICommonDataServiceRestClient getInstance(String webapiUrl, RestTemplate restTemplate) {
@@ -356,12 +356,13 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 * "foo=a&amp;foo=b".
 	 * 
 	 * @param path
-	 *            Array of path segments
+	 *                        Array of path segments
 	 * @param queryParams
-	 *            key-value pairs; ignored if null or empty. Gives special treatment
-	 *            to Date-type values, Array values, and null values inside arrays.
+	 *                        key-value pairs; ignored if null or empty. Gives
+	 *                        special treatment to Date-type values, Array values,
+	 *                        and null values inside arrays.
 	 * @param pageRequest
-	 *            page, size and sort specification; ignored if null.
+	 *                        page, size and sort specification; ignored if null.
 	 * @return URI with the specified path segments and query parameters
 	 */
 	protected URI buildUri(final String[] path, final Map<String, Object> queryParams, RestPageRequest pageRequest) {
@@ -2303,7 +2304,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public long checkRestrictedAccessSolution(String peerId, String solutionId) {
 		URI uri = buildUri(new String[] { CCDSConstants.GROUP_PATH, CCDSConstants.PEER_PATH, peerId,
 				CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.ACCESS_PATH }, null, null);
-		logger.debug("checkPeerSolutionAccess: uri {}", uri);
+		logger.debug("checkRestrictedAccessSolution: uri {}", uri);
 		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<CountTransport>() {
 				});
@@ -2314,8 +2315,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public RestPageResponse<MLPSolution> findRestrictedAccessSolutions(String peerId, RestPageRequest pageRequest) {
 		URI uri = buildUri(
 				new String[] { CCDSConstants.GROUP_PATH, CCDSConstants.PEER_PATH, peerId, CCDSConstants.SOLUTION_PATH },
-				null, null);
-		logger.debug("getRestrictedSolutions: uri {}", uri);
+				null, pageRequest);
+		logger.debug("findRestrictedAccessSolutions: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
 				});

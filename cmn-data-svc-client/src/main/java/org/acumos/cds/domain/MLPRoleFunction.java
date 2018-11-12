@@ -81,9 +81,9 @@ public class MLPRoleFunction extends MLPTimestampedEntity implements Serializabl
 	 * generated on save.
 	 * 
 	 * @param roleId
-	 *            Role ID
+	 *                   Role ID
 	 * @param name
-	 *            Role function name
+	 *                   Role function name
 	 */
 	public MLPRoleFunction(String roleId, String name) {
 		if (roleId == null || name == null)
@@ -96,7 +96,7 @@ public class MLPRoleFunction extends MLPTimestampedEntity implements Serializabl
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPRoleFunction(MLPRoleFunction that) {
 		super(that);

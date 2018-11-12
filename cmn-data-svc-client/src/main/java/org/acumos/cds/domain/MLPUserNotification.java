@@ -48,19 +48,19 @@ public class MLPUserNotification extends MLPNotification {
 	 * Constructor for use in repository method
 	 * 
 	 * @param notificationId
-	 *            Notification ID
+	 *                           Notification ID
 	 * @param title
-	 *            Notification title
+	 *                           Notification title
 	 * @param message
-	 *            Notification message
+	 *                           Notification message
 	 * @param url
-	 *            Notification URL
+	 *                           Notification URL
 	 * @param start
-	 *            Notification start time
+	 *                           Notification start time
 	 * @param end
-	 *            Notification end time
+	 *                           Notification end time
 	 * @param viewed
-	 *            Notification viewed time
+	 *                           Notification viewed time
 	 */
 	public MLPUserNotification(String notificationId, String title, String message, String url, Date start, Date end,
 			Date viewed) {
@@ -77,7 +77,7 @@ public class MLPUserNotification extends MLPNotification {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPUserNotification(MLPUserNotification that) {
 		super(that);

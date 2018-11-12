@@ -32,7 +32,7 @@ public interface SolTagMapRepository extends CrudRepository<MLPSolTagMap, MLPSol
 	 * Deletes all map entries for the specified solution ID.
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 */
 	@Modifying
 	@Transactional // throws exception without this

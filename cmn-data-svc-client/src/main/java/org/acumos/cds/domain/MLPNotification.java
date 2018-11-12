@@ -106,13 +106,14 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	 * generated on save.
 	 * 
 	 * @param title
-	 *            Like the subject of an email
+	 *                            Like the subject of an email
 	 * @param msgSeverityCode
-	 *            severity of the notification like high, medium or low
+	 *                            severity of the notification like high, medium or
+	 *                            low
 	 * @param startDate
-	 *            Earliest date of the active period
+	 *                            Earliest date of the active period
 	 * @param endDate
-	 *            Latest date of the active period
+	 *                            Latest date of the active period
 	 */
 	public MLPNotification(String title, String msgSeverityCode, Date startDate, Date endDate) {
 		if (title == null || msgSeverityCode == null || startDate == null || endDate == null)
@@ -127,7 +128,7 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPNotification(MLPNotification that) {
 		super(that);

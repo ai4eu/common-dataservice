@@ -32,7 +32,7 @@ public interface UserTagMapRepository extends CrudRepository<MLPUserTagMap, MLPU
 	 * Deletes all map entries for the specified user ID.
 	 * 
 	 * @param userId
-	 *            User ID
+	 *                   User ID
 	 */
 	@Modifying
 	@Transactional // throws exception without this

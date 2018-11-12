@@ -113,11 +113,11 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 * on save.
 	 * 
 	 * @param name
-	 *            Solution Name
+	 *                   Solution Name
 	 * @param userId
-	 *            User ID of owner
+	 *                   User ID of owner
 	 * @param active
-	 *            Boolean flag
+	 *                   Boolean flag
 	 */
 	public MLPSolution(String name, String userId, boolean active) {
 		super(name, active);
@@ -128,7 +128,7 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 * Copy constructor
 	 * 
 	 * @param that
-	 *            Instance to copy
+	 *                 Instance to copy
 	 */
 	public MLPSolution(MLPSolution that) {
 		super(that);
@@ -169,7 +169,7 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 * i.e., have been created previously.
 	 * 
 	 * @param tags
-	 *            Set of MLPTag
+	 *                 Set of MLPTag
 	 */
 	public void setTags(Set<MLPTag> tags) {
 		this.tags = tags;
@@ -190,7 +190,7 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 * are discarded.
 	 * 
 	 * @param webStats
-	 *            MLPSolutionWeb object
+	 *                     MLPSolutionWeb object
 	 */
 	public void setWebStats(MLPSolutionWeb webStats) {
 		this.webStats = webStats;
