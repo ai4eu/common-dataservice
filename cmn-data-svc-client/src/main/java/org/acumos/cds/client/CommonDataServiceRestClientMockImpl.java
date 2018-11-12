@@ -223,6 +223,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPPublishRequest> searchPublishRequests;
 	private MLPPublishRequest publishRequest;
 	private RestPageResponse<MLPSolution> restrictedSolutions;
+	private long userNotificationCount;
 
 	/**
 	 * No-argument constructor.
@@ -1129,6 +1130,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void deleteNotification(String notificationId) {
 		// How to mock?
+	}
+
+	public void setUserNotificationCount(long count) {
+		this.userNotificationCount = count;
+	}
+
+	@Override
+	public long getUserUnreadNotificationCount(String userId) {
+		return this.userNotificationCount;
 	}
 
 	public void setUserNotifications(RestPageResponse<MLPUserNotification> notifications) {

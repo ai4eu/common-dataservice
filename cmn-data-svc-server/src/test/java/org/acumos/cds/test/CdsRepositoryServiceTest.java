@@ -1247,6 +1247,8 @@ public class CdsRepositoryServiceTest {
 			nm.setUserId(cu.getUserId());
 			nm = notifUserMapRepository.save(nm);
 
+			long count = notificationRepository.countActiveUnreadByUser(cu.getUserId());
+			Assert.assertEquals(1, count);
 			Page<MLPUserNotification> notifs = notificationRepository.findActiveByUser(cu.getUserId(),
 					new PageRequest(0, 5));
 			Assert.assertFalse(notifs.getContent().isEmpty());

@@ -350,6 +350,8 @@ public class MockClientTest {
 		client.updateNotification(notification);
 		client.deleteNotification("id");
 
+		client.setUserNotificationCount(1);
+		Assert.assertTrue(1 == client.getUserUnreadNotificationCount("id"));
 		RestPageResponse<MLPUserNotification> userNotifications = new RestPageResponse<>();
 		client.setUserNotifications(userNotifications);
 		Assert.assertTrue(userNotifications == client.getUserNotifications("id", pageRequest));

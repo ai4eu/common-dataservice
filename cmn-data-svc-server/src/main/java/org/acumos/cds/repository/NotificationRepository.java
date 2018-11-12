@@ -31,6 +31,23 @@ import org.springframework.data.repository.query.Param;
 public interface NotificationRepository extends PagingAndSortingRepository<MLPNotification, String> {
 
 	/**
+	 * Gets the count of notifications that are active (current time falls within
+	 * the notification's time window), assigned to the specified user unread.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @return Page of notification objects
+	 */
+	@Query(value = "select count(n.notificationId) "//
+			+ " from MLPNotification n, MLPNotifUserMap m" //
+			+ " where n.start <= CURRENT_TIMESTAMP " //
+			+ "   and n.end >= CURRENT_TIMESTAMP " //
+			+ "   and n.notificationId = m.notificationId " //
+			+ "   and m.userId = :userId " //
+			+ "   and m.viewed is null ")
+	long countActiveUnreadByUser(@Param("userId") String userId);
+
+	/**
 	 * Finds a page of notifications that are active (current time falls within the
 	 * notification's time window) and assigned to the specified user. Result
 	 * includes the viewed date, which is null if the user has not read it.

@@ -70,6 +70,8 @@ public interface CCDSConstants {
 	public static final String VALIDATION_PATH = "validation";
 	public static final String VIEW_PATH = "view";
 	public static final String WEB_PATH = "web";
+	public static final String UNREAD_PATH = "unread";
+
 	// Code-name pairs
 	public static final String CODE_PATH = "code";
 	public static final String NAME_PATH = "name";

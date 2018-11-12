@@ -1617,6 +1617,17 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public long getUserUnreadNotificationCount(String userId) {
+		URI uri = buildUri(new String[] { CCDSConstants.NOTIFICATION_PATH, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.UNREAD_PATH, CCDSConstants.COUNT_PATH }, null, null);
+		logger.debug("getUserUnreadNotificationCount: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount();
+	}
+
+	@Override
 	public RestPageResponse<MLPUserNotification> getUserNotifications(String userId, RestPageRequest pageRequest) {
 		URI uri = buildUri(new String[] { CCDSConstants.NOTIFICATION_PATH, CCDSConstants.USER_PATH, userId }, null,
 				pageRequest);

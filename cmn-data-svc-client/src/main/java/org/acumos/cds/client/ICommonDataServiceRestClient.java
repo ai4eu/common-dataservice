@@ -1395,6 +1395,15 @@ public interface ICommonDataServiceRestClient {
 	void deleteNotification(String notificationId);
 
 	/**
+	 * Gets the count of user notifications not yet viewed.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @return Count of unread notifications.
+	 */
+	long getUserUnreadNotificationCount(String userId);
+
+	/**
 	 * Gets a page of active notifications for the specified user, both viewed and
 	 * unviewed. "Active" means the current date/time falls within the
 	 * notification's begin and end timestamps.

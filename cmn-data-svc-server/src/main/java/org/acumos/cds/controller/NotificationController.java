@@ -85,7 +85,7 @@ public class NotificationController extends AbstractController {
 	@ResponseBody
 	public CountTransport getNotificationCount() {
 		logger.info("getNotificationCount");
-		Long count = notificationRepository.count();
+		long count = notificationRepository.count();
 		return new CountTransport(count);
 	}
 
@@ -177,14 +177,24 @@ public class NotificationController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets active notifications for the specified user ID.", //
+	@ApiOperation(value = "Gets the count of unread active notifications for the specified user.", response = CountTransport.class)
+	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/" + CCDSConstants.UNREAD_PATH + "/"
+			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
+	@ResponseBody
+	public CountTransport getUserUnreadNotificationCount(@PathVariable("userId") String userId) {
+		logger.info("getUserNotificationCount user {}", userId);
+		long count = notificationRepository.countActiveUnreadByUser(userId);
+		return new CountTransport(count);
+	}
+
+	@ApiOperation(value = "Gets a page of active notifications for the specified user.", //
 			response = MLPUserNotification.class, responseContainer = "List")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Iterable<MLPUserNotification> getActiveNotificationsForUser(@PathVariable("userId") String userId,
+	public Iterable<MLPUserNotification> getUserNotifications(@PathVariable("userId") String userId,
 			Pageable pageable) {
-		logger.info("getActiveNotificationsForUser: userId {}", userId);
+		logger.info("getUserNotifications: userId {}", userId);
 		return notificationRepository.findActiveByUser(userId, pageable);
 	}
 

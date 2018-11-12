@@ -1260,6 +1260,8 @@ public class CdsControllerTest {
 
 			// Assign user to this notification
 			client.addUserToNotification(no.getNotificationId(), cu.getUserId());
+			// Query for it
+			Assert.assertEquals(1, client.getUserUnreadNotificationCount(cu.getUserId()));
 			RestPageResponse<MLPUserNotification> userNotifs = client.getUserNotifications(cu.getUserId(), null);
 			Assert.assertTrue(userNotifs.iterator().hasNext());
 			logger.info("First user notification {}", userNotifs.iterator().next());
@@ -1268,7 +1270,7 @@ public class CdsControllerTest {
 			client.setUserViewedNotification(no.getNotificationId(), cu.getUserId());
 
 			userNotifs = client.getUserNotifications(cu.getUserId(), null);
-			// Assert.assertFalse(userNotifs.iterator().next().());
+			Assert.assertEquals(0, client.getUserUnreadNotificationCount(cu.getUserId()));
 
 			client.dropUserFromNotification(no.getNotificationId(), cu.getUserId());
 			client.deleteNotification(no.getNotificationId());

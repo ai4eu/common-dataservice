@@ -703,6 +703,11 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
+			client.getUserUnreadNotificationCount("userId");
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
 			client.getUserNotifications("userId", new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
