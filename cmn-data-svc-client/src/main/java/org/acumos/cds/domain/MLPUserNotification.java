@@ -20,15 +20,14 @@
 
 package org.acumos.cds.domain;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 import io.swagger.annotations.ApiModelProperty;
 
 /**
  * A user notification object has all the notification fields plus a "viewed"
- * timestamp. This is a transport model, to carry results of a HQL join out to
+ * field. This is a transport model, to carry results of a HQL join out to
  * client, not an entity.
  */
 public class MLPUserNotification extends MLPNotification {
@@ -36,7 +35,7 @@ public class MLPUserNotification extends MLPNotification {
 	private static final long serialVersionUID = -6305213486711160636L;
 
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp viewed;
+	private Instant viewed;
 
 	/**
 	 * No-arg constructor
@@ -63,8 +62,8 @@ public class MLPUserNotification extends MLPNotification {
 	 * @param viewed
 	 *                           Notification viewed timestamp
 	 */
-	public MLPUserNotification(String notificationId, String title, String message, String url, Timestamp start,
-			Timestamp end, Timestamp viewed) {
+	public MLPUserNotification(String notificationId, String title, String message, String url, Instant start,
+			Instant end, Instant viewed) {
 		setNotificationId(notificationId);
 		setTitle(title);
 		setMessage(message);
@@ -72,36 +71,6 @@ public class MLPUserNotification extends MLPNotification {
 		setStart(start);
 		setEnd(end);
 		this.viewed = viewed;
-	}
-
-	/**
-	 * For benefit of Hibernate. I do not fully understand why this is required, but
-	 * possibly because Timestamp lacks a no-arg constructor?
-	 * 
-	 * @param notificationId
-	 *                           Notification ID
-	 * @param title
-	 *                           Notification title
-	 * @param message
-	 *                           Notification message
-	 * @param url
-	 *                           Notification URL
-	 * @param start
-	 *                           Notification start timestamp
-	 * @param end
-	 *                           Notification end timestamp
-	 * @param viewed
-	 *                           Notification viewed timestamp
-	 */
-	public MLPUserNotification(String notificationId, String title, String message, String url, Date start, Date end,
-			Date viewed) {
-		setNotificationId(notificationId);
-		setTitle(title);
-		setMessage(message);
-		setUrl(url);
-		setStart(start == null ? null : new Timestamp(start.getTime()));
-		setEnd(end == null ? null : new Timestamp(end.getTime()));
-		setViewed(viewed == null ? null : new Timestamp(viewed.getTime()));
 	}
 
 	/**
@@ -115,11 +84,11 @@ public class MLPUserNotification extends MLPNotification {
 		this.viewed = that.viewed;
 	}
 
-	public Timestamp getViewed() {
+	public Instant getViewed() {
 		return viewed;
 	}
 
-	public void setViewed(Timestamp viewed) {
+	public void setViewed(Instant viewed) {
 		this.viewed = viewed;
 	}
 

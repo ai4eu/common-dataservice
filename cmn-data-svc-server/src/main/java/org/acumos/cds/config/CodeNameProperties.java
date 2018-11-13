@@ -35,8 +35,8 @@ import org.springframework.context.annotation.Configuration;
  * two code-name pairs in the toolkitType value set:
  * 
  * <PRE>
-   codeName.toolkitType.PY=Python
-   codeName.toolkitType.JA=Java
+   code-name.toolkit-type.PY=Python
+   code-name.toolkit-type.JA=Java
  * </PRE>
  * 
  * Every value set has its own field with associated getter and setter here. I
@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
  * them to find matches. Spring's Environment class only provides getProperty().
  */
 @Configuration
-@ConfigurationProperties(prefix = "codeName")
+@ConfigurationProperties(prefix = "code-name")
 public class CodeNameProperties {
 
 	private Map<String, String> accessType;

@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(CompSolMapPK.class)
 @Table(name = "C_COMP_SOL_MAP")
-public class MLPCompSolMap implements MLPEntity, Serializable {
+public class MLPCompSolMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = 5998210814745640634L;
 

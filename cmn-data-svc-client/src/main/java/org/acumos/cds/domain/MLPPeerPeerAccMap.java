@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for a row in the peer group - peer group mapping table.
@@ -41,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(MLPPeerPeerAccMap.PeerPeerAccMapPK.class)
 @Table(name = MLPPeerPeerAccMap.TABLE_NAME)
-public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
+public class MLPPeerPeerAccMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -8184725585346886508L;
 
@@ -114,8 +115,8 @@ public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
 	@CreationTimestamp
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(readOnly = true)
-	private Timestamp created;
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY)
+	private Instant created;
 
 	/**
 	 * No-arg constructor
@@ -167,11 +168,11 @@ public class MLPPeerPeerAccMap implements MLPEntity, Serializable {
 		this.resourcePeerGroupId = resourcePeerGroupId;
 	}
 
-	public Timestamp getCreated() {
+	public Instant getCreated() {
 		return created;
 	}
 
-	public void setCreated(Timestamp created) {
+	public void setCreated(Instant created) {
 		this.created = created;
 	}
 

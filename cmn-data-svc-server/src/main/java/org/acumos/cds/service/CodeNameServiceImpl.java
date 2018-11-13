@@ -30,6 +30,7 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+// Serves data from config; no DB access so no @Transactional annotation
 @Service("codeNameService")
 public class CodeNameServiceImpl implements CodeNameService {
 

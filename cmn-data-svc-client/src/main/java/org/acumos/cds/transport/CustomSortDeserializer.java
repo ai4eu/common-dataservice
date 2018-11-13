@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
- * Required to make use of PageRequest field Sort.
+ * Parses JSON that arrives in Page response echoing the requested sort order.
  * 
  * https://stackoverflow.com/questions/30974286/com-fasterxml-jackson-databind-jsonmappingexception-can-not-deserialize-instanc
  */
@@ -47,6 +47,6 @@ public class CustomSortDeserializer extends JsonDeserializer<Sort> {
 			orders[i] = new Order(Direction.valueOf(obj.get("direction").asText()), obj.get("property").asText());
 			i++;
 		}
-		return new Sort(orders);
+		return Sort.by(orders);
 	}
 }

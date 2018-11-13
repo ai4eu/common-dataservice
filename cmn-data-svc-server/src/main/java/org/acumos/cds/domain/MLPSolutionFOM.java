@@ -58,7 +58,7 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 	 */
 	@OneToOne
 	@JoinColumn(name = "USER_ID", nullable = false, columnDefinition = "CHAR(36)")
-	private MLPUser owner;
+	private MLPUser user;
 
 	/**
 	 * A solution has zero or one source peer. Unidirectional mapping.
@@ -115,12 +115,12 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 			inverseJoinColumns = { @JoinColumn(name = MLPSolUserAccMap.USER_ID_COL_NAME) })
 	private Set<MLPUser> accessUsers = new HashSet<>(0);
 
-	public MLPUser getOwner() {
-		return owner;
+	public MLPUser getUser() {
+		return user;
 	}
 
-	public void setOwner(MLPUser owner) {
-		this.owner = owner;
+	public void setUser(MLPUser owner) {
+		this.user = owner;
 	}
 
 	public MLPPeer getSource() {
@@ -157,7 +157,7 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[solutionId=" + getSolutionId() + ", name=" + getName() + ", owner=" + owner
+		return this.getClass().getName() + "[solutionId=" + getSolutionId() + ", name=" + getName() + ", user=" + user
 				+ ", active=" + isActive() + ", modelTypeCode=" + getModelTypeCode() + ", source=" + source
 				+ ", revisions=" + revisions + ", created=" + getCreated() + ", modified=" + getModified() + "]";
 	}
@@ -166,7 +166,7 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 	 * @return MLPSolution with the information from this entity
 	 */
 	public MLPSolution toMLPSolution() {
-		MLPSolution sol = new MLPSolution(getName(), owner.getUserId(), isActive());
+		MLPSolution sol = new MLPSolution(getName(), user.getUserId(), isActive());
 		sol.setCreated(getCreated());
 		sol.setDownloadCount(getDownloadCount());
 		sol.setFeatured(isFeatured());

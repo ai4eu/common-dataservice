@@ -20,31 +20,38 @@
 
 package org.acumos.cds.service;
 
-import java.util.Map;
-
 import org.acumos.cds.domain.MLPUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * Defines methods to manipulate user information.
- */
 public interface UserSearchService {
 
 	/**
 	 * Searches for instances matching all or one of the query parameters, depending
-	 * on the isOr parameter.
+	 * on the isOr parameter; case is ignored in all String matches.
 	 * 
-	 * @param queryParameters
-	 *                            field-name, field-value pairs. Value may be scalar
-	 *                            or array.
+	 * @param firstName
+	 *                       First name; ignored if null
+	 * @param middleName
+	 *                       Middle name; ignored if null
+	 * @param lastName
+	 *                       Last name; ignored if null
+	 * @param orgName
+	 *                       Organization name; ignored if null
+	 * @param email
+	 *                       email; ignored if null
+	 * @param loginName
+	 *                       Login name; ignored if null
+	 * @param active
+	 *                       Active status; ignored if null
 	 * @param isOr
-	 *                            If true, the query is a disjunction ("or");
-	 *                            otherwise the query is a conjunction ("and").
+	 *                       If true, the query is a disjunction ("or"); otherwise
+	 *                       the query is a conjunction ("and").
 	 * @param pageable
-	 *                            Page and sort criteria
+	 *                       Page and sort criteria
 	 * @return Page of instances, which may be empty.
 	 */
-	Page<MLPUser> findUsers(Map<String, ? extends Object> queryParameters, boolean isOr, Pageable pageable);
+	Page<MLPUser> findUsers(String firstName, String middleName, String lastName, String orgName, String email,
+			String loginName, Boolean active, boolean isOr, Pageable pageable);
 
 }

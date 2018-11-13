@@ -32,7 +32,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for requesting approval to publish a solution to PUBLIC.
@@ -46,10 +49,12 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	// Hibernate is weak on the ID column generator, the method is specific to
 	// the backing database. For portability, specify AUTO and define the column
 	// appropriately in the database, which in MySQL requires "AUTO_INCREMENT".
+	// The "native" annotations work in Hibernate 5.3 with Mariadb 10.2.
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "REQUEST_ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(readOnly = true, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
 	// Use object to allow null value
 	private Long requestId;
 

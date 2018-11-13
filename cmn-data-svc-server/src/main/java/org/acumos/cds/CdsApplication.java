@@ -23,13 +23,14 @@ package org.acumos.cds;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
+import org.acumos.cds.domain.MLPSolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Launcher for the common data service Spring-Boot app.
  */
 @SpringBootApplication
+@EntityScan(basePackageClasses = MLPSolution.class)
 public class CdsApplication implements ApplicationContextAware {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -64,11 +66,10 @@ public class CdsApplication implements ApplicationContextAware {
 		} else {
 			logger.warn("main: no configuration found in environment {}", CONFIG_ENV_VAR_NAME);
 		}
-		ConfigurableApplicationContext cxt = SpringApplication.run(CdsApplication.class, args);
+		// This returns after the app is running
+		SpringApplication.run(CdsApplication.class, args);
 		// Force this onto the console
-		logger.warn("main: successful start, Spring context is {}", cxt);
-		// Closing the context stops the application, so ignore
-		// the Sonar advice that the context must be closed here!
+		logger.warn("main: successful start");
 	}
 
 	@Override

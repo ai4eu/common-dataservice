@@ -26,13 +26,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.acumos.cds.CCDSConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -45,6 +45,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * Excluded from Swagger API documentation.
  * 
  * https://stackoverflow.com/questions/25356781/spring-boot-remove-whitelabel-error-page
+ * https://www.baeldung.com/spring-boot-custom-error-page
  */
 @ApiIgnore
 @RestController
@@ -71,7 +72,7 @@ public class SimpleErrorController implements ErrorController {
 	}
 
 	/**
-	 * Builds a map with error details
+	 * Builds a map with error details that serializes to JSON
 	 * 
 	 * @param aRequest
 	 *                     HttpServletRequest
@@ -97,8 +98,8 @@ public class SimpleErrorController implements ErrorController {
 	}
 
 	private Map<String, Object> getErrorAttributes(HttpServletRequest aRequest, boolean includeStackTrace) {
-		RequestAttributes requestAttributes = new ServletRequestAttributes(aRequest);
-		return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
+		WebRequest webRequest = new ServletWebRequest(aRequest);
+		return errorAttributes.getErrorAttributes(webRequest, includeStackTrace);
 	}
 
 }

@@ -20,9 +20,11 @@
 
 package org.acumos.cds.transport;
 
+import org.acumos.cds.MLPResponse;
+
 /**
- * Trivial marker interface to make coding of controllers easier.
+ * Marker interface used by all transport (non-Domain) models.
  */
-public interface MLPTransportModel {
+public interface MLPTransportModel extends MLPResponse {
 
 }

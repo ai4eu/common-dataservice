@@ -18,30 +18,13 @@
  * ===============LICENSE_END=========================================================
  */
 
-package org.acumos.cds.config;
+package org.acumos.cds.domain;
 
-import java.lang.invoke.MethodHandles;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
+import org.acumos.cds.MLPResponse;
 
 /**
- * Runs when Spring-Boot starts.
+ * Marker interface used by all domain models.
  */
-@Component
-public class ContextRefreshedListener implements ApplicationListener<ContextRefreshedEvent> {
+public interface MLPDomainModel extends MLPResponse {
 
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-	@Value("${spring.datasource.url}")
-	private String dbUrl;
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		logger.info("onApplicationEvent: Spring-Boot context refreshed using data source URL {}", dbUrl);
-	}
 }

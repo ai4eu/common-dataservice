@@ -21,9 +21,8 @@
 package org.acumos.cds.client;
 
 import java.lang.invoke.MethodHandles;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -211,8 +210,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		MLPPeer mlpPeer = new MLPPeer();
 		mlpPeer.setApiUrl("http://peer-api");
 		mlpPeer.setContact1("Contact1");
-		Timestamp created = new Timestamp(new Date().getTime());
-		mlpPeer.setCreated(created);
+		mlpPeer.setCreated(Instant.now());
 		mlpPeer.setDescription("Peer description");
 		mlpPeer.setName("Peer-1509357629935");
 		mlpPeer.setPeerId(String.valueOf(Math.incrementExact(0)));
@@ -224,15 +222,14 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		peers = new RestPageResponse<>(peerList);
 
 		MLPNotification mlpNotification = new MLPNotification();
-		mlpNotification.setCreated(created);
+		mlpNotification.setCreated(Instant.now());
 		mlpNotification.setMessage("notification created");
-		Timestamp modified = new Timestamp(new Date().getTime());
-		mlpNotification.setModified(modified);
+		mlpNotification.setModified(Instant.now());
 		mlpNotification.setNotificationId("037ad773-3ae2-472b-89d3-9e185a2cbrt");
 		mlpNotification.setTitle("Notification");
 		mlpNotification.setUrl("http://notify.com");
-		mlpNotification.setStart(created);
-		mlpNotification.setEnd(new Timestamp(new Date().getTime()));
+		mlpNotification.setStart(Instant.now());
+		mlpNotification.setEnd(Instant.now());
 	}
 
 	public CommonDataServiceRestClientMockImpl(final String webapiUrl, final String user, final String pass) {
@@ -327,7 +324,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Date date,
+	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant i,
 			RestPageRequest pageRequest) {
 		return solutionsByDate;
 	}
@@ -1319,12 +1316,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	public RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
 			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
 			String[] authKws, String[] pubKws, RestPageRequest pageRequest) {
-		return this.portalSolutions;
-	}
-
-	@Override
-	public RestPageResponse<MLPSolution> findPortalSolutionsByKw(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] tags, RestPageRequest pageRequest) {
 		return this.portalSolutions;
 	}
 

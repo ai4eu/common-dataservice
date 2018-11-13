@@ -21,8 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -34,24 +33,29 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for a step result
  */
 @Entity
 @Table(name = "C_STEP_RESULT")
-public class MLPStepResult implements MLPEntity, Serializable {
+public class MLPStepResult implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -595148641870461125L;
 
 	// Hibernate is weak on the ID column generator, the method is specific to
 	// the backing database. For portability, specify AUTO and define the column
 	// appropriately in the database, which in MySQL requires "AUTO_INCREMENT".
+	// The "native" annotations work in Hibernate 5.3 with Mariadb 10.2.
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(readOnly = true, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
 	private Long stepResultId;
 
 	@Column(name = "TRACKING_ID", updatable = false, columnDefinition = "CHAR(36)")
@@ -104,18 +108,18 @@ public class MLPStepResult implements MLPEntity, Serializable {
 
 	@Column(name = "START_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp startDate;
+	private Instant startDate;
 
 	@Column(name = "END_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp endDate;
+	private Instant endDate;
 
 	/**
 	 * No-arg constructor
 	 */
 	public MLPStepResult() {
 		// no-arg constructor
-		startDate = new Timestamp(new Date().getTime());
+		startDate = Instant.now();
 	}
 
 	/**
@@ -132,7 +136,7 @@ public class MLPStepResult implements MLPEntity, Serializable {
 	 * @param startDate
 	 *                         Start date
 	 */
-	public MLPStepResult(String stepTypeCode, String name, String statusCode, Timestamp startDate) {
+	public MLPStepResult(String stepTypeCode, String name, String statusCode, Instant startDate) {
 		if (stepTypeCode == null || name == null || statusCode == null || startDate == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.stepCode = stepTypeCode;
@@ -242,19 +246,19 @@ public class MLPStepResult implements MLPEntity, Serializable {
 		this.result = result;
 	}
 
-	public Timestamp getStartDate() {
+	public Instant getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Timestamp startDate) {
+	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;
 	}
 
-	public Timestamp getEndDate() {
+	public Instant getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Timestamp endDate) {
+	public void setEndDate(Instant endDate) {
 		this.endDate = endDate;
 	}
 

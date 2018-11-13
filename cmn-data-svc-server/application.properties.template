@@ -63,31 +63,26 @@ server.port=8081
 
 # REST endpoints are protected by HTTP Basic Authentication
 # Encrypted password - see README.md
-security.user.name=ccds-web-user
-security.user.password = ccds-web-pass
+spring.security.user.name=ccds-web-user
+spring.security.user.password = ccds-web-pass
 # Encrypted password - see README.md
 # security.user.password = ENC(CTQD7Xk5bOIuC4MaqRZtzjW1K4ArjCjr)
 
-# This works for Mysql and MariaDB
-spring.database.driver.classname = org.mariadb.jdbc.Driver
 # Database coordinates
 # Mysql/Mariadb must set this parameter: useLegacyDatetimeCode=false
 # Add the following parameter if the host machine has an unexpected timezone string:
 #    &serverTimezone=GMT-05:00
 # Example error: QueryException: The server time_zone 'Eastern Standard Time' cannot be parsed.
-spring.datasource.url = jdbc:mysql://localhost:3306/db-name?useLegacyDatetimeCode=false&useSSL=false
+spring.datasource.jdbc-url = jdbc:mariadb://localhost:3306/db-name?useLegacyDatetimeCode=false&useSSL=false
 spring.datasource.username = db-user-name
 spring.datasource.password = db-user-pass
 # Encrypted password - see README.md
 # spring.datasource.password = ENC(neXyzs+frWL6UQmH5Ii+tO5eo0Lkk9x+)
 # Platform name is used to find data.sql file on classpath (only for test)
 # spring.datasource.platform = mariadb
-
 # Specify ORM dialect 
-# spring.jpa.database-platform=org.hibernate.dialect.DerbyTenSevenDialect
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
-# Hibernate creates the tables when using Derby; others use "validate"
-# spring.jpa.hibernate.ddl-auto = create
+spring.jpa.database-platform=org.hibernate.dialect.MariaDB102Dialect
+# don't create the schema, just validate the contents
 spring.jpa.hibernate.ddl-auto=validate
 
 ###############################################################
@@ -95,13 +90,20 @@ spring.jpa.hibernate.ddl-auto=validate
 # The following properties are similar in all deployments,
 # so the values can be externalized as needed.
 
+# don't want a reactive web server
+spring.main.web-application-type=SERVLET
+
+# silence the warning about this behavior
+spring.jpa.open-in-view=false
+
 # REST endpoint configuration; i.e., where this server listens
-server.contextPath=/ccds
+server.servlet.context-path=/ccds
 
 # Keep the connection alive if idle for a long time (needed in production)
-spring.datasource.testWhileIdle = true
-spring.datasource.validationQuery = SELECT 1
+spring.datasource.test-while-idle = true
+spring.datasource.validation-query = SELECT 1
 
+# can show SQL for local testing
 spring.jpa.show-sql=false
 # Generate names as annotated which use upper case.
 # Without this config Spring uses lower case, which requires case-insensitivity at database.
@@ -113,101 +115,102 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 # Guards passwords
 jasypt.encryptor.password=supersecret
 
-# Guards sensitive HTTP endpoints
-management.security.roles=SUPERUSER
-
 # Enumerated code-name value sets.
 # Case *IS* relevant here!
 #
-codeName.accessType.OR=Organization
-codeName.accessType.PB=Public
-codeName.accessType.PR=Private
+code-name.access-type.OR=Organization
+code-name.access-type.PB=Public
+code-name.access-type.PR=Private
+code-name.access-type.RS=Restricted
 #
-codeName.artifactType.BP=Blueprint File
-codeName.artifactType.CD=Cdump File
-codeName.artifactType.DI=Docker Image
-codeName.artifactType.DP=Docker Image Pre-Dockerized
-codeName.artifactType.DS=Data Source
-codeName.artifactType.LG=Log File
-codeName.artifactType.LI=License
-codeName.artifactType.MD=Metadata
-codeName.artifactType.MH=Model-H2O
-codeName.artifactType.MI=Model Image
-codeName.artifactType.MR=Model-R
-codeName.artifactType.MS=Model-SciKit
-codeName.artifactType.MT=Model-Tensorflow
-codeName.artifactType.TE=TOSCA Template
-codeName.artifactType.TG=TOSCA Generator Input File
-codeName.artifactType.TS=TOSCA Schema
-codeName.artifactType.TT=TOSCA Translate
-codeName.artifactType.PJ=Protobuf File
+code-name.artifact-type.BP=Blueprint File
+code-name.artifact-type.CD=Cdump File
+code-name.artifact-type.DI=Docker Image
+code-name.artifact-type.DP=Docker Image Pre-Dockerized
+code-name.artifact-type.DS=Data Source
+code-name.artifact-type.LI=License
+code-name.artifact-type.LG=Log File
+code-name.artifact-type.MD=Metadata
+code-name.artifact-type.MH=Model-H2O
+code-name.artifact-type.MI=Model Image
+code-name.artifact-type.MR=Model-R
+code-name.artifact-type.MS=Model-SciKit
+code-name.artifact-type.MT=Model-Tensorflow
+code-name.artifact-type.TE=TOSCA Template
+code-name.artifact-type.TG=TOSCA Generator Input File
+code-name.artifact-type.TS=TOSCA Schema
+code-name.artifact-type.TT=TOSCA Translate
+code-name.artifact-type.PJ=Protobuf File
 #
-codeName.deploymentStatus.DP=Deployed
-codeName.deploymentStatus.FA=Failed
-codeName.deploymentStatus.IP=In Progress
-codeName.deploymentStatus.ST=Started
+code-name.deployment-status.DP=Deployed
+code-name.deployment-status.FA=Failed
+code-name.deployment-status.IP=In Progress
+code-name.deployment-status.ST=Started
 #
-codeName.loginProvider.FB=Facebook
-codeName.loginProvider.GH=GitHub
-codeName.loginProvider.GP=Google Plus
-codeName.loginProvider.LI=LinkedIn
+code-name.login-provider.FB=Facebook
+code-name.login-provider.GH=GitHub
+code-name.login-provider.GP=Google Plus
+code-name.login-provider.LI=LinkedIn
 #
-codeName.messageSeverity.HI=High
-codeName.messageSeverity.ME=Medium
-codeName.messageSeverity.LO=Low
+code-name.message-severity.HI=High
+code-name.message-severity.ME=Medium
+code-name.message-severity.LO=Low
 #
-codeName.modelType.CL=Classification
-codeName.modelType.DS=Data Sources
-codeName.modelType.DT=Data Transformer
-codeName.modelType.PR=Prediction
-codeName.modelType.RG=Regression
+code-name.model-type.CL=Classification
+code-name.model-type.DS=Data Sources
+code-name.model-type.DT=Data Transformer
+code-name.model-type.PR=Prediction
+code-name.model-type.RG=Regression
 #
-codeName.notificationDeliveryMechanism.EM=Email
-codeName.notificationDeliveryMechanism.TX=Text
+code-name.notification-delivery-mechanism.EM=Email
+code-name.notification-delivery-mechanism.TX=Text
 #
-codeName.peerStatus.AC=Active
-codeName.peerStatus.IN=Inactive
-codeName.peerStatus.RQ=Requested
-codeName.peerStatus.RN=Renounced
-codeName.peerStatus.DC=Declined
+code-name.peer-status.AC=Active
+code-name.peer-status.IN=Inactive
+code-name.peer-status.RQ=Requested
+code-name.peer-status.RN=Renounced
+code-name.peer-status.DC=Declined
+code-name.peer-status.RM=Removed
 #
-codeName.publishRequestStatus.AP=Approved
-codeName.publishRequestStatus.DC=Declined
-codeName.publishRequestStatus.PE=Pending
-codeName.publishRequestStatus.WD=Withdrawn
+code-name.publish-request-status.AP=Approved
+code-name.publish-request-status.DC=Declined
+code-name.publish-request-status.PE=Pending
+code-name.publish-request-status.WD=Withdrawn
 #
-codeName.stepStatus.ST=Started
-codeName.stepStatus.SU=Succeeded
-codeName.stepStatus.FA=Failed
+code-name.step-status.ST=Started
+code-name.step-status.SU=Succeeded
+code-name.step-status.FA=Failed
 #
-codeName.stepType.OB=Onboarding
-codeName.stepType.VL=Validation
+code-name.step-type.OB=Onboarding
+code-name.step-type.VL=Validation
 #
-codeName.subscriptionScope.RF=Reference
-codeName.subscriptionScope.FL=Full
+code-name.subscription-scope.RF=Reference
+code-name.subscription-scope.FL=Full
 #
-codeName.toolkitType.BR=Data Broker
-codeName.toolkitType.CO=Collator
-codeName.toolkitType.CP=Composite Solution
-codeName.toolkitType.DS=Design Studio
-codeName.toolkitType.H2=H2O
-codeName.toolkitType.ON=ONAP
-codeName.toolkitType.PB=Probe
-codeName.toolkitType.RC=R
-codeName.toolkitType.SK=Scikit-Learn
-codeName.toolkitType.SP=Splitter
-codeName.toolkitType.TF=TensorFlow
-codeName.toolkitType.TC=Training Client
+code-name.toolkit-type.CO=Collator
+code-name.toolkit-type.CP=Composite Solution
+code-name.toolkit-type.DS=Design Studio
+code-name.toolkit-type.H2=H2O
+code-name.toolkit-type.PB=Probe
+code-name.toolkit-type.RC=R
+code-name.toolkit-type.SK=Scikit-Learn
+code-name.toolkit-type.SP=Splitter
+code-name.toolkit-type.TF=TensorFlow
+code-name.toolkit-type.TC=Training Client
+code-name.toolkit-type.BR=Data Broker
+code-name.toolkit-type.ON=ONAP
+code-name.toolkit-type.OX=ONNX
+code-name.toolkit-type.PF=PFA
 #
-codeName.verifiedLicense.SU=Success
-codeName.verifiedLicense.FA=Failed
-codeName.verifiedLicense.IP=In progress
-codeName.verifiedLicense.UR=Unrequested
-
-codeName.verifiedVulnerability.SU=Success
-codeName.verifiedVulnerability.FA=Failed
-codeName.verifiedVulnerability.IP=In progress
-codeName.verifiedVulnerability.UR=Unrequested
+code-name.verified-license.SU=Success
+code-name.verified-license.FA=Failed
+code-name.verified-license.IP=In progress
+code-name.verified-license.UR=Unrequested
+#
+code-name.verified-vulnerability.SU=Success
+code-name.verified-vulnerability.FA=Failed
+code-name.verified-vulnerability.IP=In progress
+code-name.verified-vulnerability.UR=Unrequested
 
 # configurable behavior on authentication failure
 # When does temp block start
@@ -219,3 +222,7 @@ login.failure.block.time = 900
 # logging.level.root=INFO
 # Specific loggers can be configured here:
 # logging.level.org.springframework.web=INFO
+# Add this to see SQL
+# logging.level.org.hibernate.SQL=debug
+# Add this to see query values
+# logging.level.org.hibernate.type.descriptor.sql=trace

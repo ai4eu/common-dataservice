@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Entity
 @Table(name = "C_THREAD")
-public class MLPThread implements MLPEntity, Serializable {
+public class MLPThread implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -8103629633174998747L;
 

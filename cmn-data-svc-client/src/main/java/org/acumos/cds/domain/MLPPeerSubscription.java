@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -32,7 +32,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for a peer subscription.
@@ -46,10 +49,12 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	// Hibernate is weak on the ID column generator, the method is specific to
 	// the backing database. For portability, specify AUTO and define the column
 	// appropriately in the database, which in MySQL requires "AUTO_INCREMENT".
+	// The "native" annotations work in Hibernate 5.3 with Mariadb 10.2.
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "SUB_ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(readOnly = true, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
 	private Long subId;
 
 	@Column(name = "PEER_ID", nullable = false, columnDefinition = "CHAR(36)")
@@ -92,7 +97,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	@Column(name = "PROCESSED_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp processed;
+	private Instant processed;
 
 	/**
 	 * No-arg constructor
@@ -238,11 +243,11 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 		this.accessType = accessType;
 	}
 
-	public Timestamp getProcessed() {
+	public Instant getProcessed() {
 		return processed;
 	}
 
-	public void setProcessed(Timestamp created) {
+	public void setProcessed(Instant created) {
 		this.processed = created;
 	}
 

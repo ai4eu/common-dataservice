@@ -23,11 +23,13 @@ package org.acumos.cds.controller;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.repository.RoleFunctionRepository;
@@ -135,7 +137,7 @@ public class RoleController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return roleSearchService.findRoles(queryParameters, isOr, pageRequest);
+			return roleSearchService.findRoles(name, active, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchRoles failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -149,27 +151,28 @@ public class RoleController extends AbstractController {
 	@RequestMapping(value = "/{roleId}", method = RequestMethod.GET)
 	public MLPRole getRole(@PathVariable("roleId") String roleId) {
 		logger.debug("getRole roleId {}", roleId);
-		return roleRepository.findOne(roleId);
+		Optional<MLPRole> da = roleRepository.findById(roleId);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPRole.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createRole(@RequestBody MLPRole role, HttpServletResponse response) {
+	public MLPResponse createRole(@RequestBody MLPRole role, HttpServletResponse response) {
 		logger.debug("createRole role {}", role);
 		try {
 			String id = role.getRoleId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (roleRepository.findOne(id) != null) {
+				if (roleRepository.findById(id).isPresent()) {
 					logger.warn("createRole failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
 				}
 			}
 			// Create a new row
-			Object result = roleRepository.save(role);
+			MLPRole result = roleRepository.save(role);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			// This is a hack to create the location path.
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.ROLE_PATH + "/" + role.getRoleId());
@@ -186,12 +189,11 @@ public class RoleController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{roleId}", method = RequestMethod.PUT)
-	public Object updateRole(@PathVariable("roleId") String roleId, @RequestBody MLPRole role,
+	public MLPTransportModel updateRole(@PathVariable("roleId") String roleId, @RequestBody MLPRole role,
 			HttpServletResponse response) {
 		logger.debug("updateRole roleId {}", roleId);
-		// Get the existing one
-		MLPRole existing = roleRepository.findOne(roleId);
-		if (existing == null) {
+		// Check the existing one
+		if (!roleRepository.findById(roleId).isPresent()) {
 			logger.warn("updateRole failed on ID {}", roleId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
@@ -219,8 +221,8 @@ public class RoleController extends AbstractController {
 		try {
 			Iterable<MLPRoleFunction> fns = roleFunctionRepository.findByRoleId(roleId);
 			if (fns != null)
-				roleFunctionRepository.delete(fns);
-			roleRepository.delete(roleId);
+				roleFunctionRepository.deleteAll(fns);
+			roleRepository.deleteById(roleId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -244,51 +246,54 @@ public class RoleController extends AbstractController {
 	public MLPRoleFunction getRoleFunc(@PathVariable("roleId") String roleId,
 			@PathVariable("functionId") String functionId) {
 		logger.debug("getRoleFunc roleId {} functionId {}", roleId, functionId);
-		return roleFunctionRepository.findOne(functionId);
+		Optional<MLPRoleFunction> rf = roleFunctionRepository.findById(functionId);
+		return rf.isPresent() ? rf.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPRoleFunction.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{roleId}/" + CCDSConstants.FUNCTION_PATH, method = RequestMethod.POST)
-	public Object createRoleFunc(@PathVariable("roleId") String roleId, @RequestBody MLPRoleFunction roleFunction,
+	public MLPResponse createRoleFunc(@PathVariable("roleId") String roleId, @RequestBody MLPRoleFunction roleFunction,
 			HttpServletResponse response) {
 		logger.debug("createRoleFunc: function {}", roleFunction);
-		if (roleRepository.findOne(roleId) == null) {
+		if (!roleRepository.findById(roleId).isPresent()) {
 			logger.warn("createRoleFunc failed on ID {}", roleId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
 		}
-		Object result;
 		try {
 			// Null out any existing ID to get an auto-generated ID
 			roleFunction.setRoleFunctionId(null);
 			// Add the solution, which the client cannot provide
 			roleFunction.setRoleId(roleId);
 			// Create a new row
-			result = roleFunctionRepository.save(roleFunction);
+			MLPRoleFunction result = roleFunctionRepository.save(roleFunction);
+			// This is a hack to create the location path.
+			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.ROLE_PATH + "/" + result.getRoleId());
+			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createRoleFunc failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			result = new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRoleFunc failed", cve);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRoleFunc failed", cve);
 		}
-		return result;
 	}
 
 	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{roleId}/" + CCDSConstants.FUNCTION_PATH + "/{functionId}", method = RequestMethod.PUT)
-	public Object updateRoleFunc(@PathVariable("roleId") String roleId, @PathVariable("functionId") String functionId,
-			@RequestBody MLPRoleFunction roleFunction, HttpServletResponse response) {
+	public MLPTransportModel updateRoleFunc(@PathVariable("roleId") String roleId,
+			@PathVariable("functionId") String functionId, @RequestBody MLPRoleFunction roleFunction,
+			HttpServletResponse response) {
 		logger.debug("updateRoleFunc roleId {} functionId {}", roleId, functionId);
-		if (roleRepository.findOne(roleId) == null) {
+		if (!roleRepository.findById(roleId).isPresent()) {
 			logger.warn("updateRoleFunc failed on role ID {}", roleId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
 		}
-		if (roleFunctionRepository.findOne(functionId) == null) {
+		if (!roleFunctionRepository.findById(functionId).isPresent()) {
 			logger.warn("updateRoleFunc failed on fn ID {}", functionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + functionId, null);
@@ -316,7 +321,7 @@ public class RoleController extends AbstractController {
 			@PathVariable("functionId") String functionId, HttpServletResponse response) {
 		logger.debug("deleteRoleFunc roleId {} funcId {}", roleId, functionId);
 		try {
-			roleFunctionRepository.delete(functionId);
+			roleFunctionRepository.deleteById(functionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

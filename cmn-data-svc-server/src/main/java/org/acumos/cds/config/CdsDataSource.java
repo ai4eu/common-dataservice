@@ -27,44 +27,31 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Builds a data source from configuration properties.
+ * Trivial bean that reports URL used when creating the data source. This bean
+ * is NOT required, Spring-Boot can create a data source from properties.
+ * 
+ * Spring-Boot v2 defaults to the Hikari pooling source, no need to configure
+ * that here.
  */
-@Component
+@Configuration
 public class CdsDataSource {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	@Value("${spring.database.driver.classname}")
-	private String dbDriverClassName;
+	@Value("${spring.datasource.jdbc-url}")
+	private String url;
 
-	@Value("${spring.datasource.url}")
-	private String dbUrl;
-
-	@Value("${spring.datasource.username}")
-	private String dbUsername;
-
-	@Value("${spring.datasource.password}")
-	private String dbPassword;
-
-	/**
-	 * Builds a data source from configuration properties.
-	 * 
-	 * @return DataSource
-	 */
-	@Bean
+	@Bean(name = "dataSource")
+	@ConfigurationProperties("spring.datasource")
 	public DataSource dataSource() {
-		// Force this onto the console
-		logger.warn("dataSource: using URL {}", dbUrl);
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(dbDriverClassName);
-		dataSource.setUrl(dbUrl);
-		dataSource.setUsername(dbUsername);
-		dataSource.setPassword(dbPassword);
-		return dataSource;
+		logger.warn("dataSource: using URL {}", url);
+		return DataSourceBuilder.create().build();
 	}
+
 }

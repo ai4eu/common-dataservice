@@ -20,31 +20,34 @@
 
 package org.acumos.cds.service;
 
-import java.util.Map;
-
 import org.acumos.cds.domain.MLPArtifact;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * Defines methods to manipulate Artifact information.
- */
 public interface ArtifactSearchService {
 
 	/**
 	 * Searches for instances matching all or one of the query parameters, depending
-	 * on the isOr parameter.
+	 * on the isOr parameter; case is ignored in all String matches.
 	 * 
-	 * @param queryParameters
-	 *                            field-name, field-value pairs. Value may be scalar
-	 *                            or array.
+	 * @param artifactTypeCode
+	 *                             Artifact type code; ignored if null
+	 * @param name
+	 *                             Artifact name; ignored if null
+	 * @param uri
+	 *                             Artifact URI; ignored if null
+	 * @param version
+	 *                             Artifact version string; ignored if null
+	 * @param userId
+	 *                             Associated user ID; ignored if null
 	 * @param isOr
-	 *                            If true, the query is a disjunction ("or");
-	 *                            otherwise the query is a conjunction ("and").
+	 *                             If true, the query is a disjunction ("or");
+	 *                             otherwise the query is a conjunction ("and").
 	 * @param pageable
-	 *                            Page and sort criteria
+	 *                             Page and sort criteria
 	 * @return Page of instances, which may be empty.
 	 */
-	Page<MLPArtifact> findArtifacts(Map<String, ? extends Object> queryParameters, boolean isOr, Pageable pageable);
+	Page<MLPArtifact> findArtifacts(String artifactTypeCode, String name, String uri, String version, String userId,
+			boolean isOr, Pageable pageable);
 
 }

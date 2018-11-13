@@ -22,7 +22,7 @@ package org.acumos.cds.util;
 
 import java.io.Serializable;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
 
 /**
@@ -34,7 +34,7 @@ import org.hibernate.id.UUIDGenerator;
 public class UseExistingOrNewUUIDGenerator extends UUIDGenerator {
 
 	@Override
-	public Serializable generate(SessionImplementor session, Object object) {
+	public Serializable generate(SharedSessionContractImplementor session, Object object) {
 		Serializable id = session.getEntityPersister(null, object).getClassMetadata().getIdentifier(object, session);
 		return id != null ? id : super.generate(session, object);
 	}

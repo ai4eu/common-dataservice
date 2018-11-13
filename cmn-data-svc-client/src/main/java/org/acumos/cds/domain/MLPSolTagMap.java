@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(SolTagMapPK.class)
 @Table(name = MLPSolTagMap.TABLE_NAME)
-public class MLPSolTagMap implements MLPEntity, Serializable {
+public class MLPSolTagMap implements MLPDomainModel, Serializable {
 
 	// Define constants so names can be reused in many-many annotation.
 	/* package */ static final String TABLE_NAME = "C_SOL_TAG_MAP";

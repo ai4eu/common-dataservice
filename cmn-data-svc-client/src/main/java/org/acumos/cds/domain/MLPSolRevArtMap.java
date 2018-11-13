@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(SolRevArtMapPK.class)
 @Table(name = MLPSolRevArtMap.TABLE_NAME)
-public class MLPSolRevArtMap implements MLPEntity, Serializable {
+public class MLPSolRevArtMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = 1721531464277548759L;
 

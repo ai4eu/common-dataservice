@@ -22,9 +22,8 @@ package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +75,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -100,11 +99,11 @@ public class CdsControllerTest {
 	private final String s64 = "12345678901234567890123456789012345678901234567890123456789012345";
 
 	// From properties
-	@Value("${server.contextPath}")
+	@Value("${server.servlet.context-path}")
 	private String contextPath;
-	@Value("${security.user.name}")
+	@Value("${spring.security.user.name}")
 	private String userName;
-	@Value("${security.user.password}")
+	@Value("${spring.security.user.password}")
 	private String password;
 	// Created by Spring black magic
 	// https://spring.io/guides/gs/testing-web/
@@ -190,7 +189,7 @@ public class CdsControllerTest {
 			logger.info("Adding artifact to revision");
 			client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
 
-			MLPStepResult sr = new MLPStepResult("OB", "New Step Result1", "FA", new Timestamp(new Date().getTime()));
+			MLPStepResult sr = new MLPStepResult("OB", "New Step Result1", "FA", Instant.now());
 			sr.setSolutionId(cs.getSolutionId());
 			sr = client.createStepResult(sr);
 			Assert.assertNotNull(sr.getStepResultId());
@@ -280,10 +279,9 @@ public class CdsControllerTest {
 			// Use this repeatedly :)
 			RestPageRequest rp = new RestPageRequest(0, 1);
 
-			Timestamp lastLogin = new Timestamp(new Date().getTime() - 60 * 1000);
+			Instant lastLogin = Instant.now().minusSeconds(60);
 			MLPUser cu = new MLPUser();
-			String unique = Long.toString(new Date().getTime());
-			final String loginName = "user-" + unique;
+			final String loginName = "artifact-user-";
 			final String loginPass = "test_client_pass";
 			final String apiToken = "test_client_api";
 			final String verifyToken = "test_client_verify";
@@ -292,21 +290,21 @@ public class CdsControllerTest {
 			cu.setApiToken(apiToken);
 			cu.setVerifyTokenHash(verifyToken);
 			cu.setEmail("createSolArtuser@abc.com");
-			final String firstName = "test_" + unique;
+			final String firstName = "SallieMaie";
 			cu.setFirstName(firstName);
-			final String lastName = "name create-sol-arts";
+			final String lastName = "LastCreateSolArt";
 			cu.setLastName(lastName);
 			cu.setActive(true);
 			cu.setLastLogin(lastLogin);
-			cu.setLoginPassExpire(new Timestamp(new Date().getTime()));
+			cu.setLoginPassExpire(Instant.now());
 			final byte[] fakePicture = new byte[] { 1, 2, 3, 4, 5 };
 			cu.setPicture(fakePicture);
 			cu = client.createUser(cu);
 			Assert.assertNotNull(cu.getUserId());
 			Assert.assertNotNull(cu.getCreated());
 			Assert.assertNotNull(cu.getModified());
-			// assertEquals occasionally fails - this allows for millisecond differences
-			Assert.assertTrue(Math.abs(cu.getCreated().getTime() - cu.getModified().getTime()) < 3);
+			// Created and modified are not necessarily equal; allow for minor difference
+			Assert.assertTrue(Math.abs(cu.getCreated().getEpochSecond() - cu.getModified().getEpochSecond()) < 2);
 			Assert.assertEquals(cu.getLastLogin(), lastLogin);
 			// Password must not come back in response
 			Assert.assertNull(cu.getLoginHash());
@@ -437,7 +435,7 @@ public class CdsControllerTest {
 
 			// Create Peer
 			MLPPeer pr = new MLPPeer();
-			final String peerName = "Peer-" + Long.toString(new Date().getTime());
+			final String peerName = "PeerCreateSolArts";
 			pr.setName(peerName);
 			pr.setSubjectName("subject name");
 			pr.setApiUrl("http://peer-api");
@@ -550,8 +548,8 @@ public class CdsControllerTest {
 			Assert.assertTrue(filtered.getNumberOfElements() == 0);
 
 			// Also check that Spring doesn't truncate last path variable
-			final String tagName1 = Long.toString(new Date().getTime()) + ".tag.1";
-			final String tagName2 = Long.toString(new Date().getTime()) + ".tag.2";
+			final String tagName1 = Long.toString(Instant.now().getEpochSecond()) + ".tag.1";
+			final String tagName2 = Long.toString(Instant.now().getEpochSecond()) + ".tag.2";
 			MLPTag tag1 = new MLPTag(tagName1);
 			MLPTag tag2 = new MLPTag(tagName2);
 			tag1 = client.createTag(tag1);
@@ -564,7 +562,7 @@ public class CdsControllerTest {
 			// Tag some users for fun
 			client.addUserTag(cu.getUserId(), tagName1);
 			// Force creation of tag
-			final String otherTag = "tag-" + Long.toString(new Date().getTime());
+			final String otherTag = "tag-" + Long.toString(Instant.now().getEpochSecond());
 			client.addUserTag(cu.getUserId(), otherTag);
 			client.dropUserTag(cu.getUserId(), otherTag);
 			client.deleteTag(new MLPTag(otherTag));
@@ -681,7 +679,7 @@ public class CdsControllerTest {
 			RestPageResponse<MLPSolution> sl2 = client.findSolutionsByTag(tagName1, new RestPageRequest(0, 5));
 			Assert.assertTrue(sl2 != null && sl2.getNumberOfElements() > 0);
 
-			// Add user access
+			// Add user access for this inactive user
 			client.addSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 
 			// Query two ways
@@ -824,16 +822,16 @@ public class CdsControllerTest {
 			// Check fetch by ID to ensure both are found
 			logger.info("Querying for solutions by id");
 			String[] ids = { cs.getSolutionId(), csOrg.getSolutionId() };
-			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKw(ids, true, null, null, null,
-					null, new RestPageRequest(0, 2));
+			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKwAndTags(ids, true, null, null,
+					null, null, null, new RestPageRequest(0, 2));
 			Assert.assertTrue(idSearchResult != null && idSearchResult.getNumberOfElements() == 2);
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
 
 			// Both keywords must occur in the same field for a match
 			logger.info("Querying for solutions by keyword");
 			String[] kw = { "solution", "organization" };
-			RestPageResponse<MLPSolution> kwSearchResult = client.findPortalSolutionsByKw(kw, true, null, null, null,
-					null, new RestPageRequest(0, 2));
+			RestPageResponse<MLPSolution> kwSearchResult = client.findPortalSolutionsByKwAndTags(kw, true, null, null,
+					null, null, null, new RestPageRequest(0, 2));
 			Assert.assertTrue(kwSearchResult != null && kwSearchResult.getNumberOfElements() > 0);
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
@@ -847,10 +845,12 @@ public class CdsControllerTest {
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
 			Assert.assertTrue(taggedSol.getTags().contains(new MLPTag(tagName1)));
 
+			// Check this finds solutions by shared-with-user ID
 			logger.info("Querying for user solutions via flexible i/f");
 			RestPageResponse<MLPSolution> userSols = client.findUserSolutions(null, null, true,
 					inactiveUser.getUserId(), null, null, null, new RestPageRequest(0, 5));
-			Assert.assertTrue(userSols != null && userSols.getNumberOfElements() > 0);
+			Assert.assertNotNull(userSols);
+			Assert.assertNotEquals(0, userSols.getNumberOfElements());
 
 			// find active solutions
 			String[] nameKw = null;
@@ -867,8 +867,7 @@ public class CdsControllerTest {
 
 			// Requires revisions and artifacts!
 			String[] searchAccessTypeCodes = new String[] { AccessTypeCode.OR.name() };
-			Date anHourAgo = new java.util.Date();
-			anHourAgo.setTime(new Date().getTime() - 1000L * 60 * 60);
+			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
 			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(true, searchAccessTypeCodes, anHourAgo,
 					new RestPageRequest(0, 1));
 			Assert.assertTrue(sld != null && sld.getNumberOfElements() > 0);
@@ -881,7 +880,6 @@ public class CdsControllerTest {
 			ur.setUserId(cu.getUserId());
 			ur.setRating(4);
 			ur.setTextReview("Awesome");
-			ur.setCreated(new Timestamp(new Date().getTime()));
 			ur = client.createSolutionRating(ur);
 			logger.info("Created solution rating {}", ur);
 			MLPSolutionRating rating = client.getSolutionRating(cs.getSolutionId(), cu.getUserId());
@@ -1035,18 +1033,17 @@ public class CdsControllerTest {
 	public void testRoleAndFunctions() throws Exception {
 		try {
 			MLPUser cu = new MLPUser();
-			String unique = Long.toString(new Date().getTime());
-			final String loginName = "user-" + unique;
+			final String loginName = "user_role_function";
 			final String loginPass = "test_client_pass";
 			cu.setLoginName(loginName);
 			cu.setLoginHash(loginPass);
 			cu.setEmail("testrolefnuser@abc.com");
-			final String firstName = "test_" + unique;
+			final String firstName = "FirstRoleFn";
 			cu.setFirstName(firstName);
-			final String lastName = "test-role-fn";
+			final String lastName = "LastRoleFn";
 			cu.setLastName(lastName);
 			cu.setActive(true);
-			cu.setLoginPassExpire(new Timestamp(new Date().getTime()));
+			cu.setLoginPassExpire(Instant.now());
 			cu = client.createUser(cu);
 			Assert.assertNotNull(cu.getUserId());
 			logger.info("Created user with ID {}", cu.getUserId());
@@ -1167,22 +1164,20 @@ public class CdsControllerTest {
 	public void testNotifications() throws Exception {
 		try {
 			MLPUser cu = new MLPUser();
-			final String loginName = "notif_" + Long.toString(new Date().getTime());
-			cu.setLoginName(loginName);
+			cu.setLoginName("notifuser");
 			cu.setEmail("testnotifuser@abc.com");
 			cu = client.createUser(cu);
 			Assert.assertNotNull(cu.getUserId());
 
 			MLPNotification no = new MLPNotification();
-			no.setTitle("notif title");
+			no.setTitle("notif1 title");
 			no.setMessage("notif msg");
-			no.setUrl("http://notify.me");
+			no.setUrl("http://notify1.me");
 			no.setMsgSeverityCode("LO");
-			Date now = new Date();
 			// An hour ago
-			no.setStart(new Timestamp(now.getTime() - 60 * 60 * 1000));
+			no.setStart(Instant.now().minusSeconds(60 * 60));
 			// An hour from now
-			no.setEnd(new Timestamp(now.getTime() + 60 * 60 * 1000));
+			no.setEnd(Instant.now().plusSeconds(60 * 60));
 			no = client.createNotification(no);
 			Assert.assertNotNull(no.getNotificationId());
 
@@ -1194,8 +1189,10 @@ public class CdsControllerTest {
 			no2.setMessage("notif2 msg");
 			no2.setUrl("http://notify2.me");
 			no2.setMsgSeverityCode(String.valueOf("HI"));
-			no2.setStart(new Timestamp(now.getTime() - 60 * 1000));
-			no2.setEnd(new Timestamp(now.getTime() + 60 * 1000));
+			// A minute ago
+			no2.setStart(Instant.now().minusSeconds(60));
+			// A minute from now
+			no2.setEnd(Instant.now().plusSeconds(60));
 			no2 = client.createNotification(no2);
 
 			// A populated database may yield a large number
@@ -1222,6 +1219,7 @@ public class CdsControllerTest {
 			Assert.assertEquals(0, client.getUserUnreadNotificationCount(cu.getUserId()));
 
 			client.dropUserFromNotification(no.getNotificationId(), cu.getUserId());
+			client.deleteNotification(no2.getNotificationId());
 			client.deleteNotification(no.getNotificationId());
 			client.deleteUser(cu.getUserId());
 		} catch (HttpStatusCodeException ex) {
@@ -1237,8 +1235,7 @@ public class CdsControllerTest {
 		MLPUserNotifPref usrNotifPref = new MLPUserNotifPref();
 
 		try {
-			final String loginName = "notif_" + Long.toString(new Date().getTime());
-			cu.setLoginName(loginName);
+			cu.setLoginName("user_notif_pref");
 			cu.setEmail("testusrnotifprefuser.com");
 			cu = client.createUser(cu);
 			Assert.assertNotNull(cu.getUserId());
@@ -1316,7 +1313,7 @@ public class CdsControllerTest {
 			sr.setStepCode("OB");
 			sr.setName(name);
 			sr.setStatusCode(String.valueOf("SU"));
-			sr.setStartDate(new Timestamp(new Date().getTime() - 60 * 1000));
+			sr.setStartDate(Instant.now().minusSeconds(60));
 			sr = client.createStepResult(sr);
 			Assert.assertNotNull(sr.getStepResultId());
 			logger.info("Created step result " + sr);
@@ -1380,7 +1377,7 @@ public class CdsControllerTest {
 			logger.info("create step result failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createStepResult(new MLPStepResult("bogus", "name", "FA", new Timestamp(new Date().getTime())));
+			client.createStepResult(new MLPStepResult("bogus", "name", "FA", Instant.now()));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create step result failed on bad type code as expected: {}", ex.getResponseBodyAsString());
@@ -1728,8 +1725,7 @@ public class CdsControllerTest {
 		MLPUser cu = null;
 		cu = new MLPUser();
 		cu.setActive(true);
-		final String loginName = "test_user_" + Long.toString(new Date().getTime());
-		cu.setLoginName(loginName);
+		cu.setLoginName("user_peer_sol_group");
 		cu.setEmail("testpeersolgrpuser@abc.com");
 		cu = client.createUser(cu);
 		Assert.assertNotNull("User ID", cu.getUserId());
@@ -1740,9 +1736,9 @@ public class CdsControllerTest {
 		Assert.assertNotNull("Solution ID", cs.getSolutionId());
 		logger.info("Created solution " + cs.getSolutionId());
 
-		final String peerName = "Peer-" + Long.toString(new Date().getTime());
-		MLPPeer pr = new MLPPeer(peerName, "x." + Long.toString(new Date().getTime()), "http://peer-api", true, true,
-				"contact", "AC");
+		final String peerName = "Peer-1-sol-grp";
+		final String subjName = "x.509.baffles.me";
+		MLPPeer pr = new MLPPeer(peerName, subjName, "http://peer-api", true, true, "contact", "AC");
 		pr = client.createPeer(pr);
 		logger.info("Created peer " + pr.getPeerId());
 
@@ -1980,18 +1976,6 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("unmap peer peer groups failed as expected: {}", ex.getResponseBodyAsString());
 		}
-		try {
-			client.checkRestrictedAccessSolution("peerId", "solutionId");
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("checkPeerSolutionAccess failed as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			client.checkRestrictedAccessSolution(pr.getPeerId(), "solutionId");
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("checkPeerSolutionAccess failed as expected: {}", ex.getResponseBodyAsString());
-		}
 		Assert.assertTrue(client.getPeerAccess("bogus peer id").isEmpty());
 
 		client.deleteSolutionGroup(sg.getGroupId());
@@ -2035,7 +2019,7 @@ public class CdsControllerTest {
 			logger.info("Create user failed on constraint as expected: {}", ex.getResponseBodyAsString());
 		}
 		// This one is supposed to work
-		final String loginName = "user-" + Long.toString(new Date().getTime());
+		final String loginName = "user-error-condition";
 		final String sillyGoose = "sillygoose";
 		cu = new MLPUser(loginName, "gooduser@abc.com", true);
 		cu.setLoginHash(sillyGoose);
@@ -2133,7 +2117,7 @@ public class CdsControllerTest {
 			logger.info("Drop user tag failed on bad role as expected {}", ex.getResponseBodyAsString());
 		}
 
-		String roleNm = "some name-" + Long.toString(new Date().getTime());
+		String roleNm = "role-error-condition";
 		// Supposed to succeed
 		MLPRole cr = client.createRole(new MLPRole(roleNm, true));
 		try {
@@ -2693,7 +2677,7 @@ public class CdsControllerTest {
 			logger.info("Create tag failed on constraints as expected: {}", ex.getResponseBodyAsString());
 		}
 		// This should succeed
-		MLPTag ct = client.createTag(new MLPTag("tag-" + new Date().toString()));
+		MLPTag ct = client.createTag(new MLPTag("tag-error-condition"));
 		try {
 			client.createTag(ct);
 			throw new Exception("Unexpected success");
@@ -2935,15 +2919,15 @@ public class CdsControllerTest {
 		}
 		try {
 			cn.setTitle(s64 + s64);
-			cn.setStart(new Timestamp(new Date().getTime()));
-			cn.setEnd(new Timestamp(new Date().getTime()));
+			cn.setStart(Instant.now());
+			cn.setEnd(Instant.now());
 			client.createNotification(cn);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Update notification failed on constraint as expected: {}", ex.getResponseBodyAsString());
 		}
 		// This one should work
-		cn.setTitle("notif title");
+		cn.setTitle("notif title in error condn test");
 		cn.setMsgSeverityCode("HI");
 		cn = client.createNotification(cn);
 		try {
@@ -2959,6 +2943,7 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create notification failed on constreaint as expected: {}", ex.getResponseBodyAsString());
 		}
+		client.deleteNotification(cn.getNotificationId());
 
 		MLPPeer cp = new MLPPeer();
 		cp.setPeerId(UUID.randomUUID().toString());
@@ -3213,12 +3198,6 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add composite solution member failed on bad sol id as expected: {}",
 					ex.getResponseBodyAsString());
-		}
-		try {
-			client.getSolutionPicture("bogus");
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("get sol pic failed on bad ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
 			client.saveSolutionPicture("bogus", new byte[0]);

@@ -20,34 +20,27 @@
 
 package org.acumos.cds.service;
 
-import java.util.Map;
-
 import org.acumos.cds.domain.MLPRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * Defines methods to manipulate role and role-function information.
- *
- * A role function cannot exist without a role. Because of this close linkage,
- * both types are handled in this service.
- */
 public interface RoleSearchService {
 
 	/**
 	 * Searches for instances matching all or one of the query parameters, depending
-	 * on the isOr parameter.
+	 * on the isOr parameter; case is ignored in all String matches.
 	 * 
-	 * @param queryParameters
-	 *                            field-name, field-value pairs. Value may be scalar
-	 *                            or array.
+	 * @param name
+	 *                     Role name; ignored if null
+	 * @param active
+	 *                     Active flag; ignored if null
 	 * @param isOr
-	 *                            If true, the query is a disjunction ("or");
-	 *                            otherwise the query is a conjunction ("and").
+	 *                     If true, the query is a disjunction ("or"); otherwise the
+	 *                     query is a conjunction ("and").
 	 * @param pageable
-	 *                            Page and sort criteria
+	 *                     Page and sort criteria
 	 * @return Page of instances, which may be empty.
 	 */
-	Page<MLPRole> findRoles(Map<String, ? extends Object> queryParameters, boolean isOr, Pageable pageable);
+	Page<MLPRole> findRoles(String name, Boolean active, boolean isOr, Pageable pageable);
 
 }

@@ -20,8 +20,7 @@
 package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import org.acumos.cds.AccessTypeCode;
@@ -112,14 +111,12 @@ public class FOMRepositoryTest {
 		if (setupTeardown) {
 			// Create entities for query
 
-			final String loginName = "user_" + Long.toString(new Date().getTime());
-			cu = new MLPUser(loginName, "entitytestuser@abc.com", true);
+			cu = new MLPUser("entity_user1", "entitytestuser@abc.com", true);
 			cu = userRepository.save(cu);
 			Assert.assertNotNull(cu.getUserId());
 			logger.info("Created user {}", cu);
 
-			final String loginName2 = "user2_" + Long.toString(new Date().getTime());
-			cu2 = new MLPUser(loginName2, "entityuser2@abc.com", true);
+			cu2 = new MLPUser("entity_user2", "entityuser2@abc.com", true);
 			cu2 = userRepository.save(cu2);
 			Assert.assertNotNull(cu2.getUserId());
 			logger.info("Created user {}", cu2);
@@ -171,11 +168,11 @@ public class FOMRepositoryTest {
 		String[] empty = new String[0];
 		String[] nameKw = new String[] { name }; // substring of solution name
 		String[] accTypes = new String[] { accCode };
-		Timestamp modifiedTs = new Timestamp(new Date().getTime() - 60 * 1000);
+		Instant modifiedTs = Instant.now().minusSeconds(60);
 
 		// Via Hibernate constraint
 		logger.info("Querying for FOM via search services");
-		Pageable pageable = new PageRequest(0, 6, null);
+		Pageable pageable = PageRequest.of(0, 6);
 
 		logger.info("Querying for FOM via findPortalSolutions method");
 		Page<MLPSolution> byName = solutionSearchService.findPortalSolutions(nameKw, empty, true, empty, empty,

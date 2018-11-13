@@ -23,7 +23,13 @@ Common Data Service Release Notes
 The client and server are released together.  The client is deployed as a jar file to a
 Maven Nexus repository. The server is deployed as a Docker image to a Docker registry.
 
-Version 2.0.0, 11 Dec 2018
+Version 2.0.1, 21 Dec 2018
+--------------------------
+
+* Upgrade to Spring-Boot version 2.1 (`ACUMOS-1926 <https://jira.acumos.org/browse/ACUMOS-1926>`_)
+* Requires database schema version 2.0
+
+Version 2.0.0, 19 Dec 2018
 --------------------------
 
 * Extend table c_solution_rev with columns for security verification (`ACUMOS-1376 <https://jira.acumos.org/browse/ACUMOS-1376>`_)

@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Entity
 @Table(name = "C_SOLUTION_TAG")
-public class MLPTag implements MLPEntity, Serializable {
+public class MLPTag implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -288462280366502647L;
 

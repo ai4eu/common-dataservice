@@ -20,13 +20,13 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.repository.StepResultRepository;
@@ -91,7 +91,8 @@ public class StepResultController extends AbstractController {
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.GET)
 	public MLPStepResult getStepResult(@PathVariable("stepResultId") Long stepResultId) {
 		logger.debug("getStepResult: stepResultId {}", stepResultId);
-		return stepResultRepository.findOne(stepResultId);
+		Optional<MLPStepResult> sr = stepResultRepository.findById(stepResultId);
+		return sr.isPresent() ? sr.get() : null;
 	}
 
 	/*
@@ -136,30 +137,15 @@ public class StepResultController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchStepResults enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		Map<String, Object> queryParameters = new HashMap<>();
-		if (trackingId != null)
-			queryParameters.put(TRACKING_ID, trackingId);
-		if (stepCode != null)
-			queryParameters.put(STEP_CODE, stepCode);
-		if (solutionId != null)
-			queryParameters.put(SOLUTION_ID, solutionId);
-		if (revisionId != null)
-			queryParameters.put(REVISION_ID, revisionId);
-		if (artifactId != null)
-			queryParameters.put(ARTIFACT_ID, artifactId);
-		if (userId != null)
-			queryParameters.put(USER_ID, userId);
-		if (name != null)
-			queryParameters.put(NAME, name);
-		if (statusCode != null)
-			queryParameters.put(STATUS_CODE, statusCode);
-		if (queryParameters.size() == 0) {
+		if (trackingId == null && stepCode == null && solutionId == null && revisionId == null && artifactId == null
+				&& userId == null && name == null && statusCode == null) {
 			logger.warn("searchStepResults missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return stepResultSearchService.findStepResults(queryParameters, isOr, pageRequest);
+			return stepResultSearchService.findStepResults(trackingId, stepCode, solutionId, revisionId, artifactId,
+					userId, name, statusCode, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchStepResults failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -172,7 +158,7 @@ public class StepResultController extends AbstractController {
 			response = MLPStepResult.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createStepResult(@RequestBody MLPStepResult stepResult, HttpServletResponse response) {
+	public MLPResponse createStepResult(@RequestBody MLPStepResult stepResult, HttpServletResponse response) {
 		logger.debug("createStepResult: enter");
 		try {
 			// Validate enum codes
@@ -197,12 +183,11 @@ public class StepResultController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.PUT)
-	public Object updateStepResult(@PathVariable("stepResultId") Long stepResultId,
+	public MLPTransportModel updateStepResult(@PathVariable("stepResultId") Long stepResultId,
 			@RequestBody MLPStepResult stepResult, HttpServletResponse response) {
 		logger.debug("updateStepResult: stepResultId {}", stepResultId);
-		// Get the existing one
-		MLPStepResult existing = stepResultRepository.findOne(stepResultId);
-		if (existing == null) {
+		// Check the existing one
+		if (!stepResultRepository.findById(stepResultId).isPresent()) {
 			logger.warn("updateStepResult failed on ID {}", stepResultId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + stepResultId, null);
@@ -232,7 +217,7 @@ public class StepResultController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deleteStepResult: stepResultId {}", stepResultId);
 		try {
-			stepResultRepository.delete(stepResultId);
+			stepResultRepository.deleteById(stepResultId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

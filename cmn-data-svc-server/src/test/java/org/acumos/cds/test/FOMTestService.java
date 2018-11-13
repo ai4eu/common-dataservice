@@ -23,6 +23,10 @@ package org.acumos.cds.test;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.acumos.cds.domain.MLPArtifact;
@@ -31,7 +35,6 @@ import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionFOM;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPSolutionRevisionFOM;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,31 +51,57 @@ public class FOMTestService {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private EntityManager entityManager;
 
 	/**
 	 * Queries for solutions, revisions and artifacts using the plain and full
 	 * object mapping classes. Results must match. If not, there is an annotation
 	 * error.
 	 */
-	@SuppressWarnings("rawtypes")
 	public void testFomAnnotations() {
-		List sol = sessionFactory.getCurrentSession().createCriteria(MLPSolutionFOM.class).list();
-		logger.info("Found sol fom count: {}", sol.size());
-		List solPlain = sessionFactory.getCurrentSession().createCriteria(MLPSolution.class).list();
-		logger.info("Found sol plain count: {}", solPlain.size());
-		Assert.assertEquals("solutions", sol.size(), solPlain.size());
 
-		List rev = sessionFactory.getCurrentSession().createCriteria(MLPSolutionRevisionFOM.class).list();
-		logger.info("Found rev fom count: {}", rev.size());
-		List revPlain = sessionFactory.getCurrentSession().createCriteria(MLPSolutionRevision.class).list();
-		logger.info("Found rev plain count: {}", revPlain.size());
-		Assert.assertEquals("revisions", rev.size(), revPlain.size());
+		logger.info("testFomAnnotations: querying solutions");
+		CriteriaQuery<MLPSolution> queryDefSol = entityManager.getCriteriaBuilder().createQuery(MLPSolution.class);
+		Root<MLPSolution> fromSol = queryDefSol.from(MLPSolution.class);
+		queryDefSol.select(fromSol);
+		TypedQuery<MLPSolution> querySol = entityManager.createQuery(queryDefSol);
+		List<MLPSolution> listSol = querySol.getResultList();
+		CriteriaQuery<MLPSolutionFOM> queryDefSolFom = entityManager.getCriteriaBuilder()
+				.createQuery(MLPSolutionFOM.class);
+		Root<MLPSolutionFOM> fromSolFom = queryDefSolFom.from(MLPSolutionFOM.class);
+		queryDefSolFom.select(fromSolFom);
+		TypedQuery<MLPSolutionFOM> querySolFom = entityManager.createQuery(queryDefSolFom);
+		List<MLPSolutionFOM> listSolFom = querySolFom.getResultList();
+		Assert.assertEquals("solutions", listSol.size(), listSolFom.size());
 
-		List art = sessionFactory.getCurrentSession().createCriteria(MLPArtifactFOM.class).list();
-		logger.info("Found art fom count: {}", art.size());
-		List artPlain = sessionFactory.getCurrentSession().createCriteria(MLPArtifact.class).list();
-		logger.info("Found art plain count: {}", artPlain.size());
-		Assert.assertEquals("artifact", art.size(), artPlain.size());
+		logger.info("testFomAnnotations: querying revisions");
+		CriteriaQuery<MLPSolutionRevision> queryDefRev = entityManager.getCriteriaBuilder()
+				.createQuery(MLPSolutionRevision.class);
+		Root<MLPSolutionRevision> fromRev = queryDefRev.from(MLPSolutionRevision.class);
+		queryDefRev.select(fromRev);
+		TypedQuery<MLPSolutionRevision> queryRev = entityManager.createQuery(queryDefRev);
+		List<MLPSolutionRevision> listRev = queryRev.getResultList();
+		CriteriaQuery<MLPSolutionRevisionFOM> queryDefRevFom = entityManager.getCriteriaBuilder()
+				.createQuery(MLPSolutionRevisionFOM.class);
+		Root<MLPSolutionRevisionFOM> fromRevFom = queryDefRevFom.from(MLPSolutionRevisionFOM.class);
+		queryDefRevFom.select(fromRevFom);
+		TypedQuery<MLPSolutionRevisionFOM> queryRevFom = entityManager.createQuery(queryDefRevFom);
+		List<MLPSolutionRevisionFOM> listRevFom = queryRevFom.getResultList();
+		Assert.assertEquals("revisions", listRev.size(), listRevFom.size());
+
+		logger.info("testFomAnnotations: querying artifacts");
+		CriteriaQuery<MLPArtifact> queryDefArt = entityManager.getCriteriaBuilder().createQuery(MLPArtifact.class);
+		Root<MLPArtifact> fromArt = queryDefArt.from(MLPArtifact.class);
+		queryDefArt.select(fromArt);
+		TypedQuery<MLPArtifact> queryArt = entityManager.createQuery(queryDefArt);
+		List<MLPArtifact> listArt = queryArt.getResultList();
+		CriteriaQuery<MLPArtifactFOM> queryDefArtFom = entityManager.getCriteriaBuilder()
+				.createQuery(MLPArtifactFOM.class);
+		Root<MLPArtifactFOM> fromArtFom = queryDefArtFom.from(MLPArtifactFOM.class);
+		queryDefArtFom.select(fromArtFom);
+		TypedQuery<MLPArtifactFOM> queryArtFom = entityManager.createQuery(queryDefArtFom);
+		List<MLPArtifactFOM> listArtFom = queryArtFom.getResultList();
+		Assert.assertEquals("artifacts", listArt.size(), listArtFom.size());
+
 	}
 }

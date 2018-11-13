@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(UserRoleMapPK.class)
 @Table(name = "C_USER_ROLE_MAP")
-public class MLPUserRoleMap implements MLPEntity, Serializable {
+public class MLPUserRoleMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -1232519251083341808L;
 

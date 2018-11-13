@@ -21,14 +21,14 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.repository.PeerRepository;
@@ -102,8 +102,6 @@ public class PeerController extends AbstractController {
 	private static final String SUBJECT_NAME = "subjectName";
 	private static final String API_URL = "apiUrl";
 	private static final String WEB_URL = "webUrl";
-	private static final String IS_SELF = "isSelf";
-	private static final String IS_LOCAL = "isLocal";
 	private static final String CONTACT_1 = "contact1";
 	private static final String STATUS_CODE = "statusCode";
 
@@ -123,10 +121,6 @@ public class PeerController extends AbstractController {
 			@RequestParam(name = API_URL, required = false) String apiUrl, //
 			@ApiParam(value = "Web URL") //
 			@RequestParam(name = WEB_URL, required = false) String webUrl, //
-			@ApiParam(value = "isSelf") //
-			@RequestParam(name = IS_SELF, required = false) Boolean isSelf, //
-			@ApiParam(value = "isLocal") //
-			@RequestParam(name = IS_LOCAL, required = false) Boolean isLocal, //
 			@ApiParam(value = "Contact 1") //
 			@RequestParam(name = CONTACT_1, required = false) String contact1, //
 			@ApiParam(value = "Status code") //
@@ -134,30 +128,15 @@ public class PeerController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPeer enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		Map<String, Object> queryParameters = new HashMap<>();
-		if (name != null)
-			queryParameters.put(NAME, name);
-		if (subjectName != null)
-			queryParameters.put(SUBJECT_NAME, subjectName);
-		if (apiUrl != null)
-			queryParameters.put(API_URL, apiUrl);
-		if (webUrl != null)
-			queryParameters.put(WEB_URL, webUrl);
-		if (isSelf != null)
-			queryParameters.put(IS_SELF, isSelf);
-		if (isLocal != null)
-			queryParameters.put(IS_LOCAL, isLocal);
-		if (contact1 != null)
-			queryParameters.put(CONTACT_1, contact1);
-		if (statusCode != null)
-			queryParameters.put(STATUS_CODE, statusCode);
-		if (queryParameters.size() == 0) {
+		if (name == null && subjectName == null && apiUrl == null && webUrl == null && contact1 == null
+				&& statusCode == null) {
 			logger.warn("searchPeers: no parameters");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return peerSearchService.findPeers(queryParameters, isOr, pageRequest);
+			return peerSearchService.findPeers(name, subjectName, apiUrl, webUrl, contact1, statusCode, isOr,
+					pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchPeers failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -171,20 +150,21 @@ public class PeerController extends AbstractController {
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.GET)
 	public MLPPeer getPeer(@PathVariable("peerId") String peerId) {
 		logger.debug("getPeer peerId {}", peerId);
-		return peerRepository.findOne(peerId);
+		Optional<MLPPeer> peer = peerRepository.findById(peerId);
+		return peer.isPresent() ? peer.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new peer and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPPeer.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createPeer(@RequestBody MLPPeer peer, HttpServletResponse response) {
+	public MLPResponse createPeer(@RequestBody MLPPeer peer, HttpServletResponse response) {
 		logger.debug("createPeer: peer {}", peer);
 		try {
 			String id = peer.getPeerId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (peerRepository.findOne(id) != null) {
+				if (peerRepository.findById(id).isPresent()) {
 					logger.warn("createPeer failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
@@ -193,7 +173,7 @@ public class PeerController extends AbstractController {
 			// Validate enum codes
 			super.validateCode(peer.getStatusCode(), CodeNameType.PEER_STATUS);
 			// Create a new row
-			Object result = peerRepository.save(peer);
+			MLPPeer result = peerRepository.save(peer);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			// This is a hack to create the location path.
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.PEER_PATH + "/" + peer.getPeerId());
@@ -210,11 +190,11 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.PUT)
-	public Object updatePeer(@PathVariable("peerId") String peerId, @RequestBody MLPPeer peer,
+	public MLPTransportModel updatePeer(@PathVariable("peerId") String peerId, @RequestBody MLPPeer peer,
 			HttpServletResponse response) {
 		logger.debug("updatePeer peerId {}", peerId);
 		// Get the existing one
-		if (peerRepository.findOne(peerId) == null) {
+		if (!peerRepository.findById(peerId).isPresent()) {
 			logger.warn("updatePeer failed on ID {}", peerId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
@@ -249,8 +229,8 @@ public class PeerController extends AbstractController {
 		try {
 			Iterable<MLPPeerSubscription> subs = peerSubRepository.findByPeerId(peerId);
 			if (subs != null)
-				peerSubRepository.delete(subs);
-			peerRepository.delete(peerId);
+				peerSubRepository.deleteAll(subs);
+			peerRepository.deleteById(peerId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -284,16 +264,17 @@ public class PeerController extends AbstractController {
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/{subId}", method = RequestMethod.GET)
 	public MLPPeerSubscription getPeerSub(@PathVariable("subId") Long subId) {
 		logger.debug("getPeerSub subId {}", subId);
-		return peerSubRepository.findOne(subId);
+		Optional<MLPPeerSubscription> peerSub = peerSubRepository.findById(subId);
+		return peerSub.isPresent() ? peerSub.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new entity with a generated ID. Returns bad request on constraint violation etc.", //
 			response = MLPPeerSubscription.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH, method = RequestMethod.POST)
-	public Object createPeerSub(@RequestBody MLPPeerSubscription peerSub, HttpServletResponse response) {
+	public MLPResponse createPeerSub(@RequestBody MLPPeerSubscription peerSub, HttpServletResponse response) {
 		logger.debug("createPeerSub: sub {}", peerSub);
-		if (peerRepository.findOne(peerSub.getPeerId()) == null) {
+		if (!peerRepository.findById(peerSub.getPeerId()).isPresent()) {
 			logger.warn("createPeerSub failed on ID {}", peerSub);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerSub.getPeerId(), null);
@@ -305,7 +286,7 @@ public class PeerController extends AbstractController {
 			// Null out any existing ID to get an auto-generated ID
 			peerSub.setSubId(null);
 			// Create a new row
-			Object result = peerSubRepository.save(peerSub);
+			MLPPeerSubscription result = peerSubRepository.save(peerSub);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			// This is a hack to create the location path.
 			response.setHeader(HttpHeaders.LOCATION,
@@ -323,12 +304,11 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/{subId}", method = RequestMethod.PUT)
-	public Object updatePeerSub(@PathVariable("subId") Long subId, @RequestBody MLPPeerSubscription peerSub,
+	public MLPTransportModel updatePeerSub(@PathVariable("subId") Long subId, @RequestBody MLPPeerSubscription peerSub,
 			HttpServletResponse response) {
 		logger.debug("updatePeerSub subId {}", subId);
-		// Get the existing one
-		MLPPeerSubscription existingPeerSub = peerSubRepository.findOne(subId);
-		if (existingPeerSub == null) {
+		// Check the existing one
+		if (!peerSubRepository.findById(subId).isPresent()) {
 			logger.warn("updatePeerSub failed on ID {}", subId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + subId, null);
@@ -357,7 +337,7 @@ public class PeerController extends AbstractController {
 	public MLPTransportModel deletePeerSub(@PathVariable("subId") Long subId, HttpServletResponse response) {
 		logger.debug("deletePeerSub subId {}", subId);
 		try {
-			peerSubRepository.delete(subId);
+			peerSubRepository.deleteById(subId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

@@ -21,20 +21,19 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
@@ -75,9 +74,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -152,10 +149,13 @@ public class SolutionController extends AbstractController {
 	 */
 	private void updateSolutionDownloadStats(String solutionId) {
 		long count = solutionDownloadRepository.countSolutionDownloads(solutionId);
-		MLPSolution stats = solutionRepository.findOne(solutionId);
-		stats.setDownloadCount(count);
-		stats.setLastDownload(new Timestamp(new Date().getTime()));
-		solutionRepository.save(stats);
+		Optional<MLPSolution> da = solutionRepository.findById(solutionId);
+		if (count > 0 && da.isPresent()) {
+			MLPSolution sol = da.get();
+			sol.setDownloadCount(count);
+			sol.setLastDownload(Instant.now());
+			solutionRepository.save(sol);
+		}
 	}
 
 	/**
@@ -173,10 +173,11 @@ public class SolutionController extends AbstractController {
 		if (count == 0 || avg == null) {
 			logger.warn("updateSolutionRatingStats failed on ID {}", solutionId);
 		} else {
-			MLPSolution stats = solutionRepository.findOne(solutionId);
-			stats.setRatingCount(count);
-			stats.setRatingAverageTenths(Math.round(10 * avg));
-			solutionRepository.save(stats);
+			Optional<MLPSolution> da = solutionRepository.findById(solutionId);
+			MLPSolution sol = da.get();
+			sol.setRatingCount(count);
+			sol.setRatingAverageTenths(Math.round(10 * avg));
+			solutionRepository.save(sol);
 		}
 	}
 
@@ -193,7 +194,8 @@ public class SolutionController extends AbstractController {
 	@RequestMapping(value = "/{solutionId}", method = RequestMethod.GET)
 	public MLPSolution getSolution(@PathVariable("solutionId") String solutionId) {
 		logger.debug("getSolution: ID {}", solutionId);
-		return solutionRepository.findOne(solutionId);
+		Optional<MLPSolution> da = solutionRepository.findById(solutionId);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Gets a page of solutions, optionally sorted. Answers empty if none are found.", response = MLPSolution.class, responseContainer = "Page")
@@ -207,9 +209,9 @@ public class SolutionController extends AbstractController {
 	@ApiOperation(value = "Searches for entities with names or descriptions that contain the search term using the like operator. Answers empty if none are found.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
-	public Page<MLPSolution> findSolutionsByLikeKeyword(@RequestParam(CCDSConstants.TERM_PATH) String term,
+	public Page<MLPSolution> findSolutionsBySearchTerm(@RequestParam(CCDSConstants.TERM_PATH) String term,
 			Pageable pageRequest) {
-		logger.debug("findSolutionsByLikeKeyword {}", term);
+		logger.debug("findSolutionsBySearchTerm {}", term);
 		return solutionRepository.findBySearchTerm(term, pageRequest);
 	}
 
@@ -260,28 +262,15 @@ public class SolutionController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchSolutions enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		Map<String, Object> queryParameters = new HashMap<>();
-		if (name != null)
-			queryParameters.put(NAME, name);
-		if (active != null)
-			queryParameters.put(ACTIVE, active);
-		if (userId != null)
-			queryParameters.put(USER_ID, userId);
-		if (sourceId != null)
-			queryParameters.put(SOURCE_ID, sourceId);
-		if (modelTypeCode != null)
-			queryParameters.put(MODEL_TYPE_CODE, modelTypeCode);
-		if (toolkitTypeCode != null)
-			queryParameters.put(TOOLKIT_TYPE_CODE, toolkitTypeCode);
-		if (origin != null)
-			queryParameters.put(ORIGIN, origin);
-		if (queryParameters.size() == 0) {
+		if (name == null && active == null && userId == null && sourceId == null && modelTypeCode == null
+				&& toolkitTypeCode == null && origin == null) {
 			logger.warn("searchSolutions missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return solutionSearchService.findSolutions(queryParameters, isOr, pageRequest);
+			return solutionSearchService.searchSolutions(name, active, userId, sourceId, modelTypeCode, toolkitTypeCode,
+					origin, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchSolutions failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -325,38 +314,6 @@ public class SolutionController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					ex.getCause() != null ? ex.getCause().getMessage() : "findPortalSolutions failed", ex);
-		}
-	}
-
-	@ApiOperation(value = "Finds solutions matching the specified attribute values and/or child attribute values. " //
-			+ "Checks multiple fields for the supplied keywords, including ID, name, description etc.", //
-			response = MLPSolution.class, responseContainer = "Page")
-	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.PORTAL_PATH + "/"
-			+ CCDSConstants.KEYWORD_PATH, method = RequestMethod.GET)
-	public Object findPortalSolutionsByKw( //
-			@ApiParam(value = "Active Y/N", required = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
-			@ApiParam(value = "Access type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
-			@ApiParam(value = "Model type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_MODEL_TYPES, required = false) String[] modelTypeCodes, //
-			@ApiParam(value = "Key words", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_KW, required = false) String[] kws, //
-			@ApiParam(value = "User IDs", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_USERS, required = false) String[] userIds, //
-			@ApiParam(value = "Tags", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_TAGS, required = false) String[] tags, //
-			Pageable pageRequest, HttpServletResponse response) {
-		logger.debug("findPortalSolutionsByKw: active {} kw {}", active, kws);
-		try {
-			return solutionSearchService.findPortalSolutionsByKw(kws, active, userIds, modelTypeCodes, accTypeCodes,
-					tags, pageRequest);
-		} catch (Exception ex) {
-			logger.error("findPortalSolutionsByKw failed", ex);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
-					ex.getCause() != null ? ex.getCause().getMessage() : "findPortalSolutionsByKw failed", ex);
 		}
 	}
 
@@ -435,14 +392,14 @@ public class SolutionController extends AbstractController {
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.DATE_PATH, method = RequestMethod.GET)
 	public Object findSolutionsByDate( //
 			@ApiParam(value = "Milliseconds since the Epoch", required = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_DATE, required = true) long dateMillis, //
+			@RequestParam(name = CCDSConstants.SEARCH_INSTANT, required = true) long millis, //
 			@ApiParam(value = "Active Y/N") //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = false) boolean active, //
 			@ApiParam(value = "Access type codes", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.debug("findSolutionsByDate: date {}", dateMillis);
-		Timestamp ts = new Timestamp(dateMillis);
+		logger.debug("findSolutionsByDate: date {}", millis);
+		Instant ts = Instant.ofEpochMilli(millis);
 		try {
 			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, ts, pageRequest);
 		} catch (Exception ex) {
@@ -457,7 +414,7 @@ public class SolutionController extends AbstractController {
 			response = MLPSolution.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createSolution(@RequestBody MLPSolution solution, HttpServletResponse response) {
+	public MLPResponse createSolution(@RequestBody MLPSolution solution, HttpServletResponse response) {
 		logger.debug("createSolution: enter");
 		try {
 			// Validate enum codes
@@ -468,7 +425,7 @@ public class SolutionController extends AbstractController {
 			String id = solution.getSolutionId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (solutionRepository.findOne(id) != null) {
+				if (solutionRepository.findById(id).isPresent()) {
 					logger.warn("createSolution failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Solution exists with ID " + id);
@@ -495,12 +452,11 @@ public class SolutionController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}", method = RequestMethod.PUT)
-	public Object updateSolution(@PathVariable("solutionId") String solutionId, @RequestBody MLPSolution solution,
-			HttpServletResponse response) {
+	public MLPTransportModel updateSolution(@PathVariable("solutionId") String solutionId,
+			@RequestBody MLPSolution solution, HttpServletResponse response) {
 		logger.debug("updateSolution: ID {}", solutionId);
-		// Get the existing one
-		MLPSolution existing = solutionRepository.findOne(solutionId);
-		if (existing == null) {
+		// Check the existing one
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("updateSolution failed on ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
@@ -529,11 +485,11 @@ public class SolutionController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.VIEW_PATH, method = RequestMethod.PUT)
-	public Object incrementViewCount(@PathVariable("solutionId") String solutionId, HttpServletResponse response) {
+	public MLPTransportModel incrementViewCount(@PathVariable("solutionId") String solutionId,
+			HttpServletResponse response) {
 		logger.debug("incrementViewCount: ID {}", solutionId);
-		// Get the existing one; the update command doesn't fail on invalid ID
-		MLPSolution existing = solutionRepository.findOne(solutionId);
-		if (existing == null) {
+		// Check the existing one; the update command doesn't fail on invalid ID
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("incrementViewCount failed on ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
@@ -575,11 +531,11 @@ public class SolutionController extends AbstractController {
 			for (MLPSolutionRevision r : solutionRevisionRepository.findBySolutionIdIn(new String[] { solutionId })) {
 				for (MLPArtifact a : artifactRepository.findByRevision(r.getRevisionId()))
 					solRevArtMapRepository
-							.delete(new MLPSolRevArtMap.SolRevArtMapPK(r.getRevisionId(), a.getArtifactId()));
+							.deleteById(new MLPSolRevArtMap.SolRevArtMapPK(r.getRevisionId(), a.getArtifactId()));
 				// do NOT delete artifacts!
 				solutionRevisionRepository.delete(r);
 			}
-			solutionRepository.delete(solutionId);
+			solutionRepository.deleteById(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -608,17 +564,18 @@ public class SolutionController extends AbstractController {
 	public MLPSolutionRevision getSolutionRevision(@PathVariable("solutionId") String solutionId,
 			@PathVariable("revisionId") String revisionId) {
 		logger.debug("getSolutionRevision: solutionId {} revisionId {}", solutionId, revisionId);
-		return solutionRevisionRepository.findOne(revisionId);
+		Optional<MLPSolutionRevision> da = solutionRevisionRepository.findById(revisionId);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new revision and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPSolutionRevision.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH, method = RequestMethod.POST)
-	public Object createSolutionRevision(@PathVariable("solutionId") String solutionId,
+	public MLPResponse createSolutionRevision(@PathVariable("solutionId") String solutionId,
 			@RequestBody MLPSolutionRevision revision, HttpServletResponse response) {
 		logger.debug("createSolutionRevision: solutionId {}", solutionId);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("createSolutionRevision failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
@@ -634,7 +591,7 @@ public class SolutionController extends AbstractController {
 			String id = revision.getRevisionId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (solutionRevisionRepository.findOne(id) != null) {
+				if (solutionRevisionRepository.findById(id).isPresent()) {
 					logger.warn("createSolutionRevision failed on rev ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Revision exists with ID " + id);
@@ -657,16 +614,16 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH
 			+ "/{revisionId}", method = RequestMethod.PUT)
-	public Object updateSolutionRevision(@PathVariable("solutionId") String solutionId,
+	public MLPTransportModel updateSolutionRevision(@PathVariable("solutionId") String solutionId,
 			@PathVariable("revisionId") String revisionId, @RequestBody MLPSolutionRevision revision,
 			HttpServletResponse response) {
 		logger.debug("updateSolutionRevision: solution ID {}, revision ID {}", solutionId, revisionId);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("updateSolutionRevision failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
-		if (solutionRevisionRepository.findOne(revisionId) == null) {
+		if (!solutionRevisionRepository.findById(revisionId).isPresent()) {
 			logger.warn("updateSolutionRevision failed on rev ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
@@ -697,11 +654,11 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH
 			+ "/{revisionId}", method = RequestMethod.DELETE)
-	public Object deleteSolutionRevision(@PathVariable("solutionId") String solutionId,
+	public MLPTransportModel deleteSolutionRevision(@PathVariable("solutionId") String solutionId,
 			@PathVariable("revisionId") String revisionId, HttpServletResponse response) {
 		logger.debug("deleteSolutionRevision: solutionId {} revisionId {}", solutionId, revisionId);
 		try {
-			solutionRevisionRepository.delete(revisionId);
+			solutionRevisionRepository.deleteById(revisionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -722,19 +679,20 @@ public class SolutionController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.TAG_PATH + "/{tag}", method = RequestMethod.POST)
-	public Object addSolutionTag(@PathVariable("solutionId") String solutionId, @PathVariable("tag") String tag,
-			HttpServletResponse response) {
+	public MLPTransportModel addSolutionTag(@PathVariable("solutionId") String solutionId,
+			@PathVariable("tag") String tag, HttpServletResponse response) {
 		logger.debug("addSolutionTag: solutionId {} tag {}", solutionId, tag);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("addSolutionTag failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
-		} else if (solTagMapRepository.findOne(new MLPSolTagMap.SolTagMapPK(solutionId, tag)) != null) {
-			logger.warn("addSolutionTag failed on tag {}", tag);
+		}
+		if (solTagMapRepository.findById(new MLPSolTagMap.SolTagMapPK(solutionId, tag)).isPresent()) {
+			logger.warn("addSolutionTag failed on existing tag {}", tag);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Already has tag " + tag, null);
 		}
-		if (tagRepository.findOne(tag) == null) {
+		if (!tagRepository.findById(tag).isPresent()) {
 			// Tags are cheap & easy to create, so make life easy for client
 			tagRepository.save(new MLPTag(tag));
 			logger.debug("addSolutionTag: created tag {}", tag);
@@ -747,11 +705,11 @@ public class SolutionController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.TAG_PATH + "/{tag}", method = RequestMethod.DELETE)
-	public Object dropSolutionTag(@PathVariable("solutionId") String solutionId, @PathVariable("tag") String tag,
-			HttpServletResponse response) {
+	public MLPTransportModel dropSolutionTag(@PathVariable("solutionId") String solutionId,
+			@PathVariable("tag") String tag, HttpServletResponse response) {
 		logger.debug("dropSolutionTag: solutionId {} tag {}", solutionId, tag);
 		try {
-			solTagMapRepository.delete(new MLPSolTagMap.SolTagMapPK(solutionId, tag));
+			solTagMapRepository.deleteById(new MLPSolTagMap.SolTagMapPK(solutionId, tag));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -766,7 +724,7 @@ public class SolutionController extends AbstractController {
 	@ApiPageable
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.DOWNLOAD_PATH, method = RequestMethod.GET)
 	public Page<MLPSolutionDownload> getSolutionDownloads(@PathVariable("solutionId") String solutionId,
-			Pageable pageRequest, HttpServletResponse response) {
+			Pageable pageRequest) {
 		logger.debug("getSolutionDownloads: solutionId {}", solutionId);
 		return solutionDownloadRepository.findBySolutionId(solutionId, pageRequest);
 	}
@@ -776,7 +734,7 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.DOWNLOAD_PATH + "/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}/" + CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.POST)
-	public Object createSolutionDownload(@PathVariable("solutionId") String solutionId,
+	public MLPResponse createSolutionDownload(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId, @PathVariable("artifactId") String artifactId,
 			@RequestBody MLPSolutionDownload sd, HttpServletResponse response) {
 		logger.debug("createSolutionDownload: solutionId {} userId {} artifactId {}", solutionId, userId, artifactId);
@@ -785,7 +743,7 @@ public class SolutionController extends AbstractController {
 			sd.setSolutionId(solutionId);
 			sd.setUserId(userId);
 			sd.setArtifactId(artifactId);
-			Object result = solutionDownloadRepository.save(sd);
+			MLPSolutionDownload result = solutionDownloadRepository.save(sd);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.SOLUTION_PATH + "/" + sd.getSolutionId() + "/"
 					+ CCDSConstants.DOWNLOAD_PATH + sd.getDownloadId());
@@ -810,7 +768,7 @@ public class SolutionController extends AbstractController {
 			@PathVariable("downloadId") Long downloadId, HttpServletResponse response) {
 		logger.debug("deleteSolutionDownload: solutionId {} downloadId {}", solutionId, downloadId);
 		try { // Build a key for fetch
-			solutionDownloadRepository.delete(downloadId);
+			solutionDownloadRepository.deleteById(downloadId);
 			// Update cache!
 			updateSolutionDownloadStats(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
@@ -835,10 +793,11 @@ public class SolutionController extends AbstractController {
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.RATING_PATH + "/" + CCDSConstants.USER_PATH
 			+ "/{userId}", method = RequestMethod.GET)
 	public MLPSolutionRating getSolutionRating(@PathVariable("solutionId") String solutionId,
-			@PathVariable("userId") String userId, HttpServletResponse response) {
+			@PathVariable("userId") String userId) {
 		logger.debug("getSolutionRating: solutionId {} userId {}", solutionId, userId);
 		SolutionRatingPK pk = new SolutionRatingPK(solutionId, userId);
-		return solutionRatingRepository.findOne(pk);
+		Optional<MLPSolutionRating> da = solutionRatingRepository.findById(pk);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new solution rating. Returns bad request on constrain violation etc.", response = MLPSolutionRating.class)
@@ -847,12 +806,12 @@ public class SolutionController extends AbstractController {
 	public Object createSolutionRating(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId, @RequestBody MLPSolutionRating sr, HttpServletResponse response) {
 		logger.debug("createSolutionRating: solutionId {} userId {}", solutionId, userId);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("createSolutionRating failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
-		if (userRepository.findOne(userId) == null) {
+		if (!userRepository.findById(userId).isPresent()) {
 			logger.warn("createSolutionRating failed on user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
@@ -884,10 +843,9 @@ public class SolutionController extends AbstractController {
 	public Object updateSolutionRating(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId, @RequestBody MLPSolutionRating sr, HttpServletResponse response) {
 		logger.debug("updateSolutionRating: solutionId {} userId {}", solutionId, userId);
-		// Get the existing one
+		// Check the existing one
 		SolutionRatingPK pk = new SolutionRatingPK(solutionId, userId);
-		MLPSolutionRating existing = solutionRatingRepository.findOne(pk);
-		if (existing == null) {
+		if (!solutionRatingRepository.findById(pk).isPresent()) {
 			logger.warn("updateSolutionRating failed on key {}", pk);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + pk, null);
@@ -919,7 +877,7 @@ public class SolutionController extends AbstractController {
 		try {
 			// Build a key for fetch
 			SolutionRatingPK pk = new SolutionRatingPK(solutionId, userId);
-			solutionRatingRepository.delete(pk);
+			solutionRatingRepository.deleteById(pk);
 			// Update cache!
 			updateSolutionRatingStats(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
@@ -931,7 +889,7 @@ public class SolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets access-control list of users for the specified solution. Answers empty if none are found.", //
+	@ApiOperation(value = "Gets access-control list of users for the specified solution.", //
 			response = MLPUser.class, responseContainer = "List")
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.USER_PATH + "/"
 			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
@@ -948,18 +906,18 @@ public class SolutionController extends AbstractController {
 	public Object addUserToSolutionACL(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId, HttpServletResponse response) {
 		logger.debug("addUserToSolutionACL: solution {}, user {}", solutionId, userId);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("addUserToSolutionACL failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
-		} else if (userRepository.findOne(userId) == null) {
+		}
+		if (!userRepository.findById(userId).isPresent()) {
 			logger.warn("addUserToSolutionACL failed on user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
-		} else {
-			solUserAccMapRepository.save(new MLPSolUserAccMap(solutionId, userId));
-			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		}
+		solUserAccMapRepository.save(new MLPSolUserAccMap(solutionId, userId));
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
 	@ApiOperation(value = "Drops a user from the ACL for the specified solution. Returns bad request if an ID is not found", //
@@ -971,7 +929,7 @@ public class SolutionController extends AbstractController {
 			@PathVariable("userId") String userId, HttpServletResponse response) {
 		logger.debug("dropUserFromSolutionACL: solution {}, user {}", solutionId, userId);
 		try {
-			solUserAccMapRepository.delete(new MLPSolUserAccMap.SolUserAccessMapPK(solutionId, userId));
+			solUserAccMapRepository.deleteById(new MLPSolUserAccMap.SolUserAccessMapPK(solutionId, userId));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -987,8 +945,7 @@ public class SolutionController extends AbstractController {
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/"
 			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
-	public Page<MLPSolution> getAccessibleSolutions(@PathVariable("userId") String userId, Pageable pageable,
-			HttpServletResponse response) {
+	public Page<MLPSolution> getAccessibleSolutions(@PathVariable("userId") String userId, Pageable pageable) {
 		logger.debug("getAccessibleSolutions: user {}", userId);
 		return solUserAccMapRepository.getSolutionsForUser(userId, pageable);
 	}
@@ -1010,7 +967,7 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH + "/{revisionId}/" + CCDSConstants.USER_PATH
 			+ "/{userId}/" + CCDSConstants.DEPLOY_PATH, method = RequestMethod.GET)
-	public Object getUserSolutionRevisionDeployments(@PathVariable("solutionId") String solutionId,
+	public Page<MLPSolutionDeployment> getUserSolutionRevisionDeployments(@PathVariable("solutionId") String solutionId,
 			@PathVariable("revisionId") String revisionId, @PathVariable("userId") String userId,
 			Pageable pageRequest) {
 		logger.debug("getUserSolutionRevisionDeployments: solutionId {} revisionId {} userId {}", solutionId,
@@ -1028,17 +985,17 @@ public class SolutionController extends AbstractController {
 			@PathVariable("revisionId") String revisionId, @RequestBody MLPSolutionDeployment sd,
 			HttpServletResponse response) {
 		logger.debug("createSolutionDeployment: solutionId {} revisionId {}", solutionId, revisionId);
-		if (solutionRepository.findOne(solutionId) == null) {
+		if (!solutionRepository.findById(solutionId).isPresent()) {
 			logger.warn("createSolutionDeployment failed on sol ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
-		if (solutionRevisionRepository.findOne(revisionId) == null) {
+		if (!solutionRevisionRepository.findById(revisionId).isPresent()) {
 			logger.warn("createSolutionDeployment failed on rev ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
 		}
-		if (userRepository.findOne(sd.getUserId()) == null) {
+		if (!userRepository.findById(sd.getUserId()).isPresent()) {
 			logger.warn("createSolutionDeployment failed on usr ID {}", sd.getUserId());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + sd.getUserId(), null);
@@ -1050,7 +1007,7 @@ public class SolutionController extends AbstractController {
 			String id = sd.getDeploymentId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (solutionDeploymentRepository.findOne(id) != null) {
+				if (solutionDeploymentRepository.findById(id).isPresent()) {
 					logger.warn("createSolutionDeployment failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Deployment exists with ID " + id);
@@ -1061,7 +1018,7 @@ public class SolutionController extends AbstractController {
 			sd.setSolutionId(solutionId);
 			sd.setRevisionId(revisionId);
 			// do NOT null out the deployment ID
-			Object result = solutionDeploymentRepository.save(sd);
+			MLPSolutionDeployment result = solutionDeploymentRepository.save(sd);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			response.setHeader(HttpHeaders.LOCATION,
 					CCDSConstants.SOLUTION_PATH + "/" + sd.getSolutionId() + "/" + CCDSConstants.REVISION_PATH
@@ -1081,12 +1038,12 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH + "/{revisionId}/"
 			+ CCDSConstants.DEPLOY_PATH + "/{deploymentId}", method = RequestMethod.PUT)
-	public Object updateSolutionDeployment(@PathVariable("solutionId") String solutionId,
+	public MLPTransportModel updateSolutionDeployment(@PathVariable("solutionId") String solutionId,
 			@PathVariable("revisionId") String revisionId, @PathVariable("deploymentId") String deploymentId,
 			@RequestBody MLPSolutionDeployment sd, HttpServletResponse response) {
 		logger.debug("updateSolutionDeployment: solutionId {} revisionId {} deploymentId {}", solutionId, revisionId,
 				deploymentId);
-		if (solutionDeploymentRepository.findOne(deploymentId) == null) {
+		if (!solutionDeploymentRepository.findById(deploymentId).isPresent()) {
 			logger.warn("updateSolutionDeployment failed on ID {}", deploymentId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + deploymentId, null);
@@ -1119,7 +1076,7 @@ public class SolutionController extends AbstractController {
 		logger.debug("updateSolutionDeployment: solutionId {} revisionId {} deploymentId {}", solutionId, revisionId,
 				deploymentId);
 		try {
-			solutionDeploymentRepository.delete(deploymentId);
+			solutionDeploymentRepository.deleteById(deploymentId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -1146,21 +1103,21 @@ public class SolutionController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{parentId}/" + CCDSConstants.COMPOSITE_PATH + "/{childId}", method = RequestMethod.POST)
-	public Object addCompositeSolutionMember(@PathVariable("parentId") String parentId,
+	public MLPTransportModel addCompositeSolutionMember(@PathVariable("parentId") String parentId,
 			@PathVariable("childId") String childId, HttpServletResponse response) {
 		logger.debug("addCompositeSolutionMember: parentId {} childId {}", parentId, childId);
-		if (solutionRepository.findOne(parentId) == null) {
+		if (!solutionRepository.findById(parentId).isPresent()) {
 			logger.warn("addCompositeSolutionMember failed on parent ID {}", parentId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + parentId, null);
-		} else if (solutionRepository.findOne(childId) == null) {
+		}
+		if (!solutionRepository.findById(childId).isPresent()) {
 			logger.warn("addCompositeSolutionMember failed on child ID {}", childId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + childId, null);
-		} else {
-			compSolMapRepository.save(new MLPCompSolMap(parentId, childId));
-			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		}
+		compSolMapRepository.save(new MLPCompSolMap(parentId, childId));
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
 	@ApiOperation(value = "Drops a child from the parent composite solution.", //
@@ -1168,25 +1125,21 @@ public class SolutionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = SuccessTransport.class) })
 	@RequestMapping(value = "/{parentId}/" + CCDSConstants.COMPOSITE_PATH + "/{childId}", method = RequestMethod.DELETE)
 	public SuccessTransport dropCompositeSolutionMember(@PathVariable("parentId") String parentId,
-			@PathVariable("childId") String childId, HttpServletResponse response) {
+			@PathVariable("childId") String childId) {
 		logger.debug("dropCompositeSolutionMember: parentId {} childId {}", parentId, childId);
 		compSolMapRepository.delete(new MLPCompSolMap(parentId, childId));
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Gets the image for the specified solution ID, which may be null. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the image for the specified solution ID. Returns null if the ID is not found.", //
 			response = MLPSolution.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = byte[].class) })
 	@RequestMapping(value = "/{solutionId}/"
 			+ CCDSConstants.PICTURE_PATH, method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public Object getSolutionPicture(@PathVariable("solutionId") String solutionId, HttpServletResponse response) {
-		logger.info("getSolutionPicture: ID {}", solutionId);
-		MLPSolutionPicture da = solutionPictureRepository.findOne(solutionId);
-		if (da == null) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
-		}
-		return new ResponseEntity<byte[]>(da.getPicture(), HttpStatus.OK);
+	public Object getSolutionPicture(@PathVariable("solutionId") String solutionId) {
+		logger.debug("getSolutionPicture: ID {}", solutionId);
+		Optional<MLPSolutionPicture> da = solutionPictureRepository.findById(solutionId);
+		return da.isPresent() ? da.get().getPicture() : null;
 	}
 
 	@ApiOperation(value = "Saves a solution image. Returns bad request if the ID is not found or the image is too large.", //
@@ -1195,16 +1148,17 @@ public class SolutionController extends AbstractController {
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.PICTURE_PATH, method = RequestMethod.PUT)
 	public Object saveSolutionPicture(@PathVariable("solutionId") String solutionId,
 			@RequestBody(required = false) byte[] picture, HttpServletResponse response) {
-		logger.info("saveSolutionPicture: ID {} pic len {}", solutionId, picture == null ? -1 : picture.length);
-		MLPSolutionPicture existing = solutionPictureRepository.findOne(solutionId);
-		if (existing == null) {
+		logger.debug("saveSolutionPicture: ID {} pic len {}", solutionId, picture == null ? -1 : picture.length);
+		Optional<MLPSolutionPicture> da = solutionPictureRepository.findById(solutionId);
+		if (!da.isPresent()) {
 			logger.warn("saveSolutionPicture failed on ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
 		try {
-			existing.setPicture(picture);
-			solutionPictureRepository.save(existing);
+			MLPSolutionPicture pic = da.get();
+			pic.setPicture(picture);
+			solutionPictureRepository.save(pic);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);

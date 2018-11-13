@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(SolUserAccessMapPK.class)
 @Table(name = MLPSolUserAccMap.TABLE_NAME)
-public class MLPSolUserAccMap implements MLPEntity, Serializable {
+public class MLPSolUserAccMap implements MLPDomainModel, Serializable {
 
 	// Define constants so names can be reused in many-many annotation.
 	/* package */ static final String TABLE_NAME = "C_SOL_USER_ACCESS_MAP";

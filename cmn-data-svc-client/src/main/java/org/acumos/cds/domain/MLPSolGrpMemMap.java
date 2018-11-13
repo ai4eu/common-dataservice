@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -35,6 +35,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for a row in the solution group - solution ID mapping table that
@@ -43,7 +44,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(MLPSolGrpMemMap.SolGrpMemMapPK.class)
 @Table(name = MLPSolGrpMemMap.TABLE_NAME)
-public class MLPSolGrpMemMap implements MLPEntity, Serializable {
+public class MLPSolGrpMemMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -4275921877383738725L;
 
@@ -115,8 +116,8 @@ public class MLPSolGrpMemMap implements MLPEntity, Serializable {
 	@CreationTimestamp
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(readOnly = true)
-	private Timestamp created;
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY)
+	private Instant created;
 
 	/**
 	 * No-arg constructor
@@ -168,11 +169,11 @@ public class MLPSolGrpMemMap implements MLPEntity, Serializable {
 		this.solutionId = solutionId;
 	}
 
-	public Timestamp getCreated() {
+	public Instant getCreated() {
 		return created;
 	}
 
-	public void setCreated(Timestamp created) {
+	public void setCreated(Instant created) {
 		this.created = created;
 	}
 

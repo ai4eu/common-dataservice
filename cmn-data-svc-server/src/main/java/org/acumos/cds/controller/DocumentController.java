@@ -22,11 +22,13 @@ package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.repository.DocumentRepository;
 import org.acumos.cds.transport.ErrorTransport;
@@ -71,22 +73,23 @@ public class DocumentController extends AbstractController {
 	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
 			response = MLPDocument.class)
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.GET)
-	public Object MLPDocument(@PathVariable("documentId") String documentId) {
+	public MLPResponse getDocument(@PathVariable("documentId") String documentId) {
 		logger.debug("getDocument ID {}", documentId);
-		return documentRepository.findOne(documentId);
+		Optional<MLPDocument> da = documentRepository.findById(documentId);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
 			response = MLPDocument.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createDocument(@RequestBody MLPDocument document, HttpServletResponse response) {
-		logger.debug("createDocument {}", document);
+	public MLPResponse createDocument(@RequestBody MLPDocument document, HttpServletResponse response) {
+		logger.debug("createDocument entry");
 		try {
 			String id = document.getDocumentId();
 			if (id != null) {
 				UUID.fromString(id);
-				if (documentRepository.findOne(id) != null) {
+				if (documentRepository.findById(id).isPresent()) {
 					logger.warn("createDocument: failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
@@ -96,7 +99,7 @@ public class DocumentController extends AbstractController {
 			if (document.getUri() != null)
 				new URI(document.getUri());
 			// Create a new row
-			Object result = documentRepository.save(document);
+			MLPDocument result = documentRepository.save(document);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			// This is a hack to create the location path.
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.DOCUMENT_PATH + "/" + document.getDocumentId());
@@ -113,12 +116,12 @@ public class DocumentController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.PUT)
-	public Object updateDocument(@PathVariable("documentId") String documentId, @RequestBody MLPDocument document,
+	public MLPResponse updateDocument(@PathVariable("documentId") String documentId, @RequestBody MLPDocument document,
 			HttpServletResponse response) {
 		logger.debug("updateDocument ID {}", documentId);
 		// Check for existing because the Hibernate save() method doesn't distinguish
-		MLPDocument existing = documentRepository.findOne(documentId);
-		if (existing == null) {
+		Optional<MLPDocument> existing = documentRepository.findById(documentId);
+		if (!existing.isPresent()) {
 			logger.warn("updateDocument: failed on ID {}", documentId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + documentId, null);
@@ -148,7 +151,7 @@ public class DocumentController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deleteDocument ID {}", documentId);
 		try {
-			documentRepository.delete(documentId);
+			documentRepository.deleteById(documentId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

@@ -20,7 +20,7 @@
 
 package org.acumos.cds.client;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -114,37 +114,64 @@ public interface ICommonDataServiceRestClient {
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
-	 * @return Page of objects.
+	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> getSolutions(RestPageRequest pageRequest);
 
 	/**
-	 * Returns solutions with a name or description that contains the search term.
+	 * Gets a page of solutions with a name field that contains the specified
+	 * string. This may be slow because it requires table scans.
 	 * 
 	 * @param searchTerm
-	 *                        String to find
+	 *                        Limits match to solutions with name fields containing
+	 *                        the specified string; uses a case-insensitive LIKE
+	 *                        after surrounding the term with wildcard '%'
+	 *                        characters
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
-	 * @return Page of solution objects.
+	 * @return Page of solution objects, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findSolutionsBySearchTerm(String searchTerm, RestPageRequest pageRequest);
 
 	/**
-	 * Returns solutions tagged with the specified string.
+	 * Gets a page of solutions with exact matches on the specified fields, either
+	 * as a conjunction ("and", all must match) or a disjunction ("or", any must
+	 * match).
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: name,
+	 *                            active, userId, sourceId, modelTypeCode,
+	 *                            toolkitTypeCode, origin.
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size, sort information; defaults
+	 *                            to page 0 of size 20 if null.
+	 * @return Page of solution objects
+	 */
+	RestPageResponse<MLPSolution> searchSolutions(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets a page of solutions that are tagged with the specified string.
 	 * 
 	 * @param tag
-	 *                        Tag to find
+	 *                        Tag to find by exact match
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
-	 * @return Page of solution objects.
+	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findSolutionsByTag(String tag, RestPageRequest pageRequest);
 
 	/**
-	 * Finds solutions with the specified status, access type code(s), and that were
-	 * modified after the specified date. Checks the last-updated date on the
+	 * Gets a page of solutions that were modified after the specified point in time
+	 * and match the additional parameter values. Checks the modified field on the
 	 * solution, the revisions for the solution, and the artifacts in the revisions.
 	 * A solution must have revision(s) and artifact(s) to match.
 	 * 
@@ -152,90 +179,79 @@ public interface ICommonDataServiceRestClient {
 	 *                            Solution active status; true for active, false for
 	 *                            inactive
 	 * @param accessTypeCodes
-	 *                            Access type codes (required)
-	 * @param date
-	 *                            Date threshold
+	 *                            Limits match to solutions containing revisions
+	 *                            with ANY of the specified values including null
+	 *                            (which is different from the special-case
+	 *                            4-character sequence "null"); required
+	 * @param instant
+	 *                            Point in time. Entities with modification dates
+	 *                            prior to (i.e., smaller than) this point in time
+	 *                            are ignored.
 	 * @param pageRequest
-	 *                            Page index, page size, sort information; ignored
-	 *                            if null.
-	 * @return Page of solution objects.
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of solutions, which may be empty
 	 */
-	RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Date date,
+	RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant instant,
 			RestPageRequest pageRequest);
 
 	/**
-	 * Finds solutions that match every specified condition. Special-purpose method
-	 * to support the dynamic search page on the portal marketplace.
+	 * Gets a page of solutions matching all query parameters. Most parameters can
+	 * be a set of values, and for those a match is found if ANY ONE of the values
+	 * matches. In other words, this is a conjunction of disjunctions. This may be
+	 * slow because it requires table scans. Special-purpose method to support the
+	 * dynamic search page on the portal marketplace.
 	 * 
 	 * @param nameKeywords
-	 *                                Keywords to perform "LIKE" search in solution
-	 *                                name field; ignored if null or empty
+	 *                                Limits match to solutions with names
+	 *                                containing ANY of the keywords; uses
+	 *                                case-insensitive LIKE after surrounding each
+	 *                                keyword with wildcard '%' characters; ignored
+	 *                                if null or empty
 	 * @param descriptionKeywords
-	 *                                Keywords to perform "LIKE" search in the
-	 *                                revision description (any access type);
-	 *                                ignored if null or empty
+	 *                                Limits match to solutions containing revisions
+	 *                                with descriptions that have ANY of the
+	 *                                keywords; uses case-insensitive LIKE after
+	 *                                surrounding each keyword with wildcard '%'
+	 *                                characters; ignored if null or empty
 	 * @param active
 	 *                                Solution active status; true for active, false
 	 *                                for inactive
 	 * @param userIds
-	 *                                User IDs who created the solution; ignored if
-	 *                                null or empty
-	 * @param accessTypeCodes
-	 *                                Access type codes; use four-letter sequence
-	 *                                "null" to match a null value; ignored if null
-	 *                                or empty
+	 *                                Limits match to solutions with associated user
+	 *                                (creator) that matches ANY of the specified
+	 *                                values; ignored if null or empty
 	 * @param modelTypeCodes
-	 *                                Model type codes; use four-letter sequence
-	 *                                "null" to match a null value; ignored if null
+	 *                                Limits match to solutions with ANY of the
+	 *                                specified values including null (which is
+	 *                                different from the special-case 4-character
+	 *                                sequence "null"); ignored if null or empty
+	 * @param accessTypeCodes
+	 *                                Limits match to solutions containing revisions
+	 *                                with ANY of the specified values including
+	 *                                null (which is different from the special-case
+	 *                                4-character sequence "null"); ignored if null
 	 *                                or empty
 	 * @param tags
-	 *                                Solution tag names; ignored if null or empty
+	 *                                Limits match to solutions with ANY of the
+	 *                                specified tags; ignored if null or empty
 	 * @param authorKeywords
-	 *                                Keywords to perform "LIKE" search in the
-	 *                                Authors field; ignored if null or empty
+	 *                                Limits match to solutions with a revision
+	 *                                containing an author field with ANY of the
+	 *                                specified keywords; uses case-insensitive LIKE
+	 *                                after surrounding each keyword with wildcard
+	 *                                '%' characters; ignored if null or empty
 	 * @param publisherKeywords
-	 *                                Keywords to perform "LIKE" search in the
-	 *                                Publisher field; ignored if null or empty
+	 *                                Same as author, but on the publisher field.
+	 * 
 	 * @param pageRequest
 	 *                                Page index, page size and sort information;
 	 *                                defaults to page 0 of size 20 if null.
-	 * @return Page of solution objects.
+	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
 			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
 			String[] authorKeywords, String[] publisherKeywords, RestPageRequest pageRequest);
-
-	/**
-	 * Gets a page of solutions that match every condition, with the caveat that any
-	 * one of the keywords can match, and multiple free-text fields are searched.
-	 * Other facets such as userId, model type code, etc. must match. This will be
-	 * slow because it requires table scans.
-	 * 
-	 * @param keywords
-	 *                            Keywords to find in the name, revision
-	 *                            description, author, publisher and other fields.
-	 *                            Required; must not be empty.
-	 * @param active
-	 *                            Solution active status; true for active, false for
-	 *                            inactive
-	 * @param userIds
-	 *                            User IDs who created the solution; ignored if null
-	 *                            or empty
-	 * @param accessTypeCodes
-	 *                            Access type codes; use four-letter sequence "null"
-	 *                            to match a null value; ignored if null or empty
-	 * @param modelTypeCodes
-	 *                            Model type codes; use four-letter sequence "null"
-	 *                            to match a null value; ignored if null or empty
-	 * @param tags
-	 *                            Solution tag names; ignored if null or empty
-	 * @param pageRequest
-	 *                            Page index, page size and sort information;
-	 *                            defaults to page 0 of size 20 if null.
-	 * @return Page of solution objects.
-	 */
-	RestPageResponse<MLPSolution> findPortalSolutionsByKw(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] tags, RestPageRequest pageRequest);
 
 	/**
 	 * Gets a page of solutions that match every condition, with the caveat that any
@@ -268,69 +284,62 @@ public interface ICommonDataServiceRestClient {
 	 * @param pageRequest
 	 *                            Page index, page size and sort information;
 	 *                            defaults to page 0 of size 20 if null.
-	 * @return Page of solution objects.
+	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
 			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
 			RestPageRequest pageRequest);
 
 	/**
-	 * Finds solutions editable by the specified user ('my models'). This includes
-	 * the user's private solutions and solutions co-owned by (shared with) the
-	 * user. This special-purpose method supports a dynamic search page on the
-	 * portal interface.
+	 * Gets a page of solutions editable by the specified user and matching all
+	 * query parameters. A user's editable solutions include the specified user's
+	 * private solutions (created by that user) AND solutions created by a different
+	 * user and shared with the specified user. Most parameters can be a set of
+	 * values, and a match is found for that parameter if ANY ONE of the values
+	 * matches. In other words, this is a conjunction of disjunctions. This
+	 * special-purpose method supports a dynamic search page on the portal interface
+	 * ('my models').
 	 * 
 	 * @param nameKeywords
-	 *                                Keywords to perform "LIKE" search in solution
-	 *                                name field; ignored if null or empty
+	 *                                Limits match to solutions with names
+	 *                                containing ANY of the keywords; uses
+	 *                                case-insensitive LIKE after surrounding each
+	 *                                keyword with wildcard '%' characters; ignored
+	 *                                if null or empty
 	 * @param descriptionKeywords
-	 *                                Keywords to perform "LIKE" search in the
-	 *                                revision description (any access type);
-	 *                                ignored if null or empty
+	 *                                Limits match to solutions containing revisions
+	 *                                with descriptions that have ANY of the
+	 *                                keywords; uses case-insensitive LIKE after
+	 *                                surrounding each keyword with wildcard '%'
+	 *                                characters; ignored if null or empty
 	 * @param active
 	 *                                Solution active status; true for active, false
 	 *                                for inactive; required.
 	 * @param userId
-	 *                                User ID who created a solution or has access
-	 *                                to a solution; required.
+	 *                                Limits match to solutions with this user ID OR
+	 *                                shared with this user ID; required.
 	 * @param accessTypeCodes
-	 *                                Access type codes; use four-letter sequence
-	 *                                "null" to match a null value; ignored if null
-	 *                                or empty
+	 *                                Limits match to solutions containing revisions
+	 *                                with codes that match ANY of the specified
+	 *                                values including null (which is different from
+	 *                                the special-case 4-character sequence "null");
+	 *                                ignored if null or empty
 	 * @param modelTypeCodes
-	 *                                Model type codes; use four-letter sequence
-	 *                                "null" to match a null value; ignored if null
+	 *                                Limits match to solutions with codes that
+	 *                                match ANY of the specified values including
+	 *                                null (which is different from the special-case
+	 *                                4-character sequence "null"); ignored if null
 	 *                                or empty
 	 * @param tags
-	 *                                Solution tag names; ignored if null or empty
+	 *                                Limits match to solutions with ANY of the
+	 *                                specified tags; ignored if null or empty
 	 * @param pageRequest
 	 *                                Page index, page size and sort information;
 	 *                                defaults to page 0 of size 20 if null.
-	 * @return Page of solution objects.
+	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
 			String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
-			RestPageRequest pageRequest);
-
-	/**
-	 * Searches solutions for exact matches.
-	 * 
-	 * @param queryParameters
-	 *                            Map of field-name, field-value pairs to use as
-	 *                            query criteria. Accepts these field names: name,
-	 *                            active, userId, sourceId, modelTypeCode,
-	 *                            toolkitTypeCode, origin.
-	 * @param isOr
-	 *                            If true, finds matches on any field-value pair
-	 *                            (conditions are OR-ed together); otherwise finds
-	 *                            matches on all field-value pairs (conditions are
-	 *                            AND-ed together).
-	 * @param pageRequest
-	 *                            Page index, page size, sort information; defaults
-	 *                            to page 0 of size 20 if null.
-	 * @return Page of solution objects
-	 */
-	RestPageResponse<MLPSolution> searchSolutions(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest);
 
 	/**

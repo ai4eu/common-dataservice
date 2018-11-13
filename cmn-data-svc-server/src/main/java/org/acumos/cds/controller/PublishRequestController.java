@@ -20,13 +20,13 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.repository.PublishRequestRepository;
 import org.acumos.cds.service.PublishRequestSearchService;
@@ -88,9 +88,10 @@ public class PublishRequestController extends AbstractController {
 	@ApiOperation(value = "Gets the request for the specified ID. Returns null if the ID is not found.", //
 			response = MLPPublishRequest.class)
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.GET)
-	public Object getPublishRequest(@PathVariable("requestId") long requestId) {
+	public MLPResponse getPublishRequest(@PathVariable("requestId") long requestId) {
 		logger.debug("getPublishRequest: requestId {}", requestId);
-		return publishRequestRepository.findOne(requestId);
+		Optional<MLPPublishRequest> sr = publishRequestRepository.findById(requestId);
+		return sr.isPresent() ? sr.get() : null;
 	}
 
 	/*
@@ -126,24 +127,15 @@ public class PublishRequestController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPublishRequests enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		Map<String, Object> queryParameters = new HashMap<>();
-		if (solutionId != null)
-			queryParameters.put(SOLUTION_ID, solutionId);
-		if (revisionId != null)
-			queryParameters.put(REVISION_ID, revisionId);
-		if (requestUserId != null)
-			queryParameters.put(REQUEST_USER_ID, requestUserId);
-		if (reviewUserId != null)
-			queryParameters.put(REVIEW_USER_ID, reviewUserId);
-		if (statusCode != null)
-			queryParameters.put(STATUS_CODE, statusCode);
-		if (queryParameters.size() == 0) {
+		if (solutionId == null && revisionId == null && requestUserId == null && reviewUserId == null
+				&& statusCode == null) {
 			logger.warn("searchPublishRequests missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return publishRequestSearchService.findPublishRequests(queryParameters, isOr, pageRequest);
+			return publishRequestSearchService.findPublishRequests(solutionId, revisionId, requestUserId, reviewUserId,
+					statusCode, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchPublishRequests failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -156,7 +148,8 @@ public class PublishRequestController extends AbstractController {
 			response = MLPPublishRequest.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createPublishRequest(@RequestBody MLPPublishRequest publishRequest, HttpServletResponse response) {
+	public MLPResponse createPublishRequest(@RequestBody MLPPublishRequest publishRequest,
+			HttpServletResponse response) {
 		logger.debug("createPublishRequest: enter");
 		try {
 			// Validate enum codes
@@ -180,12 +173,11 @@ public class PublishRequestController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.PUT)
-	public Object updatePublishRequest(@PathVariable("requestId") long requestId,
+	public MLPTransportModel updatePublishRequest(@PathVariable("requestId") long requestId,
 			@RequestBody MLPPublishRequest publishRequest, HttpServletResponse response) {
 		logger.debug("updatePublishRequest: requestId {}", requestId);
-		// Get the existing one
-		MLPPublishRequest existing = publishRequestRepository.findOne(requestId);
-		if (existing == null) {
+		// Check the existing one
+		if (!publishRequestRepository.findById(requestId).isPresent()) {
 			logger.warn("updatePublishRequest failed on ID {}", requestId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + requestId, null);
@@ -214,7 +206,7 @@ public class PublishRequestController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deletePublishRequest: requestId {}", requestId);
 		try {
-			publishRequestRepository.delete(requestId);
+			publishRequestRepository.deleteById(requestId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

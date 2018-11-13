@@ -118,7 +118,7 @@ public abstract class AbstractController {
 		for (MLPTag tag : tags) {
 			if (tag == null || tag.getTag() == null)
 				throw new IllegalArgumentException("Unexpected null tag");
-			if (tagRepository.findOne(tag.getTag()) == null) {
+			if (!tagRepository.findById(tag.getTag()).isPresent()) {
 				tagRepository.save(tag);
 				logger.debug("createMissingTags: tag {}", tag);
 			}

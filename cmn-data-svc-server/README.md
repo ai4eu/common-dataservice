@@ -4,6 +4,10 @@ This project has the Spring-Boot application that provides common data services 
 
 Please see the documentation in the parent project's "docs" folder.
 
+## Developers
+
+Eclipse IDE users should install the plugin "m2e-apt" from the Marketplace.
+
 ## License
 
 Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.

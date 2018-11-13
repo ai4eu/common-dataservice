@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -34,25 +34,29 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Model for solution download, which includes artifactID.
  */
 @Entity
 @Table(name = "C_SOLUTION_DOWNLOAD")
-public class MLPSolutionDownload implements MLPEntity, Serializable {
+public class MLPSolutionDownload implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = 8190007610178155564L;
 
 	// Hibernate is weak on the ID column generator, the method is specific to
 	// the backing database. For portability, specify AUTO and define the column
 	// appropriately in the database, which in MySQL requires "AUTO_INCREMENT".
+	// The "native" annotations work in Hibernate 5.3 with Mariadb 10.2.
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "DOWNLOAD_ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(readOnly = true, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
 	private Long downloadId;
 
 	@Column(name = "SOLUTION_ID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
@@ -76,8 +80,8 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 	@CreationTimestamp
 	@Column(name = "DOWNLOAD_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(readOnly = true)
-	private Timestamp downloadDate;
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY)
+	private Instant downloadDate;
 
 	/**
 	 * No-arg constructor
@@ -152,11 +156,11 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 		this.userId = userId;
 	}
 
-	public Timestamp getDownloadDate() {
+	public Instant getDownloadDate() {
 		return downloadDate;
 	}
 
-	public void setDownloadDate(Timestamp downloadDate) {
+	public void setDownloadDate(Instant downloadDate) {
 		this.downloadDate = downloadDate;
 	}
 

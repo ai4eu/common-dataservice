@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -77,7 +78,8 @@ public class SiteController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.GET)
 	public MLPSiteConfig getSiteConfig(@PathVariable("configKey") String configKey) {
 		logger.debug("getSiteConfig key {}", configKey);
-		return siteConfigRepository.findOne(configKey);
+		Optional<MLPSiteConfig> da = siteConfigRepository.findById(configKey);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new site configuration record. Returns bad request on constraint violation etc.", response = MLPSiteConfig.class)
@@ -85,14 +87,14 @@ public class SiteController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH, method = RequestMethod.POST)
 	public Object createSiteConfig(@RequestBody MLPSiteConfig siteConfig, HttpServletResponse response) {
 		logger.debug("createSiteConfig: key {}", siteConfig.getConfigKey());
-		if (siteConfigRepository.findOne(siteConfig.getConfigKey()) != null) {
+		if (siteConfigRepository.findById(siteConfig.getConfigKey()).isPresent()) {
 			logger.warn("createSiteConfig failed on key {}", siteConfig.getConfigKey());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Key exists: " + siteConfig.getConfigKey(),
 					null);
 		}
 		// UserID is optional
-		if (siteConfig.getUserId() != null && userRepository.findOne(siteConfig.getUserId()) == null) {
+		if (siteConfig.getUserId() != null && !userRepository.findById(siteConfig.getUserId()).isPresent()) {
 			logger.warn("createSiteConfig failed on user {}", siteConfig.getUserId());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + siteConfig.getUserId(),
@@ -120,9 +122,8 @@ public class SiteController extends AbstractController {
 	public Object updateSiteConfig(@PathVariable("configKey") String configKey, @RequestBody MLPSiteConfig siteConfig,
 			HttpServletResponse response) {
 		logger.debug("updateSiteConfig key {}", configKey);
-		// Get the existing one
-		MLPSiteConfig existing = siteConfigRepository.findOne(configKey);
-		if (existing == null) {
+		// Check for an existing one
+		if (!siteConfigRepository.findById(configKey).isPresent()) {
 			logger.warn("updateSiteConfig failed on key {}", configKey);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + configKey, null);
@@ -148,7 +149,7 @@ public class SiteController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deleteSiteConfig key {}", configKey);
 		try {
-			siteConfigRepository.delete(configKey);
+			siteConfigRepository.deleteById(configKey);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
@@ -158,11 +159,12 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the site content value for the specified key.", response = MLPSiteContent.class)
+	@ApiOperation(value = "Gets the site content value for the specified key. Answers null if the key is not found.", response = MLPSiteContent.class)
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.GET)
-	public MLPSiteContent getSiteContent(@PathVariable("contentKey") String contentKey, HttpServletResponse response) {
+	public MLPSiteContent getSiteContent(@PathVariable("contentKey") String contentKey) {
 		logger.debug("getSiteContent key {}", contentKey);
-		return siteContentRepository.findOne(contentKey);
+		Optional<MLPSiteContent> da = siteContentRepository.findById(contentKey);
+		return da.isPresent() ? da.get() : null;
 	}
 
 	@ApiOperation(value = "Creates a new site content record. Returns bad request on constraint violation etc.", response = MLPSiteContent.class)
@@ -170,7 +172,7 @@ public class SiteController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH, method = RequestMethod.POST)
 	public Object createSiteContent(@RequestBody MLPSiteContent siteContent, HttpServletResponse response) {
 		logger.debug("createSiteContent: key {}", siteContent.getContentKey());
-		if (siteContentRepository.findOne(siteContent.getContentKey()) != null) {
+		if (siteContentRepository.findById(siteContent.getContentKey()).isPresent()) {
 			logger.warn("createSiteContent failed on key {}", siteContent.getContentKey());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Key exists: " + siteContent.getContentKey(),
@@ -198,9 +200,8 @@ public class SiteController extends AbstractController {
 	public Object updateSiteContent(@PathVariable("contentKey") String contentKey,
 			@RequestBody MLPSiteContent siteContent, HttpServletResponse response) {
 		logger.debug("updateSiteContent key {}", contentKey);
-		// Get the existing one
-		MLPSiteContent existing = siteContentRepository.findOne(contentKey);
-		if (existing == null) {
+		// Check for an existing one
+		if (!siteContentRepository.findById(contentKey).isPresent()) {
 			logger.warn("updateSiteContent failed on key {}", contentKey);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + contentKey, null);
@@ -226,7 +227,7 @@ public class SiteController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deleteSiteContent key {}", contentKey);
 		try {
-			siteContentRepository.delete(contentKey);
+			siteContentRepository.deleteById(contentKey);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

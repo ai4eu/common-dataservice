@@ -20,8 +20,8 @@
 
 package org.acumos.cds.client.test;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +111,7 @@ public class MockClientTest {
 		Assert.assertTrue(solutions3 == client.findSolutionsByTag("string", pageRequest));
 		RestPageResponse<MLPSolution> solutions4 = new RestPageResponse<>();
 		client.setSolutionsByDate(solutions4);
-		Assert.assertTrue(solutions4 == client.findSolutionsByDate(true, new String[0], new Date(), pageRequest));
+		Assert.assertTrue(solutions4 == client.findSolutionsByDate(true, new String[0], Instant.now(), pageRequest));
 
 		MLPSolution solution = new MLPSolution();
 		client.setSolutionById(solution);
@@ -425,8 +425,8 @@ public class MockClientTest {
 		client.setPortalSolutions(portalSols);
 		Assert.assertTrue(portalSols == client.findPortalSolutions(null, null, true, null, null, null, null, null, null,
 				pageRequest));
-		Assert.assertTrue(
-				portalSols == client.findPortalSolutionsByKw(null, true, null, null, null, null, pageRequest));
+		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
+				pageRequest));
 		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
 				pageRequest));
 

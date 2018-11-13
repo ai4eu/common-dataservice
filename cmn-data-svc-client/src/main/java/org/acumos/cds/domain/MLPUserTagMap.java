@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(UserTagMapPK.class)
 @Table(name = MLPUserTagMap.TABLE_NAME)
-public class MLPUserTagMap implements MLPEntity, Serializable {
+public class MLPUserTagMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -4323298277808436884L;
 

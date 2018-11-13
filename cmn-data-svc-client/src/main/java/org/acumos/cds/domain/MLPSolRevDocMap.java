@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(SolRevDocMapPK.class)
 @Table(name = MLPSolRevDocMap.TABLE_NAME)
-public class MLPSolRevDocMap implements MLPEntity, Serializable {
+public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -1521666035352658419L;
 	/* package */ static final String TABLE_NAME = "C_SOL_REV_DOC_MAP";

@@ -20,7 +20,7 @@
 
 package org.acumos.cds.domain;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -110,7 +110,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 
 	@Column(name = "LAST_DOWNLOAD", columnDefinition = "TIMESTAMP" /* don't attempt "NULL DEFAULT 0" here */)
 	@ApiModelProperty(value = "Timestamp of most recent download")
-	private Timestamp lastDownload;
+	private Instant lastDownload;
 
 	@Column(name = "RATING_COUNT", columnDefinition = "INT")
 	@ApiModelProperty(value = "Rating count", example = "1")
@@ -252,11 +252,11 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		this.downloadCount = downloadCount;
 	}
 
-	public Timestamp getLastDownload() {
+	public Instant getLastDownload() {
 		return lastDownload;
 	}
 
-	public void setLastDownload(Timestamp lastDownload) {
+	public void setLastDownload(Instant lastDownload) {
 		this.lastDownload = lastDownload;
 	}
 

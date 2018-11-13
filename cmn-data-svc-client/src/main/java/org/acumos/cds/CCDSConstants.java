@@ -105,6 +105,7 @@ public interface CCDSConstants {
 	public static final String SEARCH_ACTIVE = "active";
 	public static final String SEARCH_USERS = "user";
 	public static final String SEARCH_DESC = "desc";
+	public static final String SEARCH_INSTANT = "inst";
 	public static final String SEARCH_KW = "kw";
 	public static final String SEARCH_MODEL_TYPES = "mtc";
 	public static final String SEARCH_NAME = "name";
@@ -112,7 +113,6 @@ public interface CCDSConstants {
 	public static final String SEARCH_ALL_TAGS = "alltag";
 	public static final String SEARCH_ANY_TAGS = "anytag";
 	public static final String SEARCH_VAL_STATUSES = "vsc";
-	public static final String SEARCH_DATE = "datems";
 	public static final String SEARCH_AUTH = "auth";
 	public static final String SEARCH_PUB = "pub";
 

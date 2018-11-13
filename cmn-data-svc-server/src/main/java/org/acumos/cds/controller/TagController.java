@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles;
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
+import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -74,9 +75,9 @@ public class TagController extends AbstractController {
 	@ApiOperation(value = "Creates a new tag. Returns bad request on constraint violation etc.", response = MLPTag.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	public Object createTag(@RequestBody MLPTag tag, HttpServletResponse response) {
+	public MLPResponse createTag(@RequestBody MLPTag tag, HttpServletResponse response) {
 		logger.debug("createTag: tag {}", tag);
-		if (tagRepository.findOne(tag.getTag()) != null) {
+		if (tagRepository.findById(tag.getTag()).isPresent()) {
 			logger.warn("createTag failed on {}", tag);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Tag exists: " + tag, null);
@@ -98,7 +99,7 @@ public class TagController extends AbstractController {
 	public MLPTransportModel deleteTag(@PathVariable("tag") String tag, HttpServletResponse response) {
 		logger.debug("deleteTag: tag {}", tag);
 		try {
-			tagRepository.delete(tag);
+			tagRepository.deleteById(tag);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

@@ -25,8 +25,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -359,16 +358,16 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			builder.pathSegment(path[p]);
 		if (queryParams != null && queryParams.size() > 0) {
 			for (Map.Entry<String, ? extends Object> entry : queryParams.entrySet()) {
-				if (entry.getValue() instanceof Date) {
-					// Server expects Date type as Long (not String)
-					builder.queryParam(entry.getKey(), ((Date) entry.getValue()).getTime());
+				if (entry.getValue() instanceof Instant) {
+					// Server expects point-in-time as Long (not String)
+					builder.queryParam(entry.getKey(), ((Instant) entry.getValue()).toEpochMilli());
 				} else if (entry.getValue().getClass().isArray()) {
 					Object[] array = (Object[]) entry.getValue();
 					for (Object o : array) {
 						if (o == null)
 							builder.queryParam(entry.getKey(), "null");
-						else if (o instanceof Date)
-							builder.queryParam(entry.getKey(), ((Date) o).getTime());
+						else if (o instanceof Instant)
+							builder.queryParam(entry.getKey(), ((Instant) o).toEpochMilli());
 						else
 							builder.queryParam(entry.getKey(), o.toString());
 					}
@@ -482,12 +481,12 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Date date,
+	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant instant,
 			RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
 		parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
-		parms.put(CCDSConstants.SEARCH_DATE, date.getTime());
+		parms.put(CCDSConstants.SEARCH_INSTANT, instant);
 		URI uri = buildUri(
 				new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH, CCDSConstants.DATE_PATH }, parms,
 				pageRequest);
@@ -525,32 +524,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH, CCDSConstants.PORTAL_PATH },
 				parms, pageRequest);
 		logger.debug("findPortalSolutions: uri {}", uri);
-		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public RestPageResponse<MLPSolution> findPortalSolutionsByKw(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] tags, RestPageRequest pageRequest) {
-		HashMap<String, Object> parms = new HashMap<>();
-		// This is required
-		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
-		if (keywords == null || keywords.length == 0)
-			throw new IllegalArgumentException("Null/empty keywords");
-		parms.put(CCDSConstants.SEARCH_KW, keywords);
-		if (userIds != null && userIds.length > 0)
-			parms.put(CCDSConstants.SEARCH_USERS, userIds);
-		if (accessTypeCodes != null && accessTypeCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
-		if (modelTypeCodes != null && modelTypeCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
-		if (tags != null && tags.length > 0)
-			parms.put(CCDSConstants.SEARCH_TAGS, tags);
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH,
-				CCDSConstants.PORTAL_PATH, CCDSConstants.KEYWORD_PATH }, parms, pageRequest);
-		logger.debug("findPortalSolutionsByKw: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
 				});
@@ -1524,7 +1497,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				null);
 		logger.debug("addNotificationUser: url {}", uri);
 		MLPNotifUserMap map = new MLPNotifUserMap(notificationId, userId);
-		map.setViewed(new Timestamp(new Date().getTime()));
+		map.setViewed(Instant.now());
 		restTemplate.put(uri, map);
 	}
 

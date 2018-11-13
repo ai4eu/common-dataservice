@@ -72,6 +72,8 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 * constraint-violation error, Hibernate attempts to insert a duplicate row to
 	 * the join table, also see https://hibernate.atlassian.net/browse/HHH-6776
 	 * 
+	 * Eager fetch type ensures that tags are present when an entity is fetched by
+	 * ID via a Spring-generated repository method.
 	 */
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = MLPSolTagMap.TABLE_NAME, //

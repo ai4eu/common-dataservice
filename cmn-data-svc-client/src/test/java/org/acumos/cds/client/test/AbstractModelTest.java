@@ -20,8 +20,7 @@
 
 package org.acumos.cds.client.test;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,16 +29,15 @@ import org.acumos.cds.domain.MLPTag;
 public abstract class AbstractModelTest {
 
 	// Values for properties
-	final long time = new Date().getTime();
 	final boolean b1 = true;
 	final boolean b2 = false;
 	final byte[] by1 = { 0, 1, 2, 3 };
-	final Timestamp t1 = new Timestamp(time + 1 * 24 * 60 * 60 * 1000);
-	final Timestamp t2 = new Timestamp(time + 2 * 24 * 60 * 60 * 1000);
-	final Timestamp t3 = new Timestamp(time + 3 * 24 * 60 * 60 * 1000);
-	final Timestamp t4 = new Timestamp(time + 4 * 24 * 60 * 60 * 1000);
-	final Timestamp t5 = new Timestamp(time + 5 * 24 * 60 * 60 * 1000);
-	final Timestamp t6 = new Timestamp(time + 6 * 24 * 60 * 60 * 1000);
+	final Instant t1 = Instant.now().plusSeconds(1);
+	final Instant t2 = Instant.now().plusSeconds(2);
+	final Instant t3 = Instant.now().plusSeconds(3);
+	final Instant t4 = Instant.now().plusSeconds(4);
+	final Instant t5 = Instant.now().plusSeconds(5);
+	final Instant t6 = Instant.now().plusSeconds(6);
 	final Integer i1 = 1;
 	final Integer i2 = 2;
 	final Integer i3 = 3;

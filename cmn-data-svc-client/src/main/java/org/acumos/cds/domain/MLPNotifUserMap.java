@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(NotifUserMapPK.class)
 @Table(name = "C_NOTIF_USER_MAP")
-public class MLPNotifUserMap implements MLPEntity, Serializable {
+public class MLPNotifUserMap implements MLPDomainModel, Serializable {
 
 	/**
 	 * Embedded key for Hibernate
@@ -104,10 +104,10 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
-	// No auto-update behaviors here, neither Hibernate nor Mysql
+	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "VIEWED_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp viewed;
+	private Instant viewed;
 
 	public MLPNotifUserMap() {
 		// no-arg constructor
@@ -156,11 +156,11 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 		this.userId = userId;
 	}
 
-	public Timestamp getViewed() {
+	public Instant getViewed() {
 		return viewed;
 	}
 
-	public void setViewed(Timestamp viewed) {
+	public void setViewed(Instant viewed) {
 		this.viewed = viewed;
 	}
 

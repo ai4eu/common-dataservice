@@ -275,7 +275,7 @@ public class DomainTest extends AbstractModelTest {
 
 	@Test
 	public void testMLPNotification() {
-		MLPNotification m = new MLPNotification(s1, s6, t1, t2);
+		MLPNotification m = new MLPNotification(s1, s6, t1, t1);
 		m = new MLPNotification();
 		m.setCreated(t1);
 		m.setEnd(t2);
@@ -491,6 +491,7 @@ public class DomainTest extends AbstractModelTest {
 	}
 
 	private void checkMLPPeerGrpMemMap(MLPPeerGrpMemMap m) {
+		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(l1, m.getGroupId());
 		Assert.assertEquals(s1, m.getPeerId());
 	}
@@ -499,6 +500,7 @@ public class DomainTest extends AbstractModelTest {
 	public void testMLPPeerGrpMemMap() {
 		MLPPeerGrpMemMap m = new MLPPeerGrpMemMap(l1, s1);
 		m = new MLPPeerGrpMemMap();
+		m.setCreated(t1);
 		m.setGroupId(l1);
 		m.setPeerId(s1);
 		checkMLPPeerGrpMemMap(m);

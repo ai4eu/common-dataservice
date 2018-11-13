@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Entity
 @IdClass(SolutionFavoritePK.class)
 @Table(name = "C_SOLUTION_FAVORITE")
-public class MLPSolutionFavorite implements MLPEntity, Serializable {
+public class MLPSolutionFavorite implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = 8515419501527090148L;
 

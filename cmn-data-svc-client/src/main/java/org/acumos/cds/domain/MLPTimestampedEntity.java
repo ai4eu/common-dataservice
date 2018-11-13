@@ -20,7 +20,7 @@
 
 package org.acumos.cds.domain;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -29,6 +29,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
  * Defines createdDate and modifiedDate fields, getters and setters to avoid
@@ -37,19 +38,20 @@ import io.swagger.annotations.ApiModelProperty;
  * Spring has a bit of magic for everything, must use @MappedSuperclass here.
  */
 @MappedSuperclass
-public abstract class MLPTimestampedEntity implements MLPEntity {
+public abstract class MLPTimestampedEntity implements MLPDomainModel {
 
 	@CreationTimestamp
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT '0000-00-00 00:00:00'")
+	// Defined by DDL as default 0 to disable Mysql/Mariadb auto-update behavior
 	// REST clients should not send this property
-	@ApiModelProperty(readOnly = true, value = "Set by system")
-	private Timestamp created;
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Set by system")
+	private Instant created;
 
 	@UpdateTimestamp
 	@Column(name = "MODIFIED_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(readOnly = true, value = "Set by system")
-	private Timestamp modified;
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Set by system")
+	private Instant modified;
 
 	public MLPTimestampedEntity() {
 		// no-arg constructor
@@ -66,19 +68,19 @@ public abstract class MLPTimestampedEntity implements MLPEntity {
 		this.modified = that.modified;
 	}
 
-	public Timestamp getCreated() {
+	public Instant getCreated() {
 		return created;
 	}
 
-	public void setCreated(Timestamp created) {
+	public void setCreated(Instant created) {
 		this.created = created;
 	}
 
-	public Timestamp getModified() {
+	public Instant getModified() {
 		return modified;
 	}
 
-	public void setModified(Timestamp modified) {
+	public void setModified(Instant modified) {
 		this.modified = modified;
 	}
 

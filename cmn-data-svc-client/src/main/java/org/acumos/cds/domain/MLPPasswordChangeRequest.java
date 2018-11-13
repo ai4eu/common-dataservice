@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiModelProperty;
  * to proceed the change. This is NOT an entity because there is no table of
  * change requests.
  */
-public class MLPPasswordChangeRequest implements MLPEntity, Serializable {
+public class MLPPasswordChangeRequest implements MLPDomainModel, Serializable {
 	private static final long serialVersionUID = 1993219468733216332L;
 
 	@Size(max = 50)

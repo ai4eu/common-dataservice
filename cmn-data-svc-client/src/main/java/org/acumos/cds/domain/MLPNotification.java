@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -79,15 +79,15 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	@ApiModelProperty(value = "A URL to view more information", example = "http://my.company.com/more/info")
 	private String url;
 
-	// No auto-update behaviors here, neither Hibernate nor Mysql
+	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "START_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp start;
+	private Instant start;
 
-	// No auto-update behaviors here, neither Hibernate nor Mysql
+	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "END_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Timestamp end;
+	private Instant end;
 
 	/**
 	 * No-arg constructor.
@@ -107,11 +107,11 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	 *                            severity of the notification like high, medium or
 	 *                            low
 	 * @param startTs
-	 *                            Earliest timestamp of the active period
+	 *                            Start of the active period
 	 * @param endTs
-	 *                            Latest timestamp of the active period
+	 *                            End of the active period
 	 */
-	public MLPNotification(String title, String msgSeverityCode, Timestamp startTs, Timestamp endTs) {
+	public MLPNotification(String title, String msgSeverityCode, Instant startTs, Instant endTs) {
 		if (title == null || msgSeverityCode == null || startTs == null || endTs == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.title = title;
@@ -177,19 +177,19 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 		this.url = url;
 	}
 
-	public Timestamp getStart() {
+	public Instant getStart() {
 		return start;
 	}
 
-	public void setStart(Timestamp start) {
+	public void setStart(Instant start) {
 		this.start = start;
 	}
 
-	public Timestamp getEnd() {
+	public Instant getEnd() {
 		return end;
 	}
 
-	public void setEnd(Timestamp end) {
+	public void setEnd(Instant end) {
 		this.end = end;
 	}
 

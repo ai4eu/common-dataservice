@@ -20,144 +20,50 @@
 
 package org.acumos.cds.service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Junction;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.data.domain.Pageable;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
+
+import org.acumos.cds.domain.MLPDomainModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 /**
- * Factors code out of search implementations
+ * Factors code out of search-service implementations
  */
 public abstract class AbstractSearchServiceImpl {
 
-	/**
-	 * Populates a criteria object for Hibernate.
-	 * 
-	 * @param criteria
-	 *                            Criteria object to extend
-	 * @param queryParameters
-	 *                            Map of field name - field value pairs. Value may
-	 *                            be a scalar or array. An "equals" criterion is
-	 *                            created for scalar values. An "in" criterion is
-	 *                            created for array values.
-	 * @param isOr
-	 *                            If true, treat the query as a disjunction; else as
-	 *                            a conjunction.
-	 */
-	protected void buildCriteria(Criteria criteria, Map<String, ? extends Object> queryParameters, boolean isOr) {
-		Junction junction = isOr ? Restrictions.disjunction() : Restrictions.conjunction();
-		criteria.add(junction);
-		for (Map.Entry<String, ? extends Object> entry : queryParameters.entrySet()) {
-			if (entry.getValue() == null)
-				throw new IllegalArgumentException("Unexpected null value in query parameters");
-			Criterion criterion = null;
-			if (entry.getValue().getClass().isArray()) {
-				Object[] array = (Object[]) entry.getValue();
-				criterion = Restrictions.in(entry.getKey(), array);
-			} else {
-				criterion = Restrictions.eq(entry.getKey(), entry.getValue());
-			}
-			junction.add(criterion);
-		}
-	}
+
+	@Autowired
+	protected EntityManager entityManager;
 
 	/**
-	 * Builds a disjunction ("OR") criterion to check if field value occurs in the
-	 * list, with special handling ("isNull") for null.
+	 * Builds a list of sort orders suitable for supplying to the orderBy clause of
+	 * a query.
 	 * 
-	 * @param fieldName
-	 *                      POJO field name
-	 * @param values
-	 *                      Set of values; null is permitted
-	 * @return Criterion
+	 * @param cb
+	 *                 Criteria Builder
+	 * @param from
+	 *                 Root item
+	 * @param sort
+	 *                 Spring sorting criteria
+	 * @return List of javax.persistence.criteria.Order
 	 */
-	protected Criterion buildEqualsListCriterion(String fieldName, Object[] values) {
-		Junction junction = Restrictions.disjunction();
-		for (Object v : values) {
-			if (v == null)
-				junction.add(Restrictions.isNull(fieldName));
+	protected List<javax.persistence.criteria.Order> buildOrderList(CriteriaBuilder cb,
+			Root<? extends MLPDomainModel> from, Sort sort) {
+		List<javax.persistence.criteria.Order> jpaOrderList = new ArrayList<>();
+		Iterator<org.springframework.data.domain.Sort.Order> sprOrderIter = sort.iterator();
+		while (sprOrderIter.hasNext()) {
+			org.springframework.data.domain.Sort.Order sprOrder = sprOrderIter.next();
+			if (sprOrder.isAscending())
+				jpaOrderList.add(cb.asc(from.get(sprOrder.getProperty())));
 			else
-				junction.add(Restrictions.eq(fieldName, v));
+				jpaOrderList.add(cb.desc(from.get(sprOrder.getProperty())));
 		}
-		return junction;
+		return jpaOrderList;
 	}
-
-	/**
-	 * Builds a criterion to check approximate match of values in the list; null is
-	 * not permitted.
-	 * 
-	 * @param fieldName
-	 *                      POJO field name
-	 * @param values
-	 *                      String values; null is forbidden
-	 * @param isOr
-	 *                      If true, treat the query as a disjunction; else as a
-	 *                      conjunction.
-	 * @return Criterion
-	 */
-	protected Criterion buildLikeListCriterion(String fieldName, String[] values, boolean isOr) {
-		Junction junction = isOr ? Restrictions.disjunction() : Restrictions.conjunction();
-		for (String v : values) {
-			if (v == null)
-				throw new IllegalArgumentException("Null not permitted in value list");
-			else
-				junction.add(Restrictions.like(fieldName, '%' + v + '%'));
-		}
-		return junction;
-	}
-
-	/**
-	 * Adds page-request criteria to the criteria.
-	 * 
-	 * @param criteria
-	 *                     Criteria
-	 * @param pageable
-	 *                     Pageable
-	 */
-	protected void applyPageableCriteria(Criteria criteria, Pageable pageable) {
-		applyFirstMaxCriteria(criteria, pageable);
-		if (pageable.getSort() != null)
-			applySortCriteria(criteria, pageable);
-	}
-
-	/**
-	 * Adds first row and page size criteria to the criteria.
-	 * 
-	 * @param criteria
-	 *                     Criteria
-	 * @param pageable
-	 *                     Pageable
-	 */
-	protected void applyFirstMaxCriteria(Criteria criteria, Pageable pageable) {
-		criteria.setFirstResult(pageable.getOffset());
-		criteria.setMaxResults(pageable.getPageSize());
-	}
-
-	/**
-	 * Adds sort criteria to the criteria.
-	 * 
-	 * @param criteria
-	 *                     Criteria
-	 * @param pageable
-	 *                     Pageable
-	 */
-	protected void applySortCriteria(Criteria criteria, Pageable pageable) {
-		Iterator<Sort.Order> orderIter = pageable.getSort().iterator();
-		while (orderIter.hasNext()) {
-			Sort.Order sortOrder = orderIter.next();
-			Order order;
-			if (sortOrder.isAscending())
-				order = Order.asc(sortOrder.getProperty());
-			else
-				order = Order.desc(sortOrder.getProperty());
-			criteria.addOrder(order);
-		}
-	}
-
 }
