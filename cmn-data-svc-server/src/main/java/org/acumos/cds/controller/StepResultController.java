@@ -42,20 +42,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.STEP_RESULT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class StepResultController extends AbstractController {
 
@@ -70,9 +69,8 @@ public class StepResultController extends AbstractController {
 			response = MLPStepResult.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
 	public Page<MLPStepResult> getStepResults(Pageable pageRequest) {
-		logger.info("getStepResults {}", pageRequest);
+		logger.debug("getStepResults {}", pageRequest);
 		return stepResultRepository.findAll(pageRequest);
 	}
 
@@ -80,11 +78,11 @@ public class StepResultController extends AbstractController {
 			response = MLPStepResult.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.GET)
-	@ResponseBody
 	public Object getStepResult(@PathVariable("stepResultId") Long stepResultId, HttpServletResponse response) {
-		logger.info("getStepResult: stepResultId {}", stepResultId);
+		logger.debug("getStepResult: stepResultId {}", stepResultId);
 		MLPStepResult sr = stepResultRepository.findOne(stepResultId);
 		if (sr == null) {
+			logger.warn("getStepResult failed on ID {}", stepResultId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + stepResultId, null);
 		}
@@ -112,7 +110,6 @@ public class StepResultController extends AbstractController {
 	@ApiPageable
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Object searchStepResults(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Tracking ID") //
@@ -132,7 +129,7 @@ public class StepResultController extends AbstractController {
 			@ApiParam(value = "Status code") //
 			@RequestParam(name = statusCodeField, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.info("searchStepResults enter");
+		logger.debug("searchStepResults enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (trackingId != null)
@@ -152,6 +149,7 @@ public class StepResultController extends AbstractController {
 		if (statusCode != null)
 			queryParameters.put(statusCodeField, statusCode);
 		if (queryParameters.size() == 0) {
+			logger.warn("searchStepResults missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
@@ -169,9 +167,8 @@ public class StepResultController extends AbstractController {
 			response = MLPStepResult.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Object createStepResult(@RequestBody MLPStepResult stepResult, HttpServletResponse response) {
-		logger.info("createStepResult: enter");
+		logger.debug("createStepResult: enter");
 		try {
 			// Validate enum codes
 			super.validateCode(stepResult.getStepCode(), CodeNameType.STEP_TYPE);
@@ -196,13 +193,13 @@ public class StepResultController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updateStepResult(@PathVariable("stepResultId") Long stepResultId,
 			@RequestBody MLPStepResult stepResult, HttpServletResponse response) {
-		logger.info("updateStepResult: stepResultId {}", stepResultId);
+		logger.debug("updateStepResult: stepResultId {}", stepResultId);
 		// Get the existing one
 		MLPStepResult existing = stepResultRepository.findOne(stepResultId);
 		if (existing == null) {
+			logger.warn("updateStepResult failed on ID {}", stepResultId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + stepResultId, null);
 		}
@@ -228,10 +225,9 @@ public class StepResultController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deleteStepResult(@PathVariable("stepResultId") Long stepResultId,
 			HttpServletResponse response) {
-		logger.info("deleteStepResult: stepResultId {}", stepResultId);
+		logger.debug("deleteStepResult: stepResultId {}", stepResultId);
 		try {
 			stepResultRepository.delete(stepResultId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);

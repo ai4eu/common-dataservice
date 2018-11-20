@@ -36,12 +36,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -50,7 +49,7 @@ import io.swagger.annotations.ApiResponses;
 /**
  * Answers REST requests to manage site configuration entries.
  */
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.CONFIG_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class SiteConfigController extends AbstractController {
 
@@ -63,11 +62,11 @@ public class SiteConfigController extends AbstractController {
 
 	@ApiOperation(value = "Gets the site configuration value for the specified key.", response = SuccessTransport.class)
 	@RequestMapping(value = "/{configKey}", method = RequestMethod.GET)
-	@ResponseBody
 	public Object getSiteConfig(@PathVariable("configKey") String configKey, HttpServletResponse response) {
-		logger.info("getSiteConfig key {}", configKey);
+		logger.debug("getSiteConfig key {}", configKey);
 		MLPSiteConfig da = siteConfigRepository.findOne(configKey);
 		if (da == null) {
+			logger.warn("getSiteConfig failed on key {}", configKey);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + configKey, null);
 		}
@@ -77,16 +76,17 @@ public class SiteConfigController extends AbstractController {
 	@ApiOperation(value = "Creates a new site configuration record. Returns bad request on constraint violation etc.", response = MLPSiteConfig.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Object createSiteConfig(@RequestBody MLPSiteConfig siteConfig, HttpServletResponse response) {
-		logger.info("createSiteConfig: config key {}", siteConfig.getConfigKey());
+		logger.debug("createSiteConfig: config key {}", siteConfig.getConfigKey());
 		if (siteConfigRepository.findOne(siteConfig.getConfigKey()) != null) {
+			logger.warn("createSiteConfig failed on key {}", siteConfig.getConfigKey());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Key exists: " + siteConfig.getConfigKey(),
 					null);
 		}
 		// UserID is optional
 		if (siteConfig.getUserId() != null && userRepository.findOne(siteConfig.getUserId()) == null) {
+			logger.warn("createSiteConfig failed on user {}", siteConfig.getUserId());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + siteConfig.getUserId(),
 					null);
@@ -110,13 +110,13 @@ public class SiteConfigController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{configKey}", method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updateSiteConfig(@PathVariable("configKey") String configKey, @RequestBody MLPSiteConfig siteConfig,
 			HttpServletResponse response) {
-		logger.info("updateSiteConfig key {}", configKey);
+		logger.debug("updateSiteConfig key {}", configKey);
 		// Get the existing one
 		MLPSiteConfig existing = siteConfigRepository.findOne(configKey);
 		if (existing == null) {
+			logger.warn("updateSiteConfig failed on key {}", configKey);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + configKey, null);
 		}
@@ -138,10 +138,9 @@ public class SiteConfigController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{configKey}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deleteSiteConfig(@PathVariable("configKey") String configKey,
 			HttpServletResponse response) {
-		logger.info("deleteSiteConfig key {}", configKey);
+		logger.debug("deleteSiteConfig key {}", configKey);
 		try {
 			siteConfigRepository.delete(configKey);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);

@@ -31,17 +31,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 
 /**
  * Answers REST requests for the service health.
  */
-@Controller
+@RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HealthcheckController extends AbstractController {
 
@@ -52,18 +51,16 @@ public class HealthcheckController extends AbstractController {
 
 	@ApiOperation(value = "Assesses the health of the application by querying the database.", response = SuccessTransport.class)
 	@RequestMapping(value = CCDSConstants.HEALTHCHECK_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public MLPTransportModel getHealth() {
-		logger.info("getHealth enter");
+		logger.debug("getHealth enter");
 		long count = artifactRepository.count();
 		return new SuccessTransport(200, "database reports artifact count is " + count);
 	}
 
 	@ApiOperation(value = "Gets the value of the MANIFEST.MF property Implementation-Version as written by maven.", response = SuccessTransport.class)
 	@RequestMapping(value = CCDSConstants.VERSION_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public MLPTransportModel getVersion() {
-		logger.info("getVersion enter");
+		logger.debug("getVersion enter");
 		String className = this.getClass().getSimpleName() + ".class";
 		String classPath = this.getClass().getResource(className).toString();
 		String version = classPath.startsWith("jar") ? CdsApplication.class.getPackage().getImplementationVersion()

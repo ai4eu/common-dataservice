@@ -41,20 +41,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.PUBLISH_REQUEST_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublishRequestController extends AbstractController {
 
@@ -69,9 +68,8 @@ public class PublishRequestController extends AbstractController {
 			response = MLPPublishRequest.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
 	public Page<MLPPublishRequest> getPublishRequests(Pageable pageRequest) {
-		logger.info("getPublishRequests {}", pageRequest);
+		logger.debug("getPublishRequests {}", pageRequest);
 		return publishRequestRepository.findAll(pageRequest);
 	}
 
@@ -79,11 +77,12 @@ public class PublishRequestController extends AbstractController {
 			response = MLPPublishRequest.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.GET)
-	@ResponseBody
+
 	public Object getPublishRequest(@PathVariable("requestId") long requestId, HttpServletResponse response) {
-		logger.info("getPublishRequest: requestId {}", requestId);
+		logger.debug("getPublishRequest: requestId {}", requestId);
 		MLPPublishRequest sr = publishRequestRepository.findOne(requestId);
 		if (sr == null) {
+			logger.warn("getPublishRequest failed on ID {}", requestId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + requestId, null);
 		}
@@ -108,7 +107,6 @@ public class PublishRequestController extends AbstractController {
 	@ApiPageable
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Object searchPublishRequests(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Solution ID") //
@@ -122,7 +120,7 @@ public class PublishRequestController extends AbstractController {
 			@ApiParam(value = "Status code") //
 			@RequestParam(name = statusCodeField, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.info("searchArtifacts enter");
+		logger.debug("searchPublishRequests enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (solutionId != null)
@@ -136,6 +134,7 @@ public class PublishRequestController extends AbstractController {
 		if (statusCode != null)
 			queryParameters.put(statusCodeField, statusCode);
 		if (queryParameters.size() == 0) {
+			logger.warn("searchPublishRequests missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
@@ -153,9 +152,8 @@ public class PublishRequestController extends AbstractController {
 			response = MLPPublishRequest.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Object createPublishRequest(@RequestBody MLPPublishRequest publishRequest, HttpServletResponse response) {
-		logger.info("createPublishRequest: enter");
+		logger.debug("createPublishRequest: enter");
 		try {
 			// Validate enum codes
 			super.validateCode(publishRequest.getStatusCode(), CodeNameType.PUBLISH_REQUEST_STATUS);
@@ -178,13 +176,13 @@ public class PublishRequestController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updatePublishRequest(@PathVariable("requestId") long requestId,
 			@RequestBody MLPPublishRequest publishRequest, HttpServletResponse response) {
-		logger.info("updatePublishRequest: requestId {}", requestId);
+		logger.debug("updatePublishRequest: requestId {}", requestId);
 		// Get the existing one
 		MLPPublishRequest existing = publishRequestRepository.findOne(requestId);
 		if (existing == null) {
+			logger.warn("updatePublishRequest failed on ID {}", requestId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + requestId, null);
 		}
@@ -208,10 +206,9 @@ public class PublishRequestController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deletePublishRequest(@PathVariable("requestId") long requestId,
 			HttpServletResponse response) {
-		logger.info("deletePublishRequest: requestId {}", requestId);
+		logger.debug("deletePublishRequest: requestId {}", requestId);
 		try {
 			publishRequestRepository.delete(requestId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);

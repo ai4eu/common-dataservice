@@ -120,7 +120,7 @@ public abstract class AbstractController {
 				throw new IllegalArgumentException("Unexpected null tag");
 			if (tagRepository.findOne(tag.getTag()) == null) {
 				tagRepository.save(tag);
-				logger.info("createMissingTags: tag {}", tag);
+				logger.debug("createMissingTags: tag {}", tag);
 			}
 		}
 	}

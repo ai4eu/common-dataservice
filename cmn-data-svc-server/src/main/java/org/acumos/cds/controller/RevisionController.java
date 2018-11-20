@@ -43,12 +43,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -58,7 +57,7 @@ import io.swagger.annotations.ApiResponses;
  * A revision is a collection of artifacts. A revision cannot exist without a
  * solution, but an artifact can exist without a revision.
  */
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.REVISION_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class RevisionController extends AbstractController {
 
@@ -79,10 +78,9 @@ public class RevisionController extends AbstractController {
 
 	@ApiOperation(value = "Gets the artifacts for the revision.", response = MLPArtifact.class, responseContainer = "List")
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Iterable<MLPArtifact> getRevisionArtifacts(@PathVariable("revisionId") String revisionId,
 			HttpServletResponse response) {
-		logger.info("getSolRevArtifacts: revisionId {}", revisionId);
+		logger.debug("getSolRevArtifacts: revisionId {}", revisionId);
 		return artifactRepository.findByRevision(revisionId);
 	}
 
@@ -90,10 +88,19 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}", method = RequestMethod.POST)
-	@ResponseBody
 	public Object addRevisionArtifact(@PathVariable("revisionId") String revisionId,
 			@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
-		logger.info("addRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		logger.debug("addRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		if (revisionRepository.findOne(revisionId) == null) {
+			logger.warn("addRevArtifact failed on revID {}", revisionId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
+		}
+		if (artifactRepository.findOne(artifactId) == null) {
+			logger.warn("addRevArtifact failed on art ID {}", artifactId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + artifactId, null);
+		}
 		try {
 			MLPSolRevArtMap map = new MLPSolRevArtMap(revisionId, artifactId);
 			solRevArtMapRepository.save(map);
@@ -109,10 +116,9 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public Object dropRevisionArtifact(@PathVariable("revisionId") String revisionId,
 			@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
-		logger.info("dropRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		logger.debug("dropRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
 		try {
 			solRevArtMapRepository.delete(new MLPSolRevArtMap.SolRevArtMapPK(revisionId, artifactId));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
@@ -128,13 +134,13 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Object getRevisionDescription(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, HttpServletResponse response) {
-		logger.info("getRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("getRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
 		MLPRevisionDescription da = revisionDescRepository
 				.findOne(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
 		if (da == null) {
+			logger.warn("getRevisionDescription failed on ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					NO_ENTRY_WITH_ID + revisionId + "/" + accessTypeCode, null);
@@ -147,12 +153,12 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.POST)
-	@ResponseBody
 	public Object createRevisionDescription(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, @RequestBody MLPRevisionDescription description,
 			HttpServletResponse response) {
-		logger.info("createRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("createRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
 		if (revisionRepository.findOne(revisionId) == null) {
+			logger.warn("createRevisionDescription failed on ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
 		}
@@ -177,15 +183,15 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updateRevisionDescription(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, @RequestBody MLPRevisionDescription description,
 			HttpServletResponse response) {
-		logger.info("updateRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("updateRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
 		// Get the existing one
 		MLPRevisionDescription existing = revisionDescRepository
 				.findOne(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
 		if (existing == null) {
+			logger.warn("updateRevisionDescription failed on ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					NO_ENTRY_WITH_ID + revisionId + "/" + accessTypeCode, null);
@@ -210,10 +216,9 @@ public class RevisionController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.DELETE)
-	@ResponseBody
 	public Object deleteRevisionDescription(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, HttpServletResponse response) {
-		logger.info("deleteRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("deleteRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
 		try {
 			revisionDescRepository.delete(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
@@ -229,10 +234,9 @@ public class RevisionController extends AbstractController {
 			response = MLPDocument.class, responseContainer = "List")
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DOCUMENT_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Iterable<MLPDocument> getSolRevDocuments(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, HttpServletResponse response) {
-		logger.info("getSolRevDocuments: revisionId {} accessType {}", revisionId, accessTypeCode);
+		logger.debug("getSolRevDocuments: revisionId {} accessType {}", revisionId, accessTypeCode);
 		return documentRepository.findByRevisionAccess(revisionId, accessTypeCode);
 	}
 
@@ -240,11 +244,10 @@ public class RevisionController extends AbstractController {
 			response = SuccessTransport.class)
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DOCUMENT_PATH + "/{documentId}", method = RequestMethod.POST)
-	@ResponseBody
 	public SuccessTransport addRevisionDocument(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, @PathVariable("documentId") String documentId,
 			HttpServletResponse response) {
-		logger.info("addRevisionDocument: revisionId {} accessType {} documentId {}", revisionId, accessTypeCode,
+		logger.debug("addRevisionDocument: revisionId {} accessType {} documentId {}", revisionId, accessTypeCode,
 				documentId);
 		MLPSolRevDocMap map = new MLPSolRevDocMap(revisionId, accessTypeCode, documentId);
 		solRevDocMapRepository.save(map);
@@ -255,11 +258,10 @@ public class RevisionController extends AbstractController {
 			response = SuccessTransport.class)
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DOCUMENT_PATH + "/{documentId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public SuccessTransport dropRevisionDocument(@PathVariable("revisionId") String revisionId,
 			@PathVariable("accessTypeCode") String accessTypeCode, @PathVariable("documentId") String documentId,
 			HttpServletResponse response) {
-		logger.info("dropRevisionDocument: revisionId {} documentId {}", revisionId, documentId);
+		logger.debug("dropRevisionDocument: revisionId {} documentId {}", revisionId, documentId);
 		solRevDocMapRepository.delete(new MLPSolRevDocMap.SolRevDocMapPK(revisionId, accessTypeCode, documentId));
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}

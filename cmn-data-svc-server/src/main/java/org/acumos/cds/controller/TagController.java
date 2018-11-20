@@ -35,18 +35,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.TAG_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController extends AbstractController {
 
@@ -55,19 +54,18 @@ public class TagController extends AbstractController {
 	@ApiOperation(value = "Gets a page of tags, optionally sorted.", response = MLPTag.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
 	public Page<MLPTag> getTags(Pageable pageable) {
-		logger.info("getTags: {}", pageable);
+		logger.debug("getTags: {}", pageable);
 		return tagRepository.findAll(pageable);
 	}
 
 	@ApiOperation(value = "Creates a new tag. Returns bad request on constraint violation etc.", response = MLPTag.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Object createTag(@RequestBody MLPTag tag, HttpServletResponse response) {
-		logger.info("createTag: tag {}", tag);
+		logger.debug("createTag: tag {}", tag);
 		if (tagRepository.findOne(tag.getTag()) != null) {
+			logger.warn("createTag failed on {}", tag);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Tag exists: " + tag, null);
 		}
@@ -86,9 +84,8 @@ public class TagController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{tag}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deleteTag(@PathVariable("tag") String tag, HttpServletResponse response) {
-		logger.info("deleteTag: tag {}", tag);
+		logger.debug("deleteTag: tag {}", tag);
 		try {
 			tagRepository.delete(tag);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);

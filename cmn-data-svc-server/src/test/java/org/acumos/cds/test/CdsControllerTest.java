@@ -1318,6 +1318,12 @@ public class CdsControllerTest {
 
 		// invalid tests
 		try {
+			client.getUserNotificationPreferences("bogusUser");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("get user notification preferences failed as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
 			client.getUserNotificationPreference(99999L);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
@@ -2779,12 +2785,18 @@ public class CdsControllerTest {
 			logger.info("Add sol rev artifact failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
+			client.addSolutionRevisionArtifact(cs.getSolutionId(), csr.getRevisionId(), "bogusArtId");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Add sol rev artifact failed as expected: {}", ex.getResponseBodyAsString());
+		}
+		client.addSolutionRevisionArtifact(cs.getSolutionId(), csr.getRevisionId(), ca.getArtifactId());
+		try {
 			client.dropSolutionRevisionArtifact(cs.getSolutionId(), "bogusRevId", "bogusArtId");
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Drop sol rev artifact failed as expected: {}", ex.getResponseBodyAsString());
 		}
-		client.addSolutionRevisionArtifact(cs.getSolutionId(), csr.getRevisionId(), ca.getArtifactId());
 		try {
 			ca.setUserId(s64);
 			client.updateArtifact(ca);
@@ -2805,7 +2817,7 @@ public class CdsControllerTest {
 			client.getSolutionDownloads("bogus", new RestPageRequest(0, 1));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
-			logger.info("Get solution access users failed as expected: {}", ex.getResponseBodyAsString());
+			logger.info("Get solution downloads failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
 			client.getSolutionRatings("bogus", new RestPageRequest(0, 1));
@@ -3069,7 +3081,13 @@ public class CdsControllerTest {
 			logger.info("Update solution deployment failed on constraint as expected: {}",
 					ex.getResponseBodyAsString());
 		}
-
+		
+		try {
+			client.getSolutionAccessUsers("bogus sol ID");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("getSolutionAccessUsers failed as expected: {}", ex.getResponseBodyAsString());
+		}
 		try {
 			client.addSolutionUserAccess(cs.getSolutionId(), "bogus");
 			throw new Exception("Unexpected success");

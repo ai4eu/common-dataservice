@@ -45,13 +45,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -63,7 +62,7 @@ import io.swagger.annotations.ApiResponses;
  * 
  * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
  */
-@Controller
+@RestController
 @RequestMapping(value = "/" + CCDSConstants.PEER_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class PeerController extends AbstractController {
 
@@ -80,9 +79,8 @@ public class PeerController extends AbstractController {
 			response = MLPPeer.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
 	public Page<MLPPeer> getPeers(Pageable pageable) {
-		logger.info("getPeers {}", pageable);
+		logger.debug("getPeers {}", pageable);
 		return peerRepository.findAll(pageable);
 	}
 
@@ -106,7 +104,6 @@ public class PeerController extends AbstractController {
 			response = MLPPeer.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Object searchPeers( //
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
@@ -127,7 +124,7 @@ public class PeerController extends AbstractController {
 			@ApiParam(value = "Status code") //
 			@RequestParam(name = statusCodeField, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.info("searchPeer enter");
+		logger.debug("searchPeer enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (name != null)
@@ -147,6 +144,7 @@ public class PeerController extends AbstractController {
 		if (statusCode != null)
 			queryParameters.put(statusCodeField, statusCode);
 		if (queryParameters.size() == 0) {
+			logger.warn("searchPeers: no parameters");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
@@ -164,11 +162,11 @@ public class PeerController extends AbstractController {
 			response = MLPPeer.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) }) //
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.GET)
-	@ResponseBody
 	public Object getPeer(@PathVariable("peerId") String peerId, HttpServletResponse response) {
-		logger.info("getPeer peerId {}", peerId);
+		logger.debug("getPeer peerId {}", peerId);
 		MLPPeer peer = peerRepository.findOne(peerId);
 		if (peer == null) {
+			logger.warn("getPeer failed on ID {}", peerId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
 		}
@@ -179,14 +177,14 @@ public class PeerController extends AbstractController {
 			response = MLPPeer.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Object createPeer(@RequestBody MLPPeer peer, HttpServletResponse response) {
-		logger.info("createPeer: peer {}", peer);
+		logger.debug("createPeer: peer {}", peer);
 		try {
 			String id = peer.getPeerId();
 			if (id != null) {
 				UUID.fromString(id);
 				if (peerRepository.findOne(id) != null) {
+					logger.warn("createPeer failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
 				}
@@ -213,12 +211,12 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updatePeer(@PathVariable("peerId") String peerId, @RequestBody MLPPeer peer,
 			HttpServletResponse response) {
-		logger.info("updatePeer peerId {}", peerId);
+		logger.debug("updatePeer peerId {}", peerId);
 		// Get the existing one
 		if (peerRepository.findOne(peerId) == null) {
+			logger.warn("updatePeer failed on ID {}", peerId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
 		}
@@ -249,9 +247,8 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deletePeer(@PathVariable("peerId") String peerId, HttpServletResponse response) {
-		logger.info("deletePeer peerId {}", peerId);
+		logger.debug("deletePeer peerId {}", peerId);
 		try {
 			Iterable<MLPPeerSubscription> subs = peerSubRepository.findByPeerId(peerId);
 			if (subs != null)
@@ -273,11 +270,11 @@ public class PeerController extends AbstractController {
 	@ApiPageable
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{peerId}/" + CCDSConstants.SUBSCRIPTION_PATH, method = RequestMethod.GET)
-	@ResponseBody
 	public Object getPeerSubs(@PathVariable("peerId") String peerId, Pageable pageable, HttpServletResponse response) {
-		logger.info("getPeerSubs peerId {}", peerId);
+		logger.debug("getPeerSubs peerId {}", peerId);
 		// Get the existing one
 		if (peerRepository.findOne(peerId) == null) {
+			logger.warn("getPeerSubs failed on ID {}", peerId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
 		}
@@ -286,11 +283,11 @@ public class PeerController extends AbstractController {
 
 	@ApiOperation(value = "Gets the peer subscription for the specified ID.", response = MLPPeerSubscription.class)
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/{subId}", method = RequestMethod.GET)
-	@ResponseBody
 	public Object getPeerSub(@PathVariable("subId") Long subId, HttpServletResponse response) {
-		logger.info("getPeerSub subId {}", subId);
+		logger.debug("getPeerSub subId {}", subId);
 		MLPPeerSubscription peerSub = peerSubRepository.findOne(subId);
 		if (peerSub == null) {
+			logger.warn("getPeerSub failed on ID {}", subId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + subId, null);
 		}
@@ -301,10 +298,10 @@ public class PeerController extends AbstractController {
 			response = MLPPeerSubscription.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH, method = RequestMethod.POST)
-	@ResponseBody
 	public Object createPeerSub(@RequestBody MLPPeerSubscription peerSub, HttpServletResponse response) {
-		logger.info("createPeerSub: sub {}", peerSub);
+		logger.debug("createPeerSub: sub {}", peerSub);
 		if (peerRepository.findOne(peerSub.getPeerId()) == null) {
+			logger.warn("createPeerSub failed on ID {}", peerSub);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerSub.getPeerId(), null);
 		}
@@ -334,13 +331,13 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/{subId}", method = RequestMethod.PUT)
-	@ResponseBody
 	public Object updatePeerSub(@PathVariable("subId") Long subId, @RequestBody MLPPeerSubscription peerSub,
 			HttpServletResponse response) {
-		logger.info("updatePeerSub subId {}", subId);
+		logger.debug("updatePeerSub subId {}", subId);
 		// Get the existing one
 		MLPPeerSubscription existingPeerSub = peerSubRepository.findOne(subId);
 		if (existingPeerSub == null) {
+			logger.warn("updatePeerSub failed on ID {}", subId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + subId, null);
 		}
@@ -366,9 +363,8 @@ public class PeerController extends AbstractController {
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/{subId}", method = RequestMethod.DELETE)
-	@ResponseBody
 	public MLPTransportModel deletePeerSub(@PathVariable("subId") Long subId, HttpServletResponse response) {
-		logger.info("deletePeerSub subId {}", subId);
+		logger.debug("deletePeerSub subId {}", subId);
 		try {
 			peerSubRepository.delete(subId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
