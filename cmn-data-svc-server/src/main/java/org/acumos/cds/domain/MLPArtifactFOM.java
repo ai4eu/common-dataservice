@@ -21,6 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,8 +94,10 @@ public class MLPArtifactFOM extends MLPAbstractArtifact implements Serializable 
 
 	/**
 	 * @return MLPArtifact with the information from this entity
+	 * @throws URISyntaxException
+	 *                                if a non-null URI violates RFC 2396
 	 */
-	public MLPArtifact toMLPArtifact() {
+	public MLPArtifact toMLPArtifact() throws URISyntaxException {
 		MLPArtifact art = new MLPArtifact(getVersion(), getArtifactTypeCode(), getName(), getUri(), owner.getUserId(),
 				getSize());
 		art.setArtifactId(getArtifactId());

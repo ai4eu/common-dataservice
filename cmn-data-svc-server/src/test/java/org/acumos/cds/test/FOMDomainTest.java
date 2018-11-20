@@ -21,6 +21,7 @@
 package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class FOMDomainTest {
 	}
 
 	@Test
-	public void testMLPArtifactFOM() {
+	public void testMLPArtifactFOM() throws URISyntaxException {
 		MLPArtifactFOM m = new MLPArtifactFOM();
 		m.setArtifactId(s1);
 		m.setArtifactTypeCode(s2);

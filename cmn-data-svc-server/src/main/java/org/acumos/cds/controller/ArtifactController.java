@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -191,7 +192,7 @@ public class ArtifactController extends AbstractController {
 		return solutionRevisionRepository.findByArtifactId(artifactId);
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
 			response = MLPArtifact.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -207,6 +208,9 @@ public class ArtifactController extends AbstractController {
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
 				}
 			}
+			// Validate the URI
+			if (artifact.getUri() != null)
+				new URI(artifact.getUri());
 			// Create a new row
 			Object result = artifactRepository.save(artifact);
 			response.setStatus(HttpServletResponse.SC_CREATED);
@@ -222,7 +226,7 @@ public class ArtifactController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{artifactId}", method = RequestMethod.PUT)
@@ -237,6 +241,9 @@ public class ArtifactController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + artifactId, null);
 		}
 		try {
+			// Validate the URI
+			if (artifact.getUri() != null)
+				new URI(artifact.getUri());
 			// Use the path-parameter id; don't trust the one in the object
 			artifact.setArtifactId(artifactId);
 			// Update the existing row

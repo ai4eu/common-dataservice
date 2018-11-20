@@ -20,6 +20,7 @@
 package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
 import java.util.Date;
 
 import org.acumos.cds.domain.MLPArtifact;
@@ -63,11 +64,11 @@ public class FOMAnnotationTest {
 	@Autowired
 	private FOMTestService fomTestService;
 
-	/**
+	/*
 	 * Tests for annotation errors in the FOM classes
 	 */
 	@Test
-	public void testFOM() {
+	public void testFOM() throws URISyntaxException {
 		final String loginName = "user_" + Long.toString(new Date().getTime());
 		MLPUser cu = new MLPUser(loginName, "fom@email.com", true);
 		cu = userRepository.save(cu);

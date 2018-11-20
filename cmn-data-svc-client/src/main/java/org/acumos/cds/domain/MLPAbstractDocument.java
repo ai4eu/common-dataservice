@@ -21,6 +21,8 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -96,10 +98,13 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 *                 URI where document can be accessed
 	 * @param size
 	 *                 Size of document in bytes
+	 * @throws URISyntaxException
+	 *                                if the URI violates RFC 2396
 	 */
-	public MLPAbstractDocument(String name, String uri, int size) {
+	public MLPAbstractDocument(String name, String uri, int size) throws URISyntaxException{
 		if (name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
+		new URI(uri);
 		this.name = name;
 		this.uri = uri;
 		this.size = size;
@@ -140,7 +145,17 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 		return uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+	 * Sets the URI.
+	 * 
+	 * @param uri
+	 *                The URI to set
+	 * @throws URISyntaxException
+	 *                                if the value is not null and violates RFC 2396
+	 */
+	public void setUri(String uri) throws URISyntaxException {
+		if (uri != null)
+			new URI(uri);
 		this.uri = uri;
 	}
 
