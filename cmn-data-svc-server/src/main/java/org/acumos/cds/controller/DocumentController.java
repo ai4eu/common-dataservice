@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URI;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -71,7 +72,7 @@ public class DocumentController extends AbstractController {
 		return da;
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
 			response = MLPDocument.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -87,6 +88,9 @@ public class DocumentController extends AbstractController {
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
 				}
 			}
+			// Validate the URI
+			if (document.getUri() != null)
+				new URI(document.getUri());
 			// Create a new row
 			Object result = documentRepository.save(document);
 			response.setStatus(HttpServletResponse.SC_CREATED);
@@ -102,7 +106,7 @@ public class DocumentController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.PUT)
@@ -117,6 +121,9 @@ public class DocumentController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + documentId, null);
 		}
 		try {
+			// Validate the URI
+			if (document.getUri() != null)
+				new URI(document.getUri());
 			// Use the path-parameter id; don't trust the one in the object
 			document.setDocumentId(documentId);
 			// Update the existing row

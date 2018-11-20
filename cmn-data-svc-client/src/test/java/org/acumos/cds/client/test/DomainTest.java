@@ -21,6 +21,7 @@
 package org.acumos.cds.client.test;
 
 import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
 
 import org.acumos.cds.domain.MLPAccessType;
 import org.acumos.cds.domain.MLPArtifact;
@@ -99,12 +100,12 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(s5, m.getName());
 		Assert.assertEquals(s6, m.getUserId());
 		Assert.assertEquals(i1, m.getSize());
-		Assert.assertEquals(s7, m.getUri());
+		Assert.assertEquals(u1, m.getUri());
 		Assert.assertEquals(s8, m.getVersion());
 	}
 
 	@Test
-	public void testMLPArtifact() {
+	public void testMLPArtifact() throws URISyntaxException {
 		MLPArtifact m = new MLPArtifact(s1, s1, s1, s1, s1, i1);
 		m = new MLPArtifact();
 		m.setArtifactId(s1);
@@ -116,7 +117,7 @@ public class DomainTest extends AbstractModelTest {
 		m.setName(s5);
 		m.setUserId(s6);
 		m.setSize(i1);
-		m.setUri(s7);
+		m.setUri(u1);
 		m.setVersion(s8);
 		checkMLPArtifact(m);
 		m = new MLPArtifact(m);
@@ -131,6 +132,13 @@ public class DomainTest extends AbstractModelTest {
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
+		}
+		try {
+			m.setUri("http://");
+			Assert.assertTrue("Unexpected success", false);
+		}
+		catch(URISyntaxException ex) {
+			// bogus URI is rejected
 		}
 	}
 
@@ -229,13 +237,13 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(d2, m.getModified());
 		Assert.assertEquals(s2, m.getName());
 		Assert.assertEquals(i1, m.getSize());
-		Assert.assertEquals(s3, m.getUri());
+		Assert.assertEquals(u1, m.getUri());
 		Assert.assertEquals(s4, m.getUserId());
 		Assert.assertEquals(s5, m.getVersion());
 	}
 
 	@Test
-	public void testMLPDocument() {
+	public void testMLPDocument() throws URISyntaxException {
 		MLPDocument m = new MLPDocument(s1, s1, i1, s1);
 		m = new MLPDocument();
 		m.setCreated(d1);
@@ -243,7 +251,7 @@ public class DomainTest extends AbstractModelTest {
 		m.setModified(d2);
 		m.setName(s2);
 		m.setSize(i1);
-		m.setUri(s3);
+		m.setUri(u1);
 		m.setUserId(s4);
 		m.setVersion(s5);
 		checkMLPDocument(m);
@@ -259,6 +267,13 @@ public class DomainTest extends AbstractModelTest {
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
+		}
+		try {
+			m.setUri("http://");
+			Assert.assertTrue("Unexpected success", false);
+		}
+		catch(URISyntaxException ex) {
+			// bogus URI is rejected
 		}
 	}
 

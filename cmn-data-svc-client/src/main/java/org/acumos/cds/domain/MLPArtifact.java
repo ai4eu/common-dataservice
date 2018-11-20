@@ -21,6 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
+import java.net.URISyntaxException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -73,8 +74,11 @@ public class MLPArtifact extends MLPAbstractArtifact implements Serializable {
 	 *                             User ID
 	 * @param size
 	 *                             Length
+	 * @throws URISyntaxException
+	 *                                if the URI violates RFC 2396
 	 */
-	public MLPArtifact(String version, String artifactTypeCode, String name, String uri, String userId, int size) {
+	public MLPArtifact(String version, String artifactTypeCode, String name, String uri, String userId, int size)
+			throws URISyntaxException {
 		super(version, artifactTypeCode, name, uri, size);
 		if (userId == null)
 			throw new IllegalArgumentException("Null not permitted");

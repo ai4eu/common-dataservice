@@ -20,6 +20,8 @@
 
 package org.acumos.cds.domain;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -115,10 +117,14 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 	 *                             URI
 	 * @param size
 	 *                             Length
+	 * @throws URISyntaxException
+	 *                                if the URI violates RFC 2396
 	 */
-	public MLPAbstractArtifact(String version, String artifactTypeCode, String name, String uri, int size) {
+	public MLPAbstractArtifact(String version, String artifactTypeCode, String name, String uri, int size)
+			throws URISyntaxException {
 		if (version == null || artifactTypeCode == null || name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
+		new URI(uri);
 		this.version = version;
 		this.artifactTypeCode = artifactTypeCode;
 		this.name = name;
@@ -177,7 +183,17 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 		return uri;
 	}
 
-	public void setUri(String uri) {
+	/**
+	 * Sets the URI.
+	 * 
+	 * @param uri
+	 *                The URI to set
+	 * @throws URISyntaxException
+	 *                                if the value is not null and violates RFC 2396
+	 */
+	public void setUri(String uri) throws URISyntaxException {
+		if (uri != null)
+			new URI(uri);
 		this.uri = uri;
 	}
 

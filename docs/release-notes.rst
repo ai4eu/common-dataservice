@@ -23,11 +23,12 @@ Common Data Service Release Notes
 The client and server are released together.  The client is deployed as a jar file to a
 Maven Nexus repository. The server is deployed as a Docker image to a Docker registry.
 
-Version 2.0.0, 14 Nov 2018
+Version 2.0.0, 21 Nov 2018
 --------------------------
 
 * Use tab-separated MDC-style log output format (`ACUMOS-1752 <https://jira.acumos.org/browse/ACUMOS-1752>`_)
 * Add method to get user unread notification count (`ACUMOS-1883 <https://jira.acumos.org/browse/ACUMOS-1883>`_)
+* Validate URI parameters in Artifact and Document (`ACUMOS-1927 <https://jira.acumos.org/browse/ACUMOS-1927>`_)
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
