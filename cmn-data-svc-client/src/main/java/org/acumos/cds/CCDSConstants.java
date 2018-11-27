@@ -55,6 +55,7 @@ public interface CCDSConstants {
 	public static final String NOTIFICATION_PATH = "notif";
 	public static final String NOTIFICATION_PREF_PATH = "notifpref";
 	public static final String PEER_PATH = "peer";
+	public static final String PICTURE_PATH = "pic";
 	public static final String PUBLISH_REQUEST_PATH = "pubreq";
 	public static final String RATING_PATH = "rating";
 	public static final String REVISION_PATH = "revision";

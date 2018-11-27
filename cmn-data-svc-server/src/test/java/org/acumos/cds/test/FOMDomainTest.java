@@ -30,6 +30,7 @@ import org.acumos.cds.domain.MLPArtifactFOM;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPSolutionFOM;
+import org.acumos.cds.domain.MLPSolutionPicture;
 import org.acumos.cds.domain.MLPSolutionRevisionFOM;
 import org.acumos.cds.domain.MLPUser;
 import org.junit.Assert;
@@ -49,7 +50,7 @@ public class FOMDomainTest {
 	final long time = new Date().getTime();
 	final boolean b1 = true;
 	final boolean b2 = false;
-	final Byte[] by1 = { 0, 1, 2, 3 };
+	final byte[] by1 = { 0, 1, 2, 3 };
 	final Date d1 = new Date(time + 1 * 24 * 60 * 60 * 1000);
 	final Date d2 = new Date(time + 2 * 24 * 60 * 60 * 1000);
 	final Date d3 = new Date(time + 3 * 24 * 60 * 60 * 1000);
@@ -202,6 +203,14 @@ public class FOMDomainTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		logger.info(m.toMLPSolutionRevision().toString());
+	}
+
+	@Test
+	public void testMLPSolutionImage() {
+		MLPSolutionPicture m = new MLPSolutionPicture();
+		m.setPicture(by1);
+		Assert.assertEquals(by1, m.getPicture());
+		logger.info(m.toString());
 	}
 
 }

@@ -25,7 +25,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -111,21 +110,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	private String origin;
 
 	/**
-	 * User-supplied picture to decorate the solution.
-	 * 
-	 * Derby BLOB type allows 2GB. Mysql/Mariadb BLOB type only allows 64KB, that's
-	 * too small. But Derby fails to create the table if type LONGBLOB is specified
-	 * here. With no columDefinition attribute Derby generates a table AND Spring
-	 * validates the MariaDB schema if the column is created as LONGBLOB.
-	 * 
-	 * Jackson handles base64 encoding.
-	 */
-	@Lob
-	@Column(name = "PICTURE", length = 2000000 /* DO NOT USE: columnDefinition = "BLOB" */)
-	@ApiModelProperty(value = "Solution picture as byte array")
-	private byte[] picture;
-
-	/**
 	 * No-arg constructor
 	 */
 	public MLPAbstractSolution() {
@@ -163,7 +147,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		this.modelTypeCode = that.modelTypeCode;
 		this.name = that.name;
 		this.origin = that.origin;
-		this.picture = that.picture;
 		this.solutionId = that.solutionId;
 		this.toolkitTypeCode = that.toolkitTypeCode;
 	}
@@ -253,14 +236,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
-	}
-
-	public byte[] getPicture() {
-		return picture;
-	}
-
-	public void setPicture(byte[] picture) {
-		this.picture = picture;
 	}
 
 	/**

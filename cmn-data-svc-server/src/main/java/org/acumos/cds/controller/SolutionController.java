@@ -42,6 +42,7 @@ import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
+import org.acumos.cds.domain.MLPSolutionPicture;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
@@ -56,6 +57,7 @@ import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionDeploymentRepository;
 import org.acumos.cds.repository.SolutionDownloadRepository;
 import org.acumos.cds.repository.SolutionFavoriteRepository;
+import org.acumos.cds.repository.SolutionPictureRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
@@ -74,7 +76,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -118,6 +122,8 @@ public class SolutionController extends AbstractController {
 	private SolutionRatingRepository solutionRatingRepository;
 	@Autowired
 	private SolutionRepository solutionRepository;
+	@Autowired
+	private SolutionPictureRepository solutionPictureRepository;
 	@Autowired
 	private SolutionRevisionRepository solutionRevisionRepository;
 	@Autowired
@@ -1253,6 +1259,46 @@ public class SolutionController extends AbstractController {
 			logger.warn("dropCompositeSolutionMember failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropCompositeSolutionMember failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Gets the image for the specified solution ID, which may be null. Returns bad request if the ID is not found.", //
+			response = MLPSolution.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = byte[].class) })
+	@RequestMapping(value = "/{solutionId}/"
+			+ CCDSConstants.PICTURE_PATH, method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public Object getSolutionPicture(@PathVariable("solutionId") String solutionId, HttpServletResponse response) {
+		logger.info("getSolutionPicture: ID {}", solutionId);
+		MLPSolutionPicture da = solutionPictureRepository.findOne(solutionId);
+		if (da == null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
+		}
+		return new ResponseEntity<byte[]>(da.getPicture(), HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "Saves a solution image. Returns bad request if the ID is not found or the image is too large.", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.PICTURE_PATH, method = RequestMethod.PUT)
+	public Object saveSolutionPicture(@PathVariable("solutionId") String solutionId,
+			@RequestBody(required = false) byte[] picture, HttpServletResponse response) {
+		logger.info("saveSolutionPicture: ID {} pic len {}", solutionId, picture == null ? -1 : picture.length);
+		MLPSolutionPicture existing = solutionPictureRepository.findOne(solutionId);
+		if (existing == null) {
+			logger.warn("saveSolutionPicture failed on ID {}", solutionId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
+		}
+		try {
+			existing.setPicture(picture);
+			solutionPictureRepository.save(existing);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			Exception cve = findConstraintViolationException(ex);
+			logger.warn("saveSolutionPicture failed: {}", cve.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "saveSolutionPicture failed", cve);
 		}
 	}
 

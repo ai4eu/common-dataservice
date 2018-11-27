@@ -2454,4 +2454,23 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		restTemplate.delete(uri);
 	}
 
+	@Override
+	public byte[] getSolutionPicture(String solutionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.PICTURE_PATH }, null,
+				null);
+		logger.debug("getSolutionImage: uri {}", uri);
+		ResponseEntity<byte[]> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<byte[]>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void saveSolutionPicture(String solutionId, byte[] image) {
+		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.PICTURE_PATH }, null,
+				null);
+		logger.debug("saveSolutionImage: uri {}", uri);
+		restTemplate.put(uri, image);
+	}
+
 }

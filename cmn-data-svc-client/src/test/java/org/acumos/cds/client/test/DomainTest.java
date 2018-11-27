@@ -132,8 +132,7 @@ public class DomainTest extends AbstractModelTest {
 		try {
 			m.setUri("http://");
 			Assert.assertTrue("Unexpected success", false);
-		}
-		catch(URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			// bogus URI is rejected
 		}
 	}
@@ -267,8 +266,7 @@ public class DomainTest extends AbstractModelTest {
 		try {
 			m.setUri("http://");
 			Assert.assertTrue("Unexpected success", false);
-		}
-		catch(URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			// bogus URI is rejected
 		}
 	}
@@ -958,7 +956,6 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(s4, m.getName());
 		Assert.assertEquals(s5, m.getOrigin());
 		Assert.assertEquals(s6, m.getUserId());
-		Assert.assertArrayEquals(by1, m.getPicture());
 		Assert.assertEquals(s7, m.getSolutionId());
 		Assert.assertEquals(s8, m.getSourceId());
 		Assert.assertEquals(tags, m.getTags());
@@ -978,7 +975,6 @@ public class DomainTest extends AbstractModelTest {
 		m.setName(s4);
 		m.setOrigin(s5);
 		m.setUserId(s6);
-		m.setPicture(by1);
 		m.setSolutionId(s7);
 		m.setSourceId(s8);
 		m.setTags(tags);

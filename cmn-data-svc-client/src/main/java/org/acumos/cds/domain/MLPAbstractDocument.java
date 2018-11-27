@@ -101,7 +101,7 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 * @throws URISyntaxException
 	 *                                if the URI violates RFC 2396
 	 */
-	public MLPAbstractDocument(String name, String uri, int size) throws URISyntaxException{
+	public MLPAbstractDocument(String name, String uri, int size) throws URISyntaxException {
 		if (name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
 		new URI(uri);

@@ -133,6 +133,10 @@ public class MockClientTest {
 		client.incrementSolutionViewCount("id");
 		client.deleteSolution("id");
 
+		client.saveSolutionPicture("id", new byte[0]);
+		byte[] img = client.getSolutionPicture("id");
+		Assert.assertNotNull(img);
+
 		List<MLPSolutionRevision> solRevList = new ArrayList<>();
 		client.setSolutionRevisionsById(solRevList);
 		Assert.assertTrue(solRevList == client.getSolutionRevisions("id"));

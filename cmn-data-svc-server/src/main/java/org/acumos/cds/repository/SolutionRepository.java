@@ -68,21 +68,17 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	 * the peer group and solution group membership mapping tables. Those solutions
 	 * are expected to have only private revisions, but that's not checked here.
 	 * 
-	 * Uses a nested query because the BLOB column in the solution table cannot be
-	 * used to select a distinct set of rows.
-	 * 
 	 * @param peerId
 	 *                        Peer ID
 	 * @param pageRequest
 	 *                        Page and sort criteria
 	 * @return Page of MLPSolution, which may be empty
 	 */
-	@Query(value = "SELECT s FROM MLPSolution s WHERE s.active = true and s.solutionId in "
-			+ " ( SELECT DISTINCT sg.solutionId FROM MLPPeerGrpMemMap pg, MLPPeerSolAccMap psg, MLPSolGrpMemMap sg "
-			+ " WHERE pg.peerId = :peerId "//
+	@Query(value = "SELECT DISTINCT s FROM MLPSolution s, MLPPeerGrpMemMap pg, MLPPeerSolAccMap psg, MLPSolGrpMemMap sg "
+			+ " WHERE s.active = true "//
+			+ "   AND pg.peerId = :peerId "//
 			+ "   AND pg.groupId = psg.peerGroupId " //
-			+ "   AND psg.solutionGroupId = sg.groupId " //
-			+ "  ) ")
+			+ "   AND psg.solutionGroupId = sg.groupId ")
 	Page<MLPSolution> findRestrictedSolutions(@Param("peerId") String peerId, Pageable pageRequest);
 
 }

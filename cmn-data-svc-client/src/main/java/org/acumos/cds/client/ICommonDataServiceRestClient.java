@@ -2330,4 +2330,26 @@ public interface ICommonDataServiceRestClient {
 	 */
 	void dropUserTag(String userId, String tag);
 
+	/**
+	 * Gets the image for the specified solution ID. Throws an exception if the
+	 * solution ID is not known.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @return Solution image; null if none is available.
+	 */
+	byte[] getSolutionPicture(String solutionId);
+
+	/**
+	 * Saves or updates a solution image. Throws an exception if the solution ID is
+	 * not known.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @param picture
+	 *                       Image to save or update; send null to delete an
+	 *                       existing image.
+	 */
+	void saveSolutionPicture(String solutionId, byte[] picture);
+
 }
