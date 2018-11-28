@@ -20,11 +20,14 @@
 
 package org.acumos.cds.repository;
 
+import javax.transaction.Transactional;
+
 import org.acumos.cds.domain.MLPSolution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,6 +37,20 @@ import org.springframework.data.repository.query.Param;
  * difference from the methods in the solution search service class.
  */
 public interface SolutionRepository extends JpaRepository<MLPSolution, String>, JpaSpecificationExecutor<MLPSolution> {
+
+	/**
+	 * Increments the solution view count by 1, with special handling for the first
+	 * time.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 */
+	@Modifying
+	@Transactional // throws exception without this
+	@Query(value = "UPDATE MLPSolution s SET s.viewCount = "//
+			+ " CASE WHEN s.viewCount is null THEN 1 ELSE (s.viewCount + 1) END" //
+			+ " WHERE s.solutionId = :solutionId")
+	void incrementViewCount(@Param("solutionId") String solutionId);
 
 	/**
 	 * Finds solutions using a LIKE query on the text columns NAME and DESCRIPTION.

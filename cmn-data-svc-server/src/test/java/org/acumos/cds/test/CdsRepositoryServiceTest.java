@@ -70,7 +70,6 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
@@ -106,7 +105,6 @@ import org.acumos.cds.repository.SolutionGroupRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
-import org.acumos.cds.repository.SolutionWebRepository;
 import org.acumos.cds.repository.StepResultRepository;
 import org.acumos.cds.repository.TagRepository;
 import org.acumos.cds.repository.ThreadRepository;
@@ -173,8 +171,6 @@ public class CdsRepositoryServiceTest {
 	private SolutionRatingRepository solutionRatingRepository;
 	@Autowired
 	private SolutionRepository solutionRepository;
-	@Autowired
-	private SolutionWebRepository solutionWebRepository;
 	@Autowired
 	private SolutionRevisionRepository revisionRepository;
 	@Autowired
@@ -965,15 +961,11 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Solution create time", cs.getCreated());
 			logger.info("Created solution " + cs.getSolutionId());
 
-			MLPSolutionWeb stats = new MLPSolutionWeb();
-			stats.setSolutionId(cs.getSolutionId());
-			stats = solutionWebRepository.save(stats);
-			Assert.assertNotNull(stats);
-			final Long countBefore = stats.getViewCount();
+			final Long countBefore = cs.getViewCount();
 			logger.info("Solution view count before: " + countBefore);
-			solutionWebRepository.incrementViewCount(cs.getSolutionId());
-			stats = solutionWebRepository.findOne(stats.getSolutionId());
-			final Long countAfter = stats.getViewCount();
+			solutionRepository.incrementViewCount(cs.getSolutionId());
+			cs = solutionRepository.findOne(cs.getSolutionId());
+			final Long countAfter = cs.getViewCount();
 			logger.info("Solution view count after: " + countAfter);
 			Assert.assertNotEquals(countBefore, countAfter);
 
@@ -1076,7 +1068,6 @@ public class CdsRepositoryServiceTest {
 			if (cleanup) {
 				logger.info("Removing newly added entities");
 				MLPSolTagMap.SolTagMapPK solTagMapKey = new MLPSolTagMap.SolTagMapPK(cs.getSolutionId(), tag1.getTag());
-				solutionWebRepository.delete(cs.getSolutionId());
 				solUserAccMapRepository.delete(solUserAccMap);
 				solTagMapRepository.delete(solTagMapKey);
 				solutionRatingRepository.delete(ur);

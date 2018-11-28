@@ -60,7 +60,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
 import org.acumos.cds.domain.MLPStepType;
@@ -950,16 +949,22 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(b1, m.isActive());
 		Assert.assertEquals(d1, m.getCreated());
 		Assert.assertEquals(s1, m.getDescription());
+		Assert.assertEquals(l1, m.getDownloadCount());
+		Assert.assertEquals(b2, m.isFeatured());
+		Assert.assertEquals(d2, m.getLastDownload());
 		Assert.assertEquals(s2, m.getMetadata());
 		Assert.assertEquals(s3, m.getModelTypeCode());
-		Assert.assertEquals(d2, m.getModified());
+		Assert.assertEquals(d3, m.getModified());
 		Assert.assertEquals(s4, m.getName());
 		Assert.assertEquals(s5, m.getOrigin());
 		Assert.assertEquals(s6, m.getUserId());
-		Assert.assertEquals(s7, m.getSolutionId());
+		Assert.assertEquals(l2, m.getRatingAverageTenths());
+		Assert.assertEquals(l3, m.getRatingCount());
+		Assert.assertEquals(s10, m.getSolutionId());
 		Assert.assertEquals(s8, m.getSourceId());
 		Assert.assertEquals(tags, m.getTags());
 		Assert.assertEquals(s9, m.getToolkitTypeCode());
+		Assert.assertEquals(l4, m.getViewCount());
 	}
 
 	@Test
@@ -969,16 +974,23 @@ public class DomainTest extends AbstractModelTest {
 		m.setActive(b1);
 		m.setCreated(d1);
 		m.setDescription(s1);
+		m.setDownloadCount(l1);
+		m.setFeatured(b2);
+		m.setLastDownload(d2);
 		m.setMetadata(s2);
 		m.setModelTypeCode(s3);
-		m.setModified(d2);
+		m.setModified(d3);
 		m.setName(s4);
 		m.setOrigin(s5);
 		m.setUserId(s6);
+		m.setRatingAverageTenths(l2);
+		m.setRatingCount(l3);
 		m.setSolutionId(s7);
 		m.setSourceId(s8);
 		m.setTags(tags);
 		m.setToolkitTypeCode(s9);
+		m.setSolutionId(s10);
+		m.setViewCount(l4);
 		checkMLPSolution(m);
 		m = new MLPSolution(m);
 		checkMLPSolution(m);
@@ -1233,45 +1245,6 @@ public class DomainTest extends AbstractModelTest {
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// characters are rejected
-		}
-
-	}
-
-	private void checkMLPSolutionWeb(MLPSolutionWeb m) {
-		Assert.assertEquals(l1, m.getDownloadCount());
-		Assert.assertEquals(b1, m.isFeatured());
-		Assert.assertEquals(d1, m.getLastDownload());
-		Assert.assertEquals(l2, m.getRatingAverageTenths());
-		Assert.assertEquals(l3, m.getRatingCount());
-		Assert.assertEquals(s1, m.getSolutionId());
-		Assert.assertEquals(l4, m.getViewCount());
-	}
-
-	@Test
-	public void testMLPSolutionWeb() {
-		MLPSolutionWeb m = new MLPSolutionWeb(s1);
-		m = new MLPSolutionWeb();
-		m.setDownloadCount(l1);
-		m.setFeatured(b1);
-		m.setLastDownload(d1);
-		m.setRatingAverageTenths(l2);
-		m.setRatingCount(l3);
-		m.setSolutionId(s1);
-		m.setViewCount(l4);
-		checkMLPSolutionWeb(m);
-		m = new MLPSolutionWeb(m);
-		checkMLPSolutionWeb(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			String n = null;
-			new MLPSolutionWeb(n);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
 		}
 	}
 

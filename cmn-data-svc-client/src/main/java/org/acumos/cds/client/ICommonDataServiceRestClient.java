@@ -52,7 +52,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
 import org.acumos.cds.domain.MLPStepType;
@@ -1409,16 +1408,6 @@ public interface ICommonDataServiceRestClient {
 	 *                           user ID
 	 */
 	void setUserViewedNotification(String notificationId, String userId);
-
-	/**
-	 * Gets website metadata about the specified solution including average rating
-	 * and total download count.
-	 * 
-	 * @param solutionId
-	 *                       Solution ID
-	 * @return Object with metadata
-	 */
-	MLPSolutionWeb getSolutionWebMetadata(String solutionId);
 
 	/**
 	 * Gets the users with access to the specified solution.

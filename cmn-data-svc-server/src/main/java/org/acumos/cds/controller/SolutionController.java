@@ -46,7 +46,6 @@ import org.acumos.cds.domain.MLPSolutionPicture;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.ArtifactRepository;
@@ -61,7 +60,6 @@ import org.acumos.cds.repository.SolutionPictureRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
-import org.acumos.cds.repository.SolutionWebRepository;
 import org.acumos.cds.repository.StepResultRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.service.SolutionSearchService;
@@ -129,8 +127,6 @@ public class SolutionController extends AbstractController {
 	@Autowired
 	private SolutionSearchService solutionSearchService;
 	@Autowired
-	private SolutionWebRepository solutionWebRepository;
-	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private StepResultRepository stepResultRepository;
@@ -146,11 +142,13 @@ public class SolutionController extends AbstractController {
 	 */
 	private void updateSolutionDownloadStats(String solutionId) {
 		Long count = solutionDownloadRepository.getSolutionDownloadCount(solutionId);
-		if (count != null) {
-			MLPSolutionWeb stats = solutionWebRepository.findOne(solutionId);
+		if (count == null) {
+			logger.warn("updateSolutionDownloadStats failed on ID {}", solutionId);
+		} else {
+			MLPSolution stats = solutionRepository.findOne(solutionId);
 			stats.setDownloadCount(count);
 			stats.setLastDownload(new Date());
-			solutionWebRepository.save(stats);
+			solutionRepository.save(stats);
 		}
 	}
 
@@ -166,11 +164,13 @@ public class SolutionController extends AbstractController {
 	private void updateSolutionRatingStats(String solutionId) {
 		Long count = solutionRatingRepository.getSolutionRatingCount(solutionId);
 		Double avg = solutionRatingRepository.getSolutionRatingAverage(solutionId);
-		if (count != null && avg != null) {
-			MLPSolutionWeb stats = solutionWebRepository.findOne(solutionId);
+		if (count == null || avg == null) {
+			logger.warn("updateSolutionRatingStats failed on ID {}", solutionId);
+		} else {
+			MLPSolution stats = solutionRepository.findOne(solutionId);
 			stats.setRatingCount(count);
 			stats.setRatingAverageTenths(Math.round(10 * avg));
-			solutionWebRepository.save(stats);
+			solutionRepository.save(stats);
 		}
 	}
 
@@ -431,8 +431,7 @@ public class SolutionController extends AbstractController {
 		logger.debug("findSolutionsByDate: date {}", dateMillis);
 		Date date = new Date(dateMillis);
 		try {
-			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, date,
-					pageRequest);
+			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, date, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findSolutionsByDate failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -478,15 +477,11 @@ public class SolutionController extends AbstractController {
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Solution exists with ID " + id);
 				}
 			}
-			// Ensure web stat object is empty
-			solution.setWebStats(null);
 			// Cascade manually - create user-supplied tags as needed
 			createMissingTags(solution.getTags());
 			// Create a new row
 			// ALSO send back the model for client convenience
 			MLPSolution persisted = solutionRepository.save(solution);
-			// Cascade manually - create an empty web stats entry.
-			solutionWebRepository.save(new MLPSolutionWeb(persisted.getSolutionId()));
 			// This is a hack to create the location path.
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.SOLUTION_PATH + "/" + persisted.getSolutionId());
@@ -521,8 +516,6 @@ public class SolutionController extends AbstractController {
 				super.validateCode(solution.getToolkitTypeCode(), CodeNameType.TOOLKIT_TYPE);
 			// Use the path-parameter id; don't trust the one in the object
 			solution.setSolutionId(solutionId);
-			// Discard any stats object; updates don't happen via this interface
-			solution.setWebStats(null);
 			// Cascade manually - create user-supplied tags as needed
 			createMissingTags(solution.getTags());
 			solutionRepository.save(solution);
@@ -542,7 +535,7 @@ public class SolutionController extends AbstractController {
 	public Object incrementViewCount(@PathVariable("solutionId") String solutionId, HttpServletResponse response) {
 		logger.debug("incrementViewCount: ID {}", solutionId);
 		// Get the existing one; the update command doesn't fail on invalid ID
-		MLPSolutionWeb existing = solutionWebRepository.findOne(solutionId);
+		MLPSolution existing = solutionRepository.findOne(solutionId);
 		if (existing == null) {
 			logger.warn("incrementViewCount failed on ID {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -550,7 +543,7 @@ public class SolutionController extends AbstractController {
 		}
 		try {
 			// Have the database do the increment to avoid race conditions
-			solutionWebRepository.incrementViewCount(solutionId);
+			solutionRepository.incrementViewCount(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// Should never happen
@@ -582,10 +575,6 @@ public class SolutionController extends AbstractController {
 			solUserAccMapRepository.deleteBySolutionId(solutionId);
 			solutionFavoriteRepository.deleteBySolutionId(solutionId);
 			stepResultRepository.deleteBySolutionId(solutionId);
-			// The web stats are annotated as optional, so be cautious when deleting
-			MLPSolutionWeb webStats = solutionWebRepository.findOne(solutionId);
-			if (webStats != null)
-				solutionWebRepository.delete(solutionId);
 			for (MLPSolutionRevision r : solutionRevisionRepository.findBySolutionIdIn(new String[] { solutionId })) {
 				for (MLPArtifact a : artifactRepository.findByRevision(r.getRevisionId()))
 					solRevArtMapRepository
@@ -964,21 +953,6 @@ public class SolutionController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSolutionRating failed", ex);
 		}
-	}
-
-	@ApiOperation(value = "Gets web metadata for the specified solution including average rating and total download count. Returns bad request if the ID is not found.", //
-			response = MLPSolutionWeb.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.WEB_PATH, method = RequestMethod.GET)
-	public Object getSolutionWebStats(@PathVariable("solutionId") String solutionId, HttpServletResponse response) {
-		logger.debug("getSolutionWebStats: solutionId {}", solutionId);
-		MLPSolutionWeb stats = solutionWebRepository.findOne(solutionId);
-		if (stats == null) {
-			logger.warn("getSolutionWebStats failed on ID {}", solutionId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
-		}
-		return stats;
 	}
 
 	@ApiOperation(value = "Gets access-control list of users for the specified solution.", //

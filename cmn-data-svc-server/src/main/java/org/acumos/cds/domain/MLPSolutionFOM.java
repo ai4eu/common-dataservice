@@ -101,27 +101,6 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 	private Set<MLPTag> tags = new HashSet<>(0);
 
 	/**
-	 * Statistics about downloads, ratings etc. Should always exist, but don't mark
-	 * as required.
-	 * 
-	 * Unidirectional relationship - the MLPSolutionWeb object is not annotated.
-	 * 
-	 * This is optional (the default) because of the unidirectional relationship.
-	 * Without annotation and a setter on the MLPSolutionWeb object there's no way
-	 * to create a solution.
-	 * 
-	 * Use default LAZY fetch. This is only used for searching (never fetched, never
-	 * serialized as JSON).
-	 * 
-	 * This does NOT use cascade; e.g., "cascade = { CascadeType.ALL }". Tests WITH
-	 * that annotation revealed no problems, but the controller does not accept
-	 * updates to the web stats via the solution object, so there is no need.
-	 */
-	@OneToOne
-	@JoinColumn(name = MLPSolutionWeb.SOL_ID_COL_NAME)
-	private MLPSolutionWeb webStats;
-
-	/**
 	 * User access assigned to the solution via a join table. Users can be assigned
 	 * to many solutions, so this is a many-many (not one-many) relationship.
 	 * 
@@ -168,14 +147,6 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 		this.tags = tags;
 	}
 
-	public MLPSolutionWeb getWebStats() {
-		return webStats;
-	}
-
-	public void setWebStats(MLPSolutionWeb webStats) {
-		this.webStats = webStats;
-	}
-
 	public Set<MLPUser> getAccessUsers() {
 		return accessUsers;
 	}
@@ -199,17 +170,22 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 		MLPSolution sol = new MLPSolution(getName(), owner.getUserId(), isActive());
 		sol.setCreated(getCreated());
 		sol.setDescription(getDescription());
+		sol.setDownloadCount(getDownloadCount());
+		sol.setFeatured(isFeatured());
+		sol.setLastDownload(getLastDownload());
 		sol.setMetadata(getMetadata());
 		sol.setModelTypeCode(getModelTypeCode());
 		sol.setModified(getModified());
 		sol.setName(getName());
 		sol.setOrigin(getOrigin());
+		sol.setRatingAverageTenths(getRatingAverageTenths());
+		sol.setRatingCount(getRatingCount());
 		sol.setSolutionId(getSolutionId());
 		if (source != null)
 			sol.setSourceId(source.getPeerId());
 		sol.setTags(getTags());
 		sol.setToolkitTypeCode(getToolkitTypeCode());
-		sol.setWebStats(getWebStats());
+		sol.setViewCount(getViewCount());
 		return sol;
 	}
 

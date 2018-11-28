@@ -30,7 +30,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -81,26 +80,6 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	private Set<MLPTag> tags = new HashSet<>(0);
 
 	/**
-	 * Statistics about downloads, ratings etc. Should always exist, but don't mark
-	 * as required.
-	 * 
-	 * Unidirectional relationship - the MLPSolutionWeb object is not annotated.
-	 * 
-	 * This is optional (the default) because of the unidirectional relationship.
-	 * Without annotation and a setter on the MLPSolutionWeb object there's no way
-	 * to create a solution.
-	 * 
-	 * This does NOT use cascade; e.g., "cascade = { CascadeType.ALL }". Tests WITH
-	 * that annotation revealed no problems, but the controller does not accept
-	 * updates to the web stats via the solution object, so there is no need.
-	 */
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = MLPSolutionWeb.SOL_ID_COL_NAME)
-	// Swagger fails to recognize readOnly on complex objects
-	@ApiModelProperty(readOnly = true, value = "Stats are read-only")
-	private MLPSolutionWeb webStats;
-
-	/**
 	 * No-arg constructor
 	 */
 	public MLPSolution() {
@@ -135,7 +114,6 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 		this.userId = that.userId;
 		this.sourceId = that.sourceId;
 		this.tags = that.tags;
-		this.webStats = that.webStats;
 	}
 
 	public String getUserId() {
@@ -173,27 +151,6 @@ public class MLPSolution extends MLPAbstractSolution implements Serializable {
 	 */
 	public void setTags(Set<MLPTag> tags) {
 		this.tags = tags;
-	}
-
-	/**
-	 * Provides counts of user activity such as downloads. These counts CANNOT be
-	 * updated via this object; all changes made here are discarded.
-	 * 
-	 * @return MLPSolutionWeb object
-	 */
-	public MLPSolutionWeb getWebStats() {
-		return webStats;
-	}
-
-	/**
-	 * User activity counts CANNOT be updated via this object; all changes made here
-	 * are discarded.
-	 * 
-	 * @param webStats
-	 *                     MLPSolutionWeb object
-	 */
-	public void setWebStats(MLPSolutionWeb webStats) {
-		this.webStats = webStats;
 	}
 
 	@Override

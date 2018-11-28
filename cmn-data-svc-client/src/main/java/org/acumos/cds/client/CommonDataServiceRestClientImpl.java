@@ -65,7 +65,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
 import org.acumos.cds.domain.MLPStepType;
@@ -1629,17 +1628,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		MLPNotifUserMap map = new MLPNotifUserMap(notificationId, userId);
 		map.setViewed(new Date());
 		restTemplate.put(uri, map);
-	}
-
-	@Override
-	public MLPSolutionWeb getSolutionWebMetadata(String solutionId) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.WEB_PATH }, null,
-				null);
-		logger.debug("getSolutionStats: url {}", uri);
-		ResponseEntity<MLPSolutionWeb> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<MLPSolutionWeb>() {
-				});
-		return response.getBody();
 	}
 
 	@Override

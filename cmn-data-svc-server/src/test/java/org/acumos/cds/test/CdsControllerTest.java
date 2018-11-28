@@ -72,7 +72,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
 import org.acumos.cds.domain.MLPStepType;
@@ -175,7 +174,7 @@ public class CdsControllerTest {
 			client.updateSolution(cs);
 
 			MLPSolution fetched = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(fetched != null && fetched.getTags() != null && fetched.getWebStats() != null);
+			Assert.assertTrue(fetched != null && fetched.getTags() != null);
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
 					AccessTypeCode.PB.name());
@@ -658,11 +657,11 @@ public class CdsControllerTest {
 			Assert.assertTrue(solCountTrans > 0);
 
 			// Increment view count
+			Long before = cs.getViewCount();
 			logger.info("Incrementing solution view count");
 			client.incrementSolutionViewCount(cs.getSolutionId());
-			MLPSolutionWeb stats = client.getSolutionWebMetadata(cs.getSolutionId());
-			Assert.assertNotNull(stats);
-			logger.info("Solution stats {}", stats);
+			MLPSolution after = client.getSolution(cs.getSolutionId());
+			Assert.assertNotEquals(before, after.getViewCount());
 
 			// add and drop tags
 			logger.info("Tagging solutions");
@@ -675,7 +674,7 @@ public class CdsControllerTest {
 
 			logger.info("Fetching back newly tagged solution");
 			MLPSolution s = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(s != null && !s.getTags().isEmpty() && s.getWebStats() != null);
+			Assert.assertTrue(s != null && !s.getTags().isEmpty());
 			logger.info("Solution {}", s);
 
 			// Query for tags
@@ -700,8 +699,7 @@ public class CdsControllerTest {
 			client.updateSolution(cs);
 			logger.info("Fetching back updated solution");
 			MLPSolution updated = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(updated != null && !updated.getTags().isEmpty() && updated.getWebStats() != null
-					&& updated.getWebStats().getViewCount() > 0);
+			Assert.assertTrue(updated != null && !updated.getTags().isEmpty() && updated.getViewCount() > 0);
 
 			logger.info("Querying for solutions with similar names");
 			RestPageResponse<MLPSolution> sl1 = client.findSolutionsBySearchTerm("solution", new RestPageRequest(0, 1));
@@ -913,11 +911,10 @@ public class CdsControllerTest {
 			Assert.assertTrue(ratings != null && ratings.getNumberOfElements() > 0);
 			logger.info("Solution rating count {}", ratings.getNumberOfElements());
 
-			// Compute the average rating
-			stats = client.getSolutionWebMetadata(cs.getSolutionId());
-			Assert.assertNotNull(stats);
-			Assert.assertTrue(stats.getRatingAverageTenths() > 0);
-			logger.info("Computed solution rating average: {}", stats.getRatingAverageTenths());
+			// check the average rating
+			MLPSolution avgRating = client.getSolution(cs.getSolutionId());
+			Assert.assertTrue(avgRating.getRatingAverageTenths() > 0);
+			logger.info("Computed solution rating average: {}", avgRating.getRatingAverageTenths());
 
 			// Create Solution download
 			MLPSolutionDownload sd = new MLPSolutionDownload(cs.getSolutionId(), ca.getArtifactId(), cu.getUserId());
@@ -929,10 +926,10 @@ public class CdsControllerTest {
 			Assert.assertTrue(dnls.getNumberOfElements() > 0);
 
 			// Count the downloads
-			MLPSolutionWeb readStats = client.getSolutionWebMetadata(cs.getSolutionId());
-			Assert.assertNotNull(readStats);
-			Assert.assertTrue(readStats.getDownloadCount() > 0);
-			logger.info("Solution download count is {}", readStats.getDownloadCount());
+			MLPSolution downloadStats = client.getSolution(cs.getSolutionId());
+			Assert.assertNotNull(downloadStats);
+			Assert.assertTrue(downloadStats.getDownloadCount() > 0);
+			logger.info("Solution download count is {}", downloadStats.getDownloadCount());
 
 			// Create Solution favorite for a user
 			MLPSolutionFavorite sf1 = new MLPSolutionFavorite();
@@ -2733,13 +2730,6 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Get solution revisions failed as expected: {}", ex.getResponseBodyAsString());
 		}
-		try {
-			client.getSolutionWebMetadata("bogus");
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("Get solution web meta failed as expected: {}", ex.getResponseBodyAsString());
-		}
-
 		try {
 			client.deleteTag(new MLPTag("bogus"));
 			throw new Exception("Unexpected success");

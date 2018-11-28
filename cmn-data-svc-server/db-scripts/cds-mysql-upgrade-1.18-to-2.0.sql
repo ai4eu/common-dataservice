@@ -1,7 +1,7 @@
 -- ===============LICENSE_START=======================================================
 -- Acumos Apache-2.0
 -- ===================================================================================
--- Copyright (C) 2017-2018 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+-- Copyright (C) 2018 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
 -- ===================================================================================
 -- This Acumos software file is distributed by AT&T and Tech Mahindra
 -- under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,23 @@
 -- FROM version 1.18.x TO version 2.0.x.
 -- No database name is set to allow flexible deployment.
 
-
 DROP TABLE C_SOLUTION_VALIDATION;
 DROP TABLE C_SOL_VAL_SEQ;
 ALTER TABLE C_PEER DROP COLUMN VALIDATION_STATUS_CD;
 ALTER TABLE C_SOLUTION_REV DROP COLUMN VALIDATION_STATUS_CD;
+ALTER TABLE C_SOLUTION ADD COLUMN VIEW_COUNT INT;
+ALTER TABLE C_SOLUTION ADD COLUMN DOWNLOAD_COUNT INT;
+ALTER TABLE C_SOLUTION ADD COLUMN LAST_DOWNLOAD TIMESTAMP NULL DEFAULT 0;
+ALTER TABLE C_SOLUTION ADD COLUMN RATING_AVG_TENTHS INT;
+ALTER TABLE C_SOLUTION ADD COLUMN RATING_COUNT INT;
+ALTER TABLE C_SOLUTION ADD COLUMN FEATURED_YN CHAR(1);
+UPDATE C_SOLUTION AS s
+  INNER JOIN C_SOLUTION_WEB AS w 
+  ON s.SOLUTION_ID = w.SOLUTION_ID
+  SET s.VIEW_COUNT = w.VIEW_COUNT, 
+      s.DOWNLOAD_COUNT = w.DOWNLOAD_COUNT,
+      s.LAST_DOWNLOAD = w.LAST_DOWNLOAD,
+      s.RATING_AVG_TENTHS = w.RATING_AVG_TENTHS,
+      s.RATING_COUNT = w.RATING_COUNT,
+      s.FEATURED_YN = w.FEATURED_YN;
+DROP TABLE C_SOLUTION_WEB
