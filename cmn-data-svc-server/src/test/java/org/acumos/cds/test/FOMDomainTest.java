@@ -181,7 +181,6 @@ public class FOMDomainTest {
 		m.setSolution(sol1);
 		m.setSource(peer1);
 		m.setUser(user1);
-		m.setValidationStatusCode(s7);
 		m.setVersion(s8);
 		Assert.assertTrue(arts == m.getArtifacts());
 		Assert.assertEquals(d1, m.getCreated());
@@ -196,7 +195,6 @@ public class FOMDomainTest {
 		Assert.assertEquals(sol1, m.getSolution());
 		Assert.assertEquals(peer1, m.getSource());
 		Assert.assertEquals(user1, m.getUser());
-		Assert.assertEquals(s7, m.getValidationStatusCode());
 		Assert.assertEquals(s8, m.getVersion());
 		Assert.assertFalse(m.equals(null));
 		Assert.assertFalse(m.equals(new Object()));

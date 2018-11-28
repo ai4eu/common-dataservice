@@ -67,7 +67,6 @@ public interface CCDSConstants {
 	public static final String USER_PATH = "user";
 	public static final String VAL_SEQ_PATH = "valseq";
 	public static final String VAL_TYPE_PATH = "valtype";
-	public static final String VALIDATION_PATH = "validation";
 	public static final String VIEW_PATH = "view";
 	public static final String WEB_PATH = "web";
 	public static final String UNREAD_PATH = "unread";

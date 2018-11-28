@@ -98,14 +98,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	private String accessTypeCode;
 
 	/**
-	 * The Validation Status Code value set is defined by server-side configuration.
-	 */
-	@Column(name = "VALIDATION_STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Validation status code", example = "NV")
-	private String validationStatusCode;
-
-	/**
 	 * Domain class method formats the text.
 	 */
 	@Column(name = "AUTHORS", columnDefinition = "VARCHAR(1024)")
@@ -134,15 +126,12 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 *                                 User-assigned version string
 	 * @param accessTypeCode
 	 *                                 Access type code
-	 * @param validationStatusCode
-	 *                                 Validation status code
 	 */
-	public MLPAbstractSolutionRevision(String version, String accessTypeCode, String validationStatusCode) {
-		if (version == null || accessTypeCode == null || validationStatusCode == null)
+	public MLPAbstractSolutionRevision(String version, String accessTypeCode) {
+		if (version == null || accessTypeCode == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.version = version;
 		this.accessTypeCode = accessTypeCode;
-		this.validationStatusCode = validationStatusCode;
 	}
 
 	/**
@@ -160,7 +149,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 		this.origin = that.origin;
 		this.publisher = that.publisher;
 		this.revisionId = that.revisionId;
-		this.validationStatusCode = that.validationStatusCode;
 		this.version = that.version;
 	}
 
@@ -223,14 +211,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 
 	public void setAccessTypeCode(String accessTypeCode) {
 		this.accessTypeCode = accessTypeCode;
-	}
-
-	public String getValidationStatusCode() {
-		return validationStatusCode;
-	}
-
-	public void setValidationStatusCode(String validationStatusCode) {
-		this.validationStatusCode = validationStatusCode;
 	}
 
 	public String getPublisher() {

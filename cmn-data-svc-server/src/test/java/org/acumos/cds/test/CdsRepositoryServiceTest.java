@@ -41,7 +41,6 @@ import org.acumos.cds.StepStatusCode;
 import org.acumos.cds.StepTypeCode;
 import org.acumos.cds.SubscriptionScopeCode;
 import org.acumos.cds.ToolkitTypeCode;
-import org.acumos.cds.ValidationStatusCode;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
@@ -336,7 +335,6 @@ public class CdsRepositoryServiceTest {
 			pr.setApiUrl("http://peer-api");
 			pr.setContact1("Tyrion Lannister");
 			pr.setStatusCode(PeerStatusCode.AC.name());
-			pr.setValidationStatusCode(ValidationStatusCode.PS.name());
 			pr = peerRepository.save(pr);
 			Assert.assertNotNull(pr.getPeerId());
 			Assert.assertNotNull(pr.getCreated());
@@ -498,7 +496,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertFalse(searchPageSols.getContent().isEmpty());
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0X", cu.getUserId(),
-					AccessTypeCode.PR.name(), ValidationStatusCode.NV.name());
+					AccessTypeCode.PR.name());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("name1", "contact1"),
 					new AuthorTransport("name2", "contact2") });
 			cr.setDescription("Some description 2");
@@ -508,7 +506,7 @@ public class CdsRepositoryServiceTest {
 			logger.info("Created solution revision " + cr.getRevisionId());
 
 			MLPSolutionRevision rev2 = new MLPSolutionRevision(cs2.getSolutionId(), "1.0X", cu.getUserId(),
-					AccessTypeCode.PR.name(), ValidationStatusCode.NV.name());
+					AccessTypeCode.PR.name());
 			rev2 = revisionRepository.save(rev2);
 			Assert.assertNotNull("Revision ID", rev2.getRevisionId());
 			logger.info("Created solution revision " + rev2.getRevisionId());
@@ -532,25 +530,24 @@ public class CdsRepositoryServiceTest {
 			String[] userIds = { cu.getUserId() };
 			String[] modelTypeCodes = { ModelTypeCode.CL.name() };
 			String[] accTypeCodes = { AccessTypeCode.PR.name(), AccessTypeCode.OR.name() };
-			String[] valStatusCodes = { ValidationStatusCode.NV.name() };
 			String[] searchTags = { solTag1.getTag() };
 			String[] searchAuths = null;
 			String[] searchPubs = { "Data" };
 			Page<MLPSolution> portalSearchResult = solutionSearchService.findPortalSolutions(solKw, descKw, active,
-					userIds, modelTypeCodes, accTypeCodes, valStatusCodes, searchTags, searchAuths, searchPubs,
+					userIds, modelTypeCodes, accTypeCodes, searchTags, searchAuths, searchPubs,
 					new PageRequest(0, 2, Direction.ASC, "name"));
 			Assert.assertTrue(portalSearchResult != null && portalSearchResult.getNumberOfElements() == 1);
 			logger.info("Found portal solution total " + portalSearchResult.getTotalElements());
 
 			logger.info("Check that one tag yields multiple matches");
 			Page<MLPSolution> oneTagSearchResult = solutionSearchService.findPortalSolutions(null, null, active, null,
-					null, null, null, searchTags, null, null, new PageRequest(0, 5));
+					null, null,  searchTags, null, null, new PageRequest(0, 5));
 			Assert.assertTrue(oneTagSearchResult != null && oneTagSearchResult.getNumberOfElements() == 2);
 
 			logger.info("Check that two tags yields single match");
 			searchTags = new String[] { solTag1.getTag(), solTag2.getTag() };
 			Page<MLPSolution> twoTagsSearchResult = solutionSearchService.findPortalSolutions(null, null, active, null,
-					null, null, null, searchTags, null, null, new PageRequest(0, 5));
+					null, null,  searchTags, null, null, new PageRequest(0, 5));
 			Assert.assertTrue(twoTagsSearchResult != null && twoTagsSearchResult.getNumberOfElements() == 1);
 
 			String[] ids = { cs.getSolutionId() };
@@ -629,10 +626,9 @@ public class CdsRepositoryServiceTest {
 
 			// Find by modified date
 			String[] accTypes = new String[] { AccessTypeCode.PR.name() };
-			String[] valCodes = new String[0];
 			Date modifiedDate = new Date();
 			modifiedDate.setTime(modifiedDate.getTime() - 60 * 1000);
-			Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, valCodes,
+			Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, 
 					modifiedDate, new PageRequest(0, 5, null));
 			Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 			logger.info("Found sols by date {}", solsByDate);
@@ -649,7 +645,7 @@ public class CdsRepositoryServiceTest {
 			ca.setDescription(ca.getDescription() + " a bit more");
 			artifactRepository.save(ca);
 			Page<MLPSolution> recentlyUpdated = solutionSearchService.findSolutionsByModifiedDate(true, accTypes,
-					valCodes, justAboutNow, new PageRequest(0, 5, null));
+					justAboutNow, new PageRequest(0, 5, null));
 			Assert.assertTrue(recentlyUpdated != null && recentlyUpdated.getNumberOfElements() == 1);
 			logger.info("Found recently updated sols {}", recentlyUpdated);
 
@@ -725,12 +721,11 @@ public class CdsRepositoryServiceTest {
 			Assert.assertFalse(solByTag.getContent().isEmpty());
 
 			String[] accessTypes = new String[] { AccessTypeCode.PR.name() };
-			String[] valStatuses = new String[] { ValidationStatusCode.NV.name() };
 			Date anHourAgo = new java.util.Date();
 			anHourAgo.setTime(new Date().getTime() - (1000L * 60 * 60));
 
 			Page<MLPSolution> solByCriteria = solutionSearchService.findSolutionsByModifiedDate(true, accessTypes,
-					valStatuses, anHourAgo, new PageRequest(0, 5));
+					anHourAgo, new PageRequest(0, 5));
 			logger.info("Solutions by date via criteria: {}", solByCriteria);
 			Assert.assertFalse(solByCriteria.getContent().isEmpty());
 
@@ -914,7 +909,7 @@ public class CdsRepositoryServiceTest {
 			// Create Peer
 			final String peerName = "Peer-" + Long.toString(new Date().getTime());
 			MLPPeer pr = new MLPPeer(peerName, "x." + Long.toString(new Date().getTime()), "http://peer-api", true,
-					true, "", PeerStatusCode.AC.name(), ValidationStatusCode.NV.name());
+					true, "", PeerStatusCode.AC.name());
 			pr = peerRepository.save(pr);
 			Assert.assertNotNull(pr.getPeerId());
 			Assert.assertNotNull(pr.getCreated());
@@ -1018,7 +1013,7 @@ public class CdsRepositoryServiceTest {
 			logger.info("Created solution 2 " + cs2.getSolutionId());
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
-					AccessTypeCode.PB.name(), ValidationStatusCode.SB.name());
+					AccessTypeCode.PB.name());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("other name", "other contact") });
 			cr.setDescription("Some description");
 			cr.setPublisher("Big Data Org");
@@ -1381,13 +1376,13 @@ public class CdsRepositoryServiceTest {
 
 		final String peerName = "Peer-" + Long.toString(new Date().getTime());
 		MLPPeer pr1 = new MLPPeer(peerName, "x." + Long.toString(new Date().getTime()), "http://peer-api", true, false,
-				"contact", PeerStatusCode.AC.name(), ValidationStatusCode.FA.name());
+				"contact", PeerStatusCode.AC.name());
 		pr1 = peerRepository.save(pr1);
 		logger.info("Created peer " + pr1);
 
 		final String peerName2 = "Peer-" + Long.toString(new Date().getTime());
 		MLPPeer pr2 = new MLPPeer(peerName2, "x." + Long.toString(new Date().getTime()), "http://peer-api", true, false,
-				"contact", PeerStatusCode.AC.name(), ValidationStatusCode.FA.name());
+				"contact", PeerStatusCode.AC.name());
 		pr2 = peerRepository.save(pr2);
 		logger.info("Created second peer " + pr2);
 

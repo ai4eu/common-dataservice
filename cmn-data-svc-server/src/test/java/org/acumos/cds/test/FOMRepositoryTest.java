@@ -127,7 +127,7 @@ public class FOMRepositoryTest {
 			cs = solutionRepository.save(cs);
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 
-			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), accCode, "NV");
+			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), accCode);
 			cr = revisionRepository.save(cr);
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
 			logger.info("Created solution revision {}", cr.getRevisionId());
@@ -179,11 +179,11 @@ public class FOMRepositoryTest {
 
 		logger.info("Querying for FOM via findPortalSolutions method");
 		Page<MLPSolution> byName = solutionSearchService.findPortalSolutions(nameKw, empty, true, empty, empty,
-				accTypes, null, empty, empty, empty, pageable);
+				accTypes, empty, empty, empty, pageable);
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
 
-		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, null,
+		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, 
 				modifiedDate, pageable);
 		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());
@@ -191,7 +191,7 @@ public class FOMRepositoryTest {
 		// Find by user and Hibernate constraint - user2 owns no solutions but has
 		// access
 		Page<MLPSolution> byUser = solutionSearchService.findUserSolutions(nameKw, empty, true, cu2.getUserId(), empty,
-				empty, null, empty, pageable);
+				empty, empty, pageable);
 		Assert.assertTrue(byUser != null && byUser.getNumberOfElements() > 0);
 		logger.info("Found sols by user via criteria: size {}", byUser.getContent().size());
 

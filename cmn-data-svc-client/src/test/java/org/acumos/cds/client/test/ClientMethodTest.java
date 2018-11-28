@@ -46,13 +46,11 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionValidation;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
-import org.acumos.cds.domain.MLPValidationSequence;
 import org.acumos.cds.transport.RestPageRequest;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -117,16 +115,6 @@ public class ClientMethodTest {
 		}
 		try {
 			client.getToolkitTypes();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getValidationStatuses();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getValidationTypes();
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
@@ -197,7 +185,7 @@ public class ClientMethodTest {
 		}
 		try {
 			String[] array = new String[] { "I'm a string" };
-			client.findPortalSolutions(array, array, true, array, array, array, array, array, array, array,
+			client.findPortalSolutions(array, array, true, array, array, array, array, array, array,
 					new RestPageRequest(0, 1));
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
@@ -222,7 +210,7 @@ public class ClientMethodTest {
 		}
 		try {
 			String[] array = new String[] { "I'm a string" };
-			client.findUserSolutions(array, array, true, "user", array, array, array, array, new RestPageRequest(0, 1));
+			client.findUserSolutions(array, array, true, "user", array, array, array, new RestPageRequest(0, 1));
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
@@ -232,7 +220,7 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.findSolutionsByDate(true, new String[0], new String[0], new Date(), new RestPageRequest());
+			client.findSolutionsByDate(true, new String[0], new Date(), new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
@@ -757,41 +745,7 @@ public class ClientMethodTest {
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
-		try {
-			client.getSolutionValidations("solutionId", "revisionId");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.createSolutionValidation(new MLPSolutionValidation());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.updateSolutionValidation(new MLPSolutionValidation());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.deleteSolutionValidation(new MLPSolutionValidation());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getValidationSequences();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.createValidationSequence(new MLPValidationSequence(1, "foo"));
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.deleteValidationSequence(new MLPValidationSequence(1, "foo"));
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
+
 		try {
 			client.getUserDeployments("userId", new RestPageRequest());
 		} catch (ResourceAccessException ex) {

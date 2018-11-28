@@ -29,8 +29,7 @@ package org.acumos.cds;
 @Deprecated
 public enum StepTypeCode {
 
-	OB("Onboarding"), //
-	VL("Validation");
+	OB("Onboarding");
 
 	private String stepName;
 

@@ -48,7 +48,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionValidation;
 import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
@@ -56,7 +55,6 @@ import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotification;
-import org.acumos.cds.domain.MLPValidationSequence;
 import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
@@ -105,8 +103,6 @@ public class MockClientTest {
 		Assert.assertFalse(client.getLoginProviders().isEmpty());
 		Assert.assertFalse(client.getModelTypes().isEmpty());
 		Assert.assertFalse(client.getToolkitTypes().isEmpty());
-		Assert.assertFalse(client.getValidationStatuses().isEmpty());
-		Assert.assertFalse(client.getValidationTypes().isEmpty());
 		Assert.assertFalse(client.getDeploymentStatuses().isEmpty());
 		Assert.assertFalse(client.getStepStatuses().isEmpty());
 		Assert.assertFalse(client.getStepTypes().isEmpty());
@@ -126,8 +122,7 @@ public class MockClientTest {
 		Assert.assertTrue(solutions3 == client.findSolutionsByTag("string", pageRequest));
 		RestPageResponse<MLPSolution> solutions4 = new RestPageResponse<>();
 		client.setSolutionsByDate(solutions4);
-		Assert.assertTrue(
-				solutions4 == client.findSolutionsByDate(true, new String[0], new String[0], new Date(), pageRequest));
+		Assert.assertTrue(solutions4 == client.findSolutionsByDate(true, new String[0], new Date(), pageRequest));
 
 		MLPSolution solution = new MLPSolution();
 		client.setSolutionById(solution);
@@ -375,25 +370,6 @@ public class MockClientTest {
 
 		client.updatePassword(user, new MLPPasswordChangeRequest());
 
-		List<MLPSolutionValidation> validationList = new ArrayList<>();
-		client.setSolutionValidations(validationList);
-		Assert.assertTrue(validationList == client.getSolutionValidations("id", "id"));
-
-		MLPSolutionValidation validation = new MLPSolutionValidation();
-		client.setSolutionValidation(validation);
-		Assert.assertTrue(validation == client.createSolutionValidation(validation));
-		client.updateSolutionValidation(validation);
-		client.deleteSolutionValidation(validation);
-
-		List<MLPValidationSequence> validationSequenceList = new ArrayList<>();
-		client.setValidationSequences(validationSequenceList);
-		Assert.assertTrue(validationSequenceList == client.getValidationSequences());
-
-		MLPValidationSequence valSeq = new MLPValidationSequence();
-		client.setValidationSequence(valSeq);
-		Assert.assertTrue(valSeq == client.createValidationSequence(valSeq));
-		client.deleteValidationSequence(valSeq);
-
 		RestPageResponse<MLPSolutionDeployment> deployments = new RestPageResponse<>();
 		client.setUserDeployments(deployments);
 		Assert.assertTrue(deployments == client.getUserDeployments("id", pageRequest));
@@ -449,7 +425,7 @@ public class MockClientTest {
 		RestPageResponse<MLPSolution> portalSols = new RestPageResponse<>();
 		client.setPortalSolutions(portalSols);
 		Assert.assertTrue(portalSols == client.findPortalSolutions(null, null, true, null, null, null, null, null, null,
-				null, pageRequest));
+				pageRequest));
 		Assert.assertTrue(
 				portalSols == client.findPortalSolutionsByKw(null, true, null, null, null, null, pageRequest));
 		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
@@ -458,7 +434,7 @@ public class MockClientTest {
 		RestPageResponse<MLPSolution> userPrivSols = new RestPageResponse<>();
 		client.setUserSolutions(userPrivSols);
 		Assert.assertTrue(
-				userPrivSols == client.findUserSolutions(null, null, true, null, null, null, null, null, pageRequest));
+				userPrivSols == client.findUserSolutions(null, null, true, null, null, null, null, pageRequest));
 
 		RestPageResponse<MLPSolution> solutionResponse = new RestPageResponse<>();
 		client.setSearchSolutions(solutionResponse);

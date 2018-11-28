@@ -60,7 +60,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionValidation;
 import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
@@ -73,9 +72,6 @@ import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
 import org.acumos.cds.domain.MLPUserTagMap;
-import org.acumos.cds.domain.MLPValidationSequence;
-import org.acumos.cds.domain.MLPValidationStatus;
-import org.acumos.cds.domain.MLPValidationType;
 import org.acumos.cds.transport.AuthorTransport;
 import org.junit.Assert;
 import org.junit.Test;
@@ -393,13 +389,12 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(b2, m.isSelf());
 		Assert.assertEquals(s6, m.getStatusCode());
 		Assert.assertEquals(s7, m.getSubjectName());
-		Assert.assertEquals(s8, m.getValidationStatusCode());
 		Assert.assertEquals(s9, m.getWebUrl());
 	}
 
 	@Test
 	public void testMLPPeer() {
-		MLPPeer m = new MLPPeer(s1, s1, s1, b1, b1, s1, s1, s1);
+		MLPPeer m = new MLPPeer(s1, s1, s1, b1, b1, s1, s1);
 		m = new MLPPeer();
 		m.setApiUrl(s1);
 		m.setContact1(s2);
@@ -412,7 +407,6 @@ public class DomainTest extends AbstractModelTest {
 		m.setSelf(b2);
 		m.setStatusCode(s6);
 		m.setSubjectName(s7);
-		m.setValidationStatusCode(s8);
 		m.setWebUrl(s9);
 		checkMLPPeer(m);
 		m = new MLPPeer(m);
@@ -423,7 +417,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPPeer(null, null, null, b1, b1, null, null, null);
+			new MLPPeer(null, null, null, b1, b1, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
@@ -1202,14 +1196,13 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(s7, m.getSolutionId());
 		Assert.assertEquals(s8, m.getSourceId());
 		Assert.assertEquals(s9, m.getUserId());
-		Assert.assertEquals(s10, m.getValidationStatusCode());
 		Assert.assertEquals(s11, m.getVersion());
 		Assert.assertEquals(author1, m.getAuthors()[1]);
 	}
 
 	@Test
 	public void testMLPSolutionRevision() {
-		MLPSolutionRevision m = new MLPSolutionRevision(s1, s1, s1, s1, s1);
+		MLPSolutionRevision m = new MLPSolutionRevision(s1, s1, s1, s1);
 		m = new MLPSolutionRevision();
 		m.setAccessTypeCode(s1);
 		AuthorTransport[] authors = new AuthorTransport[] { author0, author1 };
@@ -1224,7 +1217,6 @@ public class DomainTest extends AbstractModelTest {
 		m.setSolutionId(s7);
 		m.setSourceId(s8);
 		m.setUserId(s9);
-		m.setValidationStatusCode(s10);
 		m.setVersion(s11);
 		checkMLPSolutionRevision(m);
 		m = new MLPSolutionRevision(m);
@@ -1235,7 +1227,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPSolutionRevision(null, null, null, null, null);
+			new MLPSolutionRevision(null, null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
@@ -1247,52 +1239,6 @@ public class DomainTest extends AbstractModelTest {
 			// characters are rejected
 		}
 
-	}
-
-	private void checkMLPSolutionValidation(MLPSolutionValidation m) {
-		Assert.assertEquals(d1, m.getCreated());
-		Assert.assertEquals(s1, m.getDetail());
-		Assert.assertEquals(d2, m.getModified());
-		Assert.assertEquals(s2, m.getRevisionId());
-		Assert.assertEquals(s3, m.getSolutionId());
-		Assert.assertEquals(s4, m.getTaskId());
-		Assert.assertEquals(s5, m.getValidationStatusCode());
-		Assert.assertEquals(s6, m.getValidationTypeCode());
-	}
-
-	@Test
-	public void testMLPSolutionValidation() {
-		MLPSolutionValidation m = new MLPSolutionValidation(s1, s1, s1, s1);
-		m = new MLPSolutionValidation();
-		m.setCreated(d1);
-		m.setDetail(s1);
-		m.setModified(d2);
-		m.setRevisionId(s2);
-		m.setSolutionId(s3);
-		m.setTaskId(s4);
-		m.setValidationStatusCode(s5);
-		m.setValidationTypeCode(s6);
-		checkMLPSolutionValidation(m);
-		m = new MLPSolutionValidation(m);
-		checkMLPSolutionValidation(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			new MLPSolutionValidation(null, null, null, null);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		MLPSolutionValidation.SolutionValidationPK pk = new MLPSolutionValidation.SolutionValidationPK();
-		pk = new MLPSolutionValidation.SolutionValidationPK(s1, s2, s3);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
 	}
 
 	private void checkMLPSolutionWeb(MLPSolutionWeb m) {
@@ -1626,12 +1572,6 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
-	private void checkMLPValidationSequence(MLPValidationSequence m) {
-		Assert.assertEquals(d1, m.getCreated());
-		Assert.assertEquals(i1, m.getSequence());
-		Assert.assertEquals(s1, m.getValTypeCode());
-	}
-
 	private void checkMLPUserTagMap(MLPUserTagMap m) {
 		Assert.assertEquals(s1, m.getUserId());
 		Assert.assertEquals(s2, m.getTag());
@@ -1659,36 +1599,6 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(m.toString());
 		MLPUserTagMap.UserTagMapPK pk = new MLPUserTagMap.UserTagMapPK();
 		pk = new MLPUserTagMap.UserTagMapPK(s1, s2);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
-	}
-
-	@Test
-	public void testMLPValidationSequence() {
-		MLPValidationSequence m = new MLPValidationSequence(i1, s1);
-		m = new MLPValidationSequence();
-		m.setCreated(d1);
-		m.setSequence(i1);
-		m.setValTypeCode(s1);
-		checkMLPValidationSequence(m);
-		m = new MLPValidationSequence(m);
-		checkMLPValidationSequence(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			new MLPValidationSequence(-1, null);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		MLPValidationSequence.ValidationSequencePK pk = new MLPValidationSequence.ValidationSequencePK();
-		pk = new MLPValidationSequence.ValidationSequencePK(i1, s1);
 		Assert.assertFalse(pk.equals(null));
 		Assert.assertFalse(pk.equals(new Object()));
 		Assert.assertTrue(pk.equals(pk));
@@ -1813,34 +1723,6 @@ public class DomainTest extends AbstractModelTest {
 	@Test
 	public void testMLPToolkitType() {
 		MLPToolkitType m = new MLPToolkitType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPValidationStatus() {
-		MLPValidationStatus m = new MLPValidationStatus();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPValidationType() {
-		MLPValidationType m = new MLPValidationType();
 		m.setCode(s1);
 		m.setName(s2);
 		Assert.assertEquals(s1, m.getCode());

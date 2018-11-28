@@ -196,7 +196,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String[] userIds, String[] modelTypeCode, String[] accessTypeCode, String[] validationStatusCode,
+			String[] userIds, String[] modelTypeCode, String[] accessTypeCode, 
 			String[] tags, String[] authorKeywords, String[] publisherKeywords, Pageable pageable) {
 
 		// build the query using FOM to access child attributes
@@ -209,15 +209,12 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			criteria.add(buildEqualsListCriterion("modelTypeCode", modelTypeCode));
 		if ((accessTypeCode != null && accessTypeCode.length > 0) //
 				|| (descKeywords != null && descKeywords.length > 0)
-				|| (validationStatusCode != null && validationStatusCode.length > 0)
 				|| (authorKeywords != null && authorKeywords.length > 0)
 				|| (publisherKeywords != null && publisherKeywords.length > 0)) {
 			// revisions are optional, but a solution without them is useless
 			criteria.createAlias("revisions", revAlias);
 			if (accessTypeCode != null && accessTypeCode.length > 0)
 				criteria.add(buildEqualsListCriterion(revAlias + ".accessTypeCode", accessTypeCode));
-			if (validationStatusCode != null && validationStatusCode.length > 0)
-				criteria.add(buildEqualsListCriterion(revAlias + ".validationStatusCode", validationStatusCode));
 			if (authorKeywords != null && authorKeywords.length > 0)
 				criteria.add(buildLikeListCriterion(revAlias + ".authors", authorKeywords, true));
 			if (publisherKeywords != null && publisherKeywords.length > 0)
@@ -261,7 +258,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String userId, String[] modelTypeCode, String[] accessTypeCode, String[] validationStatusCode,
+			String userId, String[] modelTypeCode, String[] accessTypeCode, 
 			String[] tags, Pageable pageable) {
 
 		// build the query using FOM to access child attributes
@@ -280,14 +277,11 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		if (modelTypeCode != null && modelTypeCode.length > 0)
 			criteria.add(buildEqualsListCriterion("modelTypeCode", modelTypeCode));
 		if ((accessTypeCode != null && accessTypeCode.length > 0) //
-				|| (descKeywords != null && descKeywords.length > 0) //
-				|| (validationStatusCode != null && validationStatusCode.length > 0)) {
+				|| (descKeywords != null && descKeywords.length > 0)) {
 			// revisions are optional, but a solution without them is useless
 			criteria.createAlias("revisions", revAlias);
 			if (accessTypeCode != null && accessTypeCode.length > 0)
 				criteria.add(buildEqualsListCriterion(revAlias + ".accessTypeCode", accessTypeCode));
-			if (validationStatusCode != null && validationStatusCode.length > 0)
-				criteria.add(buildEqualsListCriterion(revAlias + ".validationStatusCode", validationStatusCode));
 			if (descKeywords != null && descKeywords.length > 0) {
 				criteria.createAlias(revAlias + ".descriptions", descsAlias,
 						org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
@@ -316,7 +310,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCode,
-			String[] validationStatusCode, Date date, Pageable pageable) {
+			Date date, Pageable pageable) {
 
 		// build the query using FOM to access child attributes
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(MLPSolutionFOM.class, solAlias);
@@ -332,8 +326,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		criteria.add(Restrictions.eq("active", active));
 		if (accessTypeCode != null && accessTypeCode.length > 0)
 			criteria.add(Restrictions.in(revAlias + ".accessTypeCode", accessTypeCode));
-		if (validationStatusCode != null && validationStatusCode.length > 0)
-			criteria.add(Restrictions.in(revAlias + ".validationStatusCode", validationStatusCode));
 		// Construct a disjunction to find any updated item.
 		// Unfortunately this requires hard-coded field names
 		Criterion solModified = Restrictions.ge("modified", date);

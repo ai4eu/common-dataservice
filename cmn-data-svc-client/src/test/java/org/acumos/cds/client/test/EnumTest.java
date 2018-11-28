@@ -30,8 +30,6 @@ import org.acumos.cds.NotificationDeliveryMechanismCode;
 import org.acumos.cds.PeerStatusCode;
 import org.acumos.cds.SubscriptionScopeCode;
 import org.acumos.cds.ToolkitTypeCode;
-import org.acumos.cds.ValidationStatusCode;
-import org.acumos.cds.ValidationTypeCode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,7 +51,5 @@ public class EnumTest {
 		Assert.assertTrue(PeerStatusCode.values().length > 0);
 		Assert.assertTrue(SubscriptionScopeCode.values().length > 0);
 		Assert.assertTrue(ToolkitTypeCode.values().length > 0);
-		Assert.assertTrue(ValidationStatusCode.values().length > 0);
-		Assert.assertTrue(ValidationTypeCode.values().length > 0);
 	}
 }

@@ -52,55 +52,50 @@ public interface SolutionSearchService {
 	 * Gets a page of solutions matching all query parameters.
 	 * 
 	 * @param nameKeywords
-	 *                                  Searches the name field for the keywords
-	 *                                  using case-insensitive LIKE after
-	 *                                  surrounding with wildcard '%' characters;
-	 *                                  ignored if null or empty
+	 *                                Searches the name field for the keywords using
+	 *                                case-insensitive LIKE after surrounding with
+	 *                                wildcard '%' characters; ignored if null or
+	 *                                empty
 	 * @param descriptionKeywords
-	 *                                  Searches the revision descriptions for the
-	 *                                  keywords using case-insensitive LIKE after
-	 *                                  surrounding with wildcard '%' characters;
-	 *                                  ignored if null or empty
+	 *                                Searches the revision descriptions for the
+	 *                                keywords using case-insensitive LIKE after
+	 *                                surrounding with wildcard '%' characters;
+	 *                                ignored if null or empty
 	 * @param active
-	 *                                  Active status: true or false; required.
+	 *                                Active status: true or false; required.
 	 * @param userIds
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified values; ignored if null or empty
+	 *                                Limits match to solutions with one of the
+	 *                                specified values; ignored if null or empty
 	 * @param modelTypeCodes
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified values including null (not the
-	 *                                  4-character sequence "null"); ignored if
-	 *                                  null or empty
+	 *                                Limits match to solutions with one of the
+	 *                                specified values including null (not the
+	 *                                4-character sequence "null"); ignored if null
+	 *                                or empty
 	 * @param accessTypeCodes
-	 *                                  Limits match to solutions containing
-	 *                                  revisions with one of the specified values
-	 *                                  including null (not the 4-character sequence
-	 *                                  "null"); ignored if null or empty
-	 * @param validationStatusCodes
-	 *                                  Limits match to solutions containing
-	 *                                  revisions with one of the specified values
-	 *                                  including null (not the 4-character sequence
-	 *                                  "null"); ignored if null or empty
+	 *                                Limits match to solutions containing revisions
+	 *                                with one of the specified values including
+	 *                                null (not the 4-character sequence "null");
+	 *                                ignored if null or empty
 	 * @param tags
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified tags; ignored if null or empty
+	 *                                Limits match to solutions with one of the
+	 *                                specified tags; ignored if null or empty
 	 * @param authorKeywords
-	 *                                  Searches the author field for the keywords
-	 *                                  using case-insensitive LIKE after
-	 *                                  surrounding each with wildcard '%'
-	 *                                  characters; ignored if null or empty
+	 *                                Searches the author field for the keywords
+	 *                                using case-insensitive LIKE after surrounding
+	 *                                each with wildcard '%' characters; ignored if
+	 *                                null or empty
 	 * @param publisherKeywords
-	 *                                  Searches the publisher field for the
-	 *                                  keywords using case-insensitive LIKE after
-	 *                                  surrounding each with wildcard '%'
-	 *                                  characters; ignored if null or empty
+	 *                                Searches the publisher field for the keywords
+	 *                                using case-insensitive LIKE after surrounding
+	 *                                each with wildcard '%' characters; ignored if
+	 *                                null or empty
 	 * @param pageable
-	 *                                  Page and sort info
+	 *                                Page and sort info
 	 * @return Page of matches
 	 */
 	Page<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
-			String[] userIds, String[] modelTypeCodes, String[] accessTypeCodes, String[] validationStatusCodes,
-			String[] tags, String[] authorKeywords, String[] publisherKeywords, Pageable pageable);
+			String[] userIds, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, String[] authorKeywords,
+			String[] publisherKeywords, Pageable pageable);
 
 	/**
 	 * Gets a page of solutions matching all query parameters, with the caveat that
@@ -203,11 +198,6 @@ public interface SolutionSearchService {
 	 *                                  revisions with one of the specified values
 	 *                                  including null (not the 4-character sequence
 	 *                                  "null"); ignored if null or empty
-	 * @param validationStatusCodes
-	 *                                  Limits match to solutions containing
-	 *                                  revisions with one of the specified values
-	 *                                  including null (not the 4-character sequence
-	 *                                  "null"); ignored if null or empty
 	 * @param tags
 	 *                                  Limits match to solutions with one of the
 	 *                                  specified tags; ignored if null or empty
@@ -216,8 +206,7 @@ public interface SolutionSearchService {
 	 * @return Page of matches
 	 */
 	public Page<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
-			String userId, String[] modelTypeCodes, String[] accessTypeCodes, String[] validationStatusCodes,
-			String[] tags, Pageable pageable);
+			String userId, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, Pageable pageable);
 
 	/**
 	 * Gets a page of solutions with recent modifications. The following entities
@@ -228,27 +217,21 @@ public interface SolutionSearchService {
 	 * found.
 	 * 
 	 * @param active
-	 *                                  Active status: true or false; required
+	 *                            Active status: true or false; required
 	 * @param accessTypeCodes
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified values including null (not the
-	 *                                  4-character sequence "null"); ignored if
-	 *                                  null or empty
-	 * @param validationStatusCodes
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified values including null (not the
-	 *                                  4-character sequence "null"); ignored if
-	 *                                  null or empty
+	 *                            Limits match to solutions with one of the
+	 *                            specified values including null (not the
+	 *                            4-character sequence "null"); ignored if null or
+	 *                            empty
 	 * @param modifiedDate
-	 *                                  The threshold value used in the search.
-	 *                                  Entities with modification dates prior to
-	 *                                  (smaller than) this point in time are
-	 *                                  ignored.
+	 *                            The threshold value used in the search. Entities
+	 *                            with modification dates prior to (smaller than)
+	 *                            this point in time are ignored.
 	 * @param pageable
-	 *                                  Page and sort info
+	 *                            Page and sort info
 	 * @return Page of matches
 	 */
-	Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes,
-			String[] validationStatusCodes, Date modifiedDate, Pageable pageable);
+	Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes, Date modifiedDate,
+			Pageable pageable);
 
 }

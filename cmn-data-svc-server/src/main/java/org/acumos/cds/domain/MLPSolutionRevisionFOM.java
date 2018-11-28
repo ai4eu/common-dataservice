@@ -175,7 +175,7 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 	@SuppressWarnings("deprecation")
 	public MLPSolutionRevision toMLPSolutionRevision() {
 		MLPSolutionRevision rev = new MLPSolutionRevision(solution.getSolutionId(), getVersion(), user.getUserId(),
-				getAccessTypeCode(), getValidationStatusCode());
+				getAccessTypeCode());
 		rev.setCreated(getCreated());
 		rev.setDescription(getDescription());
 		rev.setMetadata(getMetadata());

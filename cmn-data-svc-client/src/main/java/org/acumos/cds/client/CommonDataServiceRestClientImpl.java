@@ -65,7 +65,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionValidation;
 import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
@@ -78,9 +77,6 @@ import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
-import org.acumos.cds.domain.MLPValidationSequence;
-import org.acumos.cds.domain.MLPValidationStatus;
-import org.acumos.cds.domain.MLPValidationType;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.LoginTransport;
 import org.acumos.cds.transport.RestPageRequest;
@@ -540,32 +536,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
 	@Override
 	@Deprecated
-	public List<MLPValidationStatus> getValidationStatuses() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.VAL_PATH, CCDSConstants.STATUS_PATH },
-				null, null);
-		logger.debug("getValidationStatuses: uri {}", uri);
-		ResponseEntity<List<MLPValidationStatus>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPValidationStatus>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPValidationType> getValidationTypes() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.VAL_PATH, CCDSConstants.TYPE_PATH },
-				null, null);
-		logger.debug("getValidationTypes: uri {}", uri);
-		ResponseEntity<List<MLPValidationType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPValidationType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
 	public List<MLPDeploymentStatus> getDeploymentStatuses() {
 		URI uri = buildUri(
 				new String[] { CCDSConstants.CODE_PATH, CCDSConstants.DEPLOY_PATH, CCDSConstants.STATUS_PATH }, null,
@@ -626,13 +596,11 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes,
-			String[] validationStatusCodes, Date date, RestPageRequest pageRequest) {
+	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Date date,
+			RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
 		parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
-		if (validationStatusCodes != null && validationStatusCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_VAL_STATUSES, validationStatusCodes);
 		parms.put(CCDSConstants.SEARCH_DATE, date.getTime());
 		URI uri = buildUri(
 				new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH, CCDSConstants.DATE_PATH }, parms,
@@ -646,9 +614,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes,
-			String[] validationStatusCodes, String[] tags, String[] authorKeywords, String[] publisherKeywords,
-			RestPageRequest pageRequest) {
+			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+			String[] authorKeywords, String[] publisherKeywords, RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		// This is required
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
@@ -662,8 +629,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
 		if (modelTypeCodes != null && modelTypeCodes.length > 0)
 			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
-		if (validationStatusCodes != null && validationStatusCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_VAL_STATUSES, validationStatusCodes);
 		if (tags != null && tags.length > 0)
 			parms.put(CCDSConstants.SEARCH_TAGS, tags);
 		if (authorKeywords != null && authorKeywords.length > 0)
@@ -736,8 +701,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public RestPageResponse<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String userId, String[] accessTypeCodes, String[] modelTypeCodes,
-			String[] validationStatusCodes, String[] tags, RestPageRequest pageRequest) {
+			boolean active, String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+			RestPageRequest pageRequest) {
 		if (userId == null || userId.length() == 0)
 			throw new IllegalArgumentException("userId argument is required");
 		HashMap<String, Object> parms = new HashMap<>();
@@ -751,8 +716,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
 		if (modelTypeCodes != null && modelTypeCodes.length > 0)
 			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
-		if (validationStatusCodes != null && validationStatusCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_VAL_STATUSES, validationStatusCodes);
 		if (tags != null && tags.length > 0)
 			parms.put(CCDSConstants.SEARCH_TAGS, tags);
 		URI uri = buildUri(
@@ -1715,73 +1678,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.USER_PATH, userId,
 				CCDSConstants.ACCESS_PATH }, null, null);
 		logger.debug("dropSolutionUserAccess: url {}", uri);
-		restTemplate.delete(uri);
-	}
-
-	@Override
-	public List<MLPSolutionValidation> getSolutionValidations(String solutionId, String revisionId) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.REVISION_PATH,
-				revisionId, CCDSConstants.VALIDATION_PATH }, null, null);
-		logger.debug("getSolutionValidations: uri {}", uri);
-		ResponseEntity<List<MLPSolutionValidation>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPSolutionValidation>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public MLPSolutionValidation createSolutionValidation(MLPSolutionValidation validation) {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.SOLUTION_PATH, validation.getSolutionId(), CCDSConstants.REVISION_PATH,
-						validation.getRevisionId(), CCDSConstants.VALIDATION_PATH, validation.getTaskId() },
-				null, null);
-		logger.debug("createSolutionValidation: uri {}", uri);
-		return restTemplate.postForObject(uri, validation, MLPSolutionValidation.class);
-	}
-
-	@Override
-	public void updateSolutionValidation(MLPSolutionValidation validation) {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.SOLUTION_PATH, validation.getSolutionId(), CCDSConstants.REVISION_PATH,
-						validation.getRevisionId(), CCDSConstants.VALIDATION_PATH, validation.getTaskId() },
-				null, null);
-		logger.debug("updateSolutionRating: url {}", uri);
-		restTemplate.put(uri, validation);
-	}
-
-	@Override
-	public void deleteSolutionValidation(MLPSolutionValidation validation) {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.SOLUTION_PATH, validation.getSolutionId(), CCDSConstants.REVISION_PATH,
-						validation.getRevisionId(), CCDSConstants.VALIDATION_PATH, validation.getTaskId() },
-				null, null);
-		logger.debug("deleteSolutionValidation: url {}", uri);
-		restTemplate.delete(uri);
-	}
-
-	@Override
-	public List<MLPValidationSequence> getValidationSequences() {
-		URI uri = buildUri(new String[] { CCDSConstants.VAL_SEQ_PATH }, null, null);
-		logger.debug("getValidationSequences: uri {}", uri);
-		ResponseEntity<List<MLPValidationSequence>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPValidationSequence>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public MLPValidationSequence createValidationSequence(MLPValidationSequence sequence) {
-		URI uri = buildUri(new String[] { CCDSConstants.VAL_SEQ_PATH, Integer.toString(sequence.getSequence()),
-				CCDSConstants.VAL_TYPE_PATH, sequence.getValTypeCode() }, null, null);
-		logger.debug("createValidationSequence: uri {}", uri);
-		return restTemplate.postForObject(uri, sequence, MLPValidationSequence.class);
-	}
-
-	@Override
-	public void deleteValidationSequence(MLPValidationSequence sequence) {
-		URI uri = buildUri(new String[] { CCDSConstants.VAL_SEQ_PATH, Integer.toString(sequence.getSequence()),
-				CCDSConstants.VAL_TYPE_PATH, sequence.getValTypeCode() }, null, null);
-		logger.debug("deleteValidationSequence: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

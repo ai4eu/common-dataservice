@@ -79,7 +79,7 @@ public class FOMAnnotationTest {
 		cs = solutionRepository.save(cs);
 		Assert.assertNotNull("Solution ID", cs.getSolutionId());
 
-		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), "PR", "NV");
+		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), "PR");
 		cr = revisionRepository.save(cr);
 		Assert.assertNotNull("Revision ID", cr.getRevisionId());
 		logger.info("Created solution revision {}", cr.getRevisionId());

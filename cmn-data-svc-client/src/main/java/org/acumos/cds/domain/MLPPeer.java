@@ -110,12 +110,6 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	@ApiModelProperty(required = true, value = "Peer active status code", example = "AC")
 	private String statusCode;
 
-	@Column(name = "VALIDATION_STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "validationStatusCode cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, example = "NV")
-	private String validationStatusCode;
-
 	/**
 	 * No-arg constructor.
 	 */
@@ -142,13 +136,10 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 *                                 Primary contact details
 	 * @param statusCode
 	 *                                 Peer status code
-	 * @param validationStatusCode
-	 *                                 Peer validation code
 	 */
 	public MLPPeer(String name, String subjectName, String apiUrl, boolean isSelf, boolean isLocal, String contact1,
-			String statusCode, String validationStatusCode) {
-		if (name == null || subjectName == null || apiUrl == null || contact1 == null || statusCode == null
-				|| validationStatusCode == null)
+			String statusCode) {
+		if (name == null || subjectName == null || apiUrl == null || contact1 == null || statusCode == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.name = name;
 		this.subjectName = subjectName;
@@ -157,7 +148,6 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 		this.isLocal = isLocal;
 		this.contact1 = contact1;
 		this.statusCode = statusCode;
-		this.validationStatusCode = validationStatusCode;
 	}
 
 	/**
@@ -177,7 +167,6 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 		this.peerId = that.peerId;
 		this.statusCode = that.statusCode;
 		this.subjectName = that.subjectName;
-		this.validationStatusCode = that.validationStatusCode;
 		this.webUrl = that.webUrl;
 	}
 
@@ -327,18 +316,6 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 */
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
-	}
-
-	public String getValidationStatusCode() {
-		return validationStatusCode;
-	}
-
-	/**
-	 * @param validationStatusCode
-	 *                                 The validation status code
-	 */
-	public void setValidationStatusCode(String validationStatusCode) {
-		this.validationStatusCode = validationStatusCode;
 	}
 
 	@Override

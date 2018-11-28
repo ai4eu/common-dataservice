@@ -61,8 +61,6 @@ public class CodeNameProperties {
 	private Map<String, String> stepType;
 	private Map<String, String> subscriptionScope;
 	private Map<String, String> toolkitType;
-	private Map<String, String> validationStatus;
-	private Map<String, String> validationType;
 
 	public Map<String, String> getAccessType() {
 		return accessType;
@@ -166,22 +164,6 @@ public class CodeNameProperties {
 
 	public void setToolkitType(Map<String, String> toolkitType) {
 		this.toolkitType = toolkitType;
-	}
-
-	public Map<String, String> getValidationStatus() {
-		return validationStatus;
-	}
-
-	public void setValidationStatus(Map<String, String> validationStatus) {
-		this.validationStatus = validationStatus;
-	}
-
-	public Map<String, String> getValidationType() {
-		return validationType;
-	}
-
-	public void setValidationType(Map<String, String> validationType) {
-		this.validationType = validationType;
 	}
 
 }

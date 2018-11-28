@@ -52,7 +52,6 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPSolutionValidation;
 import org.acumos.cds.domain.MLPSolutionWeb;
 import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPStepStatus;
@@ -64,9 +63,6 @@ import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
-import org.acumos.cds.domain.MLPValidationSequence;
-import org.acumos.cds.domain.MLPValidationStatus;
-import org.acumos.cds.domain.MLPValidationType;
 import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
@@ -171,24 +167,6 @@ public interface ICommonDataServiceRestClient {
 	List<MLPToolkitType> getToolkitTypes();
 
 	/**
-	 * Gets all validation status codes
-	 * 
-	 * @return List of validation status code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPValidationStatus> getValidationStatuses();
-
-	/**
-	 * Gets all validation type codes.
-	 * 
-	 * @return List of validation type code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPValidationType> getValidationTypes();
-
-	/**
 	 * Gets the list of code-name value-set names.
 	 * 
 	 * @return List of names
@@ -246,77 +224,67 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPSolution> findSolutionsByTag(String tag, RestPageRequest pageRequest);
 
 	/**
-	 * Finds solutions with the specified status, access type and validation status
-	 * code(s), and that were modified after the specified date. Checks the
-	 * last-updated date on the solution, the revisions for the solution, and the
-	 * artifacts in the revisions. A solution must have revision(s) and artifact(s)
-	 * to match.
+	 * Finds solutions with the specified status, access type code(s), and that were
+	 * modified after the specified date. Checks the last-updated date on the
+	 * solution, the revisions for the solution, and the artifacts in the revisions.
+	 * A solution must have revision(s) and artifact(s) to match.
 	 * 
 	 * @param active
-	 *                                  Solution active status; true for active,
-	 *                                  false for inactive
+	 *                            Solution active status; true for active, false for
+	 *                            inactive
 	 * @param accessTypeCodes
-	 *                                  Access type codes (required)
-	 * @param validationStatusCodes
-	 *                                  Validation status codes (ignored if null or
-	 *                                  empty)
+	 *                            Access type codes (required)
 	 * @param date
-	 *                                  Date threshold
+	 *                            Date threshold
 	 * @param pageRequest
-	 *                                  Page index, page size, sort information;
-	 *                                  ignored if null.
+	 *                            Page index, page size, sort information; ignored
+	 *                            if null.
 	 * @return Page of solution objects.
 	 */
-	RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes,
-			String[] validationStatusCodes, Date date, RestPageRequest pageRequest);
+	RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Date date,
+			RestPageRequest pageRequest);
 
 	/**
 	 * Finds solutions that match every specified condition. Special-purpose method
 	 * to support the dynamic search page on the portal marketplace.
 	 * 
 	 * @param nameKeywords
-	 *                                  Keywords to perform "LIKE" search in
-	 *                                  solution name field; ignored if null or
-	 *                                  empty
+	 *                                Keywords to perform "LIKE" search in solution
+	 *                                name field; ignored if null or empty
 	 * @param descriptionKeywords
-	 *                                  Keywords to perform "LIKE" search in the
-	 *                                  revision description (any access type);
-	 *                                  ignored if null or empty
+	 *                                Keywords to perform "LIKE" search in the
+	 *                                revision description (any access type);
+	 *                                ignored if null or empty
 	 * @param active
-	 *                                  Solution active status; true for active,
-	 *                                  false for inactive
+	 *                                Solution active status; true for active, false
+	 *                                for inactive
 	 * @param userIds
-	 *                                  User IDs who created the solution; ignored
-	 *                                  if null or empty
+	 *                                User IDs who created the solution; ignored if
+	 *                                null or empty
 	 * @param accessTypeCodes
-	 *                                  Access type codes; use four-letter sequence
-	 *                                  "null" to match a null value; ignored if
-	 *                                  null or empty
+	 *                                Access type codes; use four-letter sequence
+	 *                                "null" to match a null value; ignored if null
+	 *                                or empty
 	 * @param modelTypeCodes
-	 *                                  Model type codes; use four-letter sequence
-	 *                                  "null" to match a null value; ignored if
-	 *                                  null or empty
-	 * @param validationStatusCodes
-	 *                                  Validation status codes; use four-letter
-	 *                                  sequence "null" to match a null value;
-	 *                                  ignored if null or empty
+	 *                                Model type codes; use four-letter sequence
+	 *                                "null" to match a null value; ignored if null
+	 *                                or empty
 	 * @param tags
-	 *                                  Solution tag names; ignored if null or empty
+	 *                                Solution tag names; ignored if null or empty
 	 * @param authorKeywords
-	 *                                  Keywords to perform "LIKE" search in the
-	 *                                  Authors field; ignored if null or empty
+	 *                                Keywords to perform "LIKE" search in the
+	 *                                Authors field; ignored if null or empty
 	 * @param publisherKeywords
-	 *                                  Keywords to perform "LIKE" search in the
-	 *                                  Publisher field; ignored if null or empty
+	 *                                Keywords to perform "LIKE" search in the
+	 *                                Publisher field; ignored if null or empty
 	 * @param pageRequest
-	 *                                  Page index, page size and sort information;
-	 *                                  defaults to page 0 of size 20 if null.
+	 *                                Page index, page size and sort information;
+	 *                                defaults to page 0 of size 20 if null.
 	 * @return Page of solution objects.
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes,
-			String[] validationStatusCodes, String[] tags, String[] authorKeywords, String[] publisherKeywords,
-			RestPageRequest pageRequest);
+			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+			String[] authorKeywords, String[] publisherKeywords, RestPageRequest pageRequest);
 
 	/**
 	 * Gets a page of solutions that match every condition, with the caveat that any
@@ -394,41 +362,36 @@ public interface ICommonDataServiceRestClient {
 	 * portal interface.
 	 * 
 	 * @param nameKeywords
-	 *                                  Keywords to perform "LIKE" search in
-	 *                                  solution name field; ignored if null or
-	 *                                  empty
+	 *                                Keywords to perform "LIKE" search in solution
+	 *                                name field; ignored if null or empty
 	 * @param descriptionKeywords
-	 *                                  Keywords to perform "LIKE" search in the
-	 *                                  revision description (any access type);
-	 *                                  ignored if null or empty
+	 *                                Keywords to perform "LIKE" search in the
+	 *                                revision description (any access type);
+	 *                                ignored if null or empty
 	 * @param active
-	 *                                  Solution active status; true for active,
-	 *                                  false for inactive; required.
+	 *                                Solution active status; true for active, false
+	 *                                for inactive; required.
 	 * @param userId
-	 *                                  User ID who created a solution or has access
-	 *                                  to a solution; required.
+	 *                                User ID who created a solution or has access
+	 *                                to a solution; required.
 	 * @param accessTypeCodes
-	 *                                  Access type codes; use four-letter sequence
-	 *                                  "null" to match a null value; ignored if
-	 *                                  null or empty
+	 *                                Access type codes; use four-letter sequence
+	 *                                "null" to match a null value; ignored if null
+	 *                                or empty
 	 * @param modelTypeCodes
-	 *                                  Model type codes; use four-letter sequence
-	 *                                  "null" to match a null value; ignored if
-	 *                                  null or empty
-	 * @param validationStatusCodes
-	 *                                  Validation status codes; use four-letter
-	 *                                  sequence "null" to match a null value;
-	 *                                  ignored if null or empty
+	 *                                Model type codes; use four-letter sequence
+	 *                                "null" to match a null value; ignored if null
+	 *                                or empty
 	 * @param tags
-	 *                                  Solution tag names; ignored if null or empty
+	 *                                Solution tag names; ignored if null or empty
 	 * @param pageRequest
-	 *                                  Page index, page size and sort information;
-	 *                                  defaults to page 0 of size 20 if null.
+	 *                                Page index, page size and sort information;
+	 *                                defaults to page 0 of size 20 if null.
 	 * @return Page of solution objects.
 	 */
 	RestPageResponse<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
-			String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] validationStatusCodes,
-			String[] tags, RestPageRequest pageRequest);
+			String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+			RestPageRequest pageRequest);
 
 	/**
 	 * Searches solutions for exact matches.
@@ -1511,66 +1474,6 @@ public interface ICommonDataServiceRestClient {
 	void updatePassword(MLPUser user, MLPPasswordChangeRequest changeRequest);
 
 	/**
-	 * Gets the validation results for the specified solution and revision.
-	 * 
-	 * @param solutionId
-	 *                       Instance ID
-	 * @param revisionId
-	 *                       Instance ID
-	 * @return List of solution validations
-	 */
-	List<MLPSolutionValidation> getSolutionValidations(String solutionId, String revisionId);
-
-	/**
-	 * Creates a solution validation record.
-	 * 
-	 * @param validation
-	 *                       Instance to save
-	 * @return Complete object, with generated information such as ID
-	 */
-	MLPSolutionValidation createSolutionValidation(MLPSolutionValidation validation);
-
-	/**
-	 * Updates a solution validation record.
-	 * 
-	 * @param validation
-	 *                       Instance to update
-	 */
-	void updateSolutionValidation(MLPSolutionValidation validation);
-
-	/**
-	 * Deletes a solution validation record.
-	 * 
-	 * @param validation
-	 *                       Instance to delete
-	 */
-	void deleteSolutionValidation(MLPSolutionValidation validation);
-
-	/**
-	 * Gets the validation sequence records.
-	 * 
-	 * @return List of validation sequence
-	 */
-	List<MLPValidationSequence> getValidationSequences();
-
-	/**
-	 * Creates a validation sequence record.
-	 * 
-	 * @param sequence
-	 *                     Instance to save
-	 * @return Complete object
-	 */
-	MLPValidationSequence createValidationSequence(MLPValidationSequence sequence);
-
-	/**
-	 * Deletes a validation sequence record.
-	 * 
-	 * @param sequence
-	 *                     Instance to delete
-	 */
-	void deleteValidationSequence(MLPValidationSequence sequence);
-
-	/**
 	 * Gets a page of deployments for the specified user.
 	 * 
 	 * @param userId
@@ -1624,7 +1527,7 @@ public interface ICommonDataServiceRestClient {
 	MLPSolutionDeployment createSolutionDeployment(MLPSolutionDeployment deployment);
 
 	/**
-	 * Updates a solution validation record.
+	 * Updates a solution deployment record.
 	 * 
 	 * @param deployment
 	 *                       Instance to update
