@@ -44,6 +44,6 @@ public interface SolGrpMemMapRepository
 	@Query(value = "select s from MLPSolution s, MLPSolGrpMemMap m " //
 			+ " where s.solutionId =  m.solutionId " //
 			+ " and m.groupId = :groupId")
-	Page<MLPSolution> findSolutionsByGroupId(@Param("groupId") Long groupId, Pageable pageable);
+	Page<MLPSolution> findSolutionsByGroupId(@Param("groupId") long groupId, Pageable pageable);
 
 }

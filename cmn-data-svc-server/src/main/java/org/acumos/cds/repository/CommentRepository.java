@@ -42,7 +42,7 @@ public interface CommentRepository extends PagingAndSortingRepository<MLPComment
 	 * @return Count of comments
 	 */
 	@Query("SELECT COUNT(commentId) FROM MLPComment WHERE threadId = :threadId")
-	Long countThreadComments(@Param("threadId") String threadId);
+	long countThreadComments(@Param("threadId") String threadId);
 
 	/**
 	 * Gets a page of comments with the specified thread ID using Spring magic.
@@ -68,7 +68,7 @@ public interface CommentRepository extends PagingAndSortingRepository<MLPComment
 			+ " where c.threadId =  t.threadId " //
 			+ " and t.solutionId = :solutionId" //
 			+ " and t.revisionId = :revisionId")
-	Long countSolutionRevisionComments(@Param("solutionId") String solutionId, @Param("revisionId") String revisionId);
+	long countSolutionRevisionComments(@Param("solutionId") String solutionId, @Param("revisionId") String revisionId);
 
 	/**
 	 * Gets a page of comments with the specified IDs by joining on the thread

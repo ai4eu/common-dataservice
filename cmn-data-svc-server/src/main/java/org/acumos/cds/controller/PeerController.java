@@ -34,6 +34,7 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.repository.PeerRepository;
 import org.acumos.cds.repository.PeerSubscriptionRepository;
 import org.acumos.cds.service.PeerSearchService;
+import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
 import org.acumos.cds.transport.SuccessTransport;
@@ -262,6 +263,16 @@ public class PeerController extends AbstractController {
 	}
 
 	/* Peer Subscriptions */
+
+	@ApiOperation(value = "Gets count of subscriptions for the specified peer.", //
+			response = CountTransport.class)
+	@RequestMapping(value = "/{peerId}/" + CCDSConstants.SUBSCRIPTION_PATH + "/"
+			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
+	public CountTransport getPeerSubCount(@PathVariable("peerId") String peerId) {
+		logger.debug("getPeerSubCount peerId {}", peerId);
+		long count = peerSubRepository.countPeerSubscriptions(peerId);
+		return new CountTransport(count);
+	}
 
 	@ApiOperation(value = "Gets all subscriptions for the specified peer.", //
 			response = MLPPeerSubscription.class, responseContainer = "List")

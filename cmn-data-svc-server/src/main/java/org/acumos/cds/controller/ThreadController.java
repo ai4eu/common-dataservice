@@ -203,7 +203,7 @@ public class ThreadController extends AbstractController {
 			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getCommentCount(@PathVariable("threadId") String threadId) {
 		logger.debug("getCommentCount: threadId {}", threadId);
-		Long count = commentRepository.countThreadComments(threadId);
+		long count = commentRepository.countThreadComments(threadId);
 		return new CountTransport(count);
 	}
 

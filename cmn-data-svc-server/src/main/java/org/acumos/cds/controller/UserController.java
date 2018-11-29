@@ -143,7 +143,7 @@ public class UserController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getUserCount() {
 		logger.debug("getUserCount");
-		Long count = userRepository.count();
+		long count = userRepository.count();
 		return new CountTransport(count);
 	}
 
@@ -615,7 +615,7 @@ public class UserController extends AbstractController {
 			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getRoleUsersCount(@PathVariable("roleId") String roleId) {
 		logger.debug("getRoleUsersCount: roleId {}", roleId);
-		Long count = userRoleMapRepository.getRoleUsersCount(roleId);
+		long count = userRoleMapRepository.countRoleUsers(roleId);
 		return new CountTransport(count);
 	}
 

@@ -1159,6 +1159,15 @@ public interface ICommonDataServiceRestClient {
 	void deletePeer(String peerId);
 
 	/**
+	 * Gets the count of subscriptions for the specified peer.
+	 * 
+	 * @param peerId
+	 *                   Instance ID
+	 * @return number of subscriptions for the peer
+	 */
+	long getPeerSubscriptionCount(String peerId);
+
+	/**
 	 * Gets all subscriptions for the specified peer.
 	 * 
 	 * @param peerId

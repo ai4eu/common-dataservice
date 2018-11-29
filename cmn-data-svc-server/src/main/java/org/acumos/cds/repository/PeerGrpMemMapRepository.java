@@ -44,6 +44,6 @@ public interface PeerGrpMemMapRepository
 	@Query(value = "select p from MLPPeer p, MLPPeerGrpMemMap m " //
 			+ " where p.peerId =  m.peerId " //
 			+ " and m.groupId = :groupId")
-	Page<MLPPeer> findPeersByGroupId(@Param("groupId") Long groupId, Pageable pageable);
+	Page<MLPPeer> findPeersByGroupId(@Param("groupId") long groupId, Pageable pageable);
 
 }
