@@ -32,7 +32,7 @@ import javax.validation.constraints.Size;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Model for site configuration details, basically a key-value store.
+ * Model for site configuration, basically a key-value store for JSON content.
  */
 @Entity
 @Table(name = "C_SITE_CONFIG")

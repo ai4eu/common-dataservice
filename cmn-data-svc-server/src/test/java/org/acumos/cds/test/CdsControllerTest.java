@@ -65,6 +65,7 @@ import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -1446,12 +1447,7 @@ public class CdsControllerTest {
 	@Test
 	public void testSiteConfig() throws Exception {
 		final String s64 = "12345678901234567890123456789012345678901234567890123456789012345";
-		try {
-			client.getSiteConfig("bogus");
-			throw new Exception("Unexpected success on key=bogus");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("Failed to get missing config as expected {}", ex.getResponseBodyAsString());
-		}
+		Assert.assertNull(client.getSiteConfig("bogus"));
 		try {
 			MLPSiteConfig sc = new MLPSiteConfig("bogus", "{ \"some\" : \"json\" }");
 			sc.setUserId("bogus");
@@ -1502,6 +1498,56 @@ public class CdsControllerTest {
 			throw new Exception("Unexpected success of delete");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Failed to delete fake config as expected {}", ex.getResponseBodyAsString());
+		}
+	}
+
+	@Test
+	public void testSiteContent() throws Exception {
+		final byte[] bytes = { 0, 1, 2, 3, 4, 5 };
+		final String s64 = "12345678901234567890123456789012345678901234567890123456789012345";
+		Assert.assertNull(client.getSiteContent("bogus"));
+		try {
+			client.createSiteContent(new MLPSiteContent(s64, bytes, s64));
+			throw new Exception("Unexpected success on long key");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Failed to create content with long key as expected {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.updateSiteContent(new MLPSiteContent("bogus", bytes, s64));
+			throw new Exception("Unexpected success of bogus update");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Failed to update non-existent content as expected {}", ex.getResponseBodyAsString());
+		}
+		// this should work
+		final String key = "controllerTest-siteContent";
+		MLPSiteContent content = new MLPSiteContent(key, bytes, "application/octet-stream");
+		content = client.createSiteContent(content);
+		Assert.assertNotNull(content.getCreated());
+		logger.info("Created site config {}", content);
+		content = client.getSiteContent(key);
+		Assert.assertNotNull(content);
+
+		try {
+			client.createSiteContent(content);
+			throw new Exception("Unexpected success on dupe");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Failed to create dupe config as expected {}", ex.getResponseBodyAsString());
+		}
+		content.setContentValue(new byte[0]);
+		client.updateSiteContent(content);
+		try {
+			content.setContentValue(null);
+			client.updateSiteContent(content);
+			throw new Exception("Unexpected success of null content");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Failed to update bad content as expected {}", ex.getResponseBodyAsString());
+		}
+		client.deleteSiteContent(content.getContentKey());
+		try {
+			client.deleteSiteContent(content.getContentKey());
+			throw new Exception("Unexpected success of delete");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("Failed to delete fake content as expected {}", ex.getResponseBodyAsString());
 		}
 	}
 

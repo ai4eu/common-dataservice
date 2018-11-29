@@ -26,7 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.repository.SiteConfigRepository;
+import org.acumos.cds.repository.SiteContentRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -47,37 +49,33 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
- * Answers REST requests to manage site configuration entries.
+ * Answers REST requests to manage site configuration and site content entries.
  */
 @RestController
-@RequestMapping(value = "/" + CCDSConstants.CONFIG_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
-public class SiteConfigController extends AbstractController {
+@RequestMapping(value = "/" + CCDSConstants.SITE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
+public class SiteController extends AbstractController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired
 	private SiteConfigRepository siteConfigRepository;
 	@Autowired
+	private SiteContentRepository siteContentRepository;
+	@Autowired
 	private UserRepository userRepository;
 
-	@ApiOperation(value = "Gets the site configuration value for the specified key.", response = SuccessTransport.class)
-	@RequestMapping(value = "/{configKey}", method = RequestMethod.GET)
-	public Object getSiteConfig(@PathVariable("configKey") String configKey, HttpServletResponse response) {
+	@ApiOperation(value = "Gets the site configuration value for the specified key.", response = MLPSiteConfig.class)
+	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.GET)
+	public MLPSiteConfig getSiteConfig(@PathVariable("configKey") String configKey, HttpServletResponse response) {
 		logger.debug("getSiteConfig key {}", configKey);
-		MLPSiteConfig da = siteConfigRepository.findOne(configKey);
-		if (da == null) {
-			logger.warn("getSiteConfig failed on key {}", configKey);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + configKey, null);
-		}
-		return da;
+		return siteConfigRepository.findOne(configKey);
 	}
 
 	@ApiOperation(value = "Creates a new site configuration record. Returns bad request on constraint violation etc.", response = MLPSiteConfig.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = CCDSConstants.CONFIG_PATH, method = RequestMethod.POST)
 	public Object createSiteConfig(@RequestBody MLPSiteConfig siteConfig, HttpServletResponse response) {
-		logger.debug("createSiteConfig: config key {}", siteConfig.getConfigKey());
+		logger.debug("createSiteConfig: key {}", siteConfig.getConfigKey());
 		if (siteConfigRepository.findOne(siteConfig.getConfigKey()) != null) {
 			logger.warn("createSiteConfig failed on key {}", siteConfig.getConfigKey());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -95,10 +93,10 @@ public class SiteConfigController extends AbstractController {
 			Object result = siteConfigRepository.save(siteConfig);
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			// This is a hack to create the location path.
-			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.CONFIG_PATH + "/" + siteConfig.getConfigKey());
+			response.setHeader(HttpHeaders.LOCATION,
+					CCDSConstants.SITE_PATH + "/" + CCDSConstants.CONFIG_PATH + "/" + siteConfig.getConfigKey());
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createSiteConfig failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -106,10 +104,10 @@ public class SiteConfigController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing config record with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{configKey}", method = RequestMethod.PUT)
+	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.PUT)
 	public Object updateSiteConfig(@PathVariable("configKey") String configKey, @RequestBody MLPSiteConfig siteConfig,
 			HttpServletResponse response) {
 		logger.debug("updateSiteConfig key {}", configKey);
@@ -126,7 +124,6 @@ public class SiteConfigController extends AbstractController {
 			siteConfigRepository.save(siteConfig);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateSiteConfig failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -134,10 +131,10 @@ public class SiteConfigController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified key. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the config record with the specified key. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{configKey}", method = RequestMethod.DELETE)
+	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.DELETE)
 	public MLPTransportModel deleteSiteConfig(@PathVariable("configKey") String configKey,
 			HttpServletResponse response) {
 		logger.debug("deleteSiteConfig key {}", configKey);
@@ -149,6 +146,84 @@ public class SiteConfigController extends AbstractController {
 			logger.warn("deleteSiteConfig failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSiteConfig failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Gets the site content value for the specified key.", response = MLPSiteContent.class)
+	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.GET)
+	public MLPSiteContent getSiteContent(@PathVariable("contentKey") String contentKey, HttpServletResponse response) {
+		logger.debug("getSiteContent key {}", contentKey);
+		return siteContentRepository.findOne(contentKey);
+	}
+
+	@ApiOperation(value = "Creates a new site content record. Returns bad request on constraint violation etc.", response = MLPSiteContent.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = CCDSConstants.CONTENT_PATH, method = RequestMethod.POST)
+	public Object createSiteContent(@RequestBody MLPSiteContent siteContent, HttpServletResponse response) {
+		logger.debug("createSiteContent: key {}", siteContent.getContentKey());
+		if (siteContentRepository.findOne(siteContent.getContentKey()) != null) {
+			logger.warn("createSiteContent failed on key {}", siteContent.getContentKey());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Key exists: " + siteContent.getContentKey(),
+					null);
+		}
+		try {
+			Object result = siteContentRepository.save(siteContent);
+			response.setStatus(HttpServletResponse.SC_CREATED);
+			// This is a hack to create the location path.
+			response.setHeader(HttpHeaders.LOCATION,
+					CCDSConstants.SITE_PATH + "/" + CCDSConstants.CONTENT_PATH + "/" + siteContent.getContentKey());
+			return result;
+		} catch (Exception ex) {
+			Exception cve = findConstraintViolationException(ex);
+			logger.warn("createSiteContent failed: {}", cve.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createSiteContent failed", cve);
+		}
+	}
+
+	@ApiOperation(value = "Updates an existing content record with the supplied data. Returns bad request on constraint violation etc.", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.PUT)
+	public Object updateSiteContent(@PathVariable("contentKey") String contentKey,
+			@RequestBody MLPSiteContent siteContent, HttpServletResponse response) {
+		logger.debug("updateSiteContent key {}", contentKey);
+		// Get the existing one
+		MLPSiteContent existing = siteContentRepository.findOne(contentKey);
+		if (existing == null) {
+			logger.warn("updateSiteContent failed on key {}", contentKey);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + contentKey, null);
+		}
+		try {
+			// Use the path-parameter id; don't trust the one in the object
+			siteContent.setContentKey(contentKey);
+			siteContentRepository.save(siteContent);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			Exception cve = findConstraintViolationException(ex);
+			logger.warn("updateSiteContent failed: {}", cve.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateSiteContent failed", cve);
+		}
+	}
+
+	@ApiOperation(value = "Deletes the content record with the specified key. Returns bad request if the ID is not found.", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.DELETE)
+	public MLPTransportModel deleteSiteContent(@PathVariable("contentKey") String contentKey,
+			HttpServletResponse response) {
+		logger.debug("deleteSiteContent key {}", contentKey);
+		try {
+			siteContentRepository.delete(contentKey);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			// e.g., EmptyResultDataAccessException is NOT an internal server error
+			logger.warn("deleteSiteContent failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSiteContent failed", ex);
 		}
 	}
 

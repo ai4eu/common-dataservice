@@ -20,9 +20,9 @@
 
 package org.acumos.cds.repository;
 
-import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SiteConfigRepository extends CrudRepository<MLPSiteConfig, String> {
+public interface SiteContentRepository extends CrudRepository<MLPSiteContent, String> {
 
 }

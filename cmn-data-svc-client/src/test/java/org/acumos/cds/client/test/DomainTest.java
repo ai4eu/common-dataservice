@@ -48,6 +48,7 @@ import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolGrpMemMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
 import org.acumos.cds.domain.MLPSolRevDocMap;
@@ -766,6 +767,39 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(m.toString());
 		try {
 			new MLPSiteConfig(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+	}
+
+	private void checkMLPSiteContent(MLPSiteContent m) {
+		Assert.assertEquals(s1, m.getContentKey());
+		Assert.assertEquals(by1, m.getContentValue());
+		Assert.assertEquals(d1, m.getCreated());
+		Assert.assertEquals(s2, m.getMimeType());
+		Assert.assertEquals(d2, m.getModified());
+	}
+
+	@Test
+	public void testMLPSiteContent() {
+		MLPSiteContent m = new MLPSiteContent(s1, by1, s1);
+		m = new MLPSiteContent();
+		m.setContentKey(s1);
+		m.setContentValue(by1);
+		m.setCreated(d1);
+		m.setMimeType(s2);
+		m.setModified(d2);
+		checkMLPSiteContent(m);
+		m = new MLPSiteContent(m);
+		checkMLPSiteContent(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPSiteContent(null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

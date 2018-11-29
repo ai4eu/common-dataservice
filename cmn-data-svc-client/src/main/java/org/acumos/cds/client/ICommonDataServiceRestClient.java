@@ -45,6 +45,7 @@ import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -1573,6 +1574,40 @@ public interface ICommonDataServiceRestClient {
 	 *                      key of instance to delete
 	 */
 	void deleteSiteConfig(String configKey);
+
+	/**
+	 * Gets one site content entry.
+	 * 
+	 * @param contentKey
+	 *                       Content key
+	 * @return Site content
+	 */
+	MLPSiteContent getSiteContent(String contentKey);
+
+	/**
+	 * Creates a site content entry.
+	 * 
+	 * @param content
+	 *                    Instance to save
+	 * @return Complete object
+	 */
+	MLPSiteContent createSiteContent(MLPSiteContent content);
+
+	/**
+	 * Updates a site content entry.
+	 * 
+	 * @param content
+	 *                    Instance to update
+	 */
+	void updateSiteContent(MLPSiteContent content);
+
+	/**
+	 * Deletes a site content entry.
+	 * 
+	 * @param contentKey
+	 *                       key of instance to delete
+	 */
+	void deleteSiteContent(String contentKey);
 
 	/**
 	 * Gets count of threads.

@@ -41,6 +41,7 @@ import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -392,6 +393,14 @@ public class MockClientTest {
 		Assert.assertTrue(siteConfig == client.createSiteConfig(siteConfig));
 		client.updateSiteConfig(siteConfig);
 		client.deleteSiteConfig("key");
+
+		MLPSiteContent siteContent = new MLPSiteContent();
+		client.setSiteContentByKey(siteContent);
+		Assert.assertTrue(siteContent == client.getSiteContent("key"));
+		client.setSiteContent(siteContent);
+		Assert.assertTrue(siteContent == client.createSiteContent(siteContent));
+		client.updateSiteContent(siteContent);
+		client.deleteSiteContent("key");
 
 		client.setThreadCount(count);
 		Assert.assertTrue(count == client.getThreadCount());

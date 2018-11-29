@@ -36,11 +36,12 @@ public interface CCDSConstants {
 	public static final String HEALTHCHECK_PATH = "healthcheck";
 	public static final String VERSION_PATH = "version";
 
-	// Entities
+	// Path components
 	public static final String ARTIFACT_PATH = "artifact";
 	public static final String COMMENT_PATH = "comment";
 	public static final String COMPOSITE_PATH = "comp";
 	public static final String CONFIG_PATH = "config";
+	public static final String CONTENT_PATH = "content";
 	public static final String COUNT_PATH = "count";
 	public static final String DATE_PATH = "date";
 	public static final String DEPLOY_PATH = "deploy";
@@ -60,6 +61,7 @@ public interface CCDSConstants {
 	public static final String RATING_PATH = "rating";
 	public static final String REVISION_PATH = "revision";
 	public static final String ROLE_PATH = "role";
+	public static final String SITE_PATH = "site";
 	public static final String STEP_RESULT_PATH = "stepresult";
 	public static final String SOLUTION_PATH = "solution";
 	public static final String SUBSCRIPTION_PATH = "sub";

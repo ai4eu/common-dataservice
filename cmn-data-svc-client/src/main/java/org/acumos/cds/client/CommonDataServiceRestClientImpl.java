@@ -57,6 +57,7 @@ import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
+import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
@@ -1745,7 +1746,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public MLPSiteConfig getSiteConfig(String configKey) {
-		URI uri = buildUri(new String[] { CCDSConstants.CONFIG_PATH, configKey }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH, configKey }, null, null);
 		logger.debug("getSiteConfig: uri {}", uri);
 		ResponseEntity<MLPSiteConfig> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<MLPSiteConfig>() {
@@ -1755,22 +1756,57 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public MLPSiteConfig createSiteConfig(MLPSiteConfig config) {
-		URI uri = buildUri(new String[] { CCDSConstants.CONFIG_PATH }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH }, null, null);
 		logger.debug("createSiteConfig: uri {}", uri);
 		return restTemplate.postForObject(uri, config, MLPSiteConfig.class);
 	}
 
 	@Override
 	public void updateSiteConfig(MLPSiteConfig config) {
-		URI uri = buildUri(new String[] { CCDSConstants.CONFIG_PATH, config.getConfigKey() }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH, config.getConfigKey() },
+				null, null);
 		logger.debug("updateSiteConfig: url {}", uri);
 		restTemplate.put(uri, config);
 	}
 
 	@Override
 	public void deleteSiteConfig(String configKey) {
-		URI uri = buildUri(new String[] { CCDSConstants.CONFIG_PATH, configKey }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH, configKey }, null, null);
 		logger.debug("deleteSiteConfig: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public MLPSiteContent getSiteContent(String contentKey) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONTENT_PATH, contentKey }, null,
+				null);
+		logger.debug("getSiteContent: uri {}", uri);
+		ResponseEntity<MLPSiteContent> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPSiteContent>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPSiteContent createSiteContent(MLPSiteContent config) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONTENT_PATH }, null, null);
+		logger.debug("createSiteContent: uri {}", uri);
+		return restTemplate.postForObject(uri, config, MLPSiteContent.class);
+	}
+
+	@Override
+	public void updateSiteContent(MLPSiteContent config) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONTENT_PATH, config.getContentKey() },
+				null, null);
+		logger.debug("updateSiteContent: url {}", uri);
+		restTemplate.put(uri, config);
+	}
+
+	@Override
+	public void deleteSiteContent(String contentKey) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONTENT_PATH, contentKey }, null,
+				null);
+		logger.debug("deleteSiteContent: url {}", uri);
 		restTemplate.delete(uri);
 	}
 
