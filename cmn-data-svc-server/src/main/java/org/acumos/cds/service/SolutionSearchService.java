@@ -174,35 +174,35 @@ public interface SolutionSearchService {
 	 * solution-access-map table.
 	 * 
 	 * @param nameKeywords
-	 *                                  Searches the name field for the keywords
-	 *                                  using case-insensitive LIKE after
-	 *                                  surrounding with wildcard '%' characters;
-	 *                                  ignored if null or empty
+	 *                                Searches the name field for the keywords using
+	 *                                case-insensitive LIKE after surrounding with
+	 *                                wildcard '%' characters; ignored if null or
+	 *                                empty
 	 * @param descriptionKeywords
-	 *                                  Searches the revision descriptions for the
-	 *                                  keywords using case-insensitive LIKE after
-	 *                                  surrounding with wildcard '%' characters;
-	 *                                  ignored if null or empty
+	 *                                Searches the revision descriptions for the
+	 *                                keywords using case-insensitive LIKE after
+	 *                                surrounding with wildcard '%' characters;
+	 *                                ignored if null or empty
 	 * @param active
-	 *                                  Active status: true or false; required.
+	 *                                Active status: true or false; required.
 	 * @param userId
-	 *                                  ID of the user who owns or has access to the
-	 *                                  solutions; required.
+	 *                                ID of the user who owns or has access to the
+	 *                                solutions; required.
 	 * @param modelTypeCodes
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified values including null (not the
-	 *                                  4-character sequence "null"); ignored if
-	 *                                  null or empty
+	 *                                Limits match to solutions with one of the
+	 *                                specified values including null (not the
+	 *                                4-character sequence "null"); ignored if null
+	 *                                or empty
 	 * @param accessTypeCodes
-	 *                                  Limits match to solutions containing
-	 *                                  revisions with one of the specified values
-	 *                                  including null (not the 4-character sequence
-	 *                                  "null"); ignored if null or empty
+	 *                                Limits match to solutions containing revisions
+	 *                                with one of the specified values including
+	 *                                null (not the 4-character sequence "null");
+	 *                                ignored if null or empty
 	 * @param tags
-	 *                                  Limits match to solutions with one of the
-	 *                                  specified tags; ignored if null or empty
+	 *                                Limits match to solutions with one of the
+	 *                                specified tags; ignored if null or empty
 	 * @param pageable
-	 *                                  Page and sort info
+	 *                                Page and sort info
 	 * @return Page of matches
 	 */
 	public Page<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,

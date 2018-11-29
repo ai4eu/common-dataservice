@@ -53,6 +53,18 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+/**
+ * Answers REST requests to get, add, update and delete publication requests.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
+ */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.PUBLISH_REQUEST_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublishRequestController extends AbstractController {
@@ -64,7 +76,7 @@ public class PublishRequestController extends AbstractController {
 	@Autowired
 	private PublishRequestSearchService publishRequestSearchService;
 
-	@ApiOperation(value = "Gets a page of publish requests, optionally sorted on fields.", //
+	@ApiOperation(value = "Gets a page of publish requests, optionally sorted on fields. Returns empty if none are found.", //
 			response = MLPPublishRequest.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -73,20 +85,12 @@ public class PublishRequestController extends AbstractController {
 		return publishRequestRepository.findAll(pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the request for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the request for the specified ID. Returns null if the ID is not found.", //
 			response = MLPPublishRequest.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.GET)
-
-	public Object getPublishRequest(@PathVariable("requestId") long requestId, HttpServletResponse response) {
+	public Object getPublishRequest(@PathVariable("requestId") long requestId) {
 		logger.debug("getPublishRequest: requestId {}", requestId);
-		MLPPublishRequest sr = publishRequestRepository.findOne(requestId);
-		if (sr == null) {
-			logger.warn("getPublishRequest failed on ID {}", requestId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + requestId, null);
-		}
-		return sr;
+		return publishRequestRepository.findOne(requestId);
 	}
 
 	/*

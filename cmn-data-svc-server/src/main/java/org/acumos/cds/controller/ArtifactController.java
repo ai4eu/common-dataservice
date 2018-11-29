@@ -58,6 +58,18 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+/**
+ * Provides REST endpoints for managing artifacts.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
+ */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.ARTIFACT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ArtifactController extends AbstractController {
@@ -79,7 +91,7 @@ public class ArtifactController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of artifacts, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of artifacts, optionally sorted; empty if none are found.", //
 			response = MLPArtifact.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -88,26 +100,19 @@ public class ArtifactController extends AbstractController {
 		return artifactRepository.findAll(pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the entity for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
 			response = MLPArtifact.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{artifactId}", method = RequestMethod.GET)
-	public Object getArtifact(@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
+	public MLPArtifact getArtifact(@PathVariable("artifactId") String artifactId) {
 		logger.debug("getArtifact ID {}", artifactId);
-		MLPArtifact da = artifactRepository.findOne(artifactId);
-		if (da == null) {
-			logger.warn("getArtifact failed {}", artifactId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + artifactId, null);
-		}
-		return da;
+		return artifactRepository.findOne(artifactId);
 	}
 
-	@ApiOperation(value = "Searches for entities with names or descriptions that contain the search term using the like operator.", //
+	@ApiOperation(value = "Searches for entities with names or descriptions that contain the search term using the like operator; empty if no matches are found.", //
 			response = MLPArtifact.class, responseContainer = "List")
 	@ApiPageable
 	@RequestMapping(value = "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
-	public Iterable<MLPArtifact> like(@RequestParam(CCDSConstants.TERM_PATH) String term, Pageable pageRequest) {
+	public Page<MLPArtifact> like(@RequestParam(CCDSConstants.TERM_PATH) String term, Pageable pageRequest) {
 		logger.debug("like pageRequest {}", pageRequest);
 		return artifactRepository.findBySearchTerm(term, pageRequest);
 	}
@@ -173,17 +178,9 @@ public class ArtifactController extends AbstractController {
 
 	@ApiOperation(value = "Gets the solution revisions that use the specified artifact ID.", //
 			response = MLPSolutionRevision.class, responseContainer = "List")
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{artifactId}/" + CCDSConstants.REVISION_PATH, method = RequestMethod.GET)
-	public Object getRevisionsForArtifact(@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
+	public Object getRevisionsForArtifact(@PathVariable("artifactId") String artifactId) {
 		logger.debug("getRevisionsForArtifact ID {}", artifactId);
-		// Validate the artifact ID because an empty result is ambiguous.
-		MLPArtifact da = artifactRepository.findOne(artifactId);
-		if (da == null) {
-			logger.warn("getRevisionsForArtifact failed on ID {}", artifactId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + artifactId, null);
-		}
 		return solutionRevisionRepository.findByArtifactId(artifactId);
 	}
 
@@ -245,7 +242,6 @@ public class ArtifactController extends AbstractController {
 			artifactRepository.save(artifact);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateArtifact failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

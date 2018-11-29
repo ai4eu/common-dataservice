@@ -133,7 +133,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	@Column(name = "FEATURED_YN", columnDefinition = "CHAR(1)")
 	@Type(type = "yes_no")
 	@ApiModelProperty(value = "Featured indicator")
-	private boolean featured;
+	private Boolean featured;
 
 	/**
 	 * Move web stats fields to solution entity No-arg constructor
@@ -310,11 +310,11 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		this.ratingAverageTenths = ratingAverageTenths;
 	}
 
-	public boolean isFeatured() {
+	public Boolean isFeatured() {
 		return featured;
 	}
 
-	public void setFeatured(boolean featured) {
+	public void setFeatured(Boolean featured) {
 		this.featured = featured;
 	}
 

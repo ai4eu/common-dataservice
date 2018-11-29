@@ -50,6 +50,15 @@ import io.swagger.annotations.ApiResponses;
 
 /**
  * Answers REST requests to manage site configuration and site content entries.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.SITE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,9 +73,9 @@ public class SiteController extends AbstractController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@ApiOperation(value = "Gets the site configuration value for the specified key.", response = MLPSiteConfig.class)
+	@ApiOperation(value = "Gets the site configuration value for the specified key. Returns null if not found.", response = MLPSiteConfig.class)
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.GET)
-	public MLPSiteConfig getSiteConfig(@PathVariable("configKey") String configKey, HttpServletResponse response) {
+	public MLPSiteConfig getSiteConfig(@PathVariable("configKey") String configKey) {
 		logger.debug("getSiteConfig key {}", configKey);
 		return siteConfigRepository.findOne(configKey);
 	}

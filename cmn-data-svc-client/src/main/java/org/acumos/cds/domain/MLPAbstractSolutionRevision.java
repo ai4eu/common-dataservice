@@ -139,9 +139,9 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * on save.
 	 * 
 	 * @param version
-	 *                                 User-assigned version string
+	 *                           User-assigned version string
 	 * @param accessTypeCode
-	 *                                 Access type code
+	 *                           Access type code
 	 */
 	public MLPAbstractSolutionRevision(String version, String accessTypeCode) {
 		if (version == null || accessTypeCode == null)

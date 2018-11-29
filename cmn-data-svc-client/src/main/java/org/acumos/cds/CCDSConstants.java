@@ -82,13 +82,11 @@ public interface CCDSConstants {
 	public static final String ACCESS_PATH = "access";
 	public static final String LOGIN_PROVIDER_PATH = "logprov";
 	public static final String MODEL_PATH = "model";
-	public static final String NOTIFICATION_MECH_PATH = "notifmech";
 	public static final String STATUS_PATH = "status";
 	public static final String STEP_PATH = "step";
 	public static final String TOOLKIT_PATH = "toolkit";
 	public static final String TYPE_PATH = "type";
 	public static final String VAL_PATH = "val";
-	public static final String MSG_SEV_PATH = "msgsev";
 	// Actions on entities
 	public static final String LIKE_PATH = "like";
 	public static final String SEARCH_PATH = "search";

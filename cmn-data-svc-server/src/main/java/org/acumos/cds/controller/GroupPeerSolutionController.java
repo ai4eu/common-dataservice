@@ -68,6 +68,15 @@ import io.swagger.annotations.ApiResponses;
  * solution group memberships, and also peer group and solution group access.
  * 
  * The prefix "group" is pretty generic.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read</LI>
+ * <LI>Provide useful messages on failure, so check everything on write</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.GROUP_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,7 +119,6 @@ public class GroupPeerSolutionController extends AbstractController {
 		try {
 			return peerGroupRepository.save(group);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createPeerGroup failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -139,7 +147,6 @@ public class GroupPeerSolutionController extends AbstractController {
 			peerGroupRepository.save(group);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updatePeerGroup failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -164,19 +171,12 @@ public class GroupPeerSolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets a page of peer members of the specified peer group, optionally sorted.", //
-			response = MLPSolutionGroup.class, responseContainer = "Page")
+	@ApiOperation(value = "Gets a page of peer members of the specified peer group, optionally sorted; empty if none are found.", //
+			response = MLPPeer.class, responseContainer = "Page")
 	@ApiPageable
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{groupId}/" + CCDSConstants.PEER_PATH, method = RequestMethod.GET)
-	public Object getPeersInGroup(@PathVariable("groupId") Long groupId, Pageable pageRequest,
-			HttpServletResponse response) {
+	public Page<MLPPeer> getPeersInGroup(@PathVariable("groupId") Long groupId, Pageable pageRequest) {
 		logger.debug("getPeersInGroup groupId {}", groupId);
-		if (peerGroupRepository.findOne(groupId) == null) {
-			logger.warn("getPeersInGroup: failed on ID {}", groupId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + groupId, null);
-		}
 		return peerGroupMemMapRepository.findPeersByGroupId(groupId, pageRequest);
 	}
 
@@ -210,14 +210,16 @@ public class GroupPeerSolutionController extends AbstractController {
 	public Object dropPeerFromGroup(@PathVariable("groupId") Long groupId, @PathVariable("peerId") String peerId,
 			HttpServletResponse response) {
 		logger.debug("dropPeerFromGroup groupId {} peerId {}", groupId, peerId);
-		MLPPeerGrpMemMap.PeerGrpMemMapPK pk = new MLPPeerGrpMemMap.PeerGrpMemMapPK(groupId, peerId);
-		if (peerGroupMemMapRepository.findOne(pk) == null) {
-			logger.warn("dropPeerFromGroup: failed on ID {}", pk);
+		try {
+			MLPPeerGrpMemMap.PeerGrpMemMapPK pk = new MLPPeerGrpMemMap.PeerGrpMemMapPK(groupId, peerId);
+			peerGroupMemMapRepository.delete(pk);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			// e.g., EmptyResultDataAccessException is NOT an internal server error
+			logger.warn("dropPeerFromGroup failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + groupId, null);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropPeerFromGroup failed", ex);
 		}
-		peerGroupMemMapRepository.delete(pk);
-		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
 	@ApiOperation(value = "Gets a page of solution groups, optionally sorted.", //
@@ -238,7 +240,6 @@ public class GroupPeerSolutionController extends AbstractController {
 			group.setGroupId(null);
 			return solutionGroupRepository.save(group);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createSolutionGroup failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -267,7 +268,6 @@ public class GroupPeerSolutionController extends AbstractController {
 			solutionGroupRepository.save(group);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateSolutionGroup failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -292,19 +292,12 @@ public class GroupPeerSolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets a page of solution members in the specified solution group, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of solution members in the specified solution group, optionally sorted; empty if none are found.", //
 			response = MLPSolutionGroup.class, responseContainer = "Page")
 	@ApiPageable
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{groupId}/" + CCDSConstants.SOLUTION_PATH, method = RequestMethod.GET)
-	public Object getSolutionsInGroup(@PathVariable("groupId") Long groupId, Pageable pageRequest,
-			HttpServletResponse response) {
+	public Object getSolutionsInGroup(@PathVariable("groupId") Long groupId, Pageable pageRequest) {
 		logger.debug("getSolutionsInGroup groupId {}", groupId);
-		if (solutionGroupRepository.findOne(groupId) == null) {
-			logger.warn("getSolutionsInGroup: failed on ID {}", groupId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + groupId, null);
-		}
 		return solGroupMemMapRepository.findSolutionsByGroupId(groupId, pageRequest);
 	}
 
@@ -387,7 +380,6 @@ public class GroupPeerSolutionController extends AbstractController {
 			peerSolAccMapRepository.save(map);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("mapPeerSolutionGroups failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -446,7 +438,6 @@ public class GroupPeerSolutionController extends AbstractController {
 			peerPeerAccMapRepository.save(map);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("mapPeerPeerGroups failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -497,28 +488,20 @@ public class GroupPeerSolutionController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of non-public solutions accessible to specified peer", response = MLPSolution.class, responseContainer = "Page")
+	@ApiOperation(value = "Gets a page of non-public solutions accessible to specified peer; empty if none found.", response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.PEER_PATH + "/{peerId}/"
 			+ CCDSConstants.SOLUTION_PATH, method = RequestMethod.GET)
-	public Page<MLPSolution> getRestrictedSolutions(@PathVariable("peerId") String peerId, Pageable pageRequest,
-			HttpServletResponse response) {
+	public Page<MLPSolution> getRestrictedSolutions(@PathVariable("peerId") String peerId, Pageable pageRequest) {
 		logger.debug("getRestrictedSolutions: peerId {} ", peerId);
 		return solutionRepository.findRestrictedSolutions(peerId, pageRequest);
 	}
 
-	@ApiOperation(value = "Gets peers accessible to the specified peer.", response = MLPPeer.class, responseContainer = "List")
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@ApiOperation(value = "Gets peers accessible to the specified peer; returns empty if none found.", response = MLPPeer.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.PEER_PATH + "/{peerId}/"
 			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
-	public Object getPeerAccessList(@PathVariable("peerId") String peerId, HttpServletResponse response) {
+	public Iterable<MLPPeer> getPeerAccessList(@PathVariable("peerId") String peerId) {
 		logger.debug("getPeerAccessList: peerId {}", peerId);
-		if (peerRepository.findOne(peerId) == null) {
-			logger.warn("getPeerAccessList: failed on peer ID {}", peerId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
-		}
 		return peerPeerAccMapRepository.findAccessPeers(peerId);
 	}
 

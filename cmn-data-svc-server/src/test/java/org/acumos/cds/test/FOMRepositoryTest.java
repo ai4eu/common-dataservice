@@ -183,8 +183,8 @@ public class FOMRepositoryTest {
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
 
-		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, 
-				modifiedDate, pageable);
+		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedDate,
+				pageable);
 		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());
 

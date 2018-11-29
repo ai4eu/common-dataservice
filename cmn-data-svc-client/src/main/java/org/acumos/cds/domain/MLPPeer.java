@@ -123,19 +123,19 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 * save.
 	 * 
 	 * @param name
-	 *                                 Peer name
+	 *                        Peer name
 	 * @param subjectName
-	 *                                 X.509 subject name
+	 *                        X.509 subject name
 	 * @param apiUrl
-	 *                                 API URL
+	 *                        API URL
 	 * @param isSelf
-	 *                                 Is the entry this site
+	 *                        Is the entry this site
 	 * @param isLocal
-	 *                                 Is the entry local
+	 *                        Is the entry local
 	 * @param contact1
-	 *                                 Primary contact details
+	 *                        Primary contact details
 	 * @param statusCode
-	 *                                 Peer status code
+	 *                        Peer status code
 	 */
 	public MLPPeer(String name, String subjectName, String apiUrl, boolean isSelf, boolean isLocal, String contact1,
 			String statusCode) {

@@ -59,8 +59,15 @@ import io.swagger.annotations.ApiResponses;
 
 /**
  * Answers REST requests to get, add, update and delete roles.
- * 
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
  * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.ROLE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +90,7 @@ public class RoleController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of roles, optionally sorted on fields.", //
+	@ApiOperation(value = "Gets a page of roles, optionally sorted on fields. Returns empty if none are found.", //
 			response = MLPRole.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -137,19 +144,12 @@ public class RoleController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the entity for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
 			response = MLPRole.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{roleId}", method = RequestMethod.GET)
-	public Object getRole(@PathVariable("roleId") String roleId, HttpServletResponse response) {
+	public MLPRole getRole(@PathVariable("roleId") String roleId) {
 		logger.debug("getRole roleId {}", roleId);
-		MLPRole da = roleRepository.findOne(roleId);
-		if (da == null) {
-			logger.warn("getRole failed on ID {}", roleId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
-		}
-		return da;
+		return roleRepository.findOne(roleId);
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
@@ -175,7 +175,6 @@ public class RoleController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.ROLE_PATH + "/" + role.getRoleId());
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createRole failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -204,7 +203,6 @@ public class RoleController extends AbstractController {
 			roleRepository.save(role);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateRole failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -232,33 +230,21 @@ public class RoleController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the functions for the specified role. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the functions for the specified role. Returns empty if none are found.", //
 			response = MLPRoleFunction.class, responseContainer = "List")
 	@RequestMapping(value = "/{roleId}/" + CCDSConstants.FUNCTION_PATH, method = RequestMethod.GET)
-	public Object getListOfRoleFunc(@PathVariable("roleId") String roleId, HttpServletResponse response) {
+	public Iterable<MLPRoleFunction> getListOfRoleFunc(@PathVariable("roleId") String roleId) {
 		logger.debug("getListOfRoleFunc roleId {}", roleId);
-		if (roleRepository.findOne(roleId) == null) {
-			logger.warn("getListOfRoleFunc failed on ID {}", roleId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
-		}
 		return roleFunctionRepository.findByRoleId(roleId);
 	}
 
-	@ApiOperation(value = "Gets the role function for the specified role and function IDs. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Gets the role function for the specified ID. Returns null if not found.", //
 			response = MLPRoleFunction.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{roleId}/" + CCDSConstants.FUNCTION_PATH + "/{functionId}", method = RequestMethod.GET)
-	public Object getRoleFunc(@PathVariable("roleId") String roleId, @PathVariable("functionId") String functionId,
-			HttpServletResponse response) {
+	public MLPRoleFunction getRoleFunc(@PathVariable("roleId") String roleId,
+			@PathVariable("functionId") String functionId) {
 		logger.debug("getRoleFunc roleId {} functionId {}", roleId, functionId);
-		MLPRoleFunction rf = roleFunctionRepository.findOne(functionId);
-		if (rf == null) {
-			logger.warn("getRoleFunc failed on ID {}", functionId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + functionId, null);
-		}
-		return rf;
+		return roleFunctionRepository.findOne(functionId);
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
@@ -282,7 +268,6 @@ public class RoleController extends AbstractController {
 			// Create a new row
 			result = roleFunctionRepository.save(roleFunction);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createRoleFunc failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -316,7 +301,6 @@ public class RoleController extends AbstractController {
 			roleFunctionRepository.save(roleFunction);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateRoleFunc failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

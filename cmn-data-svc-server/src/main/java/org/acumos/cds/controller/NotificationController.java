@@ -61,8 +61,14 @@ import io.swagger.annotations.ApiResponses;
  * Answers REST requests to get, add, update and delete notifications; to record
  * which users should receive a notification; to get notifications relevant for
  * a user; and to update when a user has viewed a notification.
- * 
- * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read</LI>
+ * <LI>Provide useful messages on failure, so check everything on write</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices</LI>
+ * </OL>
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.NOTIFICATION_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +93,7 @@ public class NotificationController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of notifications, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of notifications, optionally sorted; empty if none are found.", //
 			response = MLPNotification.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -119,7 +125,6 @@ public class NotificationController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.NOTIFICATION_PATH + "/" + notif.getNotificationId());
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createNotification failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -148,7 +153,6 @@ public class NotificationController extends AbstractController {
 			notificationRepository.save(notif);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateNotification failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -182,8 +186,8 @@ public class NotificationController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of active notifications for the specified user.", //
-			response = MLPUserNotification.class, responseContainer = "List")
+	@ApiOperation(value = "Gets a page of active notifications for the specified user; returns empty if none are found.", //
+			response = MLPUserNotification.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.GET)
 	public Iterable<MLPUserNotification> getUserNotifications(@PathVariable("userId") String userId,
@@ -252,50 +256,28 @@ public class NotificationController extends AbstractController {
 	@ApiOperation(value = "Drops a user as a recipient of the notification.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{notificationId}/" + CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.DELETE)
-	public Object dropUserRecipient(@PathVariable("userId") String userId,
+	public SuccessTransport dropUserRecipient(@PathVariable("userId") String userId,
 			@PathVariable("notificationId") String notificationId, HttpServletResponse response) {
 		logger.debug("dropUserRecipient: user {}, notif{}", userId, notificationId);
-		try {
-			notifUserMapRepository.delete(new MLPNotifUserMap(notificationId, userId));
-			return new SuccessTransport(HttpServletResponse.SC_OK, null);
-		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("dropUserRecipient failed: {}", ex.toString());
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropUserRecipient failed", ex);
-		}
+		notifUserMapRepository.delete(new MLPNotifUserMap(notificationId, userId));
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Gets the user notification preference for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the user notification preference for the specified ID. Returns null if the ID is not found.", //
 			response = MLPUserNotifPref.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.NOTIFICATION_PREF_PATH + "/{userNotifPrefId}", method = RequestMethod.GET)
-	public Object getUserNotificationPreference(@PathVariable("userNotifPrefId") Long userNotifPrefId,
-			HttpServletResponse response) {
+	public Object getUserNotificationPreference(@PathVariable("userNotifPrefId") Long userNotifPrefId) {
 		logger.debug("getUserNotificationPreference: userNotifPrefId {}", userNotifPrefId);
-		MLPUserNotifPref usrnp = notificationPreferenceRepository.findOne(userNotifPrefId);
-		if (usrnp == null) {
-			logger.warn("getUserNotificationPreference: failed on ID {}", userNotifPrefId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userNotifPrefId, null);
-		}
-		return usrnp;
+		return notificationPreferenceRepository.findOne(userNotifPrefId);
 	}
 
-	@ApiOperation(value = "Gets notification preferences for the specified user ID.", //
+	@ApiOperation(value = "Gets notification preferences for the specified user ID. Returns empty if not found.", //
 			response = MLPUserNotifPref.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.NOTIFICATION_PREF_PATH + "/" + CCDSConstants.USER_PATH
 			+ "/{userId}", method = RequestMethod.GET)
-	public Object getNotificationPreferencesForUser(@PathVariable("userId") String userId,
-			HttpServletResponse response) {
+	public Object getNotificationPreferencesForUser(@PathVariable("userId") String userId) {
 		logger.debug("getNotificationPreferencesForUser: userId {}", userId);
-		if (userRepository.findOne(userId) == null) {
-			logger.warn("getNotificationPreferencesForUser: failed on user ID {}", userId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
-		}
-		Iterable<MLPUserNotifPref> result = notificationPreferenceRepository.findByUserId(userId);
-		return result;
+		return notificationPreferenceRepository.findByUserId(userId);
 	}
 
 	@ApiOperation(value = "Creates a new user notification preference. Returns bad request on constraint violation etc.", //
@@ -317,7 +299,6 @@ public class NotificationController extends AbstractController {
 					CCDSConstants.USER_PATH + "/" + CCDSConstants.NOTIFICATION_PREF_PATH);
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createUserNotificationPreference failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -350,7 +331,6 @@ public class NotificationController extends AbstractController {
 			notificationPreferenceRepository.save(usrNotifPref);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateUserNotificationPreference failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

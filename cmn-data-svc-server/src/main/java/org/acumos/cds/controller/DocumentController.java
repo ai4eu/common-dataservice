@@ -47,6 +47,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+/**
+ * Provides REST endpoints for managing documents.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
+ */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.DOCUMENT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentController extends AbstractController {
@@ -56,19 +68,12 @@ public class DocumentController extends AbstractController {
 	@Autowired
 	private DocumentRepository documentRepository;
 
-	@ApiOperation(value = "Gets the entity for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
 			response = MLPDocument.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.GET)
-	public Object getDocument(@PathVariable("documentId") String documentId, HttpServletResponse response) {
+	public Object MLPDocument(@PathVariable("documentId") String documentId) {
 		logger.debug("getDocument ID {}", documentId);
-		MLPDocument da = documentRepository.findOne(documentId);
-		if (da == null) {
-			logger.warn("getDocument: failed on ID {}", documentId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + documentId, null);
-		}
-		return da;
+		return documentRepository.findOne(documentId);
 	}
 
 	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
@@ -97,7 +102,6 @@ public class DocumentController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.DOCUMENT_PATH + "/" + document.getDocumentId());
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createDocument failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -129,7 +133,6 @@ public class DocumentController extends AbstractController {
 			documentRepository.save(document);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateDocument failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

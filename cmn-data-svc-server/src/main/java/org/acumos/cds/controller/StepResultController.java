@@ -54,6 +54,18 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+/**
+ * Provides endpoints to manage step result records.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
+ */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.STEP_RESULT_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class StepResultController extends AbstractController {
@@ -65,7 +77,7 @@ public class StepResultController extends AbstractController {
 	@Autowired
 	private StepResultSearchService stepResultSearchService;
 
-	@ApiOperation(value = "Gets a page of step results, optionally sorted on fields.", //
+	@ApiOperation(value = "Gets a page of step results, optionally sorted on fields. Answers empty if none are found.", //
 			response = MLPStepResult.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -74,19 +86,12 @@ public class StepResultController extends AbstractController {
 		return stepResultRepository.findAll(pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the step result for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the step result for the specified ID. Returns null if the ID is not found.", //
 			response = MLPStepResult.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.GET)
-	public Object getStepResult(@PathVariable("stepResultId") Long stepResultId, HttpServletResponse response) {
+	public MLPStepResult getStepResult(@PathVariable("stepResultId") Long stepResultId) {
 		logger.debug("getStepResult: stepResultId {}", stepResultId);
-		MLPStepResult sr = stepResultRepository.findOne(stepResultId);
-		if (sr == null) {
-			logger.warn("getStepResult failed on ID {}", stepResultId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + stepResultId, null);
-		}
-		return sr;
+		return stepResultRepository.findOne(stepResultId);
 	}
 
 	/*
@@ -99,7 +104,7 @@ public class StepResultController extends AbstractController {
 	private static final String stepCodeField = "stepCode";
 	private static final String solutionIdField = "solutionId";
 	private static final String revisionIdField = "revisionId";
-	private static final String artifactIdField = "artifiactId";
+	private static final String artifactIdField = "artifactId";
 	private static final String userIdField = "userId";
 	private static final String statusCodeField = "statusCode";
 	private static final String nameField = "name";
@@ -163,7 +168,7 @@ public class StepResultController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Creates a new entity with a generated ID. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new step result with a generated ID. Returns bad request on constraint violation etc.", //
 			response = MLPStepResult.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -181,7 +186,6 @@ public class StepResultController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.STEP_RESULT_PATH + "/" + result.getStepResultId());
 			return result;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createStepResult failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -189,7 +193,7 @@ public class StepResultController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing step result with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.PUT)
@@ -213,7 +217,6 @@ public class StepResultController extends AbstractController {
 			stepResultRepository.save(stepResult);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateStepResult failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -221,7 +224,7 @@ public class StepResultController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the step result with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{stepResultId}", method = RequestMethod.DELETE)

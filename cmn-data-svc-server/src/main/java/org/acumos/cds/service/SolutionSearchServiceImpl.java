@@ -196,8 +196,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String[] userIds, String[] modelTypeCode, String[] accessTypeCode, 
-			String[] tags, String[] authorKeywords, String[] publisherKeywords, Pageable pageable) {
+			String[] userIds, String[] modelTypeCode, String[] accessTypeCode, String[] tags, String[] authorKeywords,
+			String[] publisherKeywords, Pageable pageable) {
 
 		// build the query using FOM to access child attributes
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(MLPSolutionFOM.class, solAlias);
@@ -258,8 +258,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String userId, String[] modelTypeCode, String[] accessTypeCode, 
-			String[] tags, Pageable pageable) {
+			String userId, String[] modelTypeCode, String[] accessTypeCode, String[] tags, Pageable pageable) {
 
 		// build the query using FOM to access child attributes
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(MLPSolutionFOM.class, solAlias);
@@ -309,8 +308,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 * Also see comment above about paginated queries.
 	 */
 	@Override
-	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCode,
-			Date date, Pageable pageable) {
+	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCode, Date date,
+			Pageable pageable) {
 
 		// build the query using FOM to access child attributes
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(MLPSolutionFOM.class, solAlias);

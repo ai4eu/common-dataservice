@@ -53,6 +53,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+/**
+ * Provides endpoints to manage threads of comments.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
+ */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.THREAD_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ThreadController extends AbstractController {
@@ -74,7 +86,7 @@ public class ThreadController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of threads, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of threads, optionally sorted. Answers empty if none are found.", //
 			response = MLPThread.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -94,7 +106,7 @@ public class ThreadController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of threads for the solution and revision IDs, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of threads for the solution and revision IDs, optionally sorted. Answers empty if none are found.", //
 			response = MLPThread.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.REVISION_PATH
@@ -105,22 +117,15 @@ public class ThreadController extends AbstractController {
 		return threadRepository.findBySolutionIdAndRevisionId(solutionId, revisionId, pageable);
 	}
 
-	@ApiOperation(value = "Gets the thread for the specified ID. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Gets the thread for the specified ID. Returns null if an ID is not found.", //
 			response = MLPThread.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}", method = RequestMethod.GET)
-	public Object getThread(@PathVariable("threadId") String threadId, HttpServletResponse response) {
+	public MLPThread getThread(@PathVariable("threadId") String threadId) {
 		logger.debug("getThread: threadId {}", threadId);
-		MLPThread thread = threadRepository.findOne(threadId);
-		if (thread == null) {
-			logger.warn("getThread failed on ID {}", threadId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + threadId, null);
-		}
-		return thread;
+		return threadRepository.findOne(threadId);
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new thread and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPThread.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -143,7 +148,6 @@ public class ThreadController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.THREAD_PATH + "/" + newThread.getThreadId());
 			return newThread;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createThread failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -151,7 +155,7 @@ public class ThreadController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing thread with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}", method = RequestMethod.PUT)
@@ -171,7 +175,6 @@ public class ThreadController extends AbstractController {
 			threadRepository.save(thread);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("updateThread failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -179,7 +182,7 @@ public class ThreadController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the thread with the specified ID. Cascades to comments in the thread. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}", method = RequestMethod.DELETE)
@@ -207,18 +210,11 @@ public class ThreadController extends AbstractController {
 		return new CountTransport(count);
 	}
 
-	@ApiOperation(value = "Gets a page of comments in the thread.", response = MLPComment.class, responseContainer = "Page")
+	@ApiOperation(value = "Gets a page of comments in the thread. Answers empty if none are found.", response = MLPComment.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH, method = RequestMethod.GET)
-	public Object getThreadComments(@PathVariable("threadId") String threadId, Pageable pageable,
-			HttpServletResponse response) {
+	public Object getThreadComments(@PathVariable("threadId") String threadId, Pageable pageable) {
 		logger.debug("getThreadComments: threadId {}", threadId);
-		MLPThread thread = threadRepository.findOne(threadId);
-		if (thread == null) {
-			logger.warn("getThreadComments failed on ID {}", threadId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + threadId, null);
-		}
 		return commentRepository.findByThreadId(threadId, pageable);
 	}
 
@@ -233,7 +229,7 @@ public class ThreadController extends AbstractController {
 		return new CountTransport(result);
 	}
 
-	@ApiOperation(value = "Gets a page of comments for the solution revision, optionally sorted.", //
+	@ApiOperation(value = "Gets a page of comments for the solution revision, optionally sorted. Answers empty if none are found.", //
 			response = MLPThread.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.REVISION_PATH
@@ -244,23 +240,16 @@ public class ThreadController extends AbstractController {
 		return commentRepository.findBySolutionIdAndRevisionId(solutionId, revisionId, pageable);
 	}
 
-	@ApiOperation(value = "Gets the comment for the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Gets the comment for the specified ID. Returns null if the ID is not found.", //
 			response = MLPComment.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH + "/{commentId}", method = RequestMethod.GET)
-	public Object getComment(@PathVariable("threadId") String threadId, @PathVariable("commentId") String commentId,
-			HttpServletResponse response) {
+	public MLPComment getComment(@PathVariable("threadId") String threadId,
+			@PathVariable("commentId") String commentId) {
 		logger.debug("getComment: threadId {} commentId {}", threadId, commentId);
-		MLPComment comment = commentRepository.findOne(commentId);
-		if (comment == null) {
-			logger.warn("getComment failed on ID {}", commentId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + commentId, null);
-		}
-		return comment;
+		return commentRepository.findOne(commentId);
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new comment and generates an ID if needed. Returns bad request on constraint violation etc.", //
 			response = MLPComment.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH, method = RequestMethod.POST)
@@ -299,7 +288,6 @@ public class ThreadController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.COMMENT_PATH + "/" + newComment.getCommentId());
 			return newComment;
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
 			logger.warn("createComment failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -307,7 +295,7 @@ public class ThreadController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing comment with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH + "/{commentId}", method = RequestMethod.PUT)
@@ -350,7 +338,7 @@ public class ThreadController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Deletes the comment with the specified ID. Returns bad request if an ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH + "/{commentId}", method = RequestMethod.DELETE)

@@ -54,8 +54,18 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
- * A revision is a collection of artifacts. A revision cannot exist without a
- * solution, but an artifact can exist without a revision.
+ * Answers REST requests to get, add, update and delete revisions. A revision is
+ * a collection of artifacts. A revision cannot exist without a solution, but an
+ * artifact can exist without a revision.
+ * <P>
+ * Validation design decisions:
+ * <OL>
+ * <LI>Keep queries fast, so check nothing on read.</LI>
+ * <LI>Provide useful messages on failure, so check everything on write.</LI>
+ * <LI>Also see:
+ * https://stackoverflow.com/questions/942951/rest-api-error-return-good-practices
+ * </LI>
+ * </OL>
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.REVISION_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +86,7 @@ public class RevisionController extends AbstractController {
 	@Autowired
 	private SolRevDocMapRepository solRevDocMapRepository;
 
-	@ApiOperation(value = "Gets the artifacts for the revision.", response = MLPArtifact.class, responseContainer = "List")
+	@ApiOperation(value = "Gets the artifacts for the revision. Answers empty if none are found.", response = MLPArtifact.class, responseContainer = "List")
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH, method = RequestMethod.GET)
 	public Iterable<MLPArtifact> getRevisionArtifacts(@PathVariable("revisionId") String revisionId,
 			HttpServletResponse response) {
@@ -84,7 +94,7 @@ public class RevisionController extends AbstractController {
 		return artifactRepository.findByRevision(revisionId);
 	}
 
-	@ApiOperation(value = "Adds an artifact to the revision.", response = SuccessTransport.class)
+	@ApiOperation(value = "Adds an artifact to the revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}", method = RequestMethod.POST)
@@ -118,7 +128,7 @@ public class RevisionController extends AbstractController {
 			+ "/{artifactId}", method = RequestMethod.DELETE)
 	public Object dropRevisionArtifact(@PathVariable("revisionId") String revisionId,
 			@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
-		logger.debug("dropRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		logger.debug("dropRevisionArtifact: revisionId {} artifactId {}", revisionId, artifactId);
 		try {
 			solRevArtMapRepository.delete(new MLPSolRevArtMap.SolRevArtMapPK(revisionId, artifactId));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
@@ -129,23 +139,14 @@ public class RevisionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the revision description for the specified access type. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Gets the revision description for the specified access type. Returns null if not found.", //
 			response = MLPRevisionDescription.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.GET)
 	public Object getRevisionDescription(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, HttpServletResponse response) {
+			@PathVariable("accessTypeCode") String accessTypeCode) {
 		logger.debug("getRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
-		MLPRevisionDescription da = revisionDescRepository
-				.findOne(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
-		if (da == null) {
-			logger.warn("getRevisionDescription failed on ID {}", revisionId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
-					NO_ENTRY_WITH_ID + revisionId + "/" + accessTypeCode, null);
-		}
-		return da;
+		return revisionDescRepository.findOne(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
 	}
 
 	@ApiOperation(value = "Creates a new description for the specified revision and access type. Returns bad request if an ID is not found.", //

@@ -1,4 +1,5 @@
 .classpath
+.factorypath
 .project
 /.settings/
 /target/
@@ -6,3 +7,4 @@
 /derby.log
 /application.properties
 /application-cognitadb.properties
+/.apt_generated/

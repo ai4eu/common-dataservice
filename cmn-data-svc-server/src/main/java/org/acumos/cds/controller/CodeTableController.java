@@ -81,7 +81,6 @@ public class CodeTableController extends AbstractController {
 			type = CodeNameType.valueOf(valueSetName);
 			return codeNameService.getCodeNamePairs(type);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			logger.warn("getCodeNamePairs failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Unexpected value set name " + valueSetName);
@@ -122,36 +121,12 @@ public class CodeTableController extends AbstractController {
 		return getCodeNamePairs(CodeNameType.LOGIN_PROVIDER.name(), response);
 	}
 
-	@ApiOperation(value = "Gets the list of message severity codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.MSG_SEV_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getMessageSeverityList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.MESSAGE_SEVERITY.name(), response);
-	}
-
 	@ApiOperation(value = "Gets the list of model type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
 			response = MLPCodeNamePair.class, responseContainer = "List")
 	@RequestMapping(value = "/" + CCDSConstants.MODEL_PATH + "/" + CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
 	@Deprecated
 	public Object getModelTypeList(HttpServletResponse response) {
 		return getCodeNamePairs(CodeNameType.MODEL_TYPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of notification delivery mechanism codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.NOTIFICATION_MECH_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getNotificationDeliveryMechanismList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.NOTIFICATION_DELIVERY_MECHANISM.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of peer status codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.PEER_PATH + "/" + CCDSConstants.STATUS_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getPeerStatusList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.PEER_STATUS.name(), response);
 	}
 
 	@ApiOperation(value = "Gets the list of step status codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
