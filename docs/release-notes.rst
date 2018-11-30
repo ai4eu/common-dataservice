@@ -32,6 +32,7 @@ Version 2.0.0, 21 Nov 2018
 * Validate URI parameters in Artifact and Document (`ACUMOS-1927 <https://jira.acumos.org/browse/ACUMOS-1927>`_)
 * Drop unused validation entities and features (`ACUMOS-1931 <https://jira.acumos.org/browse/ACUMOS-1931>`_)
 * Remove picture from MLPSolution, add get and save methods (`ACUMOS-2088 <https://jira.acumos.org/browse/ACUMOS-2088>`_)
+* Add SQL script to create default first author in revisions (`ACUMOS-2109 <https://jira.acumos.org/browse/ACUMOS-2109>`_)
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
