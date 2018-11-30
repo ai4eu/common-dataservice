@@ -79,17 +79,13 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	@ApiModelProperty(value = "A URL to view more information", example = "http://my.company.com/more/info")
 	private String url;
 
-	// No auto-update behaviors here
-	// TODO: Column definition is not provided here because in Derby it's
-	// created as TIMESTAMP but for Mariadb the DDL uses Datetime.
-	@Column(name = "START_DATE", nullable = false)
+	// No auto-update behaviors here.
+	@Column(name = "START_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
 	private Date start;
 
 	// No auto-update behaviors here
-	// TODO: Column definition is not provided here because in Derby it's
-	// created as TIMESTAMP but for Mariadb the DDL uses Datetime.
-	@Column(name = "END_DATE", nullable = false)
+	@Column(name = "END_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
 	private Date end;
 

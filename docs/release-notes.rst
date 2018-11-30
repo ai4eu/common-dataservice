@@ -27,6 +27,7 @@ Version 2.0.0, 21 Nov 2018
 --------------------------
 
 * Move download, rating and view fields to MLPSolution entity (`ACUMOS-1675 <https://jira.acumos.org/browse/ACUMOS-1675>`_)
+* Change column types to TIMESTAMP (`ACUMOS-1691 <https://jira.acumos.org/browse/ACUMOS-1691>`_)
 * Extend controllers to log warnings on bad requests (`ACUMOS-1697 <https://jira.acumos.org/browse/ACUMOS-1697>`_)
 * Use tab-separated MDC-style log output format (`ACUMOS-1752 <https://jira.acumos.org/browse/ACUMOS-1752>`_)
 * Add method to get user unread notification count (`ACUMOS-1883 <https://jira.acumos.org/browse/ACUMOS-1883>`_)

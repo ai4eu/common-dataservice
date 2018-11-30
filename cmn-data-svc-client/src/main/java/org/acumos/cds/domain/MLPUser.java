@@ -137,13 +137,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	/**
 	 * Date-time of most recent successful login.
 	 * 
-	 * Client sends date-time as long integer, milliseconds since the Epoch. Stored
-	 * as DATETIME in Mariadb, but Derby lacks DATETIME (Spring picks TIMESTAMP), so
-	 * do not specify column definition here.
+	 * Client sends date-time as long integer, milliseconds since the Epoch.
 	 * 
 	 * Should have used names "LOGIN_DATE" and loginDate.
 	 */
-	@Column(name = "LAST_LOGIN_DATE")
+	@Column(name = "LAST_LOGIN_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Last login date, sent as millisec since the Epoch", example = "1521202458867")
 	private Date lastLogin;
 
@@ -158,11 +156,9 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Date-time of login failure. Should be null after a successful login. Used to
 	 * control the delay before this user can login again with a valid password.
 	 * 
-	 * Client sends date-time as long integer, milliseconds since the Epoch. Stored
-	 * as DATETIME in Mariadb, but Derby lacks DATETIME (Spring picks TIMESTAMP), so
-	 * do not specify column definition here.
+	 * Client sends date-time as long integer, milliseconds since the Epoch.
 	 */
-	@Column(name = "LOGIN_FAIL_DATE")
+	@Column(name = "LOGIN_FAIL_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Login failure date, sent as millisec since the Epoch", example = "1521202458867")
 	private Date loginFailDate;
 
@@ -197,11 +193,9 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	private String verifyTokenHash;
 
 	/**
-	 * Client sends date-time as long integer, milliseconds since the Epoch. Stored
-	 * as DATETIME, but Derby lacks DATETIME, so do not specify column definition
-	 * here.
+	 * Client sends date-time as long integer, milliseconds since the Epoch.
 	 */
-	@Column(name = "VERIFY_EXPIRE_DATE")
+	@Column(name = "VERIFY_EXPIRE_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Verification token expiration date, sent as millisec since the Epoch", example = "1521202458867")
 	private Date verifyExpiration;
 
