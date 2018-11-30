@@ -637,6 +637,10 @@ public class SolutionController extends AbstractController {
 			// Validate enum codes
 			if (revision.getAccessTypeCode() != null)
 				super.validateCode(revision.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
+			if (revision.getVerifiedLicense() != null)
+				super.validateCode(revision.getVerifiedLicense(), CodeNameType.VERIFIED_LICENSE);
+			if (revision.getVerifiedVulnerability() != null)
+				super.validateCode(revision.getVerifiedVulnerability(), CodeNameType.VERIFIED_VULNERABILITY);
 			String id = revision.getRevisionId();
 			if (id != null) {
 				UUID.fromString(id);
@@ -681,6 +685,10 @@ public class SolutionController extends AbstractController {
 			// Validate enum codes
 			if (revision.getAccessTypeCode() != null)
 				super.validateCode(revision.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
+			if (revision.getVerifiedLicense() != null)
+				super.validateCode(revision.getVerifiedLicense(), CodeNameType.VERIFIED_LICENSE);
+			if (revision.getVerifiedVulnerability() != null)
+				super.validateCode(revision.getVerifiedVulnerability(), CodeNameType.VERIFIED_VULNERABILITY);
 			// Use the validated values
 			revision.setRevisionId(revisionId);
 			revision.setSolutionId(solutionId);

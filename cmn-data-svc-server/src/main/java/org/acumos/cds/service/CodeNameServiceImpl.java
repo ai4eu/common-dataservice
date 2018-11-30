@@ -70,6 +70,10 @@ public class CodeNameServiceImpl implements CodeNameService {
 			return codeNameProps.getSubscriptionScope();
 		case TOOLKIT_TYPE:
 			return codeNameProps.getToolkitType();
+		case VERIFIED_LICENSE:
+			return codeNameProps.getVerifiedLicense();
+		case VERIFIED_VULNERABILITY:
+			return codeNameProps.getVerifiedVulnerability();
 		}
 		throw new IllegalArgumentException("unimplemented case for type " + type.name());
 	}

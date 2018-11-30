@@ -111,6 +111,22 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	private String publisher;
 
 	/**
+	 * The license codes are defined by server-side configuration
+	 */
+	@Column(name = "SV_LICENSE_CD", columnDefinition = "CHAR(2)")
+	@Size(max = 2)
+	@ApiModelProperty(value = "Security-verification license status code")
+	private String verifiedLicense;
+
+	/**
+	 * The vulnerability codes are defined by server-side configuration
+	 */
+	@Column(name = "SV_VULNER_CD", columnDefinition = "CHAR(2)")
+	@Size(max = 2)
+	@ApiModelProperty(value = "Security-verification vulerability status code")
+	private String verifiedVulnerability;
+
+	/**
 	 * No-arg constructor
 	 */
 	public MLPAbstractSolutionRevision() {
@@ -149,6 +165,8 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 		this.origin = that.origin;
 		this.publisher = that.publisher;
 		this.revisionId = that.revisionId;
+		this.verifiedLicense = that.verifiedLicense;
+		this.verifiedVulnerability = that.verifiedVulnerability;
 		this.version = that.version;
 	}
 
@@ -275,6 +293,22 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 		this.authors = sb.toString();
 	}
 
+	public String getVerifiedLicense() {
+		return verifiedLicense;
+	}
+
+	public void setVerifiedLicense(String verifiedLicense) {
+		this.verifiedLicense = verifiedLicense;
+	}
+
+	public String getVerifiedVulnerability() {
+		return verifiedVulnerability;
+	}
+
+	public void setVerifiedVulnerability(String verifiedVulnerability) {
+		this.verifiedVulnerability = verifiedVulnerability;
+	}
+
 	@Override
 	public boolean equals(Object that) {
 		if (that == null)
@@ -289,4 +323,5 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	public int hashCode() {
 		return Objects.hash(revisionId, version);
 	}
+
 }
