@@ -32,7 +32,7 @@ Common Data Service
    client.rst
    server.rst
    server-api.rst
-   migrate.rst
+   upgrade.rst
    release-notes.rst
 
 * :ref:`search`
