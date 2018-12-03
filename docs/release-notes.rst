@@ -23,10 +23,11 @@ Common Data Service Release Notes
 The client and server are released together.  The client is deployed as a jar file to a
 Maven Nexus repository. The server is deployed as a Docker image to a Docker registry.
 
-Version 1.18.4, ? Oct 2018
---------------------------
+Version 1.18.4, 23 Oct 2018
+---------------------------
 
 * Detect description and document modifications (`ACUMOS-1902 <https://jira.acumos.org/browse/ACUMOS-1902>`_)
+* Add SQL script to create default first author in revisions (`ACUMOS-2109 <https://jira.acumos.org/browse/ACUMOS-2109>`_)
 * Add missing API model annotations to benefit Swagger
 * Add test case for find-by-modified-date feature
 * Requires database schema version 1.18
