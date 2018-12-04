@@ -105,7 +105,7 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 	private String userId;
 
 	// No auto-update behaviors here
-	@Column(name = "VIEWED_DATE")
+	@Column(name = "VIEWED_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
 	private Date viewed;
 
