@@ -34,7 +34,6 @@ Version 2.0.0, 21 Nov 2018
 * Validate URI parameters in Artifact and Document (`ACUMOS-1927 <https://jira.acumos.org/browse/ACUMOS-1927>`_)
 * Drop unused validation entities and features (`ACUMOS-1931 <https://jira.acumos.org/browse/ACUMOS-1931>`_)
 * Remove picture from MLPSolution, add get and save methods (`ACUMOS-2088 <https://jira.acumos.org/browse/ACUMOS-2088>`_)
-* Add SQL script to create default first author in revisions (`ACUMOS-2109 <https://jira.acumos.org/browse/ACUMOS-2109>`_)
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
@@ -42,6 +41,7 @@ Version 1.18.4, 23 Oct 2018
 ---------------------------
 
 * Detect description and document modifications (`ACUMOS-1902 <https://jira.acumos.org/browse/ACUMOS-1902>`_)
+* Add SQL script to create default first author in revisions (`ACUMOS-2109 <https://jira.acumos.org/browse/ACUMOS-2109>`_)
 * Add missing API model annotations to benefit Swagger
 * Add test case for find-by-modified-date feature
 * Requires database schema version 1.18
