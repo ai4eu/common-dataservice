@@ -26,6 +26,7 @@ Maven Nexus repository. The server is deployed as a Docker image to a Docker reg
 Version 2.0.0, 21 Nov 2018
 --------------------------
 
+* Extend table c_solution_rev with columns for security verification (`ACUMOS-1376 <https://jira.acumos.org/browse/ACUMOS-1376>`_)
 * Move download, rating and view fields to MLPSolution entity (`ACUMOS-1675 <https://jira.acumos.org/browse/ACUMOS-1675>`_)
 * Change column types to TIMESTAMP (`ACUMOS-1691 <https://jira.acumos.org/browse/ACUMOS-1691>`_)
 * Extend controllers to log warnings on bad requests (`ACUMOS-1697 <https://jira.acumos.org/browse/ACUMOS-1697>`_)

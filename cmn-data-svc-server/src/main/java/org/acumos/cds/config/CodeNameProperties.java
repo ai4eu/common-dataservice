@@ -61,6 +61,8 @@ public class CodeNameProperties {
 	private Map<String, String> stepType;
 	private Map<String, String> subscriptionScope;
 	private Map<String, String> toolkitType;
+	private Map<String, String> verifiedLicense;
+	private Map<String, String> verifiedVulnerability;
 
 	public Map<String, String> getAccessType() {
 		return accessType;
@@ -164,6 +166,22 @@ public class CodeNameProperties {
 
 	public void setToolkitType(Map<String, String> toolkitType) {
 		this.toolkitType = toolkitType;
+	}
+
+	public Map<String, String> getVerifiedLicense() {
+		return verifiedLicense;
+	}
+
+	public void setVerifiedLicense(Map<String, String> verifiedLicense) {
+		this.verifiedLicense = verifiedLicense;
+	}
+
+	public Map<String, String> getVerifiedVulnerability() {
+		return verifiedVulnerability;
+	}
+
+	public void setVerifiedVulnerability(Map<String, String> verifiedVulnerability) {
+		this.verifiedVulnerability = verifiedVulnerability;
 	}
 
 }
