@@ -21,10 +21,21 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface PeerSubscriptionRepository extends PagingAndSortingRepository<MLPPeerSubscription, Long> {
+
+	/**
+	 * Gets the count of peer subscriptions.
+	 * 
+	 * @param peerId
+	 *                   Peer ID
+	 * @return Count of subscriptions
+	 */
+	@Query("SELECT COUNT(subId) FROM MLPPeerSubscription WHERE peerId = :peerId")
+	long countPeerSubscriptions(@Param("peerId") String peerId);
 
 	/**
 	 * Finds all subscriptions for the specified peer.

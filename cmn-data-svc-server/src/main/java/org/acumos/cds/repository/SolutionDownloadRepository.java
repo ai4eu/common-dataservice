@@ -41,7 +41,7 @@ public interface SolutionDownloadRepository extends PagingAndSortingRepository<M
 	 * @return Count of download records
 	 */
 	@Query("SELECT COUNT(solutionId) FROM MLPSolutionDownload WHERE solutionId = :solutionId")
-	Long getSolutionDownloadCount(@Param("solutionId") String solutionId);
+	long countSolutionDownloads(@Param("solutionId") String solutionId);
 
 	/**
 	 * Finds solution downloads for the specified solution ID.

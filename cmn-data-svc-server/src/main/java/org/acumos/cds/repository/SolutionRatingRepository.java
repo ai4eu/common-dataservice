@@ -42,7 +42,7 @@ public interface SolutionRatingRepository
 	 * @return Count of rating records
 	 */
 	@Query("SELECT COUNT(rating) FROM MLPSolutionRating WHERE solutionId = :solutionId")
-	Long getSolutionRatingCount(@Param("solutionId") String solutionId);
+	long countSolutionRatings(@Param("solutionId") String solutionId);
 
 	/**
 	 * Gets the average of ratings for the specified solution ID by iterating over
@@ -51,7 +51,7 @@ public interface SolutionRatingRepository
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
-	 * @return Average of rating values
+	 * @return Average of rating values; null if no ratings exist.
 	 */
 	@Query("SELECT AVG(rating) FROM MLPSolutionRating WHERE solutionId = :solutionId")
 	Double getSolutionRatingAverage(@Param("solutionId") String solutionId);

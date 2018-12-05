@@ -79,7 +79,7 @@ public class RoleController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getRoleCount() {
 		logger.debug("getRoleCount");
-		Long count = roleRepository.count();
+		long count = roleRepository.count();
 		return new CountTransport(count);
 	}
 

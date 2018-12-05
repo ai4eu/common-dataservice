@@ -75,7 +75,7 @@ public class ArtifactController extends AbstractController {
 	@RequestMapping(value = "/" + CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getArtifactCount() {
 		logger.debug("getArtifactCount");
-		Long count = artifactRepository.count();
+		long count = artifactRepository.count();
 		return new CountTransport(count);
 	}
 

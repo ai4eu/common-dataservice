@@ -35,7 +35,7 @@ public interface UserRoleMapRepository extends CrudRepository<MLPUserRoleMap, ML
 	 * @return Count of users in the role
 	 */
 	@Query(value = "select count(m) from MLPUserRoleMap m where m.roleId = :roleId")
-	Long getRoleUsersCount(@Param("roleId") String roleId);
+	long countRoleUsers(@Param("roleId") String roleId);
 
 	/**
 	 * Finds all map entries for the specified userId.

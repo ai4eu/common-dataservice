@@ -43,7 +43,7 @@ public interface SolutionDeploymentRepository extends PagingAndSortingRepository
 	 */
 	@Query("SELECT COUNT(solutionId) FROM MLPSolutionDeployment "
 			+ " WHERE solutionId = :solutionId AND revisionId = :revisionId")
-	Long getSolutionDeploymentCount(@Param("solutionId") String solutionId, @Param("revisionId") String revisionId);
+	long countSolutionDeployments(@Param("solutionId") String solutionId, @Param("revisionId") String revisionId);
 
 	/**
 	 * Finds solution deployments for the specified user ID.

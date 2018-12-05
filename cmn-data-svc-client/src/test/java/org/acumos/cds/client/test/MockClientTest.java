@@ -294,8 +294,10 @@ public class MockClientTest {
 		client.deletePeer("id");
 
 		List<MLPPeerSubscription> peerSubList = new ArrayList<>();
+		peerSubList.add(new MLPPeerSubscription());
 		client.setPeerSubscriptions(peerSubList);
 		Assert.assertTrue(peerSubList == client.getPeerSubscriptions("id"));
+		Assert.assertEquals(1, client.getPeerSubscriptionCount("id"));
 
 		MLPPeerSubscription peerSub = new MLPPeerSubscription();
 		client.setPeerSubscriptionById(peerSub);

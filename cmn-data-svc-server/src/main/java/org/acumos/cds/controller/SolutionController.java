@@ -141,15 +141,11 @@ public class SolutionController extends AbstractController {
 	 *                       Solution ID
 	 */
 	private void updateSolutionDownloadStats(String solutionId) {
-		Long count = solutionDownloadRepository.getSolutionDownloadCount(solutionId);
-		if (count == null) {
-			logger.warn("updateSolutionDownloadStats failed on ID {}", solutionId);
-		} else {
-			MLPSolution stats = solutionRepository.findOne(solutionId);
-			stats.setDownloadCount(count);
-			stats.setLastDownload(new Date());
-			solutionRepository.save(stats);
-		}
+		long count = solutionDownloadRepository.countSolutionDownloads(solutionId);
+		MLPSolution stats = solutionRepository.findOne(solutionId);
+		stats.setDownloadCount(count);
+		stats.setLastDownload(new Date());
+		solutionRepository.save(stats);
 	}
 
 	/**
@@ -162,9 +158,9 @@ public class SolutionController extends AbstractController {
 	 *                       Solution ID
 	 */
 	private void updateSolutionRatingStats(String solutionId) {
-		Long count = solutionRatingRepository.getSolutionRatingCount(solutionId);
+		long count = solutionRatingRepository.countSolutionRatings(solutionId);
 		Double avg = solutionRatingRepository.getSolutionRatingAverage(solutionId);
-		if (count == null || avg == null) {
+		if (count == 0 || avg == null) {
 			logger.warn("updateSolutionRatingStats failed on ID {}", solutionId);
 		} else {
 			MLPSolution stats = solutionRepository.findOne(solutionId);
@@ -178,7 +174,7 @@ public class SolutionController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getSolutionCount() {
 		logger.debug("getSolutionCount");
-		Long count = solutionRepository.count();
+		long count = solutionRepository.count();
 		return new CountTransport(count);
 	}
 
