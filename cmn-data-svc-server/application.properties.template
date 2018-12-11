@@ -71,6 +71,7 @@ security.user.password = ccds-web-pass
 # This works for Mysql and MariaDB
 spring.database.driver.classname = org.mariadb.jdbc.Driver
 # Database coordinates
+# Mysql/Mariadb must set this parameter: useLegacyDatetimeCode=false
 spring.datasource.url = jdbc:mysql://localhost:3306/db-name?useSSL=false
 spring.datasource.username = db-user-name
 spring.datasource.password = db-user-pass

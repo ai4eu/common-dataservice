@@ -53,7 +53,7 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	void incrementViewCount(@Param("solutionId") String solutionId);
 
 	/**
-	 * Finds solutions using a LIKE query on the text columns NAME and DESCRIPTION.
+	 * Finds solutions using a LIKE query on the text column NAME.
 	 * 
 	 * @param searchTerm
 	 *                        fragment to find in text columns
@@ -62,8 +62,7 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 	 * @return Page of MLPSolution
 	 */
 	@Query("SELECT s FROM MLPSolution s " //
-			+ " WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))" //
-			+ " OR LOWER(s.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+			+ " WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
 	Page<MLPSolution> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageRequest);
 
 	/**

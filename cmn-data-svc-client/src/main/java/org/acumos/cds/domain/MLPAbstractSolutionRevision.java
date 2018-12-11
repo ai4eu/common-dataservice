@@ -65,16 +65,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	@ApiModelProperty(required = true, value = "Free-text version string", example = "v1.0")
 	private String version;
 
-	/**
-	 * This is not used. Instead a separate entity stores long descriptions by
-	 * revision ID and access-type code.
-	 */
-	@Deprecated
-	@Column(name = "DESCRIPTION", columnDefinition = "VARCHAR(512)")
-	@Size(max = 512)
-	@ApiModelProperty(value = "Free-text description")
-	private String description;
-
 	@Column(name = "METADATA", columnDefinition = "VARCHAR(1024)")
 	@Size(max = 1024)
 	@ApiModelProperty(value = "JSON", example = "{ \"tag\" : \"value\" }")
@@ -160,7 +150,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 		super(that);
 		this.accessTypeCode = that.accessTypeCode;
 		this.authors = that.authors;
-		this.description = that.description;
 		this.metadata = that.metadata;
 		this.origin = that.origin;
 		this.publisher = that.publisher;
@@ -176,27 +165,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 
 	public void setRevisionId(String revisionId) {
 		this.revisionId = revisionId;
-	}
-
-	/**
-	 * @deprecated Use the per-access-type description instead.
-	 * 
-	 * @return Description
-	 */
-	@Deprecated
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @deprecated Use the per-access-type description instead.
-	 * 
-	 * @param description
-	 *                        Description
-	 */
-	@Deprecated
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public String getMetadata() {

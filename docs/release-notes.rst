@@ -38,8 +38,10 @@ Version 2.0.0, 11 Dec 2018
 * Add method to get peer subscription count (`ACUMOS-2006 <https://jira.acumos.org/browse/ACUMOS-2006>`_)
 * Remove picture from MLPSolution, add get and save methods (`ACUMOS-2088 <https://jira.acumos.org/browse/ACUMOS-2088>`_)
 * Add artifact-type code and toolkit-type codes (`ACUMOS-2248 <https://jira.acumos.org/browse/ACUMOS-2248>`_)
+* Remove description from MLPSolution and MLPSolutionRevision (`ACUMOS-2261 <https://jira.acumos.org/browse/ACUMOS-2261>`_)
 * Add artifact-type code LI for license (`ACUMOS-2307 <https://jira.acumos.org/browse/ACUMOS-2307>`_)
 * Revise restricted-federation query method to use page parameter
+* Requires Mariadb/Mysql connection parameter "useLegacyDatetimeCode=false"
 * Requires database schema version 2.0
 
 Version 1.18.4, 23 Oct 2018

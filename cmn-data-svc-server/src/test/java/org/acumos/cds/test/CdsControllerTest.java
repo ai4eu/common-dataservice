@@ -624,7 +624,6 @@ public class CdsControllerTest {
 			client.dropUserTag(cu.getUserId(), tagName1);
 
 			MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
-			cs.setDescription("Tagged solution");
 			cs.setModelTypeCode(ModelTypeCode.CL.name());
 			cs.setToolkitTypeCode(ToolkitTypeCode.CP.name());
 			// This tag should spring into existence here
@@ -654,7 +653,6 @@ public class CdsControllerTest {
 
 			// no tags
 			MLPSolution csOrg = new MLPSolution("solution organization", cu.getUserId(), true);
-			csOrg.setDescription("Untagged solution org");
 			csOrg.setModelTypeCode(ModelTypeCode.DS.name());
 			csOrg.setToolkitTypeCode(ToolkitTypeCode.SK.name());
 			csOrg = client.createSolution(csOrg);
@@ -664,7 +662,6 @@ public class CdsControllerTest {
 			MLPSolution inactive = new MLPSolution();
 			inactive.setName("inactive solution name");
 			inactive.setUserId(cu.getUserId());
-			inactive.setDescription("Inactive Data Org");
 			inactive.setModelTypeCode(ModelTypeCode.DS.name());
 			inactive.setToolkitTypeCode(ToolkitTypeCode.SK.name());
 			inactive.setActive(false);
@@ -715,7 +712,7 @@ public class CdsControllerTest {
 			RestPageResponse<MLPSolution> page = client.getSolutions(new RestPageRequest(0, 2, "name"));
 			Assert.assertTrue(page != null && page.getTotalElements() > 0);
 
-			cs.setDescription("some description");
+			cs.setOrigin("some origin");
 			client.updateSolution(cs);
 			logger.info("Fetching back updated solution");
 			MLPSolution updated = client.getSolution(cs.getSolutionId());
@@ -748,7 +745,6 @@ public class CdsControllerTest {
 			cr = client.createSolutionRevision(cr);
 			Assert.assertNotNull(cr.getRevisionId());
 			logger.info("Created solution revision {}", cr.getRevisionId());
-			cr.setDescription("Some description");
 			cr.setVerifiedLicense("FA");
 			cr.setVerifiedVulnerability("FA");
 			client.updateSolutionRevision(cr);
