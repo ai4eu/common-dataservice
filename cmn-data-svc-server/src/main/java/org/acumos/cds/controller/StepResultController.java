@@ -100,14 +100,14 @@ public class StepResultController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String trackingIdField = "trackingId";
-	private static final String stepCodeField = "stepCode";
-	private static final String solutionIdField = "solutionId";
-	private static final String revisionIdField = "revisionId";
-	private static final String artifactIdField = "artifactId";
-	private static final String userIdField = "userId";
-	private static final String statusCodeField = "statusCode";
-	private static final String nameField = "name";
+	private static final String TRACKING_ID = "trackingId";
+	private static final String STEP_CODE = "stepCode";
+	private static final String SOLUTION_ID = "solutionId";
+	private static final String REVISION_ID = "revisionId";
+	private static final String ARTIFACT_ID = "artifactId";
+	private static final String USER_ID = "userId";
+	private static final String STATUS_CODE = "statusCode";
+	private static final String NAME = "name";
 
 	@ApiOperation(value = "Searches for requests with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -118,41 +118,41 @@ public class StepResultController extends AbstractController {
 	public Object searchStepResults(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Tracking ID") //
-			@RequestParam(name = trackingIdField, required = false) String trackingId, //
+			@RequestParam(name = TRACKING_ID, required = false) String trackingId, //
 			@ApiParam(value = "Step code") //
-			@RequestParam(name = stepCodeField, required = false) String stepCode, //
+			@RequestParam(name = STEP_CODE, required = false) String stepCode, //
 			@ApiParam(value = "Solution ID") //
-			@RequestParam(name = solutionIdField, required = false) String solutionId, //
+			@RequestParam(name = SOLUTION_ID, required = false) String solutionId, //
 			@ApiParam(value = "Revision ID") //
-			@RequestParam(name = revisionIdField, required = false) String revisionId, //
+			@RequestParam(name = REVISION_ID, required = false) String revisionId, //
 			@ApiParam(value = "Artifact ID") //
-			@RequestParam(name = artifactIdField, required = false) String artifactId, //
+			@RequestParam(name = ARTIFACT_ID, required = false) String artifactId, //
 			@ApiParam(value = "User ID") //
-			@RequestParam(name = userIdField, required = false) String userId, //
+			@RequestParam(name = USER_ID, required = false) String userId, //
 			@ApiParam(value = "Name") //
-			@RequestParam(name = nameField, required = false) String name, //
+			@RequestParam(name = NAME, required = false) String name, //
 			@ApiParam(value = "Status code") //
-			@RequestParam(name = statusCodeField, required = false) String statusCode, //
+			@RequestParam(name = STATUS_CODE, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchStepResults enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (trackingId != null)
-			queryParameters.put(trackingIdField, trackingId);
+			queryParameters.put(TRACKING_ID, trackingId);
 		if (stepCode != null)
-			queryParameters.put(stepCodeField, stepCode);
+			queryParameters.put(STEP_CODE, stepCode);
 		if (solutionId != null)
-			queryParameters.put(solutionIdField, solutionId);
+			queryParameters.put(SOLUTION_ID, solutionId);
 		if (revisionId != null)
-			queryParameters.put(revisionIdField, revisionId);
+			queryParameters.put(REVISION_ID, revisionId);
 		if (artifactId != null)
-			queryParameters.put(artifactIdField, artifactId);
+			queryParameters.put(ARTIFACT_ID, artifactId);
 		if (userId != null)
-			queryParameters.put(userIdField, userId);
+			queryParameters.put(USER_ID, userId);
 		if (name != null)
-			queryParameters.put(nameField, name);
+			queryParameters.put(NAME, name);
 		if (statusCode != null)
-			queryParameters.put(statusCodeField, statusCode);
+			queryParameters.put(STATUS_CODE, statusCode);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchStepResults missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

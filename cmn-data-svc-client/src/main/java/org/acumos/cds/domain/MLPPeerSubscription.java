@@ -220,8 +220,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param scopeType
-	 *                      A value obtained by calling
-	 *                      {@link org.acumos.cds.SubscriptionScopeCode#toString()}.
+	 *                      A valid scope-type code
 	 */
 	public void setScopeType(String scopeType) {
 		this.scopeType = scopeType;
@@ -233,8 +232,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	/**
 	 * @param accessType
-	 *                       A value obtained by calling
-	 *                       {@link org.acumos.cds.AccessTypeCode#toString()}.
+	 *                       A valid access-type code
 	 */
 	public void setAccessType(String accessType) {
 		this.accessType = accessType;

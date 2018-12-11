@@ -98,14 +98,14 @@ public class PeerController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String nameField = "name";
-	private static final String subjectNameField = "subjectName";
-	private static final String apiUrlField = "apiUrl";
-	private static final String webUrlField = "webUrl";
-	private static final String isSelfField = "isSelf";
-	private static final String isLocalField = "isLocal";
-	private static final String contact1Field = "contact1";
-	private static final String statusCodeField = "statusCode";
+	private static final String NAME = "name";
+	private static final String SUBJECT_NAME = "subjectName";
+	private static final String API_URL = "apiUrl";
+	private static final String WEB_URL = "webUrl";
+	private static final String IS_SELF = "isSelf";
+	private static final String IS_LOCAL = "isLocal";
+	private static final String CONTACT_1 = "contact1";
+	private static final String STATUS_CODE = "statusCode";
 
 	@ApiOperation(value = "Searches for peers with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -116,41 +116,41 @@ public class PeerController extends AbstractController {
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Name") //
-			@RequestParam(name = nameField, required = false) String name, //
+			@RequestParam(name = NAME, required = false) String name, //
 			@ApiParam(value = "Subject name") //
-			@RequestParam(name = subjectNameField, required = false) String subjectName, //
+			@RequestParam(name = SUBJECT_NAME, required = false) String subjectName, //
 			@ApiParam(value = "API URL") //
-			@RequestParam(name = apiUrlField, required = false) String apiUrl, //
+			@RequestParam(name = API_URL, required = false) String apiUrl, //
 			@ApiParam(value = "Web URL") //
-			@RequestParam(name = webUrlField, required = false) String webUrl, //
+			@RequestParam(name = WEB_URL, required = false) String webUrl, //
 			@ApiParam(value = "isSelf") //
-			@RequestParam(name = isSelfField, required = false) Boolean isSelf, //
+			@RequestParam(name = IS_SELF, required = false) Boolean isSelf, //
 			@ApiParam(value = "isLocal") //
-			@RequestParam(name = isLocalField, required = false) Boolean isLocal, //
+			@RequestParam(name = IS_LOCAL, required = false) Boolean isLocal, //
 			@ApiParam(value = "Contact 1") //
-			@RequestParam(name = contact1Field, required = false) String contact1, //
+			@RequestParam(name = CONTACT_1, required = false) String contact1, //
 			@ApiParam(value = "Status code") //
-			@RequestParam(name = statusCodeField, required = false) String statusCode, //
+			@RequestParam(name = STATUS_CODE, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPeer enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (name != null)
-			queryParameters.put(nameField, name);
+			queryParameters.put(NAME, name);
 		if (subjectName != null)
-			queryParameters.put(subjectNameField, subjectName);
+			queryParameters.put(SUBJECT_NAME, subjectName);
 		if (apiUrl != null)
-			queryParameters.put(apiUrlField, apiUrl);
+			queryParameters.put(API_URL, apiUrl);
 		if (webUrl != null)
-			queryParameters.put(webUrlField, webUrl);
+			queryParameters.put(WEB_URL, webUrl);
 		if (isSelf != null)
-			queryParameters.put(isSelfField, isSelf);
+			queryParameters.put(IS_SELF, isSelf);
 		if (isLocal != null)
-			queryParameters.put(isLocalField, isLocal);
+			queryParameters.put(IS_LOCAL, isLocal);
 		if (contact1 != null)
-			queryParameters.put(contact1Field, contact1);
+			queryParameters.put(CONTACT_1, contact1);
 		if (statusCode != null)
-			queryParameters.put(statusCodeField, statusCode);
+			queryParameters.put(STATUS_CODE, statusCode);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchPeers: no parameters");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

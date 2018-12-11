@@ -311,8 +311,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 
 	/**
 	 * @param statusCode
-	 *                       A value obtained by calling
-	 *                       {@link org.acumos.cds.PeerStatusCode#toString()}.
+	 *                       A valid peer-status code
 	 */
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;

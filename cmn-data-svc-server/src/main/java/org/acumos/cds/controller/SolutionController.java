@@ -226,13 +226,13 @@ public class SolutionController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String nameField = "name";
-	private static final String activeField = "active";
-	private static final String userIdField = "userId";
-	private static final String sourceIdField = "sourceId";
-	private static final String modelTypeCodeField = "modelTypeCode";
-	private static final String toolkitTypeCodeField = "toolkitTypeCode";
-	private static final String originField = "origin";
+	private static final String NAME = "name";
+	private static final String ACTIVE = "active";
+	private static final String USER_ID = "userId";
+	private static final String SOURCE_ID = "sourceId";
+	private static final String MODEL_TYPE_CODE = "modelTypeCode";
+	private static final String TOOLKIT_TYPE_CODE = "toolkitTypeCode";
+	private static final String ORIGIN = "origin";
 
 	@ApiOperation(value = "Searches for solutions with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -243,37 +243,37 @@ public class SolutionController extends AbstractController {
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Name") //
-			@RequestParam(name = nameField, required = false) String name, //
+			@RequestParam(name = NAME, required = false) String name, //
 			@ApiParam(value = "Active") //
-			@RequestParam(name = activeField, required = false) Boolean active, //
+			@RequestParam(name = ACTIVE, required = false) Boolean active, //
 			@ApiParam(value = "User ID") //
-			@RequestParam(name = userIdField, required = false) String userId, //
+			@RequestParam(name = USER_ID, required = false) String userId, //
 			@ApiParam(value = "Source ID") //
-			@RequestParam(name = sourceIdField, required = false) String sourceId, //
+			@RequestParam(name = SOURCE_ID, required = false) String sourceId, //
 			@ApiParam(value = "Model type code") //
-			@RequestParam(name = modelTypeCodeField, required = false) String modelTypeCode, //
+			@RequestParam(name = MODEL_TYPE_CODE, required = false) String modelTypeCode, //
 			@ApiParam(value = "Toolkit type code") //
-			@RequestParam(name = toolkitTypeCodeField, required = false) String toolkitTypeCode, //
+			@RequestParam(name = TOOLKIT_TYPE_CODE, required = false) String toolkitTypeCode, //
 			@ApiParam(value = "Origin URI") //
-			@RequestParam(name = originField, required = false) String origin, //
+			@RequestParam(name = ORIGIN, required = false) String origin, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchSolutions enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (name != null)
-			queryParameters.put(nameField, name);
+			queryParameters.put(NAME, name);
 		if (active != null)
-			queryParameters.put(activeField, active);
+			queryParameters.put(ACTIVE, active);
 		if (userId != null)
-			queryParameters.put(userIdField, userId);
+			queryParameters.put(USER_ID, userId);
 		if (sourceId != null)
-			queryParameters.put(sourceIdField, sourceId);
+			queryParameters.put(SOURCE_ID, sourceId);
 		if (modelTypeCode != null)
-			queryParameters.put(modelTypeCodeField, modelTypeCode);
+			queryParameters.put(MODEL_TYPE_CODE, modelTypeCode);
 		if (toolkitTypeCode != null)
-			queryParameters.put(toolkitTypeCodeField, toolkitTypeCode);
+			queryParameters.put(TOOLKIT_TYPE_CODE, toolkitTypeCode);
 		if (origin != null)
-			queryParameters.put(originField, origin);
+			queryParameters.put(ORIGIN, origin);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchSolutions missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

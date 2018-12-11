@@ -74,7 +74,6 @@ public class MockClientTest {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void coverMockMethods() {
 
@@ -96,16 +95,6 @@ public class MockClientTest {
 		Assert.assertTrue(success == client.getHealth());
 		client.setVersion(success);
 		Assert.assertTrue(success == client.getVersion());
-
-		// Cover the enums
-		Assert.assertFalse(client.getAccessTypes().isEmpty());
-		Assert.assertFalse(client.getArtifactTypes().isEmpty());
-		Assert.assertFalse(client.getLoginProviders().isEmpty());
-		Assert.assertFalse(client.getModelTypes().isEmpty());
-		Assert.assertFalse(client.getToolkitTypes().isEmpty());
-		Assert.assertFalse(client.getDeploymentStatuses().isEmpty());
-		Assert.assertFalse(client.getStepStatuses().isEmpty());
-		Assert.assertFalse(client.getStepTypes().isEmpty());
 
 		long count = 3;
 		client.setSolutionCount(count);

@@ -21,35 +21,16 @@
 package org.acumos.cds.client.test;
 
 import org.acumos.cds.AccessTypeCode;
-import org.acumos.cds.ArtifactTypeCode;
-import org.acumos.cds.DeploymentStatusCode;
-import org.acumos.cds.LoginProviderCode;
-import org.acumos.cds.MessageSeverityCode;
-import org.acumos.cds.ModelTypeCode;
-import org.acumos.cds.NotificationDeliveryMechanismCode;
-import org.acumos.cds.PeerStatusCode;
-import org.acumos.cds.SubscriptionScopeCode;
-import org.acumos.cds.ToolkitTypeCode;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * This increases coverage.
  */
-@SuppressWarnings("deprecation")
 public class EnumTest {
 
 	@Test
 	public void testEnums() {
 		Assert.assertTrue(AccessTypeCode.values().length > 0);
-		Assert.assertTrue(ArtifactTypeCode.values().length > 0);
-		Assert.assertTrue(DeploymentStatusCode.values().length > 0);
-		Assert.assertTrue(LoginProviderCode.values().length > 0);
-		Assert.assertTrue(MessageSeverityCode.values().length > 0);
-		Assert.assertTrue(ModelTypeCode.values().length > 0);
-		Assert.assertTrue(NotificationDeliveryMechanismCode.values().length > 0);
-		Assert.assertTrue(PeerStatusCode.values().length > 0);
-		Assert.assertTrue(SubscriptionScopeCode.values().length > 0);
-		Assert.assertTrue(ToolkitTypeCode.values().length > 0);
 	}
 }

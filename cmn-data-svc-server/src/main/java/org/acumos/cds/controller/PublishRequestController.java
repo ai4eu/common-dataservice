@@ -99,11 +99,11 @@ public class PublishRequestController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many field names from the MLPArtifact class.
 	 */
-	private static final String solutionIdField = "solutionId";
-	private static final String revisionIdField = "revisionId";
-	private static final String requestUserIdField = "requestUserId";
-	private static final String reviewUserIdField = "reviewUserId";
-	private static final String statusCodeField = "statusCode";
+	private static final String SOLUTION_ID = "solutionId";
+	private static final String REVISION_ID = "revisionId";
+	private static final String REQUEST_USER_ID = "requestUserId";
+	private static final String REVIEW_USER_ID = "reviewUserId";
+	private static final String STATUS_CODE = "statusCode";
 
 	@ApiOperation(value = "Searches for requests with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -114,29 +114,29 @@ public class PublishRequestController extends AbstractController {
 	public Object searchPublishRequests(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Solution ID") //
-			@RequestParam(name = solutionIdField, required = false) String solutionId, //
+			@RequestParam(name = SOLUTION_ID, required = false) String solutionId, //
 			@ApiParam(value = "Revision ID") //
-			@RequestParam(name = revisionIdField, required = false) String revisionId, //
+			@RequestParam(name = REVISION_ID, required = false) String revisionId, //
 			@ApiParam(value = "Request user ID") //
-			@RequestParam(name = requestUserIdField, required = false) String requestUserId, //
+			@RequestParam(name = REQUEST_USER_ID, required = false) String requestUserId, //
 			@ApiParam(value = "Review user ID") //
-			@RequestParam(name = reviewUserIdField, required = false) String reviewUserId, //
+			@RequestParam(name = REVIEW_USER_ID, required = false) String reviewUserId, //
 			@ApiParam(value = "Status code") //
-			@RequestParam(name = statusCodeField, required = false) String statusCode, //
+			@RequestParam(name = STATUS_CODE, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPublishRequests enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (solutionId != null)
-			queryParameters.put(solutionIdField, solutionId);
+			queryParameters.put(SOLUTION_ID, solutionId);
 		if (revisionId != null)
-			queryParameters.put(revisionIdField, revisionId);
+			queryParameters.put(REVISION_ID, revisionId);
 		if (requestUserId != null)
-			queryParameters.put(requestUserIdField, requestUserId);
+			queryParameters.put(REQUEST_USER_ID, requestUserId);
 		if (reviewUserId != null)
-			queryParameters.put(reviewUserIdField, reviewUserId);
+			queryParameters.put(REVIEW_USER_ID, reviewUserId);
 		if (statusCode != null)
-			queryParameters.put(statusCodeField, statusCode);
+			queryParameters.put(STATUS_CODE, statusCode);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchPublishRequests missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

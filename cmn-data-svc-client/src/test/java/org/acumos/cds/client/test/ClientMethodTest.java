@@ -76,13 +76,11 @@ public class ClientMethodTest {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void coverClientEnumMethods() {
 		final String uri = "http://localhost:51243";
-		ICommonDataServiceRestClient client = CommonDataServiceRestClientImpl.getInstance(uri, "user", "pass");
-		client = CommonDataServiceRestClientImpl.getInstance(uri, new RestTemplate());
-
+		CommonDataServiceRestClientImpl.getInstance(uri, "user", "pass");
+		CommonDataServiceRestClientImpl.getInstance(uri, new RestTemplate());
 		try {
 			CommonDataServiceRestClientImpl.getInstance(null, null, null);
 		} catch (IllegalArgumentException ex) {
@@ -92,47 +90,6 @@ public class ClientMethodTest {
 			CommonDataServiceRestClientImpl.getInstance("bogus:/host;port", null, null);
 		} catch (IllegalArgumentException ex) {
 			logger.info("getInstance failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getAccessTypes();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getArtifactTypes();
-
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getLoginProviders();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getModelTypes();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getToolkitTypes();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getDeploymentStatuses();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getStepStatuses();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getStepTypes();
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
 		}
 	}
 

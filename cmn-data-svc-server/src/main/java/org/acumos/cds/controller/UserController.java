@@ -383,13 +383,13 @@ public class UserController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String firstNameField = "firstName";
-	private static final String middleNameField = "middleName";
-	private static final String lastNameField = "lastName";
-	private static final String orgNameField = "orgName";
-	private static final String emailField = "email";
-	private static final String loginNameField = "loginName";
-	private static final String activeField = "active";
+	private static final String FIRST_NAME = "firstName";
+	private static final String MIDDLE_NAME = "middleName";
+	private static final String LAST_NAME = "lastName";
+	private static final String ORG_NAME = "orgName";
+	private static final String EMAIL = "email";
+	private static final String LOGIN_NAME = "loginName";
+	private static final String ACTIVE = "active";
 
 	@ApiOperation(value = "Searches for users with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -400,37 +400,37 @@ public class UserController extends AbstractController {
 	public Object searchUsers(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "First name") //
-			@RequestParam(name = firstNameField, required = false) String firstName, //
+			@RequestParam(name = FIRST_NAME, required = false) String firstName, //
 			@ApiParam(value = "Middle name") //
-			@RequestParam(name = middleNameField, required = false) String middleName, //
+			@RequestParam(name = MIDDLE_NAME, required = false) String middleName, //
 			@ApiParam(value = "Last name") //
-			@RequestParam(name = lastNameField, required = false) String lastName, //
+			@RequestParam(name = LAST_NAME, required = false) String lastName, //
 			@ApiParam(value = "Org name") //
-			@RequestParam(name = orgNameField, required = false) String orgName, //
+			@RequestParam(name = ORG_NAME, required = false) String orgName, //
 			@ApiParam(value = "Email") //
-			@RequestParam(name = emailField, required = false) String email, //
+			@RequestParam(name = EMAIL, required = false) String email, //
 			@ApiParam(value = "Login name") //
-			@RequestParam(name = loginNameField, required = false) String loginName, //
+			@RequestParam(name = LOGIN_NAME, required = false) String loginName, //
 			@ApiParam(value = "Active") //
-			@RequestParam(name = activeField, required = false) Boolean active, //
+			@RequestParam(name = ACTIVE, required = false) Boolean active, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchUsers enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (firstName != null)
-			queryParameters.put(firstNameField, firstName);
+			queryParameters.put(FIRST_NAME, firstName);
 		if (middleName != null)
-			queryParameters.put(middleNameField, middleName);
+			queryParameters.put(MIDDLE_NAME, middleName);
 		if (lastName != null)
-			queryParameters.put(lastNameField, lastName);
+			queryParameters.put(LAST_NAME, lastName);
 		if (orgName != null)
-			queryParameters.put(orgNameField, orgName);
+			queryParameters.put(ORG_NAME, orgName);
 		if (email != null)
-			queryParameters.put(emailField, email);
+			queryParameters.put(EMAIL, email);
 		if (loginName != null)
-			queryParameters.put(loginNameField, loginName);
+			queryParameters.put(LOGIN_NAME, loginName);
 		if (active != null)
-			queryParameters.put(activeField, active);
+			queryParameters.put(ACTIVE, active);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchUsers missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

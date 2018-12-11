@@ -25,15 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.acumos.cds.CodeNameType;
-import org.acumos.cds.domain.MLPAccessType;
 import org.acumos.cds.domain.MLPArtifact;
-import org.acumos.cds.domain.MLPArtifactType;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
-import org.acumos.cds.domain.MLPDeploymentStatus;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPLoginProvider;
-import org.acumos.cds.domain.MLPModelType;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
@@ -54,11 +49,8 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPStepResult;
-import org.acumos.cds.domain.MLPStepStatus;
-import org.acumos.cds.domain.MLPStepType;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
-import org.acumos.cds.domain.MLPToolkitType;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
@@ -77,7 +69,6 @@ import org.acumos.cds.transport.SuccessTransport;
  * {@link org.springframework.web.client.HttpStatusCodeException#getResponseBodyAsString()}
  * to obtain the detailed error message sent by the server.
  */
-@SuppressWarnings("deprecation")
 public interface ICommonDataServiceRestClient {
 
 	/**
@@ -93,78 +84,6 @@ public interface ICommonDataServiceRestClient {
 	 * @return Object with version string
 	 */
 	SuccessTransport getVersion();
-
-	/**
-	 * Gets all access types.
-	 * 
-	 * @return List of access type objects.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPAccessType> getAccessTypes();
-
-	/**
-	 * Gets all artifact types.
-	 * 
-	 * @return List of artifact type code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPArtifactType> getArtifactTypes();
-
-	/**
-	 * Gets all deployment status codes
-	 * 
-	 * @return List of deployment status code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPDeploymentStatus> getDeploymentStatuses();
-
-	/**
-	 * Gets all login providers.
-	 * 
-	 * @return List of login provider code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPLoginProvider> getLoginProviders();
-
-	/**
-	 * Gets all model types.
-	 * 
-	 * @return List of model type code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPModelType> getModelTypes();
-
-	/**
-	 * Gets all step status codes.
-	 * 
-	 * @return List of step status code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPStepStatus> getStepStatuses();
-
-	/**
-	 * Gets all step type codes.
-	 * 
-	 * @return List of step type code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPStepType> getStepTypes();
-
-	/**
-	 * Gets all toolkit types.
-	 * 
-	 * @return List of tookit type code-name pairs.
-	 * @deprecated Use {@link #getCodeNamePairs(CodeNameType)}
-	 */
-	@Deprecated
-	List<MLPToolkitType> getToolkitTypes();
 
 	/**
 	 * Gets the list of code-name value-set names.

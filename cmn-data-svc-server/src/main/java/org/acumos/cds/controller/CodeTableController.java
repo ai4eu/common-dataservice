@@ -45,8 +45,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
- * Provides getters for all code-name value sets, which are obtained from
- * property sources.
+ * Provides a getter to fetch any code-name value sets, the contents of which
+ * are obtained from property sources.
  */
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.CODE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,9 +63,8 @@ public class CodeTableController extends AbstractController {
 	public List<String> getValueSetNames() {
 		logger.debug("getValueSetNames");
 		List<String> list = new ArrayList<>();
-		for (CodeNameType cn : CodeNameType.values()) {
+		for (CodeNameType cn : CodeNameType.values())
 			list.add(cn.name());
-		}
 		return list;
 	}
 
@@ -85,82 +84,6 @@ public class CodeTableController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Unexpected value set name " + valueSetName);
 		}
-	}
-
-	@ApiOperation(value = "Gets the list of access type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.ACCESS_PATH + "/" + CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getAccessTypeList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.ACCESS_TYPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of artifact type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.ARTIFACT_PATH + "/"
-			+ CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getArtifactTypeList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.ARTIFACT_TYPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of deployment status codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.DEPLOY_PATH + "/"
-			+ CCDSConstants.STATUS_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getDeploymentStatusList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.DEPLOYMENT_STATUS.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of login provider codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.LOGIN_PROVIDER_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getLoginProviderList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.LOGIN_PROVIDER.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of model type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.MODEL_PATH + "/" + CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getModelTypeList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.MODEL_TYPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of step status codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.STEP_PATH + "/" + CCDSConstants.STATUS_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getStepStatusList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.STEP_STATUS.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of step type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.STEP_PATH + "/" + CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getStepTypeList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.STEP_TYPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of subscription scope codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.SUBSCRIPTION_PATH + "/"
-			+ CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getSubscriptionScopes(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.SUBSCRIPTION_SCOPE.name(), response);
-	}
-
-	@ApiOperation(value = "Gets the list of toolkit type codes. This is DEPRECATED, use getCodeNamePairs with the appropriate value-set name.", //
-			response = MLPCodeNamePair.class, responseContainer = "List")
-	@RequestMapping(value = "/" + CCDSConstants.TOOLKIT_PATH + "/"
-			+ CCDSConstants.TYPE_PATH, method = RequestMethod.GET)
-	@Deprecated
-	public Object getToolkitTypeList(HttpServletResponse response) {
-		return getCodeNamePairs(CodeNameType.TOOLKIT_TYPE.name(), response);
 	}
 
 }

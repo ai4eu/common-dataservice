@@ -164,8 +164,7 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 
 	/**
 	 * @param artifactTypeCode
-	 *                             A value obtained by calling
-	 *                             {@link org.acumos.cds.ArtifactTypeCode#toString()}.
+	 *                             A valid artifact-type code
 	 */
 	public void setArtifactTypeCode(String artifactTypeCode) {
 		this.artifactTypeCode = artifactTypeCode;

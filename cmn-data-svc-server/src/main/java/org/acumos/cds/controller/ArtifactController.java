@@ -123,11 +123,11 @@ public class ArtifactController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String artifactTypeCodeField = "artifactTypeCode";
-	private static final String nameField = "name";
-	private static final String uriField = "uri";
-	private static final String versionField = "version";
-	private static final String userIdField = "userId";
+	private static final String ARTIFACT_TYPE_CODE = "artifactTypeCode";
+	private static final String NAME = "name";
+	private static final String URI = "uri";
+	private static final String VERSION = "version";
+	private static final String USER_ID = "userId";
 
 	@ApiOperation(value = "Searches for artifacts with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -139,29 +139,29 @@ public class ArtifactController extends AbstractController {
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Artifact type code") //
-			@RequestParam(name = artifactTypeCodeField, required = false) String artifactTypeCode, //
+			@RequestParam(name = ARTIFACT_TYPE_CODE, required = false) String artifactTypeCode, //
 			@ApiParam(value = "Name") //
-			@RequestParam(name = nameField, required = false) String name, //
+			@RequestParam(name = NAME, required = false) String name, //
 			@ApiParam(value = "URI") //
-			@RequestParam(name = uriField, required = false) String uri, //
+			@RequestParam(name = URI, required = false) String uri, //
 			@ApiParam(value = "Version") //
-			@RequestParam(name = versionField, required = false) String version, //
+			@RequestParam(name = VERSION, required = false) String version, //
 			@ApiParam(value = "User ID") //
-			@RequestParam(name = userIdField, required = false) String userId, //
+			@RequestParam(name = USER_ID, required = false) String userId, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchArtifacts enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (artifactTypeCode != null)
-			queryParameters.put(artifactTypeCodeField, artifactTypeCode);
+			queryParameters.put(ARTIFACT_TYPE_CODE, artifactTypeCode);
 		if (name != null)
-			queryParameters.put(nameField, name);
+			queryParameters.put(NAME, name);
 		if (uri != null)
-			queryParameters.put(uriField, uri);
+			queryParameters.put(URI, uri);
 		if (version != null)
-			queryParameters.put(versionField, version);
+			queryParameters.put(VERSION, version);
 		if (userId != null)
-			queryParameters.put(userIdField, userId);
+			queryParameters.put(USER_ID, userId);
 		if (queryParameters.size() == 0) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);

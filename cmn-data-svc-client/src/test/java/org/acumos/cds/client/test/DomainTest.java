@@ -23,16 +23,11 @@ package org.acumos.cds.client.test;
 import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 
-import org.acumos.cds.domain.MLPAccessType;
 import org.acumos.cds.domain.MLPArtifact;
-import org.acumos.cds.domain.MLPArtifactType;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
-import org.acumos.cds.domain.MLPDeploymentStatus;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPLoginProvider;
-import org.acumos.cds.domain.MLPModelType;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
@@ -41,7 +36,6 @@ import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
-import org.acumos.cds.domain.MLPPeerStatus;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
@@ -62,11 +56,8 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPStepResult;
-import org.acumos.cds.domain.MLPStepStatus;
-import org.acumos.cds.domain.MLPStepType;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
-import org.acumos.cds.domain.MLPToolkitType;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotification;
@@ -1607,134 +1598,6 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertTrue(pk.equals(pk));
 		Assert.assertFalse(pk.hashCode() == 0);
 		logger.info(pk.toString());
-	}
-
-	// Collect all the deprecated types together below
-
-	@Test
-	public void testMLPAccessType() {
-		MLPAccessType m = new MLPAccessType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPArtifactType() {
-		MLPArtifactType m = new MLPArtifactType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPDeploymentStatus() {
-		MLPDeploymentStatus m = new MLPDeploymentStatus();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPLoginProvider() {
-		MLPLoginProvider m = new MLPLoginProvider();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPModelType() {
-		MLPModelType m = new MLPModelType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPPeerStatus() {
-		MLPPeerStatus m = new MLPPeerStatus();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPStepStatus() {
-		MLPStepStatus m = new MLPStepStatus();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPStepType() {
-		MLPStepType m = new MLPStepType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-	}
-
-	@Test
-	public void testMLPToolkitType() {
-		MLPToolkitType m = new MLPToolkitType();
-		m.setCode(s1);
-		m.setName(s2);
-		Assert.assertEquals(s1, m.getCode());
-		Assert.assertEquals(s2, m.getName());
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
 	}
 
 }

@@ -26,24 +26,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.acumos.cds.AccessTypeCode;
-import org.acumos.cds.ArtifactTypeCode;
 import org.acumos.cds.CodeNameType;
-import org.acumos.cds.DeploymentStatusCode;
-import org.acumos.cds.LoginProviderCode;
-import org.acumos.cds.ModelTypeCode;
-import org.acumos.cds.StepStatusCode;
-import org.acumos.cds.StepTypeCode;
-import org.acumos.cds.ToolkitTypeCode;
-import org.acumos.cds.domain.MLPAccessType;
 import org.acumos.cds.domain.MLPArtifact;
-import org.acumos.cds.domain.MLPArtifactType;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
-import org.acumos.cds.domain.MLPDeploymentStatus;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPLoginProvider;
-import org.acumos.cds.domain.MLPModelType;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
@@ -64,11 +51,8 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPStepResult;
-import org.acumos.cds.domain.MLPStepStatus;
-import org.acumos.cds.domain.MLPStepType;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
-import org.acumos.cds.domain.MLPToolkitType;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
@@ -85,7 +69,6 @@ import org.springframework.web.client.RestTemplate;
  * Accepts objects via setters and keeps a references for later return by
  * corresponding getter methods.
  */
-@SuppressWarnings("deprecation")
 public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRestClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -283,86 +266,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public SuccessTransport getVersion() {
 		return version;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPAccessType> getAccessTypes() {
-		List<MLPAccessType> list = new ArrayList<>();
-		for (AccessTypeCode a : AccessTypeCode.values())
-			list.add(new MLPAccessType(a.name(), a.getTypeName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPArtifactType> getArtifactTypes() {
-		List<MLPArtifactType> list = new ArrayList<>();
-		for (ArtifactTypeCode a : ArtifactTypeCode.values())
-			list.add(new MLPArtifactType(a.name(), a.getTypeName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPLoginProvider> getLoginProviders() {
-		List<MLPLoginProvider> list = new ArrayList<>();
-		for (LoginProviderCode a : LoginProviderCode.values())
-			list.add(new MLPLoginProvider(a.name(), a.getProviderName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPModelType> getModelTypes() {
-		List<MLPModelType> list = new ArrayList<>();
-		for (ModelTypeCode a : ModelTypeCode.values())
-			list.add(new MLPModelType(a.name(), a.getTypeName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPStepStatus> getStepStatuses() {
-		List<MLPStepStatus> list = new ArrayList<>();
-		for (StepStatusCode a : StepStatusCode.values())
-			list.add(new MLPStepStatus(a.name(), a.getStatusName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPStepType> getStepTypes() {
-		List<MLPStepType> list = new ArrayList<>();
-		for (StepTypeCode a : StepTypeCode.values())
-			list.add(new MLPStepType(a.name(), a.getStepName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPToolkitType> getToolkitTypes() {
-		List<MLPToolkitType> list = new ArrayList<>();
-		for (ToolkitTypeCode a : ToolkitTypeCode.values())
-			list.add(new MLPToolkitType(a.name(), a.getTypeName()));
-		return list;
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Deprecated
-	@Override
-	public List<MLPDeploymentStatus> getDeploymentStatuses() {
-		List<MLPDeploymentStatus> list = new ArrayList<>();
-		for (DeploymentStatusCode a : DeploymentStatusCode.values())
-			list.add(new MLPDeploymentStatus(a.name(), a.getStatusName()));
-		return list;
 	}
 
 	public void setValueSetNames(List<String> names) {

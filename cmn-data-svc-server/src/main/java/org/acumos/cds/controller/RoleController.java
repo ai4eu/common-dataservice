@@ -105,8 +105,8 @@ public class RoleController extends AbstractController {
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI
 	 * at the cost of hard-coding many class field names.
 	 */
-	private static final String nameField = "name";
-	private static final String activeField = "active";
+	private static final String NAME = "name";
+	private static final String ACTIVE = "active";
 
 	@ApiOperation(value = "Searches for roles with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
@@ -118,17 +118,17 @@ public class RoleController extends AbstractController {
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@ApiParam(value = "Name") //
-			@RequestParam(name = nameField, required = false) String name, //
+			@RequestParam(name = NAME, required = false) String name, //
 			@ApiParam(value = "Active") //
-			@RequestParam(name = activeField, required = false) Boolean active, //
+			@RequestParam(name = ACTIVE, required = false) Boolean active, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchRoles enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (name != null)
-			queryParameters.put(nameField, name);
+			queryParameters.put(NAME, name);
 		if (active != null)
-			queryParameters.put(activeField, active);
+			queryParameters.put(ACTIVE, active);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchRoles missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

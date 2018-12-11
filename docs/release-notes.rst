@@ -38,6 +38,7 @@ Version 2.0.0, 11 Dec 2018
 * Add method to get peer subscription count (`ACUMOS-2006 <https://jira.acumos.org/browse/ACUMOS-2006>`_)
 * Remove picture from MLPSolution, add get and save methods (`ACUMOS-2088 <https://jira.acumos.org/browse/ACUMOS-2088>`_)
 * Add artifact-type code and toolkit-type codes (`ACUMOS-2248 <https://jira.acumos.org/browse/ACUMOS-2248>`_)
+* Drop deprecated get-enum methods (`ACUMOS-2252 <https://jira.acumos.org/browse/ACUMOS-2252>`_)
 * Remove description from MLPSolution and MLPSolutionRevision (`ACUMOS-2261 <https://jira.acumos.org/browse/ACUMOS-2261>`_)
 * Add artifact-type code LI for license (`ACUMOS-2307 <https://jira.acumos.org/browse/ACUMOS-2307>`_)
 * Revise restricted-federation query method to use page parameter

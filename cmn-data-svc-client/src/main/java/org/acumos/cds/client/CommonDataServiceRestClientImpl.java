@@ -34,15 +34,10 @@ import java.util.Random;
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.PublishRequestStatusCode;
-import org.acumos.cds.domain.MLPAccessType;
 import org.acumos.cds.domain.MLPArtifact;
-import org.acumos.cds.domain.MLPArtifactType;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
-import org.acumos.cds.domain.MLPDeploymentStatus;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPLoginProvider;
-import org.acumos.cds.domain.MLPModelType;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
@@ -67,11 +62,8 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPStepResult;
-import org.acumos.cds.domain.MLPStepStatus;
-import org.acumos.cds.domain.MLPStepType;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPThread;
-import org.acumos.cds.domain.MLPToolkitType;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
@@ -118,7 +110,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  * getResponseBodyAsString() method.
  * </P>
  */
-@SuppressWarnings("deprecation")
 public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -166,7 +157,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			return encodeBase62(randomNum);
 		}
 
-		private static final String base62Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		private static final String BASE_62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		/**
 		 * Encodes the given Long in base 62. <BR>
@@ -184,11 +175,11 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			// perform the first selection using unsigned ops to get negative
 			// numbers down into positive signed range.
 			long index = Long.remainderUnsigned(n, 62);
-			builder.append(base62Chars.charAt((int) index));
+			builder.append(BASE_62_CHARS.charAt((int) index));
 			n = Long.divideUnsigned(n, 62);
 			// now the long is unsigned, can just do regular math ops
 			while (n > 0) {
-				builder.append(base62Chars.charAt((int) (n % 62)));
+				builder.append(BASE_62_CHARS.charAt((int) (n % 62)));
 				n /= 62;
 			}
 			return builder.toString();
@@ -437,112 +428,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		logger.debug("getCodeNamePairs: uri {}", uri);
 		ResponseEntity<List<MLPCodeNamePair>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<MLPCodeNamePair>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPAccessType> getAccessTypes() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.ACCESS_PATH, CCDSConstants.TYPE_PATH },
-				null, null);
-		logger.debug("getAccessTypes: uri {}", uri);
-		ResponseEntity<List<MLPAccessType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPAccessType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPArtifactType> getArtifactTypes() {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.CODE_PATH, CCDSConstants.ARTIFACT_PATH, CCDSConstants.TYPE_PATH }, null,
-				null);
-		logger.debug("getArtifactTypes: uri {}", uri);
-		ResponseEntity<List<MLPArtifactType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPArtifactType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPLoginProvider> getLoginProviders() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.LOGIN_PROVIDER_PATH }, null, null);
-		logger.debug("getLoginProviders: uri {}", uri);
-		ResponseEntity<List<MLPLoginProvider>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPLoginProvider>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPModelType> getModelTypes() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.MODEL_PATH, CCDSConstants.TYPE_PATH },
-				null, null);
-		logger.debug("getModelTypes: uri {}", uri);
-		ResponseEntity<List<MLPModelType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPModelType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPStepStatus> getStepStatuses() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.STEP_PATH, CCDSConstants.STATUS_PATH },
-				null, null);
-		logger.debug("getStepStatuses: uri {}", uri);
-		ResponseEntity<List<MLPStepStatus>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPStepStatus>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPStepType> getStepTypes() {
-		URI uri = buildUri(new String[] { CCDSConstants.CODE_PATH, CCDSConstants.STEP_PATH, CCDSConstants.TYPE_PATH },
-				null, null);
-		logger.debug("getStepTypes: uri {}", uri);
-		ResponseEntity<List<MLPStepType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPStepType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPToolkitType> getToolkitTypes() {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.CODE_PATH, CCDSConstants.TOOLKIT_PATH, CCDSConstants.TYPE_PATH }, null,
-				null);
-		logger.debug("getTookitTypes: uri {}", uri);
-		ResponseEntity<List<MLPToolkitType>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPToolkitType>>() {
-				});
-		return response.getBody();
-	}
-
-	/** @deprecated Use {@link #getCodeNamePairs(CodeNameType)} */
-	@Override
-	@Deprecated
-	public List<MLPDeploymentStatus> getDeploymentStatuses() {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.CODE_PATH, CCDSConstants.DEPLOY_PATH, CCDSConstants.STATUS_PATH }, null,
-				null);
-		logger.debug("getDeploymentStatuses: uri {}", uri);
-		ResponseEntity<List<MLPDeploymentStatus>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPDeploymentStatus>>() {
 				});
 		return response.getBody();
 	}

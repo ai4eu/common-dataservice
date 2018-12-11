@@ -91,18 +91,18 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	private final String revAlias = "revs";
-	private final String artAlias = "arts";
-	private final String ownerAlias = "ownr";
-	private final String accAlias = "acc";
-	private final String descsAlias = "descs";
-	private final String docsAlias = "docs";
-	private final String solutionId = "solutionId";
+	private static final String revAlias = "revs";
+	private static final String artAlias = "arts";
+	private static final String ownerAlias = "ownr";
+	private static final String accAlias = "acc";
+	private static final String descsAlias = "descs";
+	private static final String docsAlias = "docs";
+	private static final String solutionId = "solutionId";
 	// Aliases used in subquery for required tags
-	private final String solAlias = "sol";
-	private final String subqAlias = "subsol";
-	private final String tagsFieldAlias = "t";
-	private final String tagValueField = tagsFieldAlias + ".tag";
+	private static final String solAlias = "sol";
+	private static final String subqAlias = "subsol";
+	private static final String tagsFieldAlias = "t";
+	private static final String tagValueField = tagsFieldAlias + ".tag";
 
 	/*
 	 * This criteria only checks properties of the solution entity, not of any
