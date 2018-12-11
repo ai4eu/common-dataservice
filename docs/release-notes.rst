@@ -23,8 +23,8 @@ Common Data Service Release Notes
 The client and server are released together.  The client is deployed as a jar file to a
 Maven Nexus repository. The server is deployed as a Docker image to a Docker registry.
 
-Version 2.0.0, 6 Dec 2018
--------------------------
+Version 2.0.0, 11 Dec 2018
+--------------------------
 
 * Extend table c_solution_rev with columns for security verification (`ACUMOS-1376 <https://jira.acumos.org/browse/ACUMOS-1376>`_)
 * Move download, rating and view fields to MLPSolution entity (`ACUMOS-1675 <https://jira.acumos.org/browse/ACUMOS-1675>`_)
@@ -37,6 +37,7 @@ Version 2.0.0, 6 Dec 2018
 * Support site content key-value pairs (`ACUMOS-1936 <https://jira.acumos.org/browse/ACUMOS-1936>`_)
 * Add method to get peer subscription count (`ACUMOS-2006 <https://jira.acumos.org/browse/ACUMOS-2006>`_)
 * Remove picture from MLPSolution, add get and save methods (`ACUMOS-2088 <https://jira.acumos.org/browse/ACUMOS-2088>`_)
+* Add artifact-type code and toolkit-type codes (`ACUMOS-2248 <https://jira.acumos.org/browse/ACUMOS-2248>`_)
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
