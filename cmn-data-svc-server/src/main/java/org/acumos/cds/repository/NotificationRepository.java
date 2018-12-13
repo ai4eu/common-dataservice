@@ -50,7 +50,7 @@ public interface NotificationRepository extends PagingAndSortingRepository<MLPNo
 	/**
 	 * Finds a page of notifications that are active (current time falls within the
 	 * notification's time window) and assigned to the specified user. Result
-	 * includes the viewed date, which is null if the user has not read it.
+	 * includes the viewed timestamp, which is null if the user has not read it.
 	 * 
 	 * @param userId
 	 *                     User ID

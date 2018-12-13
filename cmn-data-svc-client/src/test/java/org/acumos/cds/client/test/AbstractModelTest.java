@@ -20,6 +20,7 @@
 
 package org.acumos.cds.client.test;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,11 +34,12 @@ public abstract class AbstractModelTest {
 	final boolean b1 = true;
 	final boolean b2 = false;
 	final byte[] by1 = { 0, 1, 2, 3 };
-	final Date d1 = new Date(time + 1 * 24 * 60 * 60 * 1000);
-	final Date d2 = new Date(time + 2 * 24 * 60 * 60 * 1000);
-	final Date d3 = new Date(time + 3 * 24 * 60 * 60 * 1000);
-	final Date d4 = new Date(time + 4 * 24 * 60 * 60 * 1000);
-	final Date d5 = new Date(time + 5 * 24 * 60 * 60 * 1000);
+	final Timestamp t1 = new Timestamp(time + 1 * 24 * 60 * 60 * 1000);
+	final Timestamp t2 = new Timestamp(time + 2 * 24 * 60 * 60 * 1000);
+	final Timestamp t3 = new Timestamp(time + 3 * 24 * 60 * 60 * 1000);
+	final Timestamp t4 = new Timestamp(time + 4 * 24 * 60 * 60 * 1000);
+	final Timestamp t5 = new Timestamp(time + 5 * 24 * 60 * 60 * 1000);
+	final Timestamp t6 = new Timestamp(time + 6 * 24 * 60 * 60 * 1000);
 	final Integer i1 = 1;
 	final Integer i2 = 2;
 	final Integer i3 = 3;

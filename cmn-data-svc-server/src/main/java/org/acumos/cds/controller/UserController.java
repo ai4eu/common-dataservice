@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -240,7 +241,7 @@ public class UserController extends AbstractController {
 			logger.warn("checkUserCredentials: user {} failed auth type {}", user.getLoginName(),
 					credentialType.name());
 			user.setLoginFailCount((short) (user.getLoginFailCount() == null ? 1 : user.getLoginFailCount() + 1));
-			user.setLoginFailDate(new Date());
+			user.setLoginFailDate(new Timestamp(new Date().getTime()));
 			userRepository.save(user);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Failed to authenticate user", null);
@@ -251,7 +252,7 @@ public class UserController extends AbstractController {
 			user.setLoginFailCount(null);
 			user.setLoginFailDate(null);
 		}
-		user.setLastLogin(new Date());
+		user.setLastLogin(new Timestamp(new Date().getTime()));
 		userRepository.save(user);
 		logger.debug("checkUserCredentials: authenticated user {}", user.getLoginName());
 		entityManager.detach(user);

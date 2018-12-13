@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -74,10 +74,10 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 	private String userId;
 
 	@CreationTimestamp
-	@Column(name = "DOWNLOAD_DATE", nullable = false, updatable = false)
+	@Column(name = "DOWNLOAD_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
 	@ApiModelProperty(readOnly = true)
-	private Date downloadDate;
+	private Timestamp downloadDate;
 
 	/**
 	 * No-arg constructor
@@ -152,11 +152,11 @@ public class MLPSolutionDownload implements MLPEntity, Serializable {
 		this.userId = userId;
 	}
 
-	public Date getDownloadDate() {
+	public Timestamp getDownloadDate() {
 		return downloadDate;
 	}
 
-	public void setDownloadDate(Date downloadDate) {
+	public void setDownloadDate(Timestamp downloadDate) {
 		this.downloadDate = downloadDate;
 	}
 

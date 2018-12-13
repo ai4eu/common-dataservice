@@ -20,6 +20,7 @@
 package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -170,8 +171,7 @@ public class FOMRepositoryTest {
 		String[] empty = new String[0];
 		String[] nameKw = new String[] { name }; // substring of solution name
 		String[] accTypes = new String[] { accCode };
-		Date modifiedDate = new Date();
-		modifiedDate.setTime(modifiedDate.getTime() - 60 * 1000);
+		Timestamp modifiedTs = new Timestamp(new Date().getTime() - 60 * 1000);
 
 		// Via Hibernate constraint
 		logger.info("Querying for FOM via search services");
@@ -183,7 +183,7 @@ public class FOMRepositoryTest {
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
 
-		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedDate,
+		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedTs,
 				pageable);
 		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());

@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -92,7 +92,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	@Column(name = "PROCESSED_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Date processed;
+	private Timestamp processed;
 
 	/**
 	 * No-arg constructor
@@ -238,11 +238,11 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 		this.accessType = accessType;
 	}
 
-	public Date getProcessed() {
+	public Timestamp getProcessed() {
 		return processed;
 	}
 
-	public void setProcessed(Date created) {
+	public void setProcessed(Timestamp created) {
 		this.processed = created;
 	}
 

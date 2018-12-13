@@ -21,6 +21,7 @@
 package org.acumos.cds.client;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -210,7 +211,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		MLPPeer mlpPeer = new MLPPeer();
 		mlpPeer.setApiUrl("http://peer-api");
 		mlpPeer.setContact1("Contact1");
-		Date created = new Date();
+		Timestamp created = new Timestamp(new Date().getTime());
 		mlpPeer.setCreated(created);
 		mlpPeer.setDescription("Peer description");
 		mlpPeer.setName("Peer-1509357629935");
@@ -225,14 +226,13 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		MLPNotification mlpNotification = new MLPNotification();
 		mlpNotification.setCreated(created);
 		mlpNotification.setMessage("notification created");
-		Date modified = new Date();
+		Timestamp modified = new Timestamp(new Date().getTime());
 		mlpNotification.setModified(modified);
 		mlpNotification.setNotificationId("037ad773-3ae2-472b-89d3-9e185a2cbrt");
 		mlpNotification.setTitle("Notification");
 		mlpNotification.setUrl("http://notify.com");
 		mlpNotification.setStart(created);
-		Date end = new Date();
-		mlpNotification.setEnd(end);
+		mlpNotification.setEnd(new Timestamp(new Date().getTime()));
 	}
 
 	public CommonDataServiceRestClientMockImpl(final String webapiUrl, final String user, final String pass) {

@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -113,12 +113,9 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	@ApiModelProperty(value = "Transports password in clear text", example = "LongKeysAreHardToCrack12345")
 	private String loginHash;
 
-	/**
-	 * Derby lacks DATETIME, so do not specify column definition here.
-	 */
-	@Column(name = "LOGIN_PASS_EXPIRE_DATE")
+	@Column(name = "LOGIN_PASS_EXPIRE_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Date loginPassExpire;
+	private Timestamp loginPassExpire;
 
 	/**
 	 * Used in early versions both to maintain web session information and as an API
@@ -143,7 +140,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 */
 	@Column(name = "LAST_LOGIN_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Last login date, sent as millisec since the Epoch", example = "1521202458867")
-	private Date lastLogin;
+	private Timestamp lastLogin;
 
 	/**
 	 * Number of login failures. Should be null after a successful login.
@@ -160,7 +157,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 */
 	@Column(name = "LOGIN_FAIL_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Login failure date, sent as millisec since the Epoch", example = "1521202458867")
-	private Date loginFailDate;
+	private Timestamp loginFailDate;
 
 	/**
 	 * Derby BLOB type allows 2GB. Mysql/Mariadb BLOB type only allows 64KB, that's
@@ -197,7 +194,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 */
 	@Column(name = "VERIFY_EXPIRE_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Verification token expiration date, sent as millisec since the Epoch", example = "1521202458867")
-	private Date verifyExpiration;
+	private Timestamp verifyExpiration;
 
 	/**
 	 * Tags assigned to the user via a join table. Tags can be reused by many users,
@@ -352,11 +349,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 		this.loginHash = hash;
 	}
 
-	public Date getLoginPassExpire() {
+	public Timestamp getLoginPassExpire() {
 		return loginPassExpire;
 	}
 
-	public void setLoginPassExpire(Date date) {
+	public void setLoginPassExpire(Timestamp date) {
 		this.loginPassExpire = date;
 	}
 
@@ -376,11 +373,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 		this.active = active;
 	}
 
-	public Date getLastLogin() {
+	public Timestamp getLastLogin() {
 		return lastLogin;
 	}
 
-	public void setLastLogin(Date lastLogin) {
+	public void setLastLogin(Timestamp lastLogin) {
 		this.lastLogin = lastLogin;
 	}
 
@@ -392,11 +389,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 		this.loginFailCount = loginFailCount;
 	}
 
-	public Date getLoginFailDate() {
+	public Timestamp getLoginFailDate() {
 		return loginFailDate;
 	}
 
-	public void setLoginFailDate(Date loginFailDate) {
+	public void setLoginFailDate(Timestamp loginFailDate) {
 		this.loginFailDate = loginFailDate;
 	}
 
@@ -424,11 +421,11 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 		this.verifyTokenHash = verifyTokenHash;
 	}
 
-	public Date getVerifyExpiration() {
+	public Timestamp getVerifyExpiration() {
 		return verifyExpiration;
 	}
 
-	public void setVerifyExpiration(Date verifyExpiration) {
+	public void setVerifyExpiration(Timestamp verifyExpiration) {
 		this.verifyExpiration = verifyExpiration;
 	}
 

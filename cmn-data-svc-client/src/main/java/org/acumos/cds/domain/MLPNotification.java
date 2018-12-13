@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Model for a notification, a message to users about a system activity. Valid
- * (active) in the date range start..end.
+ * (active) in the range start..end.
  * 
  * Participates in many-many relationship with users via a map table.
  */
@@ -79,15 +79,15 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	@ApiModelProperty(value = "A URL to view more information", example = "http://my.company.com/more/info")
 	private String url;
 
-	// No auto-update behaviors here.
+	// No auto-update behaviors here, neither Hibernate nor Mysql
 	@Column(name = "START_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Date start;
+	private Timestamp start;
 
-	// No auto-update behaviors here
+	// No auto-update behaviors here, neither Hibernate nor Mysql
 	@Column(name = "END_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Date end;
+	private Timestamp end;
 
 	/**
 	 * No-arg constructor.
@@ -106,18 +106,18 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 	 * @param msgSeverityCode
 	 *                            severity of the notification like high, medium or
 	 *                            low
-	 * @param startDate
-	 *                            Earliest date of the active period
-	 * @param endDate
-	 *                            Latest date of the active period
+	 * @param startTs
+	 *                            Earliest timestamp of the active period
+	 * @param endTs
+	 *                            Latest timestamp of the active period
 	 */
-	public MLPNotification(String title, String msgSeverityCode, Date startDate, Date endDate) {
-		if (title == null || msgSeverityCode == null || startDate == null || endDate == null)
+	public MLPNotification(String title, String msgSeverityCode, Timestamp startTs, Timestamp endTs) {
+		if (title == null || msgSeverityCode == null || startTs == null || endTs == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.title = title;
 		this.msgSeverityCode = msgSeverityCode;
-		this.start = startDate;
-		this.end = endDate;
+		this.start = startTs;
+		this.end = endTs;
 	}
 
 	/**
@@ -177,19 +177,19 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 		this.url = url;
 	}
 
-	public Date getStart() {
+	public Timestamp getStart() {
 		return start;
 	}
 
-	public void setStart(Date start) {
+	public void setStart(Timestamp start) {
 		this.start = start;
 	}
 
-	public Date getEnd() {
+	public Timestamp getEnd() {
 		return end;
 	}
 
-	public void setEnd(Date end) {
+	public void setEnd(Timestamp end) {
 		this.end = end;
 	}
 

@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -153,7 +154,7 @@ public class SolutionController extends AbstractController {
 		long count = solutionDownloadRepository.countSolutionDownloads(solutionId);
 		MLPSolution stats = solutionRepository.findOne(solutionId);
 		stats.setDownloadCount(count);
-		stats.setLastDownload(new Date());
+		stats.setLastDownload(new Timestamp(new Date().getTime()));
 		solutionRepository.save(stats);
 	}
 
@@ -441,9 +442,9 @@ public class SolutionController extends AbstractController {
 			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findSolutionsByDate: date {}", dateMillis);
-		Date date = new Date(dateMillis);
+		Timestamp ts = new Timestamp(dateMillis);
 		try {
-			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, date, pageRequest);
+			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, ts, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findSolutionsByDate failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

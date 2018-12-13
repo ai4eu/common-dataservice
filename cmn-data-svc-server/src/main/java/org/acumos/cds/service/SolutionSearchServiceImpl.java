@@ -21,8 +21,8 @@
 package org.acumos.cds.service;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -299,14 +299,14 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		return result;
 	}
 
-	/**
+	/*
 	 * This supports federation, which needs to search for solutions modified after
 	 * a point in time.
 	 * 
 	 * Also see comment above about paginated queries.
 	 */
 	@Override
-	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCode, Date date,
+	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCode, Timestamp modifiedTs,
 			Pageable pageable) {
 
 		// build the query using FOM to access child attributes
@@ -325,11 +325,11 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			criteria.add(Restrictions.in(revAlias + ".accessTypeCode", accessTypeCode));
 		// Construct a disjunction to find any updated item.
 		// Unfortunately this requires hard-coded field names
-		Criterion solModified = Restrictions.ge("modified", date);
-		Criterion revModified = Restrictions.ge(revAlias + ".modified", date);
-		Criterion descModified = Restrictions.ge(descsAlias + ".modified", date);
-		Criterion docModified = Restrictions.ge(docsAlias + ".modified", date);
-		Criterion artModified = Restrictions.ge(artAlias + ".modified", date);
+		Criterion solModified = Restrictions.ge("modified", modifiedTs);
+		Criterion revModified = Restrictions.ge(revAlias + ".modified", modifiedTs);
+		Criterion descModified = Restrictions.ge(descsAlias + ".modified", modifiedTs);
+		Criterion docModified = Restrictions.ge(docsAlias + ".modified", modifiedTs);
+		Criterion artModified = Restrictions.ge(artAlias + ".modified", modifiedTs);
 		Disjunction itemModifiedAfter = Restrictions.disjunction();
 		itemModifiedAfter.add(solModified);
 		itemModifiedAfter.add(revModified);

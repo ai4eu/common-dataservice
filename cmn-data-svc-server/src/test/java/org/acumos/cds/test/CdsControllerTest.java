@@ -22,6 +22,7 @@ package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -189,7 +190,7 @@ public class CdsControllerTest {
 			logger.info("Adding artifact to revision");
 			client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
 
-			MLPStepResult sr = new MLPStepResult("OB", "New Step Result1", "FA", new Date());
+			MLPStepResult sr = new MLPStepResult("OB", "New Step Result1", "FA", new Timestamp(new Date().getTime()));
 			sr.setSolutionId(cs.getSolutionId());
 			sr = client.createStepResult(sr);
 			Assert.assertNotNull(sr.getStepResultId());
@@ -279,7 +280,7 @@ public class CdsControllerTest {
 			// Use this repeatedly :)
 			RestPageRequest rp = new RestPageRequest(0, 1);
 
-			Date lastLogin = new Date(new Date().getTime() - 60 * 1000);
+			Timestamp lastLogin = new Timestamp(new Date().getTime() - 60 * 1000);
 			MLPUser cu = new MLPUser();
 			String unique = Long.toString(new Date().getTime());
 			final String loginName = "user-" + unique;
@@ -297,7 +298,7 @@ public class CdsControllerTest {
 			cu.setLastName(lastName);
 			cu.setActive(true);
 			cu.setLastLogin(lastLogin);
-			cu.setLoginPassExpire(new Date());
+			cu.setLoginPassExpire(new Timestamp(new Date().getTime()));
 			final byte[] fakePicture = new byte[] { 1, 2, 3, 4, 5 };
 			cu.setPicture(fakePicture);
 			cu = client.createUser(cu);
@@ -880,7 +881,7 @@ public class CdsControllerTest {
 			ur.setUserId(cu.getUserId());
 			ur.setRating(4);
 			ur.setTextReview("Awesome");
-			ur.setCreated(new Date());
+			ur.setCreated(new Timestamp(new Date().getTime()));
 			ur = client.createSolutionRating(ur);
 			logger.info("Created solution rating {}", ur);
 			MLPSolutionRating rating = client.getSolutionRating(cs.getSolutionId(), cu.getUserId());
@@ -1045,7 +1046,7 @@ public class CdsControllerTest {
 			final String lastName = "test-role-fn";
 			cu.setLastName(lastName);
 			cu.setActive(true);
-			cu.setLoginPassExpire(new Date());
+			cu.setLoginPassExpire(new Timestamp(new Date().getTime()));
 			cu = client.createUser(cu);
 			Assert.assertNotNull(cu.getUserId());
 			logger.info("Created user with ID {}", cu.getUserId());
@@ -1176,12 +1177,12 @@ public class CdsControllerTest {
 			no.setTitle("notif title");
 			no.setMessage("notif msg");
 			no.setUrl("http://notify.me");
+			no.setMsgSeverityCode("LO");
 			Date now = new Date();
 			// An hour ago
-			no.setStart(new Date(now.getTime() - 60 * 60 * 1000));
+			no.setStart(new Timestamp(now.getTime() - 60 * 60 * 1000));
 			// An hour from now
-			no.setEnd(new Date(now.getTime() + 60 * 60 * 1000));
-			no.setMsgSeverityCode("LO");
+			no.setEnd(new Timestamp(now.getTime() + 60 * 60 * 1000));
 			no = client.createNotification(no);
 			Assert.assertNotNull(no.getNotificationId());
 
@@ -1192,9 +1193,9 @@ public class CdsControllerTest {
 			no2.setTitle("notif2 title");
 			no2.setMessage("notif2 msg");
 			no2.setUrl("http://notify2.me");
-			no2.setStart(new Date(now.getTime() - 60 * 1000));
-			no2.setEnd(new Date(now.getTime() + 60 * 1000));
 			no2.setMsgSeverityCode(String.valueOf("HI"));
+			no2.setStart(new Timestamp(now.getTime() - 60 * 1000));
+			no2.setEnd(new Timestamp(now.getTime() + 60 * 1000));
 			no2 = client.createNotification(no2);
 
 			// A populated database may yield a large number
@@ -1315,8 +1316,7 @@ public class CdsControllerTest {
 			sr.setStepCode("OB");
 			sr.setName(name);
 			sr.setStatusCode(String.valueOf("SU"));
-			Date now = new Date();
-			sr.setStartDate(new Date(now.getTime() - 60 * 1000));
+			sr.setStartDate(new Timestamp(new Date().getTime() - 60 * 1000));
 			sr = client.createStepResult(sr);
 			Assert.assertNotNull(sr.getStepResultId());
 			logger.info("Created step result " + sr);
@@ -1380,16 +1380,10 @@ public class CdsControllerTest {
 			logger.info("create step result failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createStepResult(new MLPStepResult("bogus", "name", "FA", new Date()));
+			client.createStepResult(new MLPStepResult("bogus", "name", "FA", new Timestamp(new Date().getTime())));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create step result failed on bad type code as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			client.createStepResult(new MLPStepResult("OB", "name", "bogus", new Date()));
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("create step result failed on bad status code as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
 			MLPStepResult stepResult = new MLPStepResult();
@@ -2312,8 +2306,7 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("createUserLoginProvider failed on bad code as expected {}", ex.getResponseBodyAsString());
 		}
-		MLPUserLoginProvider clp = new MLPUserLoginProvider(cu.getUserId(), "GH", "something",
-				"access token", 1);
+		MLPUserLoginProvider clp = new MLPUserLoginProvider(cu.getUserId(), "GH", "something", "access token", 1);
 		clp = client.createUserLoginProvider(clp);
 		Assert.assertNotNull(clp.getCreated());
 		try {
@@ -2624,8 +2617,7 @@ public class CdsControllerTest {
 			logger.info("Update artifact failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		// These should succeed
-		ca = client.createArtifact(
-				new MLPArtifact("version", "BP", "name", "URI", cu.getUserId(), 1));
+		ca = client.createArtifact(new MLPArtifact("version", "BP", "name", "URI", cu.getUserId(), 1));
 		try {
 			client.createArtifact(ca);
 			throw new Exception("Unexpected success");
@@ -2820,24 +2812,24 @@ public class CdsControllerTest {
 
 		Assert.assertFalse(client.getSolutionDeployments("bogus", "bogus", new RestPageRequest()).hasContent());
 		try {
-			client.createSolutionDeployment(new MLPSolutionDeployment("bogus", csr.getRevisionId(), cu.getUserId(),
-					"DP"));
+			client.createSolutionDeployment(
+					new MLPSolutionDeployment("bogus", csr.getRevisionId(), cu.getUserId(), "DP"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create solution deployment failed on bad solution ID as expected: {}",
 					ex.getResponseBodyAsString());
 		}
 		try {
-			client.createSolutionDeployment(new MLPSolutionDeployment(cs.getSolutionId(), "bogus", cu.getUserId(),
-					"DP"));
+			client.createSolutionDeployment(
+					new MLPSolutionDeployment(cs.getSolutionId(), "bogus", cu.getUserId(), "DP"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create solution deployment failed on bad revision ID as expected: {}",
 					ex.getResponseBodyAsString());
 		}
 		try {
-			client.createSolutionDeployment(new MLPSolutionDeployment(cs.getSolutionId(), csr.getRevisionId(), "bogus",
-					"DP"));
+			client.createSolutionDeployment(
+					new MLPSolutionDeployment(cs.getSolutionId(), csr.getRevisionId(), "bogus", "DP"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create solution deployment failed on bad user ID as expected: {}",
@@ -2878,8 +2870,8 @@ public class CdsControllerTest {
 			logger.info("Delete solution deployment failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		// Should succeed
-		solDep = client.createSolutionDeployment(new MLPSolutionDeployment(cs.getSolutionId(), csr.getRevisionId(),
-				cu.getUserId(), "DP"));
+		solDep = client.createSolutionDeployment(
+				new MLPSolutionDeployment(cs.getSolutionId(), csr.getRevisionId(), cu.getUserId(), "DP"));
 		try {
 			client.createSolutionDeployment(solDep);
 			throw new Exception("Unexpected success");
@@ -2943,8 +2935,8 @@ public class CdsControllerTest {
 		}
 		try {
 			cn.setTitle(s64 + s64);
-			cn.setStart(new Date());
-			cn.setEnd(new Date());
+			cn.setStart(new Timestamp(new Date().getTime()));
+			cn.setEnd(new Timestamp(new Date().getTime()));
 			client.createNotification(cn);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
@@ -3005,8 +2997,7 @@ public class CdsControllerTest {
 			logger.info("Create peer failed on constraint as expected: {}", ex.getResponseBodyAsString());
 		}
 		// This one is supposed to work
-		cp = client.createPeer(
-				new MLPPeer("peer name", "subj name", "api url", false, false, "contact 1", "AC"));
+		cp = client.createPeer(new MLPPeer("peer name", "subj name", "api url", false, false, "contact 1", "AC"));
 
 		try {
 			cp = client.createPeer(cp);
@@ -3016,8 +3007,8 @@ public class CdsControllerTest {
 		}
 
 		try {
-			cp = client.createPeer(new MLPPeer("another peer name", "subj name", "api url", false, false, "contact 2",
-					"DC"));
+			cp = client.createPeer(
+					new MLPPeer("another peer name", "subj name", "api url", false, false, "contact 2", "DC"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create peer failed on duplicate subject name as expected: {}", ex.getResponseBodyAsString());
@@ -3046,8 +3037,7 @@ public class CdsControllerTest {
 			logger.info("Create peer sub failed on bad scope code as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createPeerSubscription(
-					new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL", "bogus"));
+			client.createPeerSubscription(new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL", "bogus"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create peer sub failed on bad access code as expected: {}", ex.getResponseBodyAsString());
@@ -3062,8 +3052,8 @@ public class CdsControllerTest {
 			logger.info("Create peer sub failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		// Supposed to work
-		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(),
-				"FL", AccessTypeCode.PB.toString());
+		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL",
+				AccessTypeCode.PB.toString());
 		ps = client.createPeerSubscription(ps);
 		try {
 			ps.setSelector(

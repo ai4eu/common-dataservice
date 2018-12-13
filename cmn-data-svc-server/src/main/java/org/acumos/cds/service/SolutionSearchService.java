@@ -20,7 +20,7 @@
 
 package org.acumos.cds.service;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import org.acumos.cds.domain.MLPSolution;
@@ -223,15 +223,15 @@ public interface SolutionSearchService {
 	 *                            specified values including null (not the
 	 *                            4-character sequence "null"); ignored if null or
 	 *                            empty
-	 * @param modifiedDate
-	 *                            The threshold value used in the search. Entities
-	 *                            with modification dates prior to (smaller than)
-	 *                            this point in time are ignored.
+	 * @param modifiedTs
+	 *                            The threshold timestamp value used in the search.
+	 *                            Entities with modification dates prior to (smaller
+	 *                            than) this point in time are ignored.
 	 * @param pageable
 	 *                            Page and sort info
 	 * @return Page of matches
 	 */
-	Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes, Date modifiedDate,
+	Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes, Timestamp modifiedTs,
 			Pageable pageable);
 
 }

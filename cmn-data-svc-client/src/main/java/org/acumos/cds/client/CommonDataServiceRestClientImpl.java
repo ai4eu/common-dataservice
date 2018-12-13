@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1523,7 +1524,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				null);
 		logger.debug("addNotificationUser: url {}", uri);
 		MLPNotifUserMap map = new MLPNotifUserMap(notificationId, userId);
-		map.setViewed(new Date());
+		map.setViewed(new Timestamp(new Date().getTime()));
 		restTemplate.put(uri, map);
 	}
 

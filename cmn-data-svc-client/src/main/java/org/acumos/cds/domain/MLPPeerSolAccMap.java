@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -121,7 +121,7 @@ public class MLPPeerSolAccMap implements MLPEntity, Serializable {
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
 	@ApiModelProperty(readOnly = true)
-	private Date created;
+	private Timestamp created;
 
 	/**
 	 * No-arg constructor
@@ -184,6 +184,14 @@ public class MLPPeerSolAccMap implements MLPEntity, Serializable {
 
 	public void setGranted(boolean granted) {
 		this.granted = granted;
+	}
+
+	public Timestamp getCreated() {
+		return created;
+	}
+
+	public void setCreated(Timestamp created) {
+		this.created = created;
 	}
 
 	@Override

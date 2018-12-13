@@ -21,6 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
@@ -101,20 +102,20 @@ public class MLPStepResult implements MLPEntity, Serializable {
 	@ApiModelProperty(value = "Step result details")
 	private String result;
 
-	@Column(name = "START_DATE", nullable = false, updatable = false)
+	@Column(name = "START_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
-	private Date startDate;
+	private Timestamp startDate;
 
-	@Column(name = "END_DATE")
+	@Column(name = "END_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Date endDate;
+	private Timestamp endDate;
 
 	/**
 	 * No-arg constructor
 	 */
 	public MLPStepResult() {
 		// no-arg constructor
-		startDate = new Date();
+		startDate = new Timestamp(new Date().getTime());
 	}
 
 	/**
@@ -131,7 +132,7 @@ public class MLPStepResult implements MLPEntity, Serializable {
 	 * @param startDate
 	 *                         Start date
 	 */
-	public MLPStepResult(String stepTypeCode, String name, String statusCode, Date startDate) {
+	public MLPStepResult(String stepTypeCode, String name, String statusCode, Timestamp startDate) {
 		if (stepTypeCode == null || name == null || statusCode == null || startDate == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.stepCode = stepTypeCode;
@@ -241,19 +242,19 @@ public class MLPStepResult implements MLPEntity, Serializable {
 		this.result = result;
 	}
 
-	public Date getStartDate() {
+	public Timestamp getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public Timestamp getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(Timestamp endDate) {
 		this.endDate = endDate;
 	}
 

@@ -21,7 +21,7 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -104,10 +104,10 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
-	// No auto-update behaviors here
+	// No auto-update behaviors here, neither Hibernate nor Mysql
 	@Column(name = "VIEWED_DATE", columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
-	private Date viewed;
+	private Timestamp viewed;
 
 	public MLPNotifUserMap() {
 		// no-arg constructor
@@ -156,11 +156,11 @@ public class MLPNotifUserMap implements MLPEntity, Serializable {
 		this.userId = userId;
 	}
 
-	public Date getViewed() {
+	public Timestamp getViewed() {
 		return viewed;
 	}
 
-	public void setViewed(Date viewed) {
+	public void setViewed(Timestamp viewed) {
 		this.viewed = viewed;
 	}
 

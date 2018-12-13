@@ -20,7 +20,7 @@
 
 package org.acumos.cds.domain;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -43,13 +43,13 @@ public abstract class MLPTimestampedEntity implements MLPEntity {
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT '0000-00-00 00:00:00'")
 	// REST clients should not send this property
 	@ApiModelProperty(readOnly = true, value = "Set by system")
-	private Date created;
+	private Timestamp created;
 
 	@UpdateTimestamp
 	@Column(name = "MODIFIED_DATE", nullable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
 	@ApiModelProperty(readOnly = true, value = "Set by system")
-	private Date modified;
+	private Timestamp modified;
 
 	public MLPTimestampedEntity() {
 		// no-arg constructor
@@ -66,19 +66,19 @@ public abstract class MLPTimestampedEntity implements MLPEntity {
 		this.modified = that.modified;
 	}
 
-	public Date getCreated() {
+	public Timestamp getCreated() {
 		return created;
 	}
 
-	public void setCreated(Date created) {
+	public void setCreated(Timestamp created) {
 		this.created = created;
 	}
 
-	public Date getModified() {
+	public Timestamp getModified() {
 		return modified;
 	}
 
-	public void setModified(Date modified) {
+	public void setModified(Timestamp modified) {
 		this.modified = modified;
 	}
 
