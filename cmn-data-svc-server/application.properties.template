@@ -124,6 +124,7 @@ codeName.artifactType.BP=Blueprint File
 codeName.artifactType.CD=Cdump File
 codeName.artifactType.DI=Docker Image
 codeName.artifactType.DS=Data Source
+codeName.artifactType.LI=License
 codeName.artifactType.LG=Log File
 codeName.artifactType.MD=Metadata
 codeName.artifactType.MH=Model-H2O
