@@ -215,7 +215,10 @@ Artifact Type
 | BP "BLUEPRINT FILE"
 | CD "CDUMP FILE"
 | DI "DOCKER IMAGE"
+| DP "DOCKER IMAGE PREDOCKERIZED"
 | DS "DATA SOURCE"
+| LG "LOG FILE"
+| LI "LICENSE"
 | MD "METADATA"
 | MH "MODEL-H2O"
 | MI "MODEL IMAGE"
@@ -236,13 +239,20 @@ Deployment Status
 | IP "In Progress"
 | ST "Started"
 
-Social Login Provider
-^^^^^^^^^^^^^^^^^^^^^
+Login Provider
+^^^^^^^^^^^^^^
 
 | FB "Facebook"
 | GH "GitHub"
 | GP "Google Plus"
 | LI "LinkedIn"
+
+Message Severity
+^^^^^^^^^^^^^^^^
+
+| HI "High"
+| ME "Medium"
+| LO "Low"
 
 Model Type
 ^^^^^^^^^^
@@ -252,6 +262,23 @@ Model Type
 | DT "Data Transformer"
 | PR "Prediction"
 | RG "Regression"
+
+Peer Status
+^^^^^^^^^^^
+
+| AC "Active"
+| IN "Inactive"
+| RQ "Requested"
+| RN "Renounced"
+| DC "Declined"
+
+Publish Request Status
+^^^^^^^^^^^^^^^^^^^^^^
+
+| AP "Approved"
+| DC "Declined"
+| PE "Pending"
+| WD "Withdrawn"
 
 StepStatus
 ^^^^^^^^^^
@@ -269,38 +296,32 @@ StepType
 Toolkit Type
 ^^^^^^^^^^^^
 
+| BR "Data Broker"
 | CP "Composite Solution"
 | DS "Design Studio"
 | H2 "H2O"
+| ON "ONAP"
+| PB "Probe"
 | RC "R"
 | SK "Scikit-Learn"
 | TF "TensorFlow"
 | TC "Training Client"
-| BR "Data Broker"
 
-Validation Status
-^^^^^^^^^^^^^^^^^
-
-| FA "Failed"
-| IP "In Progress"
-| NV "Not Validated"
-| PS "Passed"
-| SB "Submitted"
-
-Validation Type
-^^^^^^^^^^^^^^^
-
-| SS "Security Scan"
-| LC "License Check"
-| OQ "OSS Quantification"
-| TA "Text Analysis"
-
-Message Severity
+Verified License
 ^^^^^^^^^^^^^^^^
 
-| HG "High"
-| MD "Medium"
-| LW "Low"
+| SU "Success"
+| FA "Failed"
+| IP "In progress"
+| UR "Unrequested"
+
+Verified Vulnerability
+^^^^^^^^^^^^^^^^^^^^^^
+
+| SU "Success"
+| FA "Failed"
+| IP "In progress"
+| UR "Unrequested"
 
 Entities
 --------
