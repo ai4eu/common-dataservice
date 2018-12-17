@@ -161,23 +161,19 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 		this.descriptions = descriptions;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public String toString() {
 		return this.getClass().getName() + "[revisionId=" + getRevisionId() + ", version=" + getVersion() + ", user="
-				+ user + ", description=" + getDescription() + ", artifacts=" + artifacts + ", created=" + getCreated()
-				+ ", modified=" + getModified() + "]";
+				+ user + ", artifacts=" + artifacts + ", created=" + getCreated() + ", modified=" + getModified() + "]";
 	}
 
 	/**
 	 * @return MLPSolutionRevision with the information from this entity
 	 */
-	@SuppressWarnings("deprecation")
 	public MLPSolutionRevision toMLPSolutionRevision() {
 		MLPSolutionRevision rev = new MLPSolutionRevision(solution.getSolutionId(), getVersion(), user.getUserId(),
 				getAccessTypeCode());
 		rev.setCreated(getCreated());
-		rev.setDescription(getDescription());
 		rev.setMetadata(getMetadata());
 		rev.setModified(getModified());
 		rev.setOrigin(getOrigin());

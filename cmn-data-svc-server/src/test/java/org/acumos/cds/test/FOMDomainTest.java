@@ -126,13 +126,11 @@ public class FOMDomainTest {
 		logger.info(m.toMLPArtifact().toString());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testMLPSolutionFOM() {
 		MLPSolutionFOM m = new MLPSolutionFOM();
 		m.setActive(b1);
 		m.setCreated(d1);
-		m.setDescription(s1);
 		m.setMetadata(s2);
 		m.setModelTypeCode(s3);
 		m.setModified(d2);
@@ -145,7 +143,6 @@ public class FOMDomainTest {
 		m.setToolkitTypeCode(s8);
 		Assert.assertEquals(b1, m.isActive());
 		Assert.assertEquals(d1, m.getCreated());
-		Assert.assertEquals(s1, m.getDescription());
 		Assert.assertEquals(s2, m.getMetadata());
 		Assert.assertEquals(s3, m.getModelTypeCode());
 		Assert.assertEquals(d2, m.getModified());
@@ -164,7 +161,6 @@ public class FOMDomainTest {
 		logger.info(m.toMLPSolution().toString());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testMLPSolutionRevisionFOM() {
 		Set<MLPArtifactFOM> arts = new HashSet<>();
@@ -172,7 +168,6 @@ public class FOMDomainTest {
 		m.setAccessTypeCode(s1);
 		m.setArtifacts(arts);
 		m.setCreated(d1);
-		m.setDescription(s2);
 		m.setDescriptions(descs);
 		m.setMetadata(s3);
 		m.setModified(d2);
@@ -186,7 +181,6 @@ public class FOMDomainTest {
 		Assert.assertTrue(arts == m.getArtifacts());
 		Assert.assertEquals(d1, m.getCreated());
 		Assert.assertEquals(s1, m.getAccessTypeCode());
-		Assert.assertEquals(s2, m.getDescription());
 		Assert.assertEquals(descs, m.getDescriptions());
 		Assert.assertEquals(s3, m.getMetadata());
 		Assert.assertEquals(d2, m.getModified());

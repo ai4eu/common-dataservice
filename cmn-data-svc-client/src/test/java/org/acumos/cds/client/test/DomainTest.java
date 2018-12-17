@@ -982,7 +982,6 @@ public class DomainTest extends AbstractModelTest {
 	private void checkMLPSolution(MLPSolution m) {
 		Assert.assertEquals(b1, m.isActive());
 		Assert.assertEquals(d1, m.getCreated());
-		Assert.assertEquals(s1, m.getDescription());
 		Assert.assertEquals(l1, m.getDownloadCount());
 		Assert.assertEquals(b2, m.isFeatured());
 		Assert.assertEquals(d2, m.getLastDownload());
@@ -1007,7 +1006,6 @@ public class DomainTest extends AbstractModelTest {
 		m = new MLPSolution();
 		m.setActive(b1);
 		m.setCreated(d1);
-		m.setDescription(s1);
 		m.setDownloadCount(l1);
 		m.setFeatured(b2);
 		m.setLastDownload(d2);
@@ -1229,7 +1227,6 @@ public class DomainTest extends AbstractModelTest {
 	private void checkMLPSolutionRevision(MLPSolutionRevision m) {
 		Assert.assertEquals(s1, m.getAccessTypeCode());
 		Assert.assertEquals(d1, m.getCreated());
-		Assert.assertEquals(s2, m.getDescription());
 		Assert.assertEquals(s3, m.getMetadata());
 		Assert.assertEquals(d2, m.getModified());
 		Assert.assertEquals(s4, m.getOrigin());
@@ -1252,7 +1249,6 @@ public class DomainTest extends AbstractModelTest {
 		AuthorTransport[] authors = new AuthorTransport[] { author0, author1 };
 		m.setAuthors(authors);
 		m.setCreated(d1);
-		m.setDescription(s2);
 		m.setMetadata(s3);
 		m.setModified(d2);
 		m.setOrigin(s4);

@@ -21,25 +21,11 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface SolutionRevisionRepository extends PagingAndSortingRepository<MLPSolutionRevision, String> {
-
-	/**
-	 * Finds solution revisions using a LIKE query on the DESCRIPTION field.
-	 * 
-	 * @param searchTerm
-	 *                        fragment to find in the descriptions
-	 * @param pageRequest
-	 *                        Page and sort criteria
-	 * @return Iterable of MLPSolutionRevision with matching text.
-	 */
-	@Query("SELECT s FROM MLPSolutionRevision s WHERE LOWER(s.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-	Page<MLPSolutionRevision> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageRequest);
 
 	/**
 	 * Finds solution revisions for the specified solution IDs.

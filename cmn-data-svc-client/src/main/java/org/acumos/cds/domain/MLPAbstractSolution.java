@@ -63,16 +63,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	@ApiModelProperty(value = "Solution name", example = "My solution")
 	private String name;
 
-	/**
-	 * This is not used. Instead a separate entity stores long descriptions by
-	 * revision ID and access-type code.
-	 */
-	@Deprecated
-	@Column(name = "DESCRIPTION", columnDefinition = "VARCHAR(512)")
-	@Size(max = 512)
-	@ApiModelProperty(value = "Free-text description")
-	private String description;
-
 	@Column(name = "METADATA", columnDefinition = "VARCHAR(1024)")
 	@Size(max = 1024)
 	@ApiModelProperty(value = "JSON", example = "{ \"tag\" : \"value\" }")
@@ -168,7 +158,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	public MLPAbstractSolution(MLPAbstractSolution that) {
 		super(that);
 		this.active = that.active;
-		this.description = that.description;
 		this.downloadCount = that.downloadCount;
 		this.featured = that.featured;
 		this.lastDownload = that.lastDownload;
@@ -205,27 +194,6 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 
 	public void setMetadata(String meta) {
 		this.metadata = meta;
-	}
-
-	/**
-	 * @deprecated Use the per-access-type description on the revision instead.
-	 * 
-	 * @return Description
-	 */
-	@Deprecated
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @deprecated Use the per-access-type description on the revision instead.
-	 * 
-	 * @param desc
-	 *                 Description
-	 */
-	@Deprecated
-	public void setDescription(String desc) {
-		this.description = desc;
 	}
 
 	public boolean isActive() {
@@ -336,7 +304,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(solutionId, name, description);
+		return Objects.hash(solutionId, name, toolkitTypeCode, modelTypeCode);
 	}
 
 }

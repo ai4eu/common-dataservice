@@ -222,7 +222,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			if (descKeywords != null && descKeywords.length > 0) {
 				criteria.createAlias(revAlias + ".descriptions", descsAlias,
 						org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-				criteria.add(buildLikeListCriterion(descsAlias + ".description", descKeywords, true));
 			}
 		}
 		if (userIds != null && userIds.length > 0) {
@@ -284,7 +283,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			if (descKeywords != null && descKeywords.length > 0) {
 				criteria.createAlias(revAlias + ".descriptions", descsAlias,
 						org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-				criteria.add(buildLikeListCriterion(descsAlias + ".description", descKeywords, false));
 			}
 		}
 		if (tags != null && tags.length > 0) {
@@ -362,7 +360,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			criteria.createAlias(revAlias + ".descriptions", descsAlias, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 			Disjunction keywordDisjunction = Restrictions.disjunction();
 			keywordDisjunction.add(buildLikeListCriterion("name", keywords, false));
-			keywordDisjunction.add(buildLikeListCriterion(descsAlias + ".description", keywords, false));
 			keywordDisjunction.add(buildLikeListCriterion(revAlias + ".authors", keywords, false));
 			keywordDisjunction.add(buildLikeListCriterion(revAlias + ".publisher", keywords, false));
 			// Also match on IDs, but exact only
@@ -408,7 +405,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			criteria.createAlias(revAlias + ".descriptions", descsAlias, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 			Disjunction keywordDisjunction = Restrictions.disjunction();
 			keywordDisjunction.add(buildLikeListCriterion("name", keywords, false));
-			keywordDisjunction.add(buildLikeListCriterion(descsAlias + ".description", keywords, false));
 			keywordDisjunction.add(buildLikeListCriterion(revAlias + ".authors", keywords, false));
 			keywordDisjunction.add(buildLikeListCriterion(revAlias + ".publisher", keywords, false));
 			// Also match on IDs, but exact only

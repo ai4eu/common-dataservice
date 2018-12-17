@@ -256,14 +256,16 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull(cu.getUserId());
 			Assert.assertNotNull(cu.getCreated());
 			Assert.assertNotNull(cu.getModified());
-			// Created and modified timestamps may be milliseconds apart
+			// Created and modified timestamps may slightly apart
+			// but note this assumes the driver fetches milliseconds,
+			// which the Mariadb JDBC connector does not for type Date.
 			Assert.assertTrue(Math.abs(cu.getCreated().getTime() - cu.getModified().getTime()) < 5);
 			logger.info("Created user {}", cu);
-			// Update
+			// Update after brief delay to check hibernate behavior on timestamps
+			Thread.sleep(1000);
 			cu.setAuthToken("JWT is Greek to me");
 			cu.setLastLogin(lastLogin);
 			cu = userRepository.save(cu);
-			// Check hibernate behavior on timestamps
 			Assert.assertEquals(cu.getCreated(), originalCreated);
 			Assert.assertNotEquals(cu.getCreated(), cu.getModified());
 			Assert.assertEquals(cu.getLastLogin(), lastLogin);
@@ -444,9 +446,7 @@ public class CdsRepositoryServiceTest {
 
 			MLPSolution cs = new MLPSolution();
 			final String solName = "solution name " + Long.toString(new Date().getTime());
-			final String solDesc = "description";
 			cs.setName(solName);
-			cs.setDescription(solDesc);
 			cs.setActive(true);
 			cs.setUserId(cu.getUserId());
 			cs.setModelTypeCode(ModelTypeCode.CL.name());
@@ -464,7 +464,6 @@ public class CdsRepositoryServiceTest {
 			cs2.setName("solution name");
 			cs2.setActive(true);
 			cs2.setUserId(cu.getUserId());
-			cs2.setDescription("Another Data Org");
 			cs2.setModelTypeCode(ModelTypeCode.CL.toString());
 			cs2.setToolkitTypeCode(ToolkitTypeCode.SK.toString());
 			cs2.getTags().add(solTag1);
@@ -475,7 +474,6 @@ public class CdsRepositoryServiceTest {
 			// Search with single values
 			Map<String, String> solParms = new HashMap<>();
 			solParms.put("name", solName);
-			solParms.put("description", solDesc);
 			// Limit to one result, which helps detect Hibernate issues
 			// of creating a cross-product when it should not
 			Page<MLPSolution> searchSols = solutionSearchService.findSolutions(solParms, false,
@@ -496,7 +494,6 @@ public class CdsRepositoryServiceTest {
 					AccessTypeCode.PR.name());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("name1", "contact1"),
 					new AuthorTransport("name2", "contact2") });
-			cr.setDescription("Some description 2");
 			cr.setPublisher("Big Data Org");
 			cr = revisionRepository.save(cr);
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
@@ -702,11 +699,6 @@ public class CdsRepositoryServiceTest {
 			Assert.assertTrue(revsByArt != null && revsByArt.iterator().hasNext());
 			for (MLPSolutionRevision r : revsByArt)
 				logger.info("\tRevision for artifact: " + r.toString());
-
-			logger.info("Querying for revisions by search term");
-			Page<MLPSolutionRevision> rl = revisionRepository.findBySearchTerm("Some", new PageRequest(0, 5, null));
-			Assert.assertFalse(rl.getContent().isEmpty());
-			logger.info("Revision list: {}", rl);
 
 			logger.info("Querying for user by partial match");
 			Page<MLPUser> sul = userRepository.findBySearchTerm("Test", new PageRequest(0, 5, null));
@@ -998,7 +990,6 @@ public class CdsRepositoryServiceTest {
 			cs2.setName("solution name");
 			cs2.setActive(true);
 			cs2.setUserId(cu.getUserId());
-			cs2.setDescription("Big Data Org");
 			cs2.setModelTypeCode(ModelTypeCode.CL.toString());
 			cs2.setToolkitTypeCode(ToolkitTypeCode.SK.toString());
 			cs2 = solutionRepository.save(cs2);
@@ -1008,7 +999,6 @@ public class CdsRepositoryServiceTest {
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
 					AccessTypeCode.PB.name());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("other name", "other contact") });
-			cr.setDescription("Some description");
 			cr.setPublisher("Big Data Org");
 			cr = revisionRepository.save(cr);
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());

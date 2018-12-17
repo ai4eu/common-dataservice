@@ -165,11 +165,9 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 	/**
 	 * @return MLPSolution with the information from this entity
 	 */
-	@SuppressWarnings("deprecation")
 	public MLPSolution toMLPSolution() {
 		MLPSolution sol = new MLPSolution(getName(), owner.getUserId(), isActive());
 		sol.setCreated(getCreated());
-		sol.setDescription(getDescription());
 		sol.setDownloadCount(getDownloadCount());
 		sol.setFeatured(isFeatured());
 		sol.setLastDownload(getLastDownload());
