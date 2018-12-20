@@ -31,6 +31,8 @@ import javax.validation.ConstraintViolationException;
 import org.acumos.cds.AccessTypeCode;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatSolMap;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
@@ -68,6 +70,8 @@ import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
 import org.acumos.cds.repository.ArtifactRepository;
+import org.acumos.cds.repository.CatSolMapRepository;
+import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.CommentRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
@@ -135,6 +139,10 @@ public class CdsRepositoryServiceTest {
 
 	@Autowired
 	private ArtifactRepository artifactRepository;
+	@Autowired
+	private CatalogRepository catalogRepository;
+	@Autowired
+	private CatSolMapRepository catSolMapRepository;
 	@Autowired
 	private CommentRepository commentRepository;
 	@Autowired
@@ -1436,6 +1444,41 @@ public class CdsRepositoryServiceTest {
 		peerRepository.delete(pr2);
 		peerRepository.delete(pr1);
 		solutionRepository.delete(cs2);
+		solutionRepository.delete(cs1);
+		userRepository.delete(cu);
+	}
+
+	@Test
+	public void testCatalogs() {
+		// Need a user to create a solution
+		MLPUser cu = null;
+		cu = new MLPUser();
+		cu.setEmail("testcatalog@abc.com");
+		cu.setActive(true);
+		cu.setLoginName("cataloguser");
+		cu = userRepository.save(cu);
+		Assert.assertNotNull("User ID", cu.getUserId());
+		logger.info("Created user {}", cu);
+
+		MLPSolution cs1 = new MLPSolution("solutionName 1 for cat", cu.getUserId(), true);
+		cs1 = solutionRepository.save(cs1);
+		Assert.assertNotNull("Solution ID", cs1.getSolutionId());
+		logger.info("Created solution {}", cs1);
+
+		MLPCatalog ca1 = new MLPCatalog("PB", "name", "http://pub.org");
+		ca1 = catalogRepository.save(ca1);
+		Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
+		logger.info("Created catalog {}", ca1);
+
+		MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs1.getSolutionId());
+		catSolMapRepository.save(csm);
+
+		Page<MLPSolution> sols = catSolMapRepository.findSolutionsByCatalogId(ca1.getCatalogId(), PageRequest.of(0, 3));
+		Assert.assertNotNull(sols);
+		Assert.assertEquals(1, sols.getNumberOfElements());
+
+		catSolMapRepository.delete(csm);
+		catalogRepository.delete(ca1);
 		solutionRepository.delete(cs1);
 		userRepository.delete(cu);
 	}

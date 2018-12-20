@@ -36,155 +36,16 @@ in the system, because they will have to be usable globally:
 * A public "root" instance will be used to publish some information
 * Users can publish their solutions for use by others.
 
-Entity Overview
----------------
-
-* Solution:
-
-  - A downloadable, executable and shareable version of a trained statistical model
-
-* Solution revision
-
-  - A version of a solution with a user-assigned identifier
-
-* Solution artifact
-
-  - A data file or document associated with a solution revision
-
-* User
-
-  - Authorized user of the system
-
-* User role
-
-  - A role is used to grant access to user role functions
-
-* User role function
-
-  - A function is a specific activity supported by a system
-
-* Social identity provider
-
-  - Websites that are recognized by the system as identity providers
-
-* User social identity provider information
-
-  - The social-identity provider accounts held by the user and available for authentication purposes.
-
-* Peer
-
-  - External instances that communicate with this instance in a federated system
-
-* Peer subscription
-
-  - Selector and metadata for polling the remote federated instance for updates
-
-* Peer group, peer group membership, peer group access, peer-peer mapping
-
-  - Feature used to manage federated access for restricted solutions.  
-    Fundamentally groups of peers are granted access to groups of solutions.
-
-* Solution group, solution group membership, solution group access, peer-solution group mapping
-
-  - Feature used to manage federated access for restricted solutions.
-    Fundamentally groups of peers are granted access to groups of solutions.
-
-* Solution download
-
-  - The date and user ID when downloaded
-
-* Solution rating
-
-  - User opinion and feedback about a solution
-
-* Solution tag
-
-  - A keyword used to mark and search solutions
-
-* Notification
-
-  - A message to be shown to a user in the system
-
-* Site configuration
-
-  - Details for administration of the system, initially for the Portal/Marketplace web site
-
-* Step result
-
-  - Outcome of a task performed for a user; e.g., on-boarding or validating a model
-
-* User Notification Preference
-
-  - What delivery preference and message priority a user will choose for receiving a notification  
-
-
-Entity Relationship Overview
-----------------------------
-
-* Solution
-
-  - 1:many rel with solution revisions
-  - many:1 rel with users (owner)
-  - many:many with authorized users (sharing feature)
-
-* Solution artifact
-
-  - 1:many rel with solution revisions (artifact may be reused)
-  - many:1 rel with users (owner)
-  - 1:many rel with download
-  - 1:many rel with rating
-  - 1:many rel with tag
-
-* Solution revision
-
-  - many:1 rel with solution
-  - 1:many rel with artifacts
-
-* Trained statistical model
-
-  - 1:1 rel with solution revision
-  - many:1 rel with users (owner)
-
-* Download
-
-  - many:1 with solution
-
-* Favorite
-
-  - many:many with solution, user
-
-* Rating/Review
-
-  - many:1 rel with solution
-
-* User
-
-  - 1:many rel with most system entities: solutions, solution artifacts, solution revision, trained models, reviews, etc.
-  - many:1 rel with organization
-
-* User role
-
-  - 1:many rel with user role functions
-
-* User role function
-
-  - many:1 rel with user role
-
-* Peer
-
-  - 1:many with user
-
-* Peer subscription
-
-  - Many:1 with peer
-
-* Notification
-
-  - Many:1 with user
-
-* Site configuration
-
-  - Many:1 with user
+Entity and Relationship Overview
+--------------------------------
+
+Entities in the system are the main items that users create and manipulate, including solutions,
+solution revisions, solution artifacts. For the purpose of CDS a user is also an entity, to track 
+name, credentials and so on.  To name another example, federation peers are also entities.
+
+Solutions and revisions are in a one-to-many relationship; a solution may be considered just a 
+collection of revisions. Similarly a revision is just a collection of artifacts. Users are in a 
+many-to-many relationship with most of the other entities in the system.
 
 Entity and Attribute Details
 ----------------------------
@@ -328,6 +189,22 @@ Entities
 
 The system entities are presented below in alphabetical order.
 
+Catalog
+^^^^^^^
+
+A catalog is a collection of solutions to assist with federation.
+
+Attributes:
+
+* Catalog ID
+* Access type code
+* Name (intended to be globally unique)
+* Description
+* Origin (the peer that provided it, in case of a mirror)
+* Publisher (name)
+* URL (the peer that publishes the catalog)
+
+
 Comment
 ^^^^^^^
 
@@ -335,11 +212,35 @@ This stores a user comment within a thread of comments.
 
 Attributes:
 
-*    Comment ID
-*    Thread ID
-*    Parent ID (identifies the comment ID for which this comment is a reply; optional)
-*    User ID
-*    Text (the comment content)
+* Comment ID
+* Thread ID
+* Parent ID (identifies the comment ID for which this comment is a reply; optional)
+* User ID
+* Text (the comment content)
+
+
+Composite Solution
+^^^^^^^^^^^^^^^^^^
+
+A composite solution is composed by a user in the Design Studio and consists of other
+simple and composite solutions.  
+
+Attributes:
+
+* Child solutions
+
+
+Document
+^^^^^^^^
+
+This stores a supplementary document for a revision as provided by a user.
+
+Attributes:
+
+* Document ID
+* Name
+* Size
+* User ID
 
 
 Notification
@@ -349,12 +250,12 @@ A notification is a message for a user about an event, for example that a soluti
 
 Attributes:
 
-*    Notification ID
-*    Title (like an email subject)
-*    Message (like an email body)
-*    URL (a link)
-*    Start (earliest date/time when the notification is active)
-*    End (latest date/time when the notification is active)
+* Notification ID
+* Title (like an email subject)
+* Message (like an email body)
+* URL (a link)
+* Start (earliest date/time when the notification is active)
+* End (latest date/time when the notification is active)
 
 Notifications are mapped to users in a many:many relationship.  That relationship must track which notifications have been viewed by the user.
 
@@ -368,24 +269,23 @@ This model is used to support the federated architecture.
 
 Attributes:
 
-*    Unique ID for peer
-*    Site name
-*    Subject name
+* Unique ID for peer
+* Site name
+* Subject name
 
      -  For an X.509 certificate.  Must be unique among all peers.
 
-
-*    Site URL(s)
+* Site URL(s)
 
      -   How many interfaces will be required by federation?
      -   For now we are considering 2 types of urls: API url and web url.
 
-*    Description
-*    IsActive
-*    IsSelf
-*    Contacts (a pair, one as primary and another as backup)
-*    Create timestamp
-*    Modified timestamp
+* Description
+* IsActive
+* IsSelf
+* Contacts (a pair, one as primary and another as backup)
+* Create timestamp
+* Modified timestamp
 
 
 Peer Group
@@ -395,14 +295,9 @@ Defines a group that may be assigned to peers to facilitate access control. Only
 
 Attributes:
 
-*    Group ID
-*    Name
-
-     - Must be unique among all peer groups
-
-*    Description
-
-     -   Additional textual information about this group
+* Group ID
+* Name (must be unique among all peer groups)
+* Description (additional textual information about this group)
 
 
 Role for Users
@@ -413,12 +308,9 @@ in terms of the functions those users may perform; i.e., the system features the
 
 Attributes:
 
-*    Unique ID
-*    Name
-
-     - Must be unique among all roles
-     
-*    Active (yes/no)
+* Unique ID
+* Name (must be unique among all roles)
+* Active (yes/no)
 
 
 Role Function
@@ -432,11 +324,10 @@ an "operator" role may have only the function "read".
 
 Attributes:
 
-*    Unique ID
-*    Role ID
-*    Function name
+* Unique ID
+* Role ID
+* Function name (must be unique among all role functions)
 
-     - Must be unique among all role functions
 
 Site Configuration
 ^^^^^^^^^^^^^^^^^^
@@ -445,17 +336,32 @@ This stores administrative details for management of the system.
 
 Attributes:
 
-*    Config key
-*    Config value, which is required to be a JSON block
-*    User ID, the last person who updated the entry; optional to allow creation of initial row without a user ID
-*    Created date
-*    Modified date
+* Config key
+* Config value, which is required to be a JSON block
+* User ID, the last person who updated the entry; optional to allow creation of initial row without a user ID
+* Created date
+* Modified date
+
+
+Site Content
+^^^^^^^^^^^^
+
+This stores data such as plain text, HTML or images to show on the web site. 
+Provided to store content that was previously held in a content management system (CMS) database.
+
+Attributes:
+
+* Content key
+* Content value, which is a binary long object (BLOB)
+* Mime type, a description of the content
+* Created date
+* Modified date
 
 
 Solution
 ^^^^^^^^
 
-* A solution is composed by a user in the Design Studio and generated by the system.
+* A solution is on-boarded by a client library or via the web
 * A solution consists of a collection of solution revisions; which in turn consist of artifacts.
 * May be generated by the system from an on-boarded trained statistical model.
 * The primary element of the Catalog that is displayed to users
@@ -466,66 +372,18 @@ The metadata listed here describes the solution as a whole.
 Attributes:
 
 * Unique ID for system use
-* Name:
-
-  - Chosen by user. This name is not required to be unique
-
-* Description
-
-  - Free-text description of what the solution does
-
-* Owner ID
-
-  - The owner is the author of the solution, and is automatically assigned to the person who uploaded the machine-learning model artifact originally.
-
-* List of authorized users
-
-  - To facilitate review and collaborative work with a team
-
-* Provider
-
-  - Name of organization that sponsored and/or supports the solution
-
-* Peer
-
-  - ID of Acumos peer where the solution was first onboarded
-
-* Toolkit (aka implementation technology) code
-
-  - Underlying ML technology; e.g., Scikit, RCloud, Composite solution, and more TBD
-
-* Model type code
-
-  - Underlying ML category; valid values include CLASSIFICATION and PREDICTION
-
-* Proposed attribute: System ID where created
-
-  - Supports federation, exchange of solutions among peer systems
-
-* Proposed attribute: collection of child solutions
-
-  - Supports composite solutions
-
-* Create time
-
-  - The time when the solution was created; i.e., upload time
-
-* Modification time
-
-  - The time when the solution gets updated
-
-* Version
-
-  - Redundant; this is already covered by the child revision entities to a solution
-
-* Referenced docker images
-
-  - Redundant - the solution revision tracks artifacts.
-  - Question: could this be used to prevent deletion of a docker image as long as a solution with that docker image exists?
-
-* Usage statistics: number of views, number of downloads, number of ratings, average rating
-
-  - These may be derived from other entities
+* Name (as chosen by user. This name is not required to be unique)
+* Description (free-text description of what the solution does)
+* User ID (creator of the solution, automatically assigned to the person who uploaded the machine-learning model artifact)
+* List of authorized users (to facilitate review and collaborative work with a team)
+* Provider (name of organization that sponsored and/or supports the solution)
+* Peer (ID of Acumos peer where the solution was first on-boarded)
+* Toolkit aka implementation technology code (underlying ML technology; e.g., Scikit, RCloud, Composite solution, and more TBD)
+* Model type code (underlying ML category; valid values include CLASSIFICATION and PREDICTION)
+* Proposed attribute: System ID where created (supports federation, exchange of solutions among peer systems)
+* Create time (time when the solution was created; i.e., upload time)
+* Modification time (the time when the solution was updated)
+* Usage statistics: number of views, number of downloads, number of ratings, average rating (may be derived from other entities)
 
 
 Solution Artifact
@@ -598,81 +456,64 @@ This captures information about deployment of a specific revision of a solution 
 
 Attributes:
 
-*    Deployment ID - generated
-*    Solution ID - required
-*    Revision ID - required
-*    User ID - required
-*    Target deployment environment
-*    Deployment status. This uses the Deployment Status Code defined above.
-
+* Deployment ID - generated
+* Solution ID - required
+* Revision ID - required
+* User ID - required
+* Target deployment environment
+* Deployment status. This uses the Deployment Status Code defined above.
 
 
 Solution Group
 ^^^^^^^^^^^^^^
 
-Defines a group that may be assigned to solutions to facilitate access control. Only seen locally, not federated.
+Defines a group that gathers solutions to facilitate access control. Only seen locally, not federated.
 
 Attributes:
 
-*    Group ID
-*    Name
+* Group ID
+* Name (unique among all solution groups)
+* Description (additional textual information about this group)
 
-     - Must be unique among all solution groups
-
-*    Description
-
-     - Additional textual information about this group
-     
 
 Solution Revision
 ^^^^^^^^^^^^^^^^^
 
-* Captures all the revisions of any solution as it goes through updates.
-* Represents a collection of artifacts that implement the solution
+* A revision is a particular version of a solution
+* Represents a collection of artifacts that implement the solution in that version
 * E.g., revision "1.0-alpha" is a consistent set of artifacts
 
 A solution revision consists of a collection of solution artifacts. The metadata listed here describes the collection.
 
 Attributes:
 
-*    Unique Revision ID
+* Unique Revision ID
 
      -  A globally unique ID for this specific revision
 
-*    Solution ID
+* Solution ID
 
      -   Represents the solution, allows multiple revisions per solution
 
-*    Access type code
+* Access type code
 
      - This refers to the visibility of the revision. It uses values defined by Access Type Code (above).
 
-*    Validation status code
+* Validation status code
 
      - This refers to the validation result for the revision. It uses values defined by Validation Status Code (above).
 
-*    Version
+* Version
 
      -   Chosen by the user. This serves as the solution's child revision entry identifier. This needs to be unique for any solution revision within the same solution.
 
-*    Create time
+* Create time
 
      -   The time when this revision of the solution is created
 
-*    Creator
+* Creator
 
      -   The person who created the revision of the solution (reference to the user table)
-
-
-Solution Validation Sequence
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This represents the steps to be performed in solution validation.  For example, in some environments a peer review may be required, and in other environments an automated scanner may be used.
-
-Attributes:
-
-*    Sequence; i.e., ordering of tasks
-*    Validation task type
 
 
 Step Result
@@ -682,36 +523,36 @@ This tracks the status of steps in the Acumos system by some actor or process. F
 
 Attributes:
 
-*    Step Result ID - generated
-*    Tracking ID - optional
+* Step Result ID - generated
+* Tracking ID - optional
 
      -  This represents a workflow execution instance. For example it may represent onboarding of a ML model workflow instance.
 
-*    Step type Code - required
+* Step type Code - required
 
      -   Represents the type of workflow being tracked- for example whether it is onboarding of ML model workflow, validation of a ML model workflow or something else. Currently onboarding and validation are the two types of workflows being identified, but this list will grow as the need for tracking additional workflows arise.
 
-*    Solution ID - optional
-*    Revision ID - optional
-*    Artifact ID - optional
-*    User ID - optional
-*    Name - required
+* Solution ID - optional
+* Revision ID - optional
+* Artifact ID - optional
+* User ID - optional
+* Name - required
 
      -   Represents the specific step involved in the workflow. For example for onboarding workflow, step name can "Soultion ID creation"
 
-*    Status Code - required
+* Status Code - required
 
      -   Represents the state at which the workflow step is currently in. Currently "started", "succeeded" and "failed" are the three step states which are tracked.
 
-*    Result - optional
+* Result - optional
 
      -    Text information for a workflow step progress, for debugging purposes.
 
-*    Start Date - required
+* Start Date - required
 
      -   Date/time when a step starts
 
-*    End Date - optional
+* End Date - optional
 
      -   Date/time when a step ends
 
@@ -723,9 +564,9 @@ This stores the delivery mechanism and message priority preferences by the user 
 
 Attributes: 
 
-*    User ID (notification recipient) 
-*    Notification type (email/text/web)
-*    Message Severity code. This uses the Message Severity Code value set defined above.
+* User ID (notification recipient) 
+* Notification type (email/text/web)
+* Message Severity code. This uses the Message Severity Code value set defined above.
 
 
 Tag for Solution
@@ -733,7 +574,7 @@ Tag for Solution
 
 Keywords applied to solutions. Attributes:
 
-*    Tag name
+* Tag name
 
 Mapped many:many to solutions.
 
@@ -745,10 +586,10 @@ This stores the general topic of discussion to which a comment is associated
 
 Attributes:
 
-*    Thread ID
-*    Thread Title (optional)
-*    Solution ID
-*    Revision ID
+* Thread ID
+* Thread Title (optional)
+* Solution ID
+* Revision ID
 
 
 User
@@ -759,30 +600,21 @@ User
 
 Attributes:
 
-*    Unique ID for system use
-*    User's organization name
-*    Login name
-
-     - Must be unique among all users
-     
-*    Login password
-*    Password expiration date/time
-*    First, middle, last names
-*    Email address(es)
-
-     - Must be unique among all users
-
-*    Phone number(s)
-*    Profile picture (subject to some size limit)
-*    Authentication mechanism
-
-     -   We have discussed Facebook, Github, Linkedin
-
-*    Authentication token
+* Unique ID for system use
+* User's organization name
+* Login name (must be unique among all users)
+* Login password
+* Password expiration date/time
+* First, middle, last names
+* Email address (must be unique among all users)
+* Phone number(s)
+* Profile picture (subject to some size limit)
+* Authentication mechanism (possibly Facebook, Github, Linked-in)
+* Authentication token
 
      -   For example, JSON Web Token, which should be short (hundreds of bytes) but may be large (thousand of bytes). This will be used to Secure APIs after logging in.
 
-*    Levels of access
+* Levels of access
 
      -   For example, users might be modelers (data scientists) who upload models; integrators who build solutions in the design studio; or consumers who download and run solutions only.
      -   As one possible implementation, the EP-SDK represents privileges using roles and role functions.  A user is assigned one or more roles.  Each role is associated with one or more functions.  A function is a specific feature in the system. Still TBD if an external authentication system will deliver privileges like roles, or if all must be stored locally.
@@ -797,17 +629,17 @@ Describes the details of a user's account at a social identity provider.  One us
 
 Attributes:
 
-*    User ID
-*    Login provider code
-*    User's login name at the provider
-*    Rank (which provider to prefer)
-*    Display name
-*    Profile URL
-*    Image URL
-*    Secret
-*    Access token
-*    Refresh token
-*    Expiration time
+* User ID
+* Login provider code
+* User's login name at the provider
+* Rank (which provider to prefer)
+* Display name
+* Profile URL
+* Image URL
+* Secret
+* Access token
+* Refresh token
+* Expiration time
 
 
 Entity Mapping Relationships
@@ -822,6 +654,16 @@ Please note this section does not document simple relationships managed within e
 one-to-one and many-to-one relationships.  For example, every comment has the ID of the containing thread, 
 so a separate table is not required to manage that relationship.
 
+Relationship Catalog - Solution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This captures solution membership in a catalog.
+
+Attributes:
+
+* Catalog ID
+* Solution ID
+
 
 Relationship Revision - Artifact
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -831,8 +673,8 @@ A separate mapping entity is required here.
 
 Attributes:
 
-*    Revision ID
-*    Artifact ID
+* Revision ID
+* Artifact ID
 
 
 Relationship Solution - Solution for Composite Solutions
@@ -842,8 +684,8 @@ This captures a parent-child relationship of a composite solution; i.e., a solut
 
 Attributes:
 
-*    Parent solution ID
-*    Child solution ID
+* Parent solution ID
+* Child solution ID
 
 
 Relationship Solution - Revision - Task for Validation
@@ -853,12 +695,12 @@ This relationship stores details of validating a solution revision against speci
 
 Attributes:
 
-*    Solution ID
-*    Revision ID
-*    Task ID (validation job identifier)
-*    Validation type
-*    Validation status (pass, fail, ..)
-*    Details of validation results
+* Solution ID
+* Revision ID
+* Task ID (validation job identifier)
+* Validation type
+* Validation status (pass, fail, ..)
+* Details of validation results
 
 
 Relationship Solution - Tag
@@ -868,8 +710,8 @@ This captures the assignment of tags to solutions.
 
 Attributes:
 
-*    Solution ID
-*    Tag value
+* Solution ID
+* Tag value
 
 
 Relationship Solution - User for Access
@@ -879,8 +721,8 @@ This represents an access grant on a solution for a specific user. For example, 
 
 Attributes:
 
-*    Solution ID
-*    User ID
+* Solution ID
+* User ID
 
 
 Relationship Solution - Artifact - User for Download
@@ -890,10 +732,10 @@ This captures a download of a solution artifact by a user.
 
 Attributes:
 
-*    Solution ID
-*    Artifact ID
-*    User ID
-*    Download date and time
+* Solution ID
+* Artifact ID
+* User ID
+* Download date and time
 
 Descriptive statistics are derived from individual records; for example total number of downloads and last download time. The statistics must be cached and updated on changes to reduce the time needed to fetch information.  For example, update the cached number of downloads and last-download time each time an artifact is downloaded.
 
@@ -905,8 +747,8 @@ This captures an action by a user to specify that a solution is a favorite
 
 Attributes:
 
-*    Solution ID
-*    User ID
+* Solution ID
+* User ID
 
 
 Relationship Solution - User for Rating
@@ -916,21 +758,21 @@ This captures a rating, text review and other feedback contributed by users abou
 
 Attributes:
 
-*    Solution ID
-*    User ID
+* Solution ID
+* User ID
 
      -  Identifier of the user who rated that solution through the web user interface.
 
-*    Rating
+* Rating
 
      -  A numerical rating scale, for example 1-5
 
-*    Text of review
-*    Create time
+* Text of review
+* Create time
 
      -   The time when the solution rating was created by the user
 
-*    Modification time
+* Modification time
 
      -   The time when the rating gets updated
 
@@ -944,8 +786,8 @@ This captures the assignment of a role to a user.
 
 Attributes:
 
-*    User ID
-*    Role ID
+* User ID
+* Role ID
 
 
 Relationship Peer - Subscription
@@ -955,18 +797,18 @@ Describes which solution(s) available on a remote peer should be tracked and/or 
 
 Attributes:
 
-*    Subscription ID
-*    Peer ID
-*    Selector
+* Subscription ID
+* Peer ID
+* Selector
 
      - What solutions should be selected
 
-*    Refresh interval
+* Refresh interval
 
      -  How often to poll the remote system
 
-*    Create timestamp
-*    Modified timestamp
+* Create timestamp
+* Modified timestamp
 
 
 Relationship Notification - User
@@ -976,9 +818,9 @@ This captures the relationship between a notification and a user; i.e., specifie
 
 Attributes:
 
-*    Notification ID
-*    User ID
-*    Viewed date and time
+* Notification ID
+* User ID
+* Viewed date and time
 
 
 Relationship Peer - Peer Group for Membership
@@ -988,9 +830,9 @@ Represents the membership of peers in a peer access group.
 
 Attributes:
 
-*   Peer Group ID
-*   Peer ID
-*   Create timestamp
+* Peer Group ID
+* Peer ID
+* Create timestamp
 
 
 Relationship Solution - Solution Group for Membership
@@ -1000,9 +842,9 @@ Represents the membership of solutions in a solution access group.
 
 Attributes:
 
-*    Solution Group ID
-*    Solution ID
-*    Create timestamp
+* Solution Group ID
+* Solution ID
+* Create timestamp
 
 
 Relationship Solution Group - Peer Group for Access
@@ -1012,10 +854,10 @@ Represents granting of access to all solutions in the solution group by peers in
 
 Attributes:
 
-*   Solution Group ID
-*   Peer Group ID
-*   Active flag (yes/no)
-*   Create timestamp
+* Solution Group ID
+* Peer Group ID
+* Active flag (yes/no)
+* Create timestamp
 
 
 Relationship Peer Group - Peer Group for Access
@@ -1025,9 +867,9 @@ Represents granting of access to resource peers for principal peers.
 
 Attributes:
 
-*   Principal peer group ID
-*   Resource peer group ID
-*   Create timestamp
+* Principal peer group ID
+* Resource peer group ID
+* Create timestamp
 
 
 Required Operations
@@ -1040,34 +882,43 @@ Metadata operations
 
 These read-only actions provide access to value sets that may change over time:
 
-*  Get access types
-*  Get artifact types
-*  Get login providers
-*  Get model types
-*  Get toolkit types
-*  Get validation status values
+* Get access types
+* Get artifact types
+* Get login providers
+* Get model types
+* Get toolkit types
+* Get validation status values
 
 CRUD operations
 ^^^^^^^^^^^^^^^
 
 To keep the rest of this document brief, the standard "CRUD" operation definitions are repeated here:
 
-*    (C)reate an entity; a REST POST operation that requires new content. If the entity ID field is not supplied, this operation generates a unique ID; otherwise the supplied ID is used.
-*    (R)etrieve an enity; a REST GET operation that requires the entity ID
-*    (U)pdate an entity; a REST PUT operation that requires the entity ID and the new content
-*    (D)elete an entity; a REST DELETE operation that requires the entity ID
+* (C)reate an entity; a REST POST operation that requires new content. If the entity ID field is not supplied, this operation generates a unique ID; otherwise the supplied ID is used.
+* (R)etrieve an enity; a REST GET operation that requires the entity ID
+* (U)pdate an entity; a REST PUT operation that requires the entity ID and the new content
+* (D)elete an entity; a REST DELETE operation that requires the entity ID
 
 Operations on artifacts
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Standard CRUD operations plus the following:
 
-*    Get a page of artifacts from the complete set, optionally sorted on one or more attributes
-*    Get a page of artifacts using partial ("like") value match on the name and description attributes, optionally sorted on one or more attributes
-*    Search for artifacts using exact value match on one or more attributes, either all (conjunction-and) or one (disjunction-or)
-*    Get all the artifacts for a particular solution revision
-*    Add an artifact to a solution revision
-*    Delete an artifact from a solution revision.
+* Get a page of artifacts from the complete set, optionally sorted on one or more attributes
+* Get a page of artifacts using partial ("like") value match on the name and description attributes, optionally sorted on one or more attributes
+* Search for artifacts using exact value match on one or more attributes, either all (conjunction-and) or one (disjunction-or)
+* Get all the artifacts for a particular solution revision
+* Add an artifact to a solution revision
+* Delete an artifact from a solution revision.
+
+Operations on catalogs
+^^^^^^^^^^^^^^^^^^^^^^
+
+Standard CRUD operations apply plus the following:
+
+* Get the collection of catalogs
+* Get a page of solutions in the catalog, optionally sorted on one or more attributes
+
 
 Operations on solutions
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -1115,8 +966,8 @@ Operations on solution ratings
 
 Standard CRUD operations plus the following:
 
-*  Get all ratings for a specific solution
-*  Get the average rating for a specific solution
+* Get all ratings for a specific solution
+* Get the average rating for a specific solution
 
 Operations on tags
 ^^^^^^^^^^^^^^^^^^

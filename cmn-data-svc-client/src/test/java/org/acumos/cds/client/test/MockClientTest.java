@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.acumos.cds.client.CommonDataServiceRestClientMockImpl;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.domain.MLPNotification;
@@ -545,6 +546,19 @@ public class MockClientTest {
 		client.updatePublishRequest(publishRequest);
 		client.deletePublishRequest(0L);
 
+		RestPageResponse<MLPCatalog> catalogs = new RestPageResponse<>();
+		client.setCatalogs(catalogs);
+		Assert.assertTrue(catalogs == client.getCatalogs(new RestPageRequest()));
+		MLPCatalog catalog = new MLPCatalog();
+		client.setCatalog(catalog);
+		Assert.assertEquals(catalog, client.createCatalog(catalog));
+		client.updateCatalog(catalog);
+		client.deleteCatalog(catalog.getCatalogId());
+		RestPageResponse<MLPSolution> solsInCat = new RestPageResponse<>();
+		client.setSolutionsInCatalog(solsInCat);
+		Assert.assertEquals(solsInCat, client.getSolutionsInGroup(0L, new RestPageRequest()));
+		client.addSolutionToCatalog("solId", "catId");
+		client.dropSolutionFromCatalog("solId", "catId");
 	}
 
 }

@@ -204,7 +204,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			criteria.addOrder(order);
 		}
 	}
-	
+
 	/*
 	 * Uses type-safe JPA methods to create a predicate that compares field values
 	 * ignoring case.

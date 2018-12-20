@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
@@ -199,6 +200,9 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPSolution> restrictedSolutions;
 	private long userNotificationCount;
 	private byte[] solutionImage;
+	private MLPCatalog catalog;
+	private RestPageResponse<MLPCatalog> catalogs;
+	private RestPageResponse<MLPSolution> solutionsInCatalog;
 
 	/**
 	 * No-argument constructor.
@@ -1743,6 +1747,58 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void saveSolutionPicture(String solutionId, byte[] image) {
 		this.solutionImage = image;
+	}
+
+	public void setCatalog(MLPCatalog catalog) {
+		this.catalog = catalog;
+	}
+
+	@Override
+	public MLPCatalog getCatalog(String catalogId) {
+		return this.catalog;
+	}
+
+	public void setCatalogs(RestPageResponse<MLPCatalog> catalogs) {
+		this.catalogs = catalogs;
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest) {
+		return this.catalogs;
+	}
+
+	@Override
+	public MLPCatalog createCatalog(MLPCatalog catalog) {
+		return this.catalog;
+	}
+
+	@Override
+	public void updateCatalog(MLPCatalog catalog) {
+		this.catalog = catalog;
+	}
+
+	@Override
+	public void deleteCatalog(String catalogId) {
+		this.catalog = null;
+	}
+
+	public void setSolutionsInCatalog(RestPageResponse<MLPSolution> solutionsInCatalog) {
+		this.solutionsInCatalog = solutionsInCatalog;
+	}
+
+	@Override
+	public RestPageResponse<MLPSolution> getSolutionsInCatalog(String catalogId, RestPageRequest pageRequest) {
+		return solutionsInCatalog;
+	}
+
+	@Override
+	public void addSolutionToCatalog(String solutionId, String catalogId) {
+		// How to mock?
+	}
+
+	@Override
+	public void dropSolutionFromCatalog(String solutionId, String catalogId) {
+		// How to mock?
 	}
 
 }

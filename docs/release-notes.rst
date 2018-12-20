@@ -33,6 +33,7 @@ Version 2.0.1, 20 Dec 2018
     * Extend property 'spring.datasource.jdbc-url' with connection parameter 'useLegacyDatetimeCode=false'
     * Change property 'spring.jpa.database-platform' to value 'org.hibernate.dialect.MariaDB102Dialect'
     * Add prefix 'spring' to property keys 'security.user.name' and 'security.user.password'
+* Add catalog support for solutions (`ACUMOS-2284 <https://jira.acumos.org/browse/ACUMOS-2284>`_)
 * Silence warnings from Springfox dependencies (`ACUMOS-2316 <https://jira.acumos.org/browse/ACUMOS-2316>`_)
 * Requires database schema version 2.0
 

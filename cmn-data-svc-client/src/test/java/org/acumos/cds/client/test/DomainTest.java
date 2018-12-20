@@ -21,9 +21,12 @@
 package org.acumos.cds.client.test;
 
 import java.lang.invoke.MethodHandles;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatSolMap;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
@@ -125,6 +128,80 @@ public class DomainTest extends AbstractModelTest {
 		} catch (URISyntaxException ex) {
 			// bogus URI is rejected
 		}
+	}
+
+	private void checkMLPCatalog(MLPCatalog m) {
+		Assert.assertEquals(s1, m.getAccessTypeCode());
+		Assert.assertEquals(s2, m.getCatalogId());
+		Assert.assertEquals(t1, m.getCreated());
+		Assert.assertEquals(s3, m.getDescription());
+		Assert.assertEquals(t2, m.getModified());
+		Assert.assertEquals(s4, m.getName());
+		Assert.assertEquals(s5, m.getOrigin());
+		Assert.assertEquals(u1, m.getUrl());
+	}
+
+	@Test
+	public void testMLPCatalog() throws MalformedURLException {
+		MLPCatalog m = new MLPCatalog(s1, s1, s1);
+		m = new MLPCatalog();
+		m.setAccessTypeCode(s1);
+		m.setCreated(t1);
+		m.setCatalogId(s2);
+		m.setDescription(s3);
+		m.setModified(t2);
+		m.setName(s4);
+		m.setOrigin(s5);
+		m.setUrl(u1);
+		checkMLPCatalog(m);
+		m = new MLPCatalog(m);
+		checkMLPCatalog(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			String n = null;
+			new MLPCatalog(n, n, n);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+	}
+
+	private void checkMLPCatSolMap(MLPCatSolMap m) {
+		Assert.assertEquals(s1, m.getCatalogId());
+		Assert.assertEquals(s2, m.getSolutionId());
+	}
+
+	@Test
+	public void testMLPCatSolMap() {
+		MLPCatSolMap m = new MLPCatSolMap(s1, s1);
+		m = new MLPCatSolMap();
+		m.setCatalogId(s1);
+		m.setSolutionId(s2);
+		checkMLPCatSolMap(m);
+		m = new MLPCatSolMap(m);
+		checkMLPCatSolMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		try {
+			new MLPCatSolMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		logger.info(m.toString());
+		MLPCatSolMap.CatSolMapPK pk = new MLPCatSolMap.CatSolMapPK();
+		pk = new MLPCatSolMap.CatSolMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
 	}
 
 	@Test

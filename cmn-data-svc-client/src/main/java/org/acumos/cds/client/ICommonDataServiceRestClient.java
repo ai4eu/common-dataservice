@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
@@ -2313,4 +2314,80 @@ public interface ICommonDataServiceRestClient {
 	 */
 	void saveSolutionPicture(String solutionId, byte[] picture);
 
+	/**
+	 * Gets a catalog
+	 * 
+	 * @param catalogId
+	 *                      Catalog ID
+	 * @return MLPCatalog; null if not found
+	 */
+	MLPCatalog getCatalog(String catalogId);
+
+	/**
+	 * Gets a page of catalogs.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of objects.
+	 */
+	RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest);
+
+	/**
+	 * Creates a catalog.
+	 * 
+	 * @param catalog
+	 *                    Catalog
+	 * @return Complete object, with generated information such as ID
+	 */
+	MLPCatalog createCatalog(MLPCatalog catalog);
+
+	/**
+	 * Updates a catalog.
+	 * 
+	 * @param catalog
+	 *                    Instance to update
+	 */
+	void updateCatalog(MLPCatalog catalog);
+
+	/**
+	 * Deletes a catalog. A catalog can be deleted if is not associated with any
+	 * solutions; if associations remain the delete will fail.
+	 * 
+	 * @param catalogId
+	 *                      ID of instance to delete
+	 */
+	void deleteCatalog(String catalogId);
+
+	/**
+	 * Gets a page of solutions in the specified catalog.
+	 * 
+	 * @param catalogId
+	 *                        Catalog ID
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of objects; empty if none are found
+	 */
+	RestPageResponse<MLPSolution> getSolutionsInCatalog(String catalogId, RestPageRequest pageRequest);
+
+	/**
+	 * Adds the specified solution as a member of the specified catalog.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @param catalogId
+	 *                       Catalog ID
+	 */
+	void addSolutionToCatalog(String solutionId, String catalogId);
+
+	/**
+	 * Drops the specified solution as a member of the specified catalog.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @param catalogId
+	 *                       Catalog ID
+	 */
+	void dropSolutionFromCatalog(String solutionId, String catalogId);
 }

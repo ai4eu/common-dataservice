@@ -35,6 +35,7 @@ import org.acumos.cds.CodeNameType;
 import org.acumos.cds.client.CommonDataServiceRestClientImpl;
 import org.acumos.cds.client.ICommonDataServiceRestClient;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
@@ -1983,6 +1984,120 @@ public class CdsControllerTest {
 		client.deletePeerGroup(pg1.getGroupId());
 		client.deleteSolution(cs.getSolutionId());
 		client.deletePeer(pr.getPeerId());
+		client.deleteUser(cu.getUserId());
+
+	}
+
+	@Test
+	public void testCatalogs() throws Exception {
+
+		MLPUser cu;
+		MLPSolution cs;
+		MLPCatalog ca;
+
+		try {
+			// Need a user to create a solution
+			cu = null;
+			cu = new MLPUser();
+			cu.setEmail("testcatalog@abc.com");
+			cu.setActive(true);
+			cu.setLoginName("cataloguser");
+			cu = client.createUser(cu);
+			Assert.assertNotNull("User ID", cu.getUserId());
+			logger.info("Created user {}", cu);
+
+			cs = new MLPSolution("solutionName 1 for cat", cu.getUserId(), true);
+			cs = client.createSolution(cs);
+			Assert.assertNotNull("Solution ID", cs.getSolutionId());
+			logger.info("Created solution {}", cs);
+
+			ca = client.createCatalog(new MLPCatalog("PB", "name", "http://pub.org"));
+			Assert.assertNotNull("Catalog ID", ca.getCatalogId());
+			logger.info("Created catalog {}", ca);
+
+			ca.setDescription("Catalog description");
+			client.updateCatalog(ca);
+
+			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
+			Assert.assertNotNull(catalogs);
+			Assert.assertEquals(1, catalogs.getNumberOfElements());
+
+			MLPCatalog c2 = client.getCatalog(ca.getCatalogId());
+			Assert.assertEquals(ca, c2);
+
+			client.addSolutionToCatalog(cs.getSolutionId(), ca.getCatalogId());
+
+			RestPageResponse<MLPSolution> sols = client.getSolutionsInCatalog(ca.getCatalogId(), new RestPageRequest());
+			Assert.assertNotNull(sols);
+			Assert.assertEquals(1, sols.getNumberOfElements());
+
+		} catch (HttpStatusCodeException ex) {
+			logger.error("testCatalogs failed {}", ex.getResponseBodyAsString());
+			throw ex;
+		}
+
+		try {
+			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			c.setCatalogId("bogus");
+			client.createCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create catalog failed on bad ID as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			c.setCatalogId(ca.getCatalogId());
+			client.createCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create catalog failed on existing ID as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPCatalog c = new MLPCatalog("xx", "name", "http://pub.org");
+			client.createCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create catalog failed on bad access code as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPCatalog c = new MLPCatalog("PB", "name", "/inval:d@-*url");
+			client.createCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create catalog failed on bad URL as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			c.setCatalogId("bogus");
+			client.updateCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update missing catalog failed as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPCatalog c = new MLPCatalog(ca);
+			c.setAccessTypeCode("bogus");
+			client.updateCatalog(c);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update catalog failed on bad acc type as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addSolutionToCatalog("bogus", ca.getCatalogId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add solution to catalog failed on bad sol id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addSolutionToCatalog(cs.getSolutionId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add solution to catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
+		}
+
+		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
+		client.deleteCatalog(ca.getCatalogId());
+		client.deleteSolution(cs.getSolutionId());
 		client.deleteUser(cu.getUserId());
 
 	}

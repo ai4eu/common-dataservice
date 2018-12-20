@@ -37,7 +37,6 @@ import org.springframework.data.domain.Sort;
  */
 public abstract class AbstractSearchServiceImpl {
 
-
 	@Autowired
 	protected EntityManager entityManager;
 

@@ -38,6 +38,7 @@ public interface CCDSConstants {
 
 	// Path components
 	public static final String ARTIFACT_PATH = "artifact";
+	public static final String CATALOG_PATH = "catalog";
 	public static final String COMMENT_PATH = "comment";
 	public static final String COMPOSITE_PATH = "comp";
 	public static final String CONFIG_PATH = "config";

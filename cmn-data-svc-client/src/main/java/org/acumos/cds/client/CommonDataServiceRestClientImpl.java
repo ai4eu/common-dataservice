@@ -35,6 +35,8 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.PublishRequestStatusCode;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatSolMap;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
@@ -2365,6 +2367,77 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				null);
 		logger.debug("saveSolutionImage: uri {}", uri);
 		restTemplate.put(uri, image);
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH }, null, pageRequest);
+		logger.debug("getCatalogs: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPCatalog>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPCatalog getCatalog(String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId }, null, null);
+		logger.debug("getCatalog: uri {}", uri);
+		ResponseEntity<MLPCatalog> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPCatalog>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPCatalog createCatalog(MLPCatalog catalog) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH }, null, null);
+		logger.debug("createCatalog: uri {}", uri);
+		return restTemplate.postForObject(uri, catalog, MLPCatalog.class);
+	}
+
+	@Override
+	public void updateCatalog(MLPCatalog catalog) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalog.getCatalogId() }, null, null);
+		logger.debug("updateCatalog: url {}", uri);
+		restTemplate.put(uri, catalog);
+	}
+
+	@Override
+	public void deleteCatalog(String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId }, null, null);
+		logger.debug("deleteCatalog: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPSolution> getSolutionsInCatalog(String catalogId, RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.SOLUTION_PATH }, null,
+				pageRequest);
+		logger.debug("getSolutionsInCatalog: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addSolutionToCatalog(String solutionId, String catalogId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.SOLUTION_PATH, solutionId }, null,
+				null);
+		logger.debug("addSolutionToCatalog: url {}", uri);
+		MLPCatSolMap map = new MLPCatSolMap(catalogId, solutionId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropSolutionFromCatalog(String solutionId, String catalogId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.SOLUTION_PATH, solutionId }, null,
+				null);
+		logger.debug("dropSolutionFromCatalog: url {}", uri);
+		restTemplate.delete(uri);
 	}
 
 }
