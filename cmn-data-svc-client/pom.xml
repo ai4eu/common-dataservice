@@ -33,6 +33,7 @@
 		<!-- Supplied by Jenkins -->
 		<build.number>${env.BUILD_NUMBER}</build.number>
 		<springfox.version>2.9.2</springfox.version>
+		<swagger.version>1.5.21</swagger.version>
 		<!-- Begin extract of POM file spring-boot-dependencies -->
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate-validator.version>5.3.6.Final</hibernate-validator.version>
@@ -107,7 +108,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
 			<version>${hibernate-jpamodelgen.version}</version>
-			<scope>provided</scope> <!--  don't package -->
+			<scope>provided</scope> <!-- don't package -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -135,15 +136,39 @@
 			<artifactId>spring-data-jpa</artifactId>
 			<version>${spring-data-jpa.version}</version>
 		</dependency>
+		<!-- Adjust versions of swagger-annotations and swagger-models versions 
+			to silence warning messages in log:
+			NumberFormatException: For input string: ""
+		-->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${springfox.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger</groupId>
+					<artifactId>swagger-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.swagger</groupId>
+					<artifactId>swagger-models</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${springfox.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>${swagger.version}</version>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>

@@ -126,7 +126,7 @@ public class MLPUserLoginProvider extends MLPTimestampedEntity implements Serial
 
 	@Column(name = "RANK", nullable = false, columnDefinition = "SMALLINT")
 	@NotNull(message = "Rank cannot be null")
-	@ApiModelProperty(required = true, value = "Relative rank among login providers")
+	@ApiModelProperty(required = true, value = "Relative rank among login providers", example = "1")
 	private Integer rank;
 
 	@Column(name = "DISPLAY_NAME", columnDefinition = "VARCHAR(256)")

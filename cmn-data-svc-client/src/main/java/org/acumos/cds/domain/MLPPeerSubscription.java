@@ -54,7 +54,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "SUB_ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated", example = "12345")
 	private Long subId;
 
 	@Column(name = "PEER_ID", nullable = false, columnDefinition = "CHAR(36)")
@@ -92,11 +92,11 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	private Long refreshInterval;
 
 	@Column(name = "MAX_ARTIFACT_SIZE", columnDefinition = "INT")
-	@ApiModelProperty(value = "Maximum artifact size")
+	@ApiModelProperty(value = "Maximum artifact size", example = "300000")
 	private Long maxArtifactSize;
 
 	@Column(name = "PROCESSED_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Processed date", example = "2018-12-16T12:34:56.789Z")
 	private Instant processed;
 
 	/**

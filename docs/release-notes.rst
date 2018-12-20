@@ -27,15 +27,13 @@ available as a Docker image in the Acumos/LF Docker registry.
 Version 2.0.1, 20 Dec 2018
 --------------------------
 
-* Upgrade to Spring-Boot version 2.1 (`ACUMOS-1926 <https://jira.acumos.org/browse/ACUMOS-1926>`_)
-  which requires the following runtime configuration changes:
-
+* Upgrade to Spring-Boot version 2.1 (`ACUMOS-1926 <https://jira.acumos.org/browse/ACUMOS-1926>`_) which requires runtime configuration changes:
     * Drop property 'spring.database.driver.classname'
     * Change property key 'spring.datasource.url' to 'spring.datasource.jdbc-url'
     * Extend property 'spring.datasource.jdbc-url' with connection parameter 'useLegacyDatetimeCode=false'
     * Change property 'spring.jpa.database-platform' to value 'org.hibernate.dialect.MariaDB102Dialect'
     * Add prefix 'spring' to property keys 'security.user.name' and 'security.user.password'
-
+* Silence warnings from Springfox dependencies (`ACUMOS-2316 <https://jira.acumos.org/browse/ACUMOS-2316>`_)
 * Requires database schema version 2.0
 
 Version 2.0.0, 19 Dec 2018

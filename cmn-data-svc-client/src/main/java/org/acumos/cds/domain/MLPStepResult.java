@@ -107,11 +107,11 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	private String result;
 
 	@Column(name = "START_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(required = true, value = "Millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(required = true, value = "Start date", example = "2018-12-16T12:34:56.789Z")
 	private Instant startDate;
 
 	@Column(name = "END_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "End date", example = "2018-12-16T12:34:56.789Z")
 	private Instant endDate;
 
 	/**

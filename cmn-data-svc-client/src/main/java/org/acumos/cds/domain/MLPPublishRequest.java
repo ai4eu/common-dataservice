@@ -54,7 +54,7 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "REQUEST_ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated", example = "12345")
 	// Use object to allow null value
 	private Long requestId;
 

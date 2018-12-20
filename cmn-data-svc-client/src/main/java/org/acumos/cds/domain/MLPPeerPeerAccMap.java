@@ -115,7 +115,7 @@ public class MLPPeerPeerAccMap implements MLPDomainModel, Serializable {
 	@CreationTimestamp
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY)
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Created date", example = "2018-12-16T12:34:56.789Z")
 	private Instant created;
 
 	/**

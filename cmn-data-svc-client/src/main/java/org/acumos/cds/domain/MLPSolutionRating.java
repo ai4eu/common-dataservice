@@ -109,7 +109,7 @@ public class MLPSolutionRating extends MLPTimestampedEntity implements Serializa
 
 	@Column(name = "RATING", nullable = false, columnDefinition = "SMALLINT")
 	@NotNull(message = "Rating cannot be null")
-	@ApiModelProperty(required = true, example = "1")
+	@ApiModelProperty(required = true, value = "User-assigned rating", example = "1")
 	private Integer rating;
 
 	@Column(name = "TEXT_REVIEW", columnDefinition = "VARCHAR(1024)")

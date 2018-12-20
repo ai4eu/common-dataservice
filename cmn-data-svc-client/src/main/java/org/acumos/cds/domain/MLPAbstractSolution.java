@@ -109,7 +109,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	private Long downloadCount = 0L;
 
 	@Column(name = "LAST_DOWNLOAD", columnDefinition = "TIMESTAMP" /* don't attempt "NULL DEFAULT 0" here */)
-	@ApiModelProperty(value = "Timestamp of most recent download")
+	@ApiModelProperty(value = "Timestamp of most recent download", example = "2018-12-16T12:34:56.789Z")
 	private Instant lastDownload;
 
 	@Column(name = "RATING_COUNT", columnDefinition = "INT")

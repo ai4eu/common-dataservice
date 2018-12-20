@@ -106,7 +106,7 @@ public class MLPNotifUserMap implements MLPDomainModel, Serializable {
 
 	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "VIEWED_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Viewed date", example = "2018-12-16T12:34:56.789Z")
 	private Instant viewed;
 
 	public MLPNotifUserMap() {

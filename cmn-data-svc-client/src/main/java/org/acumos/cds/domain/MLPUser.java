@@ -114,7 +114,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	private String loginHash;
 
 	@Column(name = "LOGIN_PASS_EXPIRE_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Login password expiration date", example = "2018-12-16T12:34:56.789Z")
 	private Instant loginPassExpire;
 
 	/**
@@ -139,7 +139,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Should have used names "LOGIN_DATE" and loginDate.
 	 */
 	@Column(name = "LAST_LOGIN_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Last login date, sent as millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Last login date", example = "2018-12-16T12:34:56.789Z")
 	private Instant lastLogin;
 
 	/**
@@ -156,7 +156,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Client sends date-time as long integer, milliseconds since the Epoch.
 	 */
 	@Column(name = "LOGIN_FAIL_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Login failure date, sent as millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Login failure date", example = "2018-12-16T12:34:56.789Z")
 	private Instant loginFailDate;
 
 	/**
@@ -193,7 +193,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	 * Client sends date-time as long integer, milliseconds since the Epoch.
 	 */
 	@Column(name = "VERIFY_EXPIRE_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "Verification token expiration date, sent as millisec since the Epoch", example = "1521202458867")
+	@ApiModelProperty(value = "Verification token expiration date", example = "2018-12-16T12:34:56.789Z")
 	private Instant verifyExpiration;
 
 	/**
