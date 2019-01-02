@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import org.acumos.cds.domain.MLPArtifactFOM;
 import org.acumos.cds.domain.MLPArtifactFOM_;
+import org.acumos.cds.domain.MLPCatalog_;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.domain.MLPDocument_;
 import org.acumos.cds.domain.MLPRevisionDescription;
@@ -215,7 +216,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			String sourceId, String modelTypeCode, String toolkitTypeCode, String origin, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (name != null && !name.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.NAME)), name.toLowerCase()));
 		if (active != null) {
@@ -340,7 +341,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
 			rootQueryDef.orderBy(buildOrderList(cb, solutionFom, pageable.getSort()));
 
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		// Active is a required parameter
 		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
 				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
@@ -436,7 +437,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
 			rootQueryDef.orderBy(buildOrderList(cb, solutionFom, pageable.getSort()));
 
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		// Active is a required parameter
 		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
 				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
@@ -519,7 +520,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
 			rootQueryDef.orderBy(buildOrderList(cb, solutionFom, pageable.getSort()));
 
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		// Active is a required parameter
 		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
 				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
@@ -606,7 +607,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] modelTypeCode, String[] accessTypeCode, String[] allTags, String[] anyTags, Pageable pageable) {
+			String[] modelTypeCode, String[] accessTypeCode, String[] allTags, String[] anyTags, String catalogId,
+			Pageable pageable) {
 
 		try (Session session = getSessionFactory().openSession()) {
 			// build the query using FOM to access child attributes
@@ -614,27 +616,31 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			Criteria criteria = session.createCriteria(MLPSolutionFOM.class, solAlias);
 			criteria.add(Restrictions.eq("active", active));
 			// A solution should ALWAYS have revisions.
-			criteria.createAlias("revisions", revAlias);
+			criteria.createAlias(MLPSolutionFOM_.REVISIONS, revAlias);
 			// Descriptions are optional, so must use outer join
 			if (keywords != null && keywords.length > 0) {
-				criteria.createAlias(revAlias + ".descriptions", descsAlias,
+				criteria.createAlias(revAlias + "." + MLPSolutionRevisionFOM_.DESCRIPTIONS, descsAlias,
 						org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 				Disjunction keywordDisjunction = Restrictions.disjunction();
-				keywordDisjunction.add(buildLikeListCriterion("name", keywords, false));
-				keywordDisjunction.add(buildLikeListCriterion(revAlias + ".authors", keywords, false));
-				keywordDisjunction.add(buildLikeListCriterion(revAlias + ".publisher", keywords, false));
+				keywordDisjunction.add(buildLikeListCriterion(MLPSolutionFOM_.NAME, keywords, false));
+				keywordDisjunction
+						.add(buildLikeListCriterion(revAlias + "." + MLPSolutionRevisionFOM_.AUTHORS, keywords, false));
+				keywordDisjunction.add(
+						buildLikeListCriterion(revAlias + "." + MLPSolutionRevisionFOM_.PUBLISHER, keywords, false));
 				// Also match on IDs, but exact only
-				keywordDisjunction.add(buildEqualsListCriterion("solutionId", keywords));
-				keywordDisjunction.add(buildEqualsListCriterion(revAlias + ".revisionId", keywords));
+				keywordDisjunction.add(buildEqualsListCriterion(MLPSolutionFOM_.SOLUTION_ID, keywords));
+				keywordDisjunction
+						.add(buildEqualsListCriterion(revAlias + "." + MLPSolutionRevisionFOM_.REVISION_ID, keywords));
 				criteria.add(keywordDisjunction);
 			}
 			if (modelTypeCode != null && modelTypeCode.length > 0)
-				criteria.add(buildEqualsListCriterion("modelTypeCode", modelTypeCode));
+				criteria.add(buildEqualsListCriterion(MLPSolutionFOM_.MODEL_TYPE_CODE, modelTypeCode));
 			if (accessTypeCode != null && accessTypeCode.length > 0)
-				criteria.add(buildEqualsListCriterion(revAlias + ".accessTypeCode", accessTypeCode));
+				criteria.add(buildEqualsListCriterion(revAlias + "." + MLPSolutionRevisionFOM_.ACCESS_TYPE_CODE,
+						accessTypeCode));
 			if (userIds != null && userIds.length > 0) {
 				criteria.createAlias("user", userAlias);
-				criteria.add(Restrictions.in(userAlias + ".userId", (Object[]) userIds));
+				criteria.add(Restrictions.in(userAlias + "." + MLPUser_.USER_ID, (Object[]) userIds));
 			}
 			if (allTags != null && allTags.length > 0) {
 				// https://stackoverflow.com/questions/51992269/hibernate-java-criteria-query-for-instances-with-multiple-collection-members-lik
@@ -655,6 +661,12 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 						.add(Restrictions.in(tag2ValueField, (Object[]) anyTags))
 						.setProjection(Projections.count(tag2ValueField));
 				criteria.add(Subqueries.lt(0L, anyTagsQuery));
+			}
+			if (catalogId != null && !catalogId.isEmpty()) {
+				final String catAlias = "ctlg";
+				// Use inner join here
+				criteria.createAlias(MLPSolutionFOM_.CATALOGS, catAlias);
+				criteria.add(Restrictions.eq(catAlias + "." + MLPCatalog_.CATALOG_ID, catalogId));
 			}
 			Page<MLPSolution> result = runSolutionFomQuery(criteria, pageable);
 			logger.debug("findPortalSolutionsByKwAndTags: result size={}", result.getNumberOfElements());

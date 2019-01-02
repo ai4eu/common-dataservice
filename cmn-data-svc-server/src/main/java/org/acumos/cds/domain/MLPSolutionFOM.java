@@ -115,6 +115,21 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 			inverseJoinColumns = { @JoinColumn(name = MLPSolUserAccMap.USER_ID_COL_NAME) })
 	private Set<MLPUser> accessUsers = new HashSet<>(0);
 
+	/**
+	 * Catalogs associated with the solution via a map table. A solution can be in
+	 * many catalogs so this is a many-many (not one-many) relationship.
+	 * 
+	 * Unidirectional relationship - the MLPCatalog object is not annotated.
+	 * 
+	 * Use default LAZY fetch. This is only used for searching (never fetched, never
+	 * serialized as JSON).
+	 */
+	@ManyToMany
+	@JoinTable(name = MLPCatSolMap.TABLE_NAME, //
+			joinColumns = { @JoinColumn(name = MLPCatSolMap.SOL_ID_COL_NAME) }, //
+			inverseJoinColumns = { @JoinColumn(name = MLPCatSolMap.CAT_ID_COL_NAME) })
+	private Set<MLPCatalog> catalogs = new HashSet<>(0);
+
 	public MLPUser getUser() {
 		return user;
 	}
@@ -153,6 +168,14 @@ public class MLPSolutionFOM extends MLPAbstractSolution implements Serializable 
 
 	public void setAccessUsers(Set<MLPUser> accessUsers) {
 		this.accessUsers = accessUsers;
+	}
+
+	public Set<MLPCatalog> getCatalogs() {
+		return catalogs;
+	}
+
+	public void setCatalogs(Set<MLPCatalog> catalogs) {
+		this.catalogs = catalogs;
 	}
 
 	@Override

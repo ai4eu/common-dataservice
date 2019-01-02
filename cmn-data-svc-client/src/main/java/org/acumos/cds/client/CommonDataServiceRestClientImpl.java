@@ -535,7 +535,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active,
 			String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
-			RestPageRequest pageRequest) {
+			String catalogId, RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		// This is the only required parameter.
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
@@ -551,6 +551,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_ALL_TAGS, allTags);
 		if (anyTags != null && anyTags.length > 0)
 			parms.put(CCDSConstants.SEARCH_ANY_TAGS, anyTags);
+		if (catalogId != null && !catalogId.isEmpty())
+			parms.put(CCDSConstants.SEARCH_CATALOG, catalogId);
 		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH,
 				CCDSConstants.PORTAL_PATH, CCDSConstants.KW_TAG_PATH }, parms, pageRequest);
 		logger.debug("findPortalSolutionsByKwAndTags: uri {}", uri);

@@ -56,7 +56,7 @@ public class PublishRequestSearchServiceImpl extends AbstractSearchServiceImpl i
 			String requestUserId, String reviewUserId, String statusCode, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (solutionId != null && !solutionId.isEmpty())
 			predicates
 					.add(cb.equal(cb.lower(from.<String>get(MLPPublishRequest_.solutionId)), solutionId.toLowerCase()));

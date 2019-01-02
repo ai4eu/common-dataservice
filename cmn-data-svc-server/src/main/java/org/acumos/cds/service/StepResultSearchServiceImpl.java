@@ -56,7 +56,7 @@ public class StepResultSearchServiceImpl extends AbstractSearchServiceImpl imple
 			String solutionId, String revisionId, String artifactId, String userId, String name, String statusCode,
 			boolean isOr) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (trackingId != null && !trackingId.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPStepResult_.trackingId)), trackingId.toLowerCase()));
 		if (stepCode != null && !stepCode.isEmpty())

@@ -47,7 +47,7 @@ public final class ONAPLogConstants {
 
 		// Silence a Sonar warning
 		private static final String inv = "INVOKE";
-		
+
 		/** Marker reporting invocation. */
 		public static final Marker INVOKE = MarkerFactory.getMarker(inv);
 

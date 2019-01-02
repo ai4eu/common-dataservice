@@ -55,7 +55,7 @@ public class ArtifactSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	private Predicate createArtifactPredicate(Root<MLPArtifact> from, String artifactTypeCode, String name, String uri,
 			String version, String userId, boolean isOr) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (artifactTypeCode != null && !artifactTypeCode.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPArtifact_.artifactTypeCode)),
 					artifactTypeCode.toLowerCase()));

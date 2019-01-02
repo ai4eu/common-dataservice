@@ -443,6 +443,11 @@ public class CdsRepositoryServiceTest {
 			MLPTag solTag2 = new MLPTag("soltag2");
 			solTag2 = tagRepository.save(solTag2);
 
+			MLPCatalog ca1 = new MLPCatalog("PB", "name", "http://pub.org");
+			ca1 = catalogRepository.save(ca1);
+			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
+			logger.info("Created catalog {}", ca1);
+
 			MLPSolution cs = new MLPSolution();
 			final String solName = "solution name test repo";
 			cs.setName(solName);
@@ -457,6 +462,9 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 			Assert.assertEquals(2, cs.getTags().size());
 			logger.info("Created solution " + cs.getSolutionId());
+
+			MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs.getSolutionId());
+			catSolMapRepository.save(csm);
 
 			// This solution has one tag
 			MLPSolution cs2 = new MLPSolution();
@@ -530,7 +538,7 @@ public class CdsRepositoryServiceTest {
 
 			String[] ids = { cs.getSolutionId() };
 			Page<MLPSolution> idSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(ids, active,
-					userIds, modelTypeCodes, accTypeCodes, searchTags, null,
+					userIds, modelTypeCodes, accTypeCodes, searchTags, null, ca1.getCatalogId(),
 					PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertEquals(1, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
@@ -539,14 +547,14 @@ public class CdsRepositoryServiceTest {
 			String[] allTags = new String[] { solTag1.getTag() };
 			String[] anyTags = new String[] { solTag2.getTag(), "other" };
 			Page<MLPSolution> allAnyTagsSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(null,
-					active, userIds, modelTypeCodes, accTypeCodes, allTags, anyTags, PageRequest.of(0, 5));
+					active, userIds, modelTypeCodes, accTypeCodes, allTags, anyTags, null, PageRequest.of(0, 5));
 			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
 			Assert.assertTrue(taggedSol.getTags().contains(solTag1) && taggedSol.getTags().contains(solTag2));
 
 			String[] kw = { "Big", "Data" };
 			Page<MLPSolution> kwSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(kw, active, userIds,
-					modelTypeCodes, accTypeCodes, searchTags, null, PageRequest.of(0, 2, Direction.ASC, "name"));
+					modelTypeCodes, accTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
@@ -793,9 +801,11 @@ public class CdsRepositoryServiceTest {
 				solutionRatingRepository.delete(solrate);
 				MLPSolTagMap.SolTagMapPK solTagMapKey = new MLPSolTagMap.SolTagMapPK(cs.getSolutionId(), tag1.getTag());
 				solTagMapRepository.deleteById(solTagMapKey);
+				catSolMapRepository.delete(csm);
 				solutionDownloadRepository.delete(sd);
 				solutionRepository.deleteById(cs2.getSolutionId());
 				solutionRepository.deleteById(cs.getSolutionId());
+				catalogRepository.deleteById(ca1.getCatalogId());
 				artifactRepository.delete(ca2);
 				artifactRepository.delete(ca);
 				peerSubscriptionRepository.delete(ps);

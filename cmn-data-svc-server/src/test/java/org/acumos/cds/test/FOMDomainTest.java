@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.acumos.cds.domain.MLPArtifactFOM;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPSolutionFOM;
@@ -81,6 +82,8 @@ public class FOMDomainTest {
 	final MLPUser user1 = new MLPUser();
 	final Set<MLPSolutionRevisionFOM> revs = new HashSet<>();
 	final Set<MLPRevisionDescription> descs = new HashSet<>();
+	final Set<MLPUser> accessUsers = new HashSet<>();
+	final Set<MLPCatalog> catalogs = new HashSet<>();
 
 	@Before
 	public void setup() {
@@ -128,7 +131,9 @@ public class FOMDomainTest {
 	@Test
 	public void testMLPSolutionFOM() {
 		MLPSolutionFOM m = new MLPSolutionFOM();
+		m.setAccessUsers(accessUsers);
 		m.setActive(b1);
+		m.setCatalogs(catalogs);
 		m.setCreated(t1);
 		m.setMetadata(s2);
 		m.setModelTypeCode(s3);
@@ -140,7 +145,9 @@ public class FOMDomainTest {
 		m.setSolutionId(s7);
 		m.setToolkitTypeCode(s8);
 		m.setUser(user1);
+		Assert.assertEquals(accessUsers, m.getAccessUsers());
 		Assert.assertEquals(b1, m.isActive());
+		Assert.assertEquals(catalogs, m.getCatalogs());
 		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(s2, m.getMetadata());
 		Assert.assertEquals(s3, m.getModelTypeCode());
@@ -148,7 +155,7 @@ public class FOMDomainTest {
 		Assert.assertEquals(s4, m.getName());
 		Assert.assertEquals(s5, m.getOrigin());
 		Assert.assertEquals(peer1, m.getSource());
-		Assert.assertTrue(revs == m.getRevisions());
+		Assert.assertEquals(revs, m.getRevisions());
 		Assert.assertEquals(s7, m.getSolutionId());
 		Assert.assertEquals(s8, m.getToolkitTypeCode());
 		Assert.assertEquals(user1, m.getUser());

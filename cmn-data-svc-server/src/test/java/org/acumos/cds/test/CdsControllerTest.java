@@ -144,7 +144,7 @@ public class CdsControllerTest {
 
 			// query the user to be sure
 			MLPUser cu2 = client.getUser(cu.getUserId());
-			Assert.assertTrue(cu.getUserId().equals(cu2.getUserId()));
+			Assert.assertEquals(cu.getUserId(), cu2.getUserId());
 
 			MLPSolution cs = new MLPSolution();
 			cs.setName("solution name");
@@ -159,7 +159,8 @@ public class CdsControllerTest {
 			client.updateSolution(cs);
 
 			MLPSolution fetched = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(fetched != null && fetched.getTags() != null);
+			Assert.assertNotNull(fetched);
+			Assert.assertNotNull(fetched.getTags());
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
 					AccessTypeCode.PB.name());
@@ -317,7 +318,8 @@ public class CdsControllerTest {
 			Assert.assertNotNull(inactiveUser.getUserId());
 
 			RestPageResponse<MLPUser> users = client.getUsers(rp);
-			Assert.assertTrue(users.getNumberOfElements() > 0);
+			Assert.assertNotNull(users);
+			Assert.assertNotEquals(0, users.getNumberOfElements());
 			for (MLPUser u : users.getContent())
 				logger.info("Fetched user: " + u);
 
@@ -401,7 +403,7 @@ public class CdsControllerTest {
 			userRestr.put("email", "~five~");
 			userRestr.put("loginName", "~six~");
 			RestPageResponse<MLPUser> emptyUserPage = client.searchUsers(userRestr, false, new RestPageRequest());
-			Assert.assertTrue(emptyUserPage.getNumberOfElements() == 0);
+			Assert.assertEquals(0, emptyUserPage.getNumberOfElements());
 
 			// Now use query parameters that should match
 			userRestr.clear();
@@ -409,7 +411,7 @@ public class CdsControllerTest {
 			userRestr.put("firstName", firstName);
 			userRestr.put("lastName", lastName);
 			RestPageResponse<MLPUser> userPage = client.searchUsers(userRestr, false, new RestPageRequest());
-			Assert.assertTrue(userPage.getNumberOfElements() == 1);
+			Assert.assertEquals(1, userPage.getNumberOfElements());
 			MLPUser testUser = userPage.iterator().next();
 			// Password must not come back as JSON
 			Assert.assertNull(testUser.getLoginHash());
@@ -418,13 +420,15 @@ public class CdsControllerTest {
 			Map<String, String> fieldMap = new HashMap<>();
 			fieldMap.put("firstName", "DESC");
 			RestPageResponse<MLPUser> lu = client.findUsersBySearchTerm(firstName, new RestPageRequest(0, 1, fieldMap));
-			Assert.assertTrue(lu != null && lu.getContent() != null && lu.getContent().size() > 0);
+			Assert.assertNotNull(lu);
+			Assert.assertNotNull(lu.getContent());
+			Assert.assertNotEquals(0, lu.getContent().size());
 			MLPUser searchUser = lu.getContent().get(0);
 			Assert.assertNull(searchUser.getLoginHash());
 
 			// Check count
 			long userCountTrans = client.getUserCount();
-			Assert.assertTrue(userCountTrans > 0);
+			Assert.assertNotEquals(0, userCountTrans);
 
 			MLPUserLoginProvider clp = new MLPUserLoginProvider(cu.getUserId(), "GH", "something", "access token", 0);
 			clp = client.createUserLoginProvider(clp);
@@ -432,7 +436,8 @@ public class CdsControllerTest {
 
 			// Fetch all login providers for user
 			List<MLPUserLoginProvider> userProvs = client.getUserLoginProviders(cu.getUserId());
-			Assert.assertTrue(userProvs != null && userProvs.size() > 0);
+			Assert.assertNotNull(userProvs);
+			Assert.assertNotEquals(0, userProvs.size());
 
 			// Create Peer
 			MLPPeer pr = new MLPPeer();
@@ -449,14 +454,14 @@ public class CdsControllerTest {
 			client.updatePeer(pr);
 
 			RestPageResponse<MLPPeer> peerPage = client.getPeers(rp);
-			Assert.assertTrue(peerPage.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, peerPage.getNumberOfElements());
 
 			// Cover case of zero results
 			HashMap<String, Object> peerRestr = new HashMap<>();
 			peerRestr.put("name", "bogusbogus~~nevermatch");
 			RestPageResponse<MLPPeer> emptyPerSearchResult = client.searchPeers(peerRestr, false,
 					new RestPageRequest(0, 1));
-			Assert.assertTrue(emptyPerSearchResult.getNumberOfElements() == 0);
+			Assert.assertEquals(0, emptyPerSearchResult.getNumberOfElements());
 
 			// Conver case of non-zero results
 			peerRestr.put("name", peerName);
@@ -464,7 +469,7 @@ public class CdsControllerTest {
 			peerFieldMap.put("name", "ASC");
 			RestPageResponse<MLPPeer> peerSearchResult = client.searchPeers(peerRestr, false,
 					new RestPageRequest(0, 1, peerFieldMap));
-			Assert.assertTrue(peerSearchResult.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, peerSearchResult.getNumberOfElements());
 
 			MLPPeer pr2 = client.getPeer(pr.getPeerId());
 			Assert.assertEquals(pr.getPeerId(), pr2.getPeerId());
@@ -486,11 +491,12 @@ public class CdsControllerTest {
 			Assert.assertNotNull(ps2);
 
 			List<MLPPeerSubscription> peerSubs = client.getPeerSubscriptions(pr.getPeerId());
-			Assert.assertTrue(peerSubs != null && peerSubs.size() > 0);
+			Assert.assertNotNull(peerSubs);
+			Assert.assertNotEquals(0, peerSubs.size());
 			logger.info("Fetched list of peer subscriptions of size {}", peerSubs.size());
 
 			MLPPeerSubscription fetchedPeerSub = client.getPeerSubscription(ps.getSubId());
-			Assert.assertTrue(fetchedPeerSub != null);
+			Assert.assertNotNull(fetchedPeerSub);
 			logger.info("Fetched peer subscriptions {}", fetchedPeerSub);
 
 			MLPArtifact ca = new MLPArtifact();
@@ -512,7 +518,7 @@ public class CdsControllerTest {
 
 			// Check count
 			long artCountTrans = client.getArtifactCount();
-			Assert.assertTrue(artCountTrans > 0);
+			Assert.assertNotEquals(0, artCountTrans);
 
 			final String artId = "e007ce63-086f-4f33-84c6-cac270874d81";
 			logger.info("Creating artifact with ID {}", artId);
@@ -531,22 +537,22 @@ public class CdsControllerTest {
 
 			// Get list
 			RestPageResponse<MLPArtifact> arts = client.getArtifacts(new RestPageRequest(0, 100, "artifactId"));
-			Assert.assertTrue(arts.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, arts.getNumberOfElements());
 			// Search like
 			RestPageResponse<MLPArtifact> likes = client.findArtifactsBySearchTerm("artifact",
 					new RestPageRequest(0, 10, "name"));
-			Assert.assertTrue(likes.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, likes.getNumberOfElements());
 			// Search exactly
 			HashMap<String, Object> restr = new HashMap<>();
 			restr.put("version", version);
 			RestPageResponse<MLPArtifact> filtered = client.searchArtifacts(restr, true, new RestPageRequest(0, 10));
-			Assert.assertTrue(filtered.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, filtered.getNumberOfElements());
 
 			// This will get no results but will cover some clauses
 			restr.clear();
 			restr.put("uri", "http://nowhwere");
 			filtered = client.searchArtifacts(restr, true, new RestPageRequest(0, 10));
-			Assert.assertTrue(filtered.getNumberOfElements() == 0);
+			Assert.assertEquals(0, filtered.getNumberOfElements());
 
 			// Also check that Spring doesn't truncate last path variable
 			final String tagName1 = Long.toString(Instant.now().getEpochSecond()) + ".tag.1";
@@ -558,7 +564,7 @@ public class CdsControllerTest {
 			tag2 = client.createTag(tag2);
 			// Get list
 			RestPageResponse<MLPTag> tags = client.getTags(new RestPageRequest(0, 100));
-			Assert.assertTrue(tags.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, tags.getNumberOfElements());
 
 			// Tag some users for fun
 			client.addUserTag(cu.getUserId(), tagName1);
@@ -577,6 +583,10 @@ public class CdsControllerTest {
 			Assert.assertTrue(taggedUser.getTags().contains(tag1));
 			client.dropUserTag(cu.getUserId(), tagName1);
 
+			MLPCatalog ca1 = client.createCatalog(new MLPCatalog("PB", "name", "http://pub.org"));
+			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
+			logger.info("Created catalog {}", ca1);
+
 			MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
 			cs.setModelTypeCode("CL");
 			cs.setToolkitTypeCode("CP");
@@ -588,6 +598,8 @@ public class CdsControllerTest {
 			Assert.assertFalse(cs.getTags().isEmpty());
 			Assert.assertTrue(cs.getTags().contains(newTag));
 			logger.info("Created public solution {}", cs);
+
+			client.addSolutionToCatalog(cs.getSolutionId(), ca1.getCatalogId());
 
 			byte[] saved = client.getSolutionPicture(cs.getSolutionId());
 			Assert.assertNull(saved);
@@ -625,7 +637,7 @@ public class CdsControllerTest {
 
 			// Check count
 			long solCountTrans = client.getSolutionCount();
-			Assert.assertTrue(solCountTrans > 0);
+			Assert.assertNotEquals(0, solCountTrans);
 
 			// Increment view count
 			Long before = cs.getViewCount();
@@ -645,7 +657,9 @@ public class CdsControllerTest {
 
 			logger.info("Fetching back newly tagged solution");
 			MLPSolution s = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(s != null && !s.getTags().isEmpty());
+			Assert.assertNotNull(s);
+			Assert.assertNotNull(s.getTags());
+			Assert.assertFalse(s.getTags().isEmpty());
 			logger.info("Solution {}", s);
 
 			// Query for tags
@@ -659,37 +673,49 @@ public class CdsControllerTest {
 
 			logger.info("Fetching back less tagged solution");
 			cs = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(cs != null && !cs.getTags().isEmpty());
+			Assert.assertNotNull(cs);
+			Assert.assertNotNull(cs.getTags());
+			Assert.assertFalse(cs.getTags().isEmpty());
+			;
 			logger.info("Solution tags: {}", cs.getTags());
 
 			logger.info("Getting all solutions");
 			RestPageResponse<MLPSolution> page = client.getSolutions(new RestPageRequest(0, 2, "name"));
-			Assert.assertTrue(page != null && page.getTotalElements() > 0);
+			Assert.assertNotNull(page);
+			Assert.assertNotEquals(0, page.getTotalElements());
 
 			cs.setOrigin("some origin");
 			client.updateSolution(cs);
 			logger.info("Fetching back updated solution");
 			MLPSolution updated = client.getSolution(cs.getSolutionId());
-			Assert.assertTrue(updated != null && !updated.getTags().isEmpty() && updated.getViewCount() > 0);
+			Assert.assertNotNull(updated);
+			Assert.assertNotNull(updated.getTags());
+			Assert.assertFalse(updated.getTags().isEmpty());
+			Assert.assertNotNull(updated.getViewCount());
+			Assert.assertNotEquals(new Long(0), updated.getViewCount());
 
 			logger.info("Querying for solutions with similar names");
 			RestPageResponse<MLPSolution> sl1 = client.findSolutionsBySearchTerm("solution", new RestPageRequest(0, 1));
-			Assert.assertTrue(sl1 != null && sl1.getNumberOfElements() > 0);
+			Assert.assertNotNull(sl1);
+			Assert.assertNotEquals(0, sl1.getNumberOfElements());
 
 			logger.info("Querying for solutions by tag");
 			RestPageResponse<MLPSolution> sl2 = client.findSolutionsByTag(tagName1, new RestPageRequest(0, 5));
-			Assert.assertTrue(sl2 != null && sl2.getNumberOfElements() > 0);
+			Assert.assertNotNull(sl2);
+			Assert.assertNotEquals(0, sl2.getNumberOfElements());
 
 			// Add user access for this inactive user
 			client.addSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 
 			// Query two ways
 			List<MLPUser> solUserAccList = client.getSolutionAccessUsers(cs.getSolutionId());
-			Assert.assertTrue(solUserAccList != null && solUserAccList.size() > 0);
+			Assert.assertNotNull(solUserAccList);
+			Assert.assertNotEquals(0, solUserAccList.size());
 			logger.info("Got users with access to solution {}", cs.getSolutionId());
 			RestPageResponse<MLPSolution> userSolAccList = client.getUserAccessSolutions(inactiveUser.getUserId(),
 					new RestPageRequest(0, 1));
-			Assert.assertTrue(userSolAccList != null && userSolAccList.getNumberOfElements() > 0);
+			Assert.assertNotNull(userSolAccList);
+			Assert.assertNotEquals(0, userSolAccList.getNumberOfElements());
 			logger.info("Got solutions accessible by user {}", cu.getUserId());
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), //
@@ -765,7 +791,8 @@ public class CdsControllerTest {
 
 			logger.info("Querying for revisions by solution");
 			List<MLPSolutionRevision> revs = client.getSolutionRevisions(new String[] { s.getSolutionId() });
-			Assert.assertTrue(revs != null && revs.size() > 0);
+			Assert.assertNotNull(revs);
+			Assert.assertNotEquals(0, revs.size());
 			for (MLPSolutionRevision r : revs) {
 				logger.info("Solution {} has revision: {}", cs.getSolutionId(), r);
 				List<MLPArtifact> al = client.getSolutionRevisionArtifacts(cs.getSolutionId(), cr.getRevisionId());
@@ -778,7 +805,8 @@ public class CdsControllerTest {
 			activePb.put("active", Boolean.TRUE);
 			RestPageResponse<MLPSolution> activePbPage = client.searchSolutions(activePb, false,
 					new RestPageRequest(0, 10, "name"));
-			Assert.assertTrue(activePbPage != null && !activePbPage.getContent().isEmpty());
+			Assert.assertNotNull(activePbPage);
+			Assert.assertFalse(activePbPage.getContent().isEmpty());
 			logger.info("Active PB solution page count {}", activePbPage.getContent().size());
 
 			logger.info("Querying for inactive solutions");
@@ -786,7 +814,8 @@ public class CdsControllerTest {
 			inactiveSols.put("active", Boolean.TRUE);
 			RestPageResponse<MLPSolution> inactiveSolList = client.searchSolutions(inactiveSols, false,
 					new RestPageRequest());
-			Assert.assertTrue(inactiveSolList != null && inactiveSolList.getNumberOfElements() > 0);
+			Assert.assertNotNull(inactiveSolList);
+			Assert.assertNotEquals(0, inactiveSolList.getNumberOfElements());
 			logger.info("Inactive PB solution count {}", inactiveSolList.getNumberOfElements());
 
 			logger.info("Cover search-solution code");
@@ -806,45 +835,64 @@ public class CdsControllerTest {
 			logger.info("Querying for any solutions via flexible i/f");
 			RestPageResponse<MLPSolution> portalAnyMatches = client.findPortalSolutions(null, null, true, null, null,
 					null, null, null, null, new RestPageRequest(0, 5));
-			Assert.assertTrue(portalAnyMatches != null && portalAnyMatches.getNumberOfElements() > 1);
+			Assert.assertNotNull(portalAnyMatches);
+			Assert.assertTrue(portalAnyMatches.getNumberOfElements() > 1);
 
 			logger.info("Querying for valid tag on solutions via flexible i/f");
 			String[] searchTags = new String[] { tagName1 };
 			RestPageResponse<MLPSolution> portalTagMatches = client.findPortalSolutions(null, null, true, null, null,
 					null, searchTags, null, null, new RestPageRequest(0, 5));
-			Assert.assertTrue(portalTagMatches != null && portalTagMatches.getNumberOfElements() > 0);
+			Assert.assertNotNull(portalTagMatches);
+			Assert.assertNotEquals(0, portalTagMatches.getNumberOfElements());
 
 			logger.info("Querying for bogus tag on solutions via flexible i/f");
 			String[] bogusTags = new String[] { "bogus" };
 			RestPageResponse<MLPSolution> portalTagNoMatches = client.findPortalSolutions(null, null, true, null, null,
 					null, bogusTags, null, null, new RestPageRequest(0, 5));
-			Assert.assertTrue(portalTagNoMatches != null && portalTagNoMatches.getNumberOfElements() == 0);
+			Assert.assertNotNull(portalTagNoMatches);
+			Assert.assertEquals(0, portalTagNoMatches.getNumberOfElements());
 
 			// Check fetch by ID to ensure both are found
 			logger.info("Querying for solutions by id");
 			String[] ids = { cs.getSolutionId(), csOrg.getSolutionId() };
+			String catalogId = null;
 			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKwAndTags(ids, true, null, null,
-					null, null, null, new RestPageRequest(0, 2));
-			Assert.assertTrue(idSearchResult != null && idSearchResult.getNumberOfElements() == 2);
+					null, null, null, catalogId, new RestPageRequest(0, 2));
+			Assert.assertNotNull(idSearchResult);
+			Assert.assertEquals(2, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
 
 			// Both keywords must occur in the same field for a match
 			logger.info("Querying for solutions by keyword");
 			String[] kw = { "solution", "organization" };
 			RestPageResponse<MLPSolution> kwSearchResult = client.findPortalSolutionsByKwAndTags(kw, true, null, null,
-					null, null, null, new RestPageRequest(0, 2));
-			Assert.assertTrue(kwSearchResult != null && kwSearchResult.getNumberOfElements() > 0);
+					null, null, null, catalogId, new RestPageRequest(0, 2));
+			Assert.assertNotNull(kwSearchResult);
+			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
 			logger.info("Querying for solutions by tags");
 			String[] allTags = new String[] { tagName1 };
 			String[] anyTags = null; // new String[] { tagName2 };
 			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPortalSolutionsByKwAndTags(null, true,
-					null, null, null, allTags, anyTags, new RestPageRequest(0, 2));
+					null, null, null, allTags, anyTags, catalogId, new RestPageRequest(0, 2));
 			logger.info("Found models by tag total " + allAnyTagsSearchResult.getTotalElements());
-			Assert.assertTrue(allAnyTagsSearchResult != null && allAnyTagsSearchResult.getNumberOfElements() > 0);
+			Assert.assertNotNull(allAnyTagsSearchResult);
+			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
 			Assert.assertTrue(taggedSol.getTags().contains(new MLPTag(tagName1)));
+
+			logger.info("Querying for solutions by catalog");
+			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
+					null, null, null, null, ca1.getCatalogId(), new RestPageRequest(0, 2));
+			Assert.assertNotNull(ctlgSearchResult);
+			Assert.assertNotEquals(0, ctlgSearchResult.getNumberOfElements());
+
+			logger.info("Querying for solutions by bogus catalog");
+			RestPageResponse<MLPSolution> noCtlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
+					null, null, null, null, "bogus", new RestPageRequest(0, 2));
+			Assert.assertNotNull(noCtlgSearchResult);
+			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
 			// Check this finds solutions by shared-with-user ID
 			logger.info("Querying for user solutions via flexible i/f");
@@ -864,14 +912,16 @@ public class CdsControllerTest {
 			searchTags = null;
 			RestPageResponse<MLPSolution> portalActiveMatches = client.findPortalSolutions(nameKw, descKw, true, owners,
 					accessTypeCodes, modelTypeCodes, searchTags, authKw, pubKw, new RestPageRequest(0, 5));
-			Assert.assertTrue(portalActiveMatches != null && portalActiveMatches.getNumberOfElements() > 0);
+			Assert.assertNotNull(portalActiveMatches);
+			Assert.assertNotEquals(0, portalActiveMatches.getNumberOfElements());
 
 			// Requires revisions and artifacts!
 			String[] searchAccessTypeCodes = new String[] { AccessTypeCode.OR.name() };
 			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
 			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(true, searchAccessTypeCodes, anHourAgo,
 					new RestPageRequest(0, 1));
-			Assert.assertTrue(sld != null && sld.getNumberOfElements() > 0);
+			Assert.assertNotNull(sld);
+			Assert.assertNotEquals(0, sld.getNumberOfElements());
 			logger.info("Found solutions by date: " + sld.getContent().size());
 
 			// Create Solution Rating
@@ -892,11 +942,13 @@ public class CdsControllerTest {
 			logger.info("Updated solution rating {}", ur);
 			RestPageResponse<MLPSolutionRating> ratings = client.getSolutionRatings(cs.getSolutionId(),
 					new RestPageRequest(0, 1));
-			Assert.assertTrue(ratings != null && ratings.getNumberOfElements() > 0);
+			Assert.assertNotNull(ratings);
+			Assert.assertNotEquals(0, ratings.getNumberOfElements());
 			logger.info("Solution rating count {}", ratings.getNumberOfElements());
 
 			// check the average rating
 			MLPSolution avgRating = client.getSolution(cs.getSolutionId());
+			Assert.assertNotNull(avgRating.getRatingAverageTenths());
 			Assert.assertTrue(avgRating.getRatingAverageTenths() > 0);
 			logger.info("Computed solution rating average: {}", avgRating.getRatingAverageTenths());
 
@@ -907,12 +959,12 @@ public class CdsControllerTest {
 
 			// Query for downloads
 			RestPageResponse<MLPSolutionDownload> dnls = client.getSolutionDownloads(cs.getSolutionId(), rp);
-			Assert.assertTrue(dnls.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, dnls.getNumberOfElements());
 
 			// Count the downloads
 			MLPSolution downloadStats = client.getSolution(cs.getSolutionId());
 			Assert.assertNotNull(downloadStats);
-			Assert.assertTrue(downloadStats.getDownloadCount() > 0);
+			Assert.assertNotEquals(new Long(0), downloadStats.getDownloadCount());
 			logger.info("Solution download count is {}", downloadStats.getDownloadCount());
 
 			// Create Solution favorite for a user
@@ -925,7 +977,7 @@ public class CdsControllerTest {
 			// Get favorite solutions
 			RestPageResponse<MLPSolution> favePage = client.getFavoriteSolutions(cu.getUserId(), rp);
 			Assert.assertNotNull(favePage);
-			Assert.assertTrue(favePage.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, favePage.getNumberOfElements());
 			for (MLPSolution mlpsol : favePage)
 				logger.info("Favorite Solution for user {} is {}, name {}", cu.getUserId(), mlpsol.getSolutionId(),
 						mlpsol.getName());
@@ -946,30 +998,36 @@ public class CdsControllerTest {
 
 			// Query for solution deployments
 			RestPageResponse<MLPSolutionDeployment> userDeps = client.getUserDeployments(cu.getUserId(), rp);
-			Assert.assertTrue(userDeps != null & userDeps.getNumberOfElements() > 0);
+			Assert.assertNotNull(userDeps);
+			Assert.assertNotEquals(0, userDeps.getNumberOfElements());
 			RestPageResponse<MLPSolutionDeployment> deps = client.getSolutionDeployments(cs.getSolutionId(),
 					cr.getRevisionId(), rp);
-			Assert.assertTrue(deps != null && deps.getNumberOfElements() > 0);
+			Assert.assertNotNull(deps);
+			Assert.assertNotEquals(0, deps.getNumberOfElements());
 			RestPageResponse<MLPSolutionDeployment> userSolDeps = client.getUserSolutionDeployments(cs.getSolutionId(),
 					cr.getRevisionId(), cu.getUserId(), rp);
-			Assert.assertTrue(userSolDeps != null && userSolDeps.getNumberOfElements() > 0);
+			Assert.assertNotNull(userSolDeps);
+			Assert.assertNotEquals(0, userSolDeps.getNumberOfElements());
 
 			// delete the deployment
 			client.deleteSolutionDeployment(dep);
 
 			logger.info("Querying for revisions by artifact");
 			List<MLPSolutionRevision> revsByArt = client.getSolutionRevisionsForArtifact(ca.getArtifactId());
-			Assert.assertTrue(revsByArt != null && revsByArt.size() > 0);
+			Assert.assertNotNull(revsByArt);
+			Assert.assertNotEquals(0, revsByArt.size());
 			for (MLPSolutionRevision r : revs)
 				logger.info("\tRevision: {}", r);
 
 			// Composite solution support was added very late
 			client.addCompositeSolutionMember(cs.getSolutionId(), csOrg.getSolutionId());
 			List<String> kids = client.getCompositeSolutionMembers(cs.getSolutionId());
-			Assert.assertTrue(kids != null && kids.size() == 1);
+			Assert.assertNotNull(kids);
+			Assert.assertEquals(1, kids.size());
 			client.dropCompositeSolutionMember(cs.getSolutionId(), csOrg.getSolutionId());
 			kids = client.getCompositeSolutionMembers(cs.getSolutionId());
-			Assert.assertTrue(kids != null && kids.size() == 0);
+			Assert.assertNotNull(kids);
+			Assert.assertEquals(0, kids.size());
 
 			MLPPublishRequest pubReq = new MLPPublishRequest(cs.getSolutionId(), cr.getRevisionId(), cu.getUserId(),
 					"PE");
@@ -990,7 +1048,7 @@ public class CdsControllerTest {
 			queryParameters.put("solutionId", cs.getSolutionId());
 			RestPageResponse<MLPPublishRequest> pubReqPage = client.searchPublishRequests(queryParameters, false,
 					new RestPageRequest(0, 5));
-			Assert.assertTrue(pubReqPage.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, pubReqPage.getNumberOfElements());
 			client.deletePublishRequest(pubReq.getRequestId());
 			Assert.assertNull(client.getPublishRequest(pubReq.getRequestId()));
 
@@ -1003,6 +1061,7 @@ public class CdsControllerTest {
 				client.dropSolutionTag(cs.getSolutionId(), tagName1);
 				client.deleteTag(tag1);
 				client.deleteTag(tag2);
+				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
 				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 				// Server SHOULD cascade deletes.
 				client.deleteSolutionRating(ur);
@@ -1012,6 +1071,7 @@ public class CdsControllerTest {
 				client.deleteSolution(cs.getSolutionId());
 				client.deleteSolution(csOrg.getSolutionId());
 				client.deleteSolution(inactive.getSolutionId());
+				client.deleteCatalog(ca1.getCatalogId());
 				client.deleteArtifact(ca.getArtifactId());
 				client.deletePeerSubscription(ps.getSubId());
 				client.deletePeer(pr.getPeerId());
@@ -1064,21 +1124,21 @@ public class CdsControllerTest {
 			cr2 = client.createRole(cr2);
 
 			long roleCount = client.getRoleCount();
-			Assert.assertTrue(roleCount > 0);
+			Assert.assertNotEquals(0, roleCount);
 
 			RestPageResponse<MLPRole> roles = client.getRoles(new RestPageRequest());
-			Assert.assertTrue(roles.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, roles.getNumberOfElements());
 
 			// Empty result
 			HashMap<String, Object> roleRestr = new HashMap<>();
 			roleRestr.put("name", "never~ever~match~role");
 			RestPageResponse<MLPRole> emptyRoleResult = client.searchRoles(roleRestr, false, new RestPageRequest());
-			Assert.assertTrue(emptyRoleResult.getNumberOfElements() == 0);
+			Assert.assertEquals(0, emptyRoleResult.getNumberOfElements());
 
 			// Nonempty result
 			roleRestr.put("name", roleName);
 			RestPageResponse<MLPRole> roleResult = client.searchRoles(roleRestr, false, new RestPageRequest());
-			Assert.assertTrue(roleResult.getNumberOfElements() > 0);
+			Assert.assertNotEquals(0, roleResult.getNumberOfElements());
 
 			MLPRoleFunction crf = new MLPRoleFunction();
 			final String roleFuncName = "My test role function";
@@ -1096,7 +1156,8 @@ public class CdsControllerTest {
 			logger.info("Retrieved role {}", res);
 
 			List<MLPRoleFunction> fetchedRoleFns = client.getRoleFunctions(cr.getRoleId());
-			Assert.assertTrue(fetchedRoleFns != null && fetchedRoleFns.size() > 0);
+			Assert.assertNotNull(fetchedRoleFns);
+			Assert.assertNotEquals(0, fetchedRoleFns.size());
 			MLPRoleFunction roleFnFromList = fetchedRoleFns.get(0);
 			logger.info("First role function in list {}", roleFnFromList);
 
@@ -1107,7 +1168,8 @@ public class CdsControllerTest {
 			logger.info("Adding role 1 for user");
 			client.addUserRole(cu.getUserId(), cr.getRoleId());
 			List<MLPRole> addedRoles = client.getUserRoles(cu.getUserId());
-			Assert.assertTrue(addedRoles != null && addedRoles.size() == 1);
+			Assert.assertNotNull(addedRoles);
+			Assert.assertEquals(1, addedRoles.size());
 
 			logger.info("Adding role 2 for user");
 			List<String> userIds = new ArrayList<>();
@@ -1115,11 +1177,12 @@ public class CdsControllerTest {
 			client.addUsersInRole(userIds, cr2.getRoleId());
 
 			long role2count = client.getRoleUsersCount(cr2.getRoleId());
-			Assert.assertTrue(role2count == 1);
+			Assert.assertEquals(1, role2count);
 			logger.info("Count of users in role 2: {}", role2count);
 
 			addedRoles = client.getUserRoles(cu.getUserId());
-			Assert.assertTrue(addedRoles != null && addedRoles.size() == 2);
+			Assert.assertNotNull(addedRoles);
+			Assert.assertEquals(2, addedRoles.size());
 			logger.info("Count of roles for user: {}", addedRoles.size());
 
 			logger.info("Dropping role 1 for user");
@@ -1129,7 +1192,8 @@ public class CdsControllerTest {
 			client.dropUsersInRole(userIds, cr2.getRoleId());
 
 			List<MLPRole> revisedUserRoles = client.getUserRoles(cu.getUserId());
-			Assert.assertTrue(revisedUserRoles != null && revisedUserRoles.isEmpty());
+			Assert.assertNotNull(revisedUserRoles);
+			Assert.assertTrue(revisedUserRoles.isEmpty());
 			logger.info("User role count is zero");
 
 			List<String> roleIds = new ArrayList<>();
@@ -1137,13 +1201,15 @@ public class CdsControllerTest {
 			roleIds.add(cr2.getRoleId());
 			client.updateUserRoles(cu.getUserId(), roleIds);
 			revisedUserRoles = client.getUserRoles(cu.getUserId());
-			Assert.assertTrue(revisedUserRoles != null && revisedUserRoles.size() == 2);
+			Assert.assertNotNull(revisedUserRoles);
+			Assert.assertEquals(2, revisedUserRoles.size());
 			logger.info("User role count is back at 2");
 
 			client.dropUserRole(cu.getUserId(), cr.getRoleId());
 			client.dropUserRole(cu.getUserId(), cr2.getRoleId());
 			revisedUserRoles = client.getUserRoles(cu.getUserId());
-			Assert.assertTrue(revisedUserRoles != null && revisedUserRoles.size() == 0);
+			Assert.assertNotNull(revisedUserRoles);
+			Assert.assertEquals(0, revisedUserRoles.size());
 			logger.info("User role count is back to zero");
 
 			logger.info("Deleting role function");
@@ -1198,12 +1264,12 @@ public class CdsControllerTest {
 
 			// A populated database may yield a large number
 			long notCountTrans = client.getNotificationCount();
-			Assert.assertTrue(notCountTrans > 0);
+			Assert.assertNotEquals(0, notCountTrans);
 
 			int limit = 100;
 			RestPageResponse<MLPNotification> notifics = client.getNotifications(new RestPageRequest(0, limit));
-			Assert.assertTrue(notifics.getNumberOfElements() > 0
-					&& notifics.getNumberOfElements() == (notCountTrans > limit ? limit : notCountTrans));
+			Assert.assertNotEquals(0, notifics.getNumberOfElements());
+			Assert.assertEquals(notCountTrans > limit ? limit : notCountTrans, notifics.getNumberOfElements());
 
 			// Assign user to this notification
 			client.addUserToNotification(no.getNotificationId(), cu.getUserId());
@@ -1340,12 +1406,12 @@ public class CdsControllerTest {
 			queryParameters.put("name", "~bogus~never~match");
 			RestPageResponse<MLPStepResult> emptySearchResults = client.searchStepResults(queryParameters, true,
 					new RestPageRequest(0, 10));
-			Assert.assertTrue(emptySearchResults.getNumberOfElements() == 0);
+			Assert.assertEquals(0, emptySearchResults.getNumberOfElements());
 
 			queryParameters.put("name", name);
 			RestPageResponse<MLPStepResult> searchResults = client.searchStepResults(queryParameters, true,
 					new RestPageRequest(0, 10));
-			Assert.assertTrue(searchResults.getNumberOfElements() == 1);
+			Assert.assertEquals(1, searchResults.getNumberOfElements());
 
 			client.deleteStepResult(sr.getStepResultId());
 		} catch (HttpStatusCodeException ex) {
@@ -1525,21 +1591,24 @@ public class CdsControllerTest {
 		Assert.assertNotNull(cr.getRevisionId());
 
 		MLPThread thread = client.createThread(new MLPThread(cs.getSolutionId(), cr.getRevisionId()));
-		Assert.assertTrue(thread != null && thread.getThreadId() != null);
+		Assert.assertNotNull(thread);
+		Assert.assertNotNull(thread.getThreadId());
 		RestPageResponse<MLPThread> threads = client.getThreads(new RestPageRequest(0, 1));
-		Assert.assertTrue(threads != null && threads.getNumberOfElements() > 0);
+		Assert.assertNotNull(threads);
+		Assert.assertNotEquals(0, threads.getNumberOfElements());
 
 		MLPThread retrieved = client.getThread(thread.getThreadId());
 		Assert.assertNotNull(retrieved);
 
 		long threadCountById = client.getSolutionRevisionThreadCount(cs.getSolutionId(), cr.getRevisionId());
-		Assert.assertTrue(threadCountById > 0);
+		Assert.assertNotEquals(0, threadCountById);
 		RestPageResponse<MLPThread> threadsById = client.getSolutionRevisionThreads(cs.getSolutionId(),
 				cr.getRevisionId(), new RestPageRequest(0, 1));
-		Assert.assertTrue(threadsById != null && threadsById.getNumberOfElements() > 0);
+		Assert.assertNotNull(threadsById);
+		Assert.assertNotEquals(0, threadsById.getNumberOfElements());
 
 		long threadCount = client.getThreadCount();
-		Assert.assertTrue(threadCount > 0);
+		Assert.assertNotEquals(0, threadCount);
 
 		thread.setTitle("thread title");
 		client.updateThread(thread);
@@ -1589,7 +1658,8 @@ public class CdsControllerTest {
 		}
 
 		MLPComment parent = client.createComment(new MLPComment(thread.getThreadId(), cu.getUserId(), "parent text"));
-		Assert.assertTrue(parent != null && parent.getCommentId() != null);
+		Assert.assertNotNull(parent);
+		Assert.assertNotNull(parent.getCommentId());
 		logger.info("Created parent comment: " + parent.toString());
 
 		parent = client.getComment(thread.getThreadId(), parent.getCommentId());
@@ -1598,25 +1668,28 @@ public class CdsControllerTest {
 		MLPComment reply = new MLPComment(thread.getThreadId(), cu.getUserId(), "child text");
 		reply.setParentId(parent.getCommentId());
 		reply = client.createComment(reply);
-		Assert.assertTrue(reply != null && reply.getCommentId() != null);
+		Assert.assertNotNull(reply);
+		Assert.assertNotNull(reply.getCommentId());
 		logger.info("Created reply comment: " + reply.toString());
 
 		reply.setText(s64);
 		client.updateComment(reply);
 
 		long commentCount = client.getThreadCommentCount(thread.getThreadId());
-		Assert.assertTrue(commentCount > 0);
+		Assert.assertNotEquals(0, commentCount);
 
 		RestPageResponse<MLPComment> threadComments = client.getThreadComments(thread.getThreadId(),
 				new RestPageRequest(0, 1));
-		Assert.assertTrue(threadComments != null && threadComments.hasContent());
+		Assert.assertNotNull(threadComments);
+		Assert.assertTrue(threadComments.hasContent());
 
 		long commentCountById = client.getSolutionRevisionCommentCount(cs.getSolutionId(), cr.getRevisionId());
-		Assert.assertTrue(commentCountById > 0);
+		Assert.assertNotEquals(0, commentCountById);
 
 		RestPageResponse<MLPComment> commentsById = client.getSolutionRevisionComments(cs.getSolutionId(),
 				cr.getRevisionId(), new RestPageRequest(0, 1));
-		Assert.assertTrue(commentsById != null && commentsById.getNumberOfElements() > 0);
+		Assert.assertNotNull(commentsById);
+		Assert.assertNotEquals(0, commentsById.getNumberOfElements());
 
 		Assert.assertNull(client.getComment("bogus", "bogus"));
 		try {
@@ -1758,7 +1831,8 @@ public class CdsControllerTest {
 		logger.info("Created peer group " + pg2.getGroupId());
 
 		RestPageResponse<MLPPeerGroup> peerGroups = client.getPeerGroups(new RestPageRequest(0, 5));
-		Assert.assertTrue(peerGroups != null && peerGroups.getNumberOfElements() > 0);
+		Assert.assertNotNull(peerGroups);
+		Assert.assertNotEquals(0, peerGroups.getNumberOfElements());
 
 		String solGrpName = "solution group";
 		MLPSolutionGroup sg = new MLPSolutionGroup(solGrpName);
@@ -1770,32 +1844,38 @@ public class CdsControllerTest {
 		client.updateSolutionGroup(sg);
 
 		RestPageResponse<MLPSolutionGroup> solGroups = client.getSolutionGroups(new RestPageRequest(0, 5));
-		Assert.assertTrue(solGroups != null && solGroups.getNumberOfElements() > 0);
+		Assert.assertNotNull(solGroups);
+		Assert.assertNotEquals(0, solGroups.getNumberOfElements());
 
 		client.addPeerToGroup(pr.getPeerId(), pg1.getGroupId());
 		RestPageResponse<MLPPeer> peersInGroup = client.getPeersInGroup(pg1.getGroupId(), new RestPageRequest());
-		Assert.assertTrue(peersInGroup != null && peersInGroup.getNumberOfElements() > 0);
+		Assert.assertNotNull(peersInGroup);
+		Assert.assertNotEquals(0, peersInGroup.getNumberOfElements());
 
 		RestPageResponse<MLPSolution> solutionsInGroup = null;
 		client.addSolutionToGroup(cs.getSolutionId(), sg.getGroupId());
 		solutionsInGroup = client.getSolutionsInGroup(sg.getGroupId(), new RestPageRequest());
-		Assert.assertTrue(solutionsInGroup != null && solutionsInGroup.getNumberOfElements() > 0);
+		Assert.assertNotNull(solutionsInGroup);
+		Assert.assertNotEquals(0, solutionsInGroup.getNumberOfElements());
 
 		RestPageResponse<MLPPeerSolAccMap> maps = null;
 
 		client.mapPeerSolutionGroups(pg1.getGroupId(), sg.getGroupId());
 		maps = client.getPeerSolutionGroupMaps(new RestPageRequest());
-		Assert.assertTrue(maps != null && maps.getNumberOfElements() > 0);
+		Assert.assertNotNull(maps);
+		Assert.assertNotEquals(0, maps.getNumberOfElements());
 
 		long access = client.checkRestrictedAccessSolution(pr.getPeerId(), cs.getSolutionId());
-		Assert.assertTrue(access > 0);
+		Assert.assertNotEquals(0, access);
 		RestPageResponse<MLPSolution> restrSols = client.findRestrictedAccessSolutions(pr.getPeerId(),
 				new RestPageRequest(0, 5));
-		Assert.assertTrue(restrSols != null && restrSols.getNumberOfElements() > 0);
+		Assert.assertNotNull(restrSols);
+		Assert.assertNotEquals(0, restrSols.getNumberOfElements());
 
 		client.unmapPeerSolutionGroups(pg1.getGroupId(), sg.getGroupId());
 		maps = client.getPeerSolutionGroupMaps(new RestPageRequest());
-		Assert.assertTrue(maps != null && maps.getNumberOfElements() == 0);
+		Assert.assertNotNull(maps);
+		Assert.assertEquals(0, maps.getNumberOfElements());
 
 		client.mapPeerPeerGroups(pg2.getGroupId(), pg1.getGroupId());
 
@@ -1806,14 +1886,16 @@ public class CdsControllerTest {
 
 		client.dropSolutionFromGroup(cs.getSolutionId(), sg.getGroupId());
 		solutionsInGroup = client.getSolutionsInGroup(sg.getGroupId(), new RestPageRequest());
-		Assert.assertTrue(solutionsInGroup != null && solutionsInGroup.getNumberOfElements() == 0);
+		Assert.assertNotNull(solutionsInGroup);
+		Assert.assertEquals(0, solutionsInGroup.getNumberOfElements());
 
 		client.dropPeerFromGroup(pr.getPeerId(), pg1.getGroupId());
 		peersInGroup = client.getPeersInGroup(pg1.getGroupId(), new RestPageRequest());
-		Assert.assertTrue(peersInGroup != null && peersInGroup.getNumberOfElements() == 0);
+		Assert.assertNotNull(peersInGroup);
+		Assert.assertEquals(0, peersInGroup.getNumberOfElements());
 
 		access = client.checkRestrictedAccessSolution(pr.getPeerId(), cs.getSolutionId());
-		Assert.assertTrue(access == 0);
+		Assert.assertEquals(0, access);
 
 		// Invalid cases
 		Assert.assertFalse(client.getPeersInGroup(9999999L, new RestPageRequest()).hasContent());

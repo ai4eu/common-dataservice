@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.acumos.cds.CCDSConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -51,6 +50,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 public class SimpleErrorController implements ErrorController {
 
+	private static final String ERROR_PATH = "/error";
 	private static final String TRACE = "trace";
 	private final ErrorAttributes errorAttributes;
 
@@ -68,7 +68,7 @@ public class SimpleErrorController implements ErrorController {
 
 	@Override
 	public String getErrorPath() {
-		return CCDSConstants.ERROR_PATH;
+		return ERROR_PATH;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class SimpleErrorController implements ErrorController {
 	 *                     HttpServletRequest
 	 * @return Map of String to Object
 	 */
-	@RequestMapping(CCDSConstants.ERROR_PATH)
+	@RequestMapping(ERROR_PATH)
 	public Map<String, Object> error(HttpServletRequest aRequest) {
 		Map<String, Object> body = getErrorAttributes(aRequest, getTraceParameter(aRequest));
 		body.put("decorated-by", SimpleErrorController.class.getName());

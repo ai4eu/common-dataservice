@@ -427,9 +427,9 @@ public class MockClientTest {
 		Assert.assertTrue(portalSols == client.findPortalSolutions(null, null, true, null, null, null, null, null, null,
 				pageRequest));
 		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
-				pageRequest));
+				null, pageRequest));
 		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
-				pageRequest));
+				null, pageRequest));
 
 		RestPageResponse<MLPSolution> userPrivSols = new RestPageResponse<>();
 		client.setUserSolutions(userPrivSols);

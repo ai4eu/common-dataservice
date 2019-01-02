@@ -29,9 +29,6 @@ public class CCDSConstants {
 
 	public static final String JUNCTION_QUERY_PARAM = "_j";
 
-	// For error page
-	public static final String ERROR_PATH = "/error";
-
 	// Metadata
 	public static final String HEALTHCHECK_PATH = "healthcheck";
 	public static final String VERSION_PATH = "version";
@@ -104,7 +101,8 @@ public class CCDSConstants {
 	// Portal search interface
 	public static final String SEARCH_ACCESS_TYPES = "atc";
 	public static final String SEARCH_ACTIVE = "active";
-	public static final String SEARCH_USERS = "user";
+	public static final String SEARCH_AUTH = "auth";
+	public static final String SEARCH_CATALOG = "ctlg";
 	public static final String SEARCH_DESC = "desc";
 	public static final String SEARCH_INSTANT = "inst";
 	public static final String SEARCH_KW = "kw";
@@ -114,7 +112,7 @@ public class CCDSConstants {
 	public static final String SEARCH_ALL_TAGS = "alltag";
 	public static final String SEARCH_ANY_TAGS = "anytag";
 	public static final String SEARCH_VAL_STATUSES = "vsc";
-	public static final String SEARCH_AUTH = "auth";
 	public static final String SEARCH_PUB = "pub";
+	public static final String SEARCH_USERS = "user";
 
 }

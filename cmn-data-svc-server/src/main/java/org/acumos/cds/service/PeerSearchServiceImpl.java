@@ -56,7 +56,7 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 			String webUrl, String contact1, String statusCode, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (name != null && !name.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPPeer_.name)), name.toLowerCase()));
 		if (subjectName != null && !subjectName.isEmpty())

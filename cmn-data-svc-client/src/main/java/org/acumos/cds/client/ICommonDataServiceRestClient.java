@@ -282,13 +282,16 @@ public interface ICommonDataServiceRestClient {
 	 * @param anyTags
 	 *                            Solutions must have ANY tag in the supplied set
 	 *                            (one or more); ignored if null or empty.
+	 * @param catalogId
+	 *                            Solutions must be mapped to the specified catalog;
+	 *                            ignored if null or empty
 	 * @param pageRequest
 	 *                            Page index, page size and sort information;
 	 *                            defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
+			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags, String catalogId,
 			RestPageRequest pageRequest);
 
 	/**

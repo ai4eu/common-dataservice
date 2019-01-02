@@ -56,7 +56,7 @@ public class UserSearchServiceImpl extends AbstractSearchServiceImpl implements 
 			String orgName, String email, String loginName, Boolean active, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (firstName != null && !firstName.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPUser_.firstName)), firstName.toLowerCase()));
 		if (middleName != null && !middleName.isEmpty())

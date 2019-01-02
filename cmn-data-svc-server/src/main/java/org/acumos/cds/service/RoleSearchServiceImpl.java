@@ -55,7 +55,7 @@ public class RoleSearchServiceImpl extends AbstractSearchServiceImpl implements 
 	private Predicate createRolePredicate(Root<MLPRole> from, String name, Boolean active, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		if (name != null && !name.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPRole_.name)), name.toLowerCase()));
 		if (active != null) {

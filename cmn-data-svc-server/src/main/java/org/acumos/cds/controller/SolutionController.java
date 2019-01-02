@@ -49,6 +49,7 @@ import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.ArtifactRepository;
+import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
@@ -109,6 +110,8 @@ public class SolutionController extends AbstractController {
 
 	@Autowired
 	private ArtifactRepository artifactRepository;
+	@Autowired
+	private CatSolMapRepository catSolMapRepository;
 	@Autowired
 	private CompSolMapRepository compSolMapRepository;
 	@Autowired
@@ -343,11 +346,13 @@ public class SolutionController extends AbstractController {
 			@RequestParam(name = CCDSConstants.SEARCH_ALL_TAGS, required = false) String[] allTags, //
 			@ApiParam(value = "Any tags, solution must have at least one", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ANY_TAGS, required = false) String[] anyTags, //
+			@ApiParam(value = "Catalog ID", allowMultiple = false) //
+			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String catalogId, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findPortalSolutionsByKwAndTags: active {} kw {}", active, kws);
 		try {
 			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes,
-					accTypeCodes, allTags, anyTags, pageRequest);
+					accTypeCodes, allTags, anyTags, catalogId, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findPortalSolutionsByKwAndTags failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -529,6 +534,7 @@ public class SolutionController extends AbstractController {
 			solTagMapRepository.deleteBySolutionId(solutionId);
 			solutionDownloadRepository.deleteBySolutionId(solutionId);
 			solutionRatingRepository.deleteBySolutionId(solutionId);
+			catSolMapRepository.deleteBySolutionId(solutionId);
 			solUserAccMapRepository.deleteBySolutionId(solutionId);
 			solutionFavoriteRepository.deleteBySolutionId(solutionId);
 			stepResultRepository.deleteBySolutionId(solutionId);
