@@ -121,10 +121,10 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	private final String descsAlias = "descs";
 	private final String solutionId = "solutionId";
 	// Aliases used in subquery for required tags
-	private static final String solAlias = "sol";
-	private static final String subqAlias = "subsol";
-	private static final String tagsFieldAlias = "t";
-	private static final String tagValueField = tagsFieldAlias + ".tag";
+	private final String solAlias = "sol";
+	private final String subqAlias = "subsol";
+	private final String tagsFieldAlias = "t";
+	private final String tagValueField = tagsFieldAlias + ".tag";
 
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
@@ -217,22 +217,24 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
 		if (name != null && !name.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("name")), name.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.NAME)), name.toLowerCase()));
 		if (active != null) {
-			Predicate activePredicate = active ? cb.isTrue(from.<Boolean>get("active"))
-					: cb.isFalse(from.<Boolean>get("active"));
+			Predicate activePredicate = active ? cb.isTrue(from.<Boolean>get(MLPSolution_.ACTIVE))
+					: cb.isFalse(from.<Boolean>get(MLPSolution_.ACTIVE));
 			predicates.add(activePredicate);
 		}
 		if (userId != null && !userId.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("userId")), userId.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.USER_ID)), userId.toLowerCase()));
 		if (sourceId != null && !sourceId.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("sourceId")), sourceId.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.SOURCE_ID)), sourceId.toLowerCase()));
 		if (modelTypeCode != null && !modelTypeCode.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("modelTypeCode")), modelTypeCode.toLowerCase()));
+			predicates.add(
+					cb.equal(cb.lower(from.<String>get(MLPSolution_.MODEL_TYPE_CODE)), modelTypeCode.toLowerCase()));
 		if (toolkitTypeCode != null && !toolkitTypeCode.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("toolkitTypeCode")), toolkitTypeCode.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.TOOLKIT_TYPE_CODE)),
+					toolkitTypeCode.toLowerCase()));
 		if (origin != null && !origin.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get("origin")), origin.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPSolution_.ORIGIN)), origin.toLowerCase()));
 		if (predicates.isEmpty())
 			throw new IllegalArgumentException("Missing query values, must have at least one non-null");
 		Predicate[] predArray = new Predicate[predicates.size()];

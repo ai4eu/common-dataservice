@@ -23,7 +23,7 @@ package org.acumos.cds;
 /**
  * Publishes constants for the CCDS server and client.
  */
-public interface CCDSConstants {
+public class CCDSConstants {
 
 	public static final String X_REQUEST_ID = "X-Request-ID";
 

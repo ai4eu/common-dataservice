@@ -72,7 +72,7 @@ public class SimpleErrorController implements ErrorController {
 	}
 
 	/**
-	 * Builds a map with error details that serializes to JSON
+	 * Builds a map with error details
 	 * 
 	 * @param aRequest
 	 *                     HttpServletRequest
@@ -82,11 +82,7 @@ public class SimpleErrorController implements ErrorController {
 	public Map<String, Object> error(HttpServletRequest aRequest) {
 		Map<String, Object> body = getErrorAttributes(aRequest, getTraceParameter(aRequest));
 		body.put("decorated-by", SimpleErrorController.class.getName());
-		String trace = (String) body.get(TRACE);
-		if (trace != null) {
-			String[] lines = trace.split("\n\t");
-			body.put(TRACE, lines);
-		}
+		body.computeIfPresent(TRACE, (key, value) -> body.put(TRACE, ((String) value).split("\n\t")));
 		return body;
 	}
 

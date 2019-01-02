@@ -174,10 +174,14 @@ public class SolutionController extends AbstractController {
 			logger.warn("updateSolutionRatingStats failed on ID {}", solutionId);
 		} else {
 			Optional<MLPSolution> da = solutionRepository.findById(solutionId);
-			MLPSolution sol = da.get();
-			sol.setRatingCount(count);
-			sol.setRatingAverageTenths(Math.round(10 * avg));
-			solutionRepository.save(sol);
+			// Because the count and average are both present, the solution exists.
+			// Add this no-op to silence a Sonar warning.
+			if (da.isPresent()) {
+				MLPSolution sol = da.get();
+				sol.setRatingCount(count);
+				sol.setRatingAverageTenths(Math.round(10 * avg));
+				solutionRepository.save(sol);
+			}
 		}
 	}
 

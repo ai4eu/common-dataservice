@@ -24,8 +24,8 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.0.1, 20 Dec 2018
---------------------------
+Version 2.0.1, 2 Jan 2019
+-------------------------
 
 * Upgrade to Spring-Boot version 2.1 (`ACUMOS-1926 <https://jira.acumos.org/browse/ACUMOS-1926>`_) which requires runtime configuration changes:
     * Drop property 'spring.database.driver.classname'
@@ -35,6 +35,7 @@ Version 2.0.1, 20 Dec 2018
     * Add prefix 'spring' to property keys 'security.user.name' and 'security.user.password'
 * Add catalog support for solutions (`ACUMOS-2284 <https://jira.acumos.org/browse/ACUMOS-2284>`_)
 * Silence warnings from Springfox dependencies (`ACUMOS-2316 <https://jira.acumos.org/browse/ACUMOS-2316>`_)
+* Use constants etc. to silence Sonar warnings
 * Requires database schema version 2.0
 
 Version 2.0.0, 19 Dec 2018

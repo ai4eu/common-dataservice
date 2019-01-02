@@ -52,14 +52,14 @@ public class DeserializerTest {
 			RestPageResponse r = mapper.readValue(springBoot15, RestPageResponse.class);
 			logger.info("testRestPageResponse15: JSON out {}", mapper.writeValueAsString(r));
 			Assert.assertNotNull(r.getContent());
-			Assert.assertEquals(r.getContent().size(), 3);
+			Assert.assertEquals(3, r.getContent().size());
 			Assert.assertTrue(r.isFirst());
 			Assert.assertFalse(r.isLast());
 			Assert.assertEquals(r.getNumber(), 0);
-			Assert.assertEquals(r.getNumberOfElements(), 3);
-			Assert.assertEquals(r.getSize(), 3);
-			Assert.assertEquals(r.getTotalPages(), 30);
-			Assert.assertEquals(r.getTotalElements(), 90);
+			Assert.assertEquals(3, r.getNumberOfElements());
+			Assert.assertEquals(3, r.getSize());
+			Assert.assertEquals(30, r.getTotalPages());
+			Assert.assertEquals(90, r.getTotalElements());
 		} catch (Exception ex) {
 			logger.error("testRestPageResponse15 failed", ex);
 		}
@@ -85,14 +85,14 @@ public class DeserializerTest {
 			RestPageResponse s = mapper.readValue(springBoot21, RestPageResponse.class);
 			logger.info("testRestPageResponse21: JSON out {}", mapper.writeValueAsString(s));
 			Assert.assertNotNull(s.getContent());
-			Assert.assertEquals(s.getContent().size(), 3);
+			Assert.assertEquals(3, s.getContent().size());
 			Assert.assertTrue(s.isFirst());
 			Assert.assertTrue(s.isLast());
-			Assert.assertEquals(s.getNumber(), 0);
-			Assert.assertEquals(s.getNumberOfElements(), 3);
-			Assert.assertEquals(s.getSize(), 20);
-			Assert.assertEquals(s.getTotalPages(), 1);
-			Assert.assertEquals(s.getTotalElements(), 3);
+			Assert.assertEquals(0, s.getNumber());
+			Assert.assertEquals(3, s.getNumberOfElements());
+			Assert.assertEquals(20, s.getSize());
+			Assert.assertEquals(1, s.getTotalPages());
+			Assert.assertEquals(3, s.getTotalElements());
 
 		} catch (Exception ex) {
 			logger.error("testRestPageResponse21 failed", ex);

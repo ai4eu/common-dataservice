@@ -255,8 +255,6 @@ public class CdsRepositoryServiceTest {
 			// Created and modified timestamps might overlap a second boundary
 			Assert.assertTrue(Math.abs(cu.getCreated().getEpochSecond() - cu.getModified().getEpochSecond()) < 2);
 			logger.info("Created user {}", cu);
-			// Update after brief delay to check hibernate behavior on timestamps
-			Thread.sleep(1000);
 			cu.setAuthToken("JWT is Greek to me");
 			cu.setLastLogin(lastLogin);
 			cu = userRepository.save(cu);

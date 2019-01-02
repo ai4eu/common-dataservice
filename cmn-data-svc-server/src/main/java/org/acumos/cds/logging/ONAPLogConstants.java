@@ -45,14 +45,17 @@ public final class ONAPLogConstants {
 	 */
 	public static final class Markers {
 
+		// Silence a Sonar warning
+		private static final String inv = "INVOKE";
+		
 		/** Marker reporting invocation. */
-		public static final Marker INVOKE = MarkerFactory.getMarker("INVOKE");
+		public static final Marker INVOKE = MarkerFactory.getMarker(inv);
 
 		/** Marker reporting synchronous invocation. */
-		public static final Marker INVOKE_SYNCHRONOUS = build("INVOKE", "SYNCHRONOUS");
+		public static final Marker INVOKE_SYNCHRONOUS = build(inv, "SYNCHRONOUS");
 
 		/** Marker reporting asynchronous invocation. */
-		public static final Marker INVOKE_ASYNCHRONOUS = build("INVOKE", "ASYNCHRONOUS");
+		public static final Marker INVOKE_ASYNCHRONOUS = build(inv, "ASYNCHRONOUS");
 
 		/** Marker reporting entry into a component. */
 		public static final Marker ENTRY = MarkerFactory.getMarker("ENTRY");
