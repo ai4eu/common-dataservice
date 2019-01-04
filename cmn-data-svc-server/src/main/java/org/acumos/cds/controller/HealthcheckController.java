@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CdsApplication;
-import org.acumos.cds.repository.ArtifactRepository;
+import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.transport.MLPTransportModel;
 import org.acumos.cds.transport.SuccessTransport;
 import org.slf4j.Logger;
@@ -47,25 +47,21 @@ public class HealthcheckController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired
-	private ArtifactRepository artifactRepository;
+	private SolutionRepository solutionRepository;
 
-	@ApiOperation(value = "Assesses the health of the application by querying the database.", response = SuccessTransport.class)
+	@ApiOperation(value = "Checks the health of the application by querying the database.", response = SuccessTransport.class)
 	@RequestMapping(value = CCDSConstants.HEALTHCHECK_PATH, method = RequestMethod.GET)
 	public MLPTransportModel getHealth() {
 		logger.debug("getHealth enter");
-		long count = artifactRepository.count();
-		return new SuccessTransport(200, "database reports artifact count is " + count);
+		long count = solutionRepository.count();
+		return new SuccessTransport(200, "database reports solution count is " + count);
 	}
 
 	@ApiOperation(value = "Gets the value of the MANIFEST.MF property Implementation-Version as written by maven.", response = SuccessTransport.class)
 	@RequestMapping(value = CCDSConstants.VERSION_PATH, method = RequestMethod.GET)
 	public MLPTransportModel getVersion() {
 		logger.debug("getVersion enter");
-		String className = this.getClass().getSimpleName() + ".class";
-		String classPath = this.getClass().getResource(className).toString();
-		String version = classPath.startsWith("jar") ? CdsApplication.class.getPackage().getImplementationVersion()
-				: "no version, classpath is not jar";
-		return new SuccessTransport(200, version);
+		return new SuccessTransport(200, CdsApplication.getVersion());
 	}
 
 }

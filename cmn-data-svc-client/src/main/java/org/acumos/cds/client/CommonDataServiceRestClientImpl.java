@@ -71,6 +71,7 @@ import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
+import org.acumos.cds.logging.AcumosLogConstants;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.LoginTransport;
 import org.acumos.cds.transport.RestPageRequest;
@@ -142,7 +143,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 				throws IOException {
-			request.getHeaders().add(CCDSConstants.X_REQUEST_ID, requestId == null ? generateRequestId() : requestId);
+			request.getHeaders().add(AcumosLogConstants.Headers.REQUEST_ID, requestId == null ? generateRequestId() : requestId);
 			return execution.execute(request, body);
 		}
 

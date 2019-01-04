@@ -24,6 +24,12 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 2.0.2, 4 Jan 2019
+-------------------------
+* Use header X-ACUMOS-Request-Id (`ACUMOS-1801 <https://jira.acumos.org/browse/ACUMOS-1801>`_)
+* Use Acumos logging standard (`ACUMOS-2328 <https://jira.acumos.org/browse/ACUMOS-2328>`_)
+* Requires database schema version 2.0
+
 Version 2.0.1, 2 Jan 2019
 -------------------------
 

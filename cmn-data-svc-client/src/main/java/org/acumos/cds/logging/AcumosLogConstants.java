@@ -1,23 +1,22 @@
-/**
- * ============LICENSE_START=======================================================
- * org.onap.logging
- * ================================================================================
- * Copyright © 2018 Amdocs
- * All rights reserved.
- * ================================================================================
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ============LICENSE_END=========================================================
- */
+/*
+  ===============LICENSE_START=======================================================
+  Acumos
+  ===================================================================================
+  Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+  ===================================================================================
+  This Acumos software file is distributed by AT&T and Tech Mahindra
+  under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+   
+	   http://www.apache.org/licenses/LICENSE-2.0
+   
+  This file is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ===============LICENSE_END=========================================================
+  */
 
 package org.acumos.cds.logging;
 
@@ -25,18 +24,14 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 /**
- * Constants for standard ONAP headers, MDCs, etc.
- *
- * <p>
- * See <tt>package-info.java</tt>.
- * </p>
+ * Constants for standard Acumos headers, MDCs, etc.
  */
-public final class ONAPLogConstants {
+public final class AcumosLogConstants {
 
 	/**
 	 * Hide and forbid construction.
 	 */
-	private ONAPLogConstants() {
+	private AcumosLogConstants() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -46,16 +41,16 @@ public final class ONAPLogConstants {
 	public static final class Markers {
 
 		// Silence a Sonar warning
-		private static final String inv = "INVOKE";
+		private static final String INVK_STR = "INVOKE";
 
 		/** Marker reporting invocation. */
-		public static final Marker INVOKE = MarkerFactory.getMarker(inv);
+		public static final Marker INVOKE = MarkerFactory.getMarker(INVK_STR);
 
 		/** Marker reporting synchronous invocation. */
-		public static final Marker INVOKE_SYNCHRONOUS = build(inv, "SYNCHRONOUS");
+		public static final Marker INVOKE_SYNCHRONOUS = build(INVK_STR, "SYNCHRONOUS");
 
 		/** Marker reporting asynchronous invocation. */
-		public static final Marker INVOKE_ASYNCHRONOUS = build(inv, "ASYNCHRONOUS");
+		public static final Marker INVOKE_ASYNCHRONOUS = build(INVK_STR, "ASYNCHRONOUS");
 
 		/** Marker reporting entry into a component. */
 		public static final Marker ENTRY = MarkerFactory.getMarker("ENTRY");
@@ -97,7 +92,7 @@ public final class ONAPLogConstants {
 		public static final String INVOCATION_ID = "InvocationID";
 
 		/** MDC correlating messages for a logical transaction. */
-		public static final String REQUEST_ID = "RequestID";
+		public static final String REQUEST_ID = "X-ACUMOS-Request-Id";
 
 		/** MDC recording calling service. */
 		public static final String PARTNER_NAME = "PartnerName";
@@ -107,6 +102,9 @@ public final class ONAPLogConstants {
 
 		/** MDC recording target service. */
 		public static final String TARGET_SERVICE_NAME = "TargetServiceName";
+
+		/** MDC recording target entity. */
+		public static final String TARGET_ENTITY = "TargetEntity";
 
 		/** MDC recording current service instance. */
 		public static final String INSTANCE_UUID = "InstanceUUID";
@@ -157,13 +155,7 @@ public final class ONAPLogConstants {
 	 */
 	public static final class Headers {
 
-		// ACUMOS is unlikely to use ONAP prefix on its headers :/
-
-		public static final String REQUEST_ID = "X-Request-ID";
-
-		public static final String INVOCATION_ID = "X-Invocation-ID";
-
-		public static final String PARTNER_NAME = "X-PartnerName";
+		public static final String REQUEST_ID = "X-ACUMOS-RequestID";
 
 		/**
 		 * Hide and forbid construction.
@@ -189,6 +181,10 @@ public final class ONAPLogConstants {
 
 		/** Not. */
 		ERROR,
+
+		/** In Progress. */
+		INPROGRESS,
+
 	}
 
 	/**

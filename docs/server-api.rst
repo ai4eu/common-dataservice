@@ -27,9 +27,16 @@ at a URL like the following, but check the server configuration for the exact po
 
     http://localhost:8000/ccds/swagger-ui.html
 
+CDS API in Boreas Release
+-------------------------
+
+This section lists the methods in version 2.0.2, which is the first version in the Boreas release.
+
+.. swaggerv2doc:: cds-api-docs-2.0.2.json
+
 CDS API in Athena Release
 -------------------------
 
-This lists the methods in version 1.18.4, which is part of the Athena release.
+This section lists the methods in version 1.18.4, which is the last version in the Athena release.
 
 .. swaggerv2doc:: cds-api-docs-1.18.4.json

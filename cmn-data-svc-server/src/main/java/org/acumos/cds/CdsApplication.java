@@ -68,8 +68,21 @@ public class CdsApplication implements ApplicationContextAware {
 		}
 		// This returns after the app is running
 		SpringApplication.run(CdsApplication.class, args);
-		// Force this onto the console
-		logger.warn("main: successful start");
+		// Force this onto the console by using level WARN
+		logger.warn("main: CDS version '{}' successful start", getVersion());
+	}
+
+	/**
+	 * Gets version details.
+	 * 
+	 * @return the value of the MANIFEST.MF property Implementation-Version as
+	 *         written by maven when packaged in a jar; 'unknown' otherwise.
+	 */
+	public static String getVersion() {
+		Class<?> clazz = MethodHandles.lookup().lookupClass();
+		String classPath = clazz.getResource(clazz.getSimpleName() + ".class").toString();
+		String version = classPath.startsWith("jar") ? clazz.getPackage().getImplementationVersion() : "unknown";
+		return version;
 	}
 
 	@Override

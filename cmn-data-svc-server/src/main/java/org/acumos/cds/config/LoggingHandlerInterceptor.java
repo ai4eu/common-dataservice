@@ -27,8 +27,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.acumos.cds.CCDSConstants;
-import org.acumos.cds.logging.ONAPLogConstants;
+import org.acumos.cds.logging.AcumosLogConstants;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -51,13 +50,15 @@ public class LoggingHandlerInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-
-		addKey(ONAPLogConstants.MDCs.SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
-		addKey(ONAPLogConstants.MDCs.CLIENT_IP_ADDRESS, request.getRemoteAddr());
-		addKey(ONAPLogConstants.MDCs.SERVICE_NAME, request.getRequestURI());
-		final String requestId = request.getHeader(CCDSConstants.X_REQUEST_ID);
+		addKey(AcumosLogConstants.MDCs.SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
+		addKey(AcumosLogConstants.MDCs.CLIENT_IP_ADDRESS, request.getRemoteAddr());
+		addKey(AcumosLogConstants.MDCs.SERVICE_NAME, request.getRequestURI());
+		String requestId = request.getHeader(AcumosLogConstants.Headers.REQUEST_ID);
+		// If missing, try this common value.
+		if (requestId == null)
+			requestId = request.getHeader("X-Request-ID");
 		if (requestId != null)
-			addKey(ONAPLogConstants.MDCs.REQUEST_ID, requestId);
+			addKey(AcumosLogConstants.Headers.REQUEST_ID, requestId);
 		return true;
 	}
 
