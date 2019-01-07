@@ -136,6 +136,7 @@ code-name.artifact-type.MI=Model Image
 code-name.artifact-type.MR=Model-R
 code-name.artifact-type.MS=Model-SciKit
 code-name.artifact-type.MT=Model-Tensorflow
+code-name.artifact-type.SR=Scan Result
 code-name.artifact-type.TE=TOSCA Template
 code-name.artifact-type.TG=TOSCA Generator Input File
 code-name.artifact-type.TS=TOSCA Schema
