@@ -62,6 +62,7 @@ public class CCDSConstants {
 	public static final String SOLUTION_PATH = "solution";
 	public static final String SUBSCRIPTION_PATH = "sub";
 	public static final String TAG_PATH = "tag";
+	public static final String TASK_PATH = "task";
 	public static final String THREAD_PATH = "thread";
 	public static final String USER_PATH = "user";
 	public static final String VIEW_PATH = "view";
@@ -84,6 +85,7 @@ public class CCDSConstants {
 	public static final String LOGIN_API_PATH = "loginapi";
 	public static final String VERIFY_PATH = "verify";
 	public static final String CHPASS_PATH = "chgpw";
+
 	// Portal search interface
 	public static final String SEARCH_ACCESS_TYPES = "atc";
 	public static final String SEARCH_ACTIVE = "active";

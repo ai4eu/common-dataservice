@@ -25,16 +25,18 @@ The data model is explained in terms of entities in the system, attributes of th
 and relationships among the entities.  These requirements are implemented in a relational
 database, but this page does not define table names, column names, data types, lengths, etc.
 
-Support for Federation
-----------------------
+Implications of Federation
+--------------------------
 
-The Acumos system is intended to be federated. This has implications for identifiers used 
-in the system, because they will have to be usable globally:
+The Acumos system is intended to be federated, meaning multiple systems share information
+with each other:
 
 * Multiple systems will be running in different organizations
 * Information will be shared selectively across the systems
 * A public "root" instance will be used to publish some information
 * Users can publish their solutions for use by others.
+
+This has implications for identifiers used in the system, because they must be usable globally.
 
 Entity and Relationship Overview
 --------------------------------
@@ -141,21 +143,27 @@ Publish Request Status
 | PE "Pending"
 | WD "Withdrawn"
 
-StepStatus
-^^^^^^^^^^
+TaskStepStatus
+^^^^^^^^^^^^^^
 
 | ST "Started"
 | SU "Succeeded"
 | FA "Failed"
 
-StepType
+TaskType
 ^^^^^^^^
 
 | OB "Onboarding"
-| VL "Validation"
+| SV "Security-Verification"
 
 Toolkit Type
 ^^^^^^^^^^^^
+
+This attribute was intended to characterize the technology used in a model.
+Over time this has been used for other purposes, for example to identify special
+features of the Design Studio. With experience it also became clear that a single
+attribute value is not sufficient to characterize some models.  For these reasons,
+the toolit-type code may be removed entirely.
 
 | BR "Data Broker"
 | CP "Composite Solution"
@@ -515,34 +523,60 @@ Attributes:
 
      -   The person who created the revision of the solution (reference to the user table)
 
+Task
+^^^^
 
-Step Result
-^^^^^^^^^^^
+This tracks the status of processing a request made by some actor or process on an Acumos instance.
+For example, a user requests on-boarding of a model.  A task carries some identification details
+and carries 0..n step-result records that carry details of individual steps. A task does not have
+a free-text result attribute; that is in the step result record.
 
-This tracks the status of steps in the Acumos system by some actor or process. For example, the on-boarding feature can store information about the status and outcome of its steps.
+Attributes:
+
+* Task ID - generated
+
+     -   A unique record identifier
+
+* Name - required
+
+     -   A descriptive name to benefit the user
+
+* Status Code - required
+
+     -   Represents the state of the task. Available values include "started", "succeeded" and "failed".
+
+* Task type code - required
+
+     -   Represents the type of action being tracked, for example on-boarding a ML model or verifying a ML model.
+
+* Tracking ID - optional
+
+     -  This represents a workflow execution instance. For example it may represent on-boarding of a ML model.
+
+* Solution ID - optional
+* Revision ID - optional
+
+* User ID - required
+
+     -  The user who made the request
+
+
+Task Step Result
+^^^^^^^^^^^^^^^^
+
+This tracks the status of a single step within a task. For example, the on-boarding feature can store information 
+about the status and outcome of every step during the task of on-boarding a model.
 
 Attributes:
 
 * Step Result ID - generated
-* Tracking ID - optional
-
-     -  This represents a workflow execution instance. For example it may represent onboarding of a ML model workflow instance.
-
-* Step type Code - required
-
-     -   Represents the type of workflow being tracked- for example whether it is onboarding of ML model workflow, validation of a ML model workflow or something else. Currently onboarding and validation are the two types of workflows being identified, but this list will grow as the need for tracking additional workflows arise.
-
-* Solution ID - optional
-* Revision ID - optional
-* Artifact ID - optional
-* User ID - optional
 * Name - required
 
-     -   Represents the specific step involved in the workflow. For example for onboarding workflow, step name can "Soultion ID creation"
+     -   Represents the specific step involved in the workflow. For example in an on-boarding workflow, the step name could be "Solution ID creation".
 
 * Status Code - required
 
-     -   Represents the state at which the workflow step is currently in. Currently "started", "succeeded" and "failed" are the three step states which are tracked.
+     -   Represents the state of the step. Available values include "started", "succeeded" and "failed".
 
 * Result - optional
 

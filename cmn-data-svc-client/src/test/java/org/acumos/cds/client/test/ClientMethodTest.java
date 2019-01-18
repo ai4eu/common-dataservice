@@ -47,8 +47,9 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
+import org.acumos.cds.domain.MLPTask;
+import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
@@ -860,29 +861,61 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.getStepResults(new RestPageRequest());
+			client.getTasks(new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.searchStepResults(new HashMap<String, Object>(), false, new RestPageRequest());
+			client.searchTasks(new HashMap<String, Object>(), false, new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.createStepResult(new MLPStepResult());
+			client.createTask(new MLPTask());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			MLPStepResult s = new MLPStepResult();
+			MLPTask s = new MLPTask();
+			s.setTaskId(0L);
+			client.updateTask(s);
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.deleteTask(0L);
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.getTaskStepResults(0L);
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.searchTaskStepResults(new HashMap<String, Object>(), false, new RestPageRequest());
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.createTaskStepResult(new MLPTaskStepResult());
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.createTaskStepResult(new MLPTaskStepResult(0L, "bo", "gus", Instant.now()));
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			MLPTaskStepResult s = new MLPTaskStepResult(0L, "bo", "gus", Instant.now());
 			s.setStepResultId(0L);
-			client.updateStepResult(s);
+			client.updateTaskStepResult(s);
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.deleteStepResult(0L);
+			client.deleteTaskStepResult(1L);
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}

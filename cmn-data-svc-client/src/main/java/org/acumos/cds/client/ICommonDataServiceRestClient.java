@@ -49,8 +49,9 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
+import org.acumos.cds.domain.MLPTask;
+import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
@@ -1713,31 +1714,31 @@ public interface ICommonDataServiceRestClient {
 	void deleteComment(String threadId, String commentId);
 
 	/**
-	 * Gets a step result.
+	 * Gets a task step result.
 	 * 
-	 * @param stepResultId
-	 *                         Step result ID
-	 * @return MLPStepResult
+	 * @param taskStepResultId
+	 *                             Task step result ID
+	 * @return MLPTaskStepResult
 	 */
-	MLPStepResult getStepResult(long stepResultId);
+	MLPTaskStepResult getTaskStepResult(long taskStepResultId);
 
 	/**
-	 * Gets a page of step results.
+	 * Gets all step results for the specified task ID
 	 * 
-	 * @param pageRequest
-	 *                        Page index, page size and sort information; defaults
-	 *                        to page 0 of size 20 if null.
-	 * @return Page of step result objects.
+	 * @param taskId
+	 *                   Task ID
+	 * @return List of step results, which may be empty
+	 * 
 	 */
-	RestPageResponse<MLPStepResult> getStepResults(RestPageRequest pageRequest);
+	List<MLPTaskStepResult> getTaskStepResults(long taskId);
 
 	/**
-	 * Searches step results for exact matches.
+	 * Gets a page of task step results that exactly match the search parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
-	 *                            query criteria. Accepts these field names:
-	 *                            trackingId, stepCode, solutionId, revisionId,
+	 *                            query criteria. Accepts these field names: taskId,
+	 *                            trackingId, taskCode, solutionId, revisionId,
 	 *                            artifactId, userId, statusCode, name.
 	 * @param isOr
 	 *                            If true, finds matches on any field-value pair
@@ -1749,33 +1750,35 @@ public interface ICommonDataServiceRestClient {
 	 *                            defaults to page 0 of size 20 if null.
 	 * @return Page of step result objects
 	 */
-	RestPageResponse<MLPStepResult> searchStepResults(Map<String, Object> queryParameters, boolean isOr,
+	RestPageResponse<MLPTaskStepResult> searchTaskStepResults(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest);
 
 	/**
-	 * Creates a step result.
+	 * Creates a task step result.
 	 * 
 	 * @param stepResult
-	 *                       result Step Result data.
-	 * @return Complete object, with generated information such as ID
+	 *                       Step Result data. The ID field should be null; the
+	 *                       taskId field must be valid.
+	 * @return Complete object, with generated information including ID
 	 */
-	MLPStepResult createStepResult(MLPStepResult stepResult);
+	MLPTaskStepResult createTaskStepResult(MLPTaskStepResult stepResult);
 
 	/**
-	 * Updates a step result.
+	 * Updates an existing task step result.
 	 * 
 	 * @param stepResult
-	 *                       Step Result data
+	 *                       Step Result data. The stepResultId and taskId fields
+	 *                       must be valid.
 	 */
-	void updateStepResult(MLPStepResult stepResult);
+	void updateTaskStepResult(MLPTaskStepResult stepResult);
 
 	/**
-	 * Deletes a step result.
+	 * Deletes a task step result.
 	 * 
 	 * @param stepResultId
 	 *                         stepResult ID
 	 */
-	void deleteStepResult(Long stepResultId);
+	void deleteTaskStepResult(long stepResultId);
 
 	/**
 	 * Gets a page of peer groups.
@@ -2396,4 +2399,70 @@ public interface ICommonDataServiceRestClient {
 	 *                       Catalog ID
 	 */
 	void dropSolutionFromCatalog(String solutionId, String catalogId);
+
+	/**
+	 * Gets a task.
+	 * 
+	 * @param taskId
+	 *                   Task ID
+	 * @return MLPTask
+	 */
+	MLPTask getTask(long taskId);
+
+	/**
+	 * Gets a page of tasks.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of task objects.
+	 */
+	RestPageResponse<MLPTask> getTasks(RestPageRequest pageRequest);
+
+	/**
+	 * Gets a page of tasks that exactly match the search parameters.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: taskId,
+	 *                            trackingId, userId, statusCode, name.
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of step result objects
+	 */
+	RestPageResponse<MLPTask> searchTasks(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Creates a task.
+	 * 
+	 * @param task
+	 *                 Task data. The ID field should be null.
+	 * @return Complete object, with generated information including ID
+	 */
+	MLPTask createTask(MLPTask task);
+
+	/**
+	 * Updates the specified task, which must exist.
+	 * 
+	 * @param task
+	 *                 Task data
+	 */
+	void updateTask(MLPTask task);
+
+	/**
+	 * Deletes the specified task. Cascades the delete to associated task step
+	 * result items.
+	 * 
+	 * @param taskId
+	 *                   task ID
+	 */
+	void deleteTask(long taskId);
+
 }

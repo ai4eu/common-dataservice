@@ -315,7 +315,7 @@ public class UserController extends AbstractController {
 		// Get the existing user
 		Optional<MLPUser> opt = userRepository.findById(userId);
 		if (!opt.isPresent() || !opt.get().isActive()) {
-			logger.warn("updatePassword failed for ID {}", userId);
+			logger.warn("updatePassword unknown or inactive user {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					"Failed to find active user with ID " + userId, null);
@@ -484,7 +484,7 @@ public class UserController extends AbstractController {
 			if (id != null) {
 				UUID.fromString(id);
 				if (userRepository.findById(id).isPresent()) {
-					logger.warn("createUser failed for ID {}", id);
+					logger.warn("createUser unknown user {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
 				}
@@ -530,7 +530,7 @@ public class UserController extends AbstractController {
 		// Get the existing one
 		Optional<MLPUser> opt = userRepository.findById(userId);
 		if (!opt.isPresent()) {
-			logger.warn("updateUser failed for ID {}", userId);
+			logger.warn("updateUser unknown user {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
@@ -616,11 +616,11 @@ public class UserController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("addUserRole: userId {}, roleId {}", userId, roleId);
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("addUserRole failed for user ID {}", userId);
+			logger.warn("addUserRole unknown for user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		} else if (!roleRepository.findById(roleId).isPresent()) {
-			logger.warn("addUserRole failed for role ID {}", roleId);
+			logger.warn("addUserRole unknown role ID {}", roleId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
 		}
@@ -636,13 +636,13 @@ public class UserController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("updateUserRoles: user {}, roles {}", userId, roleIds);
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("updateUserRoles failed for user ID {}", userId);
+			logger.warn("updateUserRoles unknown user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
 		for (String roleId : roleIds) {
 			if (!roleRepository.findById(roleId).isPresent()) {
-				logger.warn("updateUserRoles failed for role ID {}", roleId);
+				logger.warn("updateUserRoles unknown role ID {}", roleId);
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
 			}
@@ -677,18 +677,18 @@ public class UserController extends AbstractController {
 				String.join(", ", usersRoleRequest.getUserIds()));
 		// Validate entire request before making any change
 		if (!roleRepository.findById(roleId).isPresent()) {
-			logger.warn("addOrDropUsersInRole failed for role ID {}", roleId);
+			logger.warn("addOrDropUsersInRole unknown role ID {}", roleId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
 		}
 		if (usersRoleRequest.getUserIds().isEmpty()) {
-			logger.warn("addOrDropUsersInRole failed for empty user ids");
+			logger.warn("addOrDropUsersInRole empty user ids");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "No users", null);
 		}
 		for (String userId : usersRoleRequest.getUserIds()) {
 			if (!userRepository.findById(userId).isPresent()) {
-				logger.warn("addOrDropUsersInRole failed for user ID {}", userId);
+				logger.warn("addOrDropUsersInRole unknown user ID {}", userId);
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 			}
@@ -750,7 +750,7 @@ public class UserController extends AbstractController {
 				providerUserId);
 		// Validate args
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("createUserLoginProvider failed for ID {}", userId);
+			logger.warn("createUserLoginProvider unknown user {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
@@ -788,7 +788,7 @@ public class UserController extends AbstractController {
 				providerUserId);
 		// Validate args
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("updateUserLoginProvider failed for ID {}", userId);
+			logger.warn("updateUserLoginProvider unknown user {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
@@ -796,7 +796,7 @@ public class UserController extends AbstractController {
 		// Build a key for fetch
 		UserLoginProviderPK pk = new UserLoginProviderPK(userId, providerCode, providerUserId);
 		if (!userLoginProviderRepository.findById(pk).isPresent()) {
-			logger.warn("updateUserLoginProvider failed for key {}", pk);
+			logger.warn("updateUserLoginProvider unknown key {}", pk);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + pk, null);
 		}
@@ -860,12 +860,12 @@ public class UserController extends AbstractController {
 			@PathVariable("userId") String userId, @RequestBody MLPSolutionFavorite sfv, HttpServletResponse response) {
 		logger.debug("createSolutionFavorite: solutionId {} userId {}", solutionId, userId);
 		if (!solutionRepository.findById(solutionId).isPresent()) {
-			logger.warn("createSolutionFavorite failed for sol ID {}", solutionId);
+			logger.warn("createSolutionFavorite unknown solution {}", solutionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("createSolutionFavorite failed for user ID {}", userId);
+			logger.warn("createSolutionFavorite user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
@@ -927,7 +927,7 @@ public class UserController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("addUserTag: userId {} tag {}", userId, tag);
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("addUserTag failed for user {}", userId);
+			logger.warn("addUserTag unknown user {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}

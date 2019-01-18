@@ -22,7 +22,6 @@ package org.acumos.cds.service;
 import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
 import org.acumos.cds.repository.SolutionDownloadRepository;
-import org.acumos.cds.repository.StepResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,14 +34,11 @@ public class ArtifactServiceImpl implements ArtifactService {
 	private SolutionDownloadRepository solutionDownloadRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
-	@Autowired
-	private StepResultRepository stepResultRepository;
 
 	@Override
 	public void deleteArtifact(String artifactId) {
 		solutionDownloadRepository.deleteByArtifactId(artifactId);
 		solRevArtMapRepository.deleteByArtifactId(artifactId);
-		stepResultRepository.deleteByArtifactId(artifactId);
 		artifactRepository.deleteById(artifactId);
 	}
 }

@@ -2,7 +2,7 @@
  * ===============LICENSE_START=======================================================
  * Acumos
  * ===================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
  * ===================================================================================
  * This Acumos software file is distributed by AT&T and Tech Mahindra
  * under the Apache License, Version 2.0 (the "License");
@@ -39,13 +39,21 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
- * Model for a step result
+ * Model for a step result, a part of a task.
  */
 @Entity
 @Table(name = "C_STEP_RESULT")
-public class MLPStepResult implements MLPDomainModel, Serializable {
+public class MLPTaskStepResult implements MLPDomainModel, Serializable {
 
 	private static final long serialVersionUID = -595148641870461125L;
+
+	// In case the parent needs to refer to this column by name
+	public static final String TASK_ID_COL_NAME = "TASK_ID";
+
+	@Column(name = TASK_ID_COL_NAME, nullable = false, columnDefinition = "INT")
+	@NotNull(message = "TaskId cannot be null")
+	@ApiModelProperty(value = "Task ID", required = true, example = "1")
+	private Long taskId;
 
 	// Hibernate is weak on the ID column generator, the method is specific to
 	// the backing database. For portability, specify AUTO and define the column
@@ -55,50 +63,19 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	@Column(name = "ID", nullable = false, updatable = false, columnDefinition = "INT")
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Generated")
+	@ApiModelProperty(value = "Generated", accessMode = AccessMode.READ_ONLY)
 	private Long stepResultId;
-
-	@Column(name = "TRACKING_ID", updatable = false, columnDefinition = "CHAR(36)")
-	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
-	private String trackingId;
-
-	@Column(name = "STEP_CD", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Step code cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, example = "OB")
-	private String stepCode;
-
-	@Column(name = "SOLUTION_ID", columnDefinition = "CHAR(36)")
-	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
-	private String solutionId;
-
-	@Column(name = "REVISION_ID", columnDefinition = "CHAR(36)")
-	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
-	private String revisionId;
-
-	@Column(name = "ARTIFACT_ID", columnDefinition = "CHAR(36)")
-	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
-	private String artifactId;
-
-	@Column(name = "USER_ID", columnDefinition = "CHAR(36)")
-	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
-	private String userId;
 
 	@Column(name = "NAME", nullable = false, columnDefinition = "VARCHAR(100)")
 	@NotNull(message = "Step name cannot be null")
 	@Size(max = 100)
-	@ApiModelProperty(required = true, example = "Step name")
+	@ApiModelProperty(value = "Step name", required = true, example = "Create widget")
 	private String name;
 
 	@Column(name = "STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Status code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(required = true, example = "SU")
+	@ApiModelProperty(value = "Status code", required = true, example = "SU")
 	private String statusCode;
 
 	@Column(name = "RESULT", columnDefinition = "VARCHAR(512)")
@@ -107,17 +84,17 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	private String result;
 
 	@Column(name = "START_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(required = true, value = "Start date", example = "2018-12-16T12:34:56.789Z")
+	@ApiModelProperty(value = "Start instant", required = true, example = "2018-12-16T12:34:56.789Z")
 	private Instant startDate;
 
 	@Column(name = "END_DATE", columnDefinition = "TIMESTAMP")
-	@ApiModelProperty(value = "End date", example = "2018-12-16T12:34:56.789Z")
+	@ApiModelProperty(value = "End instant", example = "2018-12-16T12:34:56.789Z")
 	private Instant endDate;
 
 	/**
 	 * No-arg constructor
 	 */
-	public MLPStepResult() {
+	public MLPTaskStepResult() {
 		// no-arg constructor
 		startDate = Instant.now();
 	}
@@ -127,19 +104,19 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	 * must supply to create a valid instance. Omits step result ID, which is
 	 * generated on save.
 	 * 
-	 * @param stepTypeCode
-	 *                         Step type code
+	 * @param taskId
+	 *                       Task ID
 	 * @param name
-	 *                         Step name
+	 *                       Step name
 	 * @param statusCode
-	 *                         Step status code
+	 *                       Step status code
 	 * @param startDate
-	 *                         Start date
+	 *                       Start date
 	 */
-	public MLPStepResult(String stepTypeCode, String name, String statusCode, Instant startDate) {
-		if (stepTypeCode == null || name == null || statusCode == null || startDate == null)
+	public MLPTaskStepResult(long taskId, String name, String statusCode, Instant startDate) {
+		if (name == null || statusCode == null || startDate == null)
 			throw new IllegalArgumentException("Null not permitted");
-		this.stepCode = stepTypeCode;
+		this.taskId = taskId;
 		this.name = name;
 		this.statusCode = statusCode;
 		this.startDate = startDate;
@@ -151,19 +128,21 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	 * @param that
 	 *                 Instance to copy
 	 */
-	public MLPStepResult(MLPStepResult that) {
-		this.artifactId = that.artifactId;
+	public MLPTaskStepResult(MLPTaskStepResult that) {
 		this.endDate = that.endDate;
 		this.name = that.name;
 		this.result = that.result;
-		this.revisionId = that.revisionId;
-		this.solutionId = that.solutionId;
 		this.startDate = that.startDate;
 		this.statusCode = that.statusCode;
-		this.stepCode = that.stepCode;
 		this.stepResultId = that.stepResultId;
-		this.trackingId = that.trackingId;
-		this.userId = that.userId;
+	}
+
+	public Long getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
 	}
 
 	public Long getStepResultId() {
@@ -172,54 +151,6 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 
 	public void setStepResultId(Long stepResultId) {
 		this.stepResultId = stepResultId;
-	}
-
-	public String getTrackingId() {
-		return trackingId;
-	}
-
-	public void setTrackingId(String trackingId) {
-		this.trackingId = trackingId;
-	}
-
-	public String getStepCode() {
-		return stepCode;
-	}
-
-	public void setStepCode(String stepCode) {
-		this.stepCode = stepCode;
-	}
-
-	public String getSolutionId() {
-		return solutionId;
-	}
-
-	public void setSolutionId(String solutionId) {
-		this.solutionId = solutionId;
-	}
-
-	public String getRevisionId() {
-		return revisionId;
-	}
-
-	public void setRevisionId(String revisionId) {
-		this.revisionId = revisionId;
-	}
-
-	public String getArtifactId() {
-		return artifactId;
-	}
-
-	public void setArtifactId(String artifactId) {
-		this.artifactId = artifactId;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
 	}
 
 	public String getName() {
@@ -266,9 +197,9 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 	public boolean equals(Object that) {
 		if (that == null)
 			return false;
-		if (!(that instanceof MLPStepResult))
+		if (!(that instanceof MLPTaskStepResult))
 			return false;
-		MLPStepResult thatObj = (MLPStepResult) that;
+		MLPTaskStepResult thatObj = (MLPTaskStepResult) that;
 		return Objects.equals(stepResultId, thatObj.stepResultId);
 	}
 
@@ -279,10 +210,8 @@ public class MLPStepResult implements MLPDomainModel, Serializable {
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[stepResultId=" + stepResultId + ", trackingId=" + trackingId + ", "
-				+ "stepCode=" + stepCode + "solutionId=" + solutionId + "artifactId=" + artifactId + ", userId="
-				+ userId + "name=" + name + "statusCode=" + statusCode + "result=" + result + ", startDate=" + startDate
-				+ ", endDate=" + endDate + "]";
+		return this.getClass().getName() + "[stepResultId=" + stepResultId + "name=" + name + "statusCode=" + statusCode
+				+ "result=" + result + ", startDate=" + startDate + ", endDate=" + endDate + "]";
 	}
 
 }

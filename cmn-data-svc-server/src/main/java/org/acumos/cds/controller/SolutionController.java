@@ -52,7 +52,6 @@ import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
-import org.acumos.cds.repository.PublishRequestRepository;
 import org.acumos.cds.repository.RevisionDescriptionRepository;
 import org.acumos.cds.repository.SolGrpMemMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
@@ -66,8 +65,7 @@ import org.acumos.cds.repository.SolutionPictureRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
-import org.acumos.cds.repository.StepResultRepository;
-import org.acumos.cds.repository.ThreadRepository;
+import org.acumos.cds.repository.TaskRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.service.ArtifactService;
 import org.acumos.cds.service.SolutionSearchService;
@@ -125,8 +123,6 @@ public class SolutionController extends AbstractController {
 	@Autowired
 	private DocumentRepository documentRepository;
 	@Autowired
-	private PublishRequestRepository publishRequestRepository;
-	@Autowired
 	private RevisionDescriptionRepository revisionDescRepository;
 	@Autowired
 	private SolGrpMemMapRepository solGroupMemMapRepository;
@@ -155,11 +151,9 @@ public class SolutionController extends AbstractController {
 	@Autowired
 	private SolutionSearchService solutionSearchService;
 	@Autowired
+	private TaskRepository taskRepository;
+	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private StepResultRepository stepResultRepository;
-	@Autowired
-	private ThreadRepository threadRepository;
 
 	/**
 	 * Updates the cached value(s) for solution ratings.
@@ -513,9 +507,8 @@ public class SolutionController extends AbstractController {
 			solGroupMemMapRepository.deleteBySolutionId(solutionId);
 			solTagMapRepository.deleteBySolutionId(solutionId);
 			solUserAccMapRepository.deleteBySolutionId(solutionId);
-			stepResultRepository.deleteBySolutionId(solutionId);
-			threadRepository.deleteBySolutionId(solutionId);
-			publishRequestRepository.deleteBySolutionId(solutionId);
+			solutionFavoriteRepository.deleteBySolutionId(solutionId);
+			taskRepository.deleteBySolutionId(solutionId);
 			for (MLPSolutionRevision r : solutionRevisionRepository.findBySolutionIdIn(new String[] { solutionId }))
 				deleteSolutionRevision(r.getRevisionId());
 			solutionRepository.deleteById(solutionId);

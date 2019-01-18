@@ -50,8 +50,9 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
+import org.acumos.cds.domain.MLPTask;
+import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
@@ -449,14 +450,23 @@ public class MockClientTest {
 		client.setSolutionRevisionComments(comments);
 		Assert.assertTrue(comments == client.getSolutionRevisionComments("id", "id", pageRequest));
 
-		RestPageResponse<MLPStepResult> stepResults = new RestPageResponse<>();
+		RestPageResponse<MLPTask> tasks = new RestPageResponse<>();
+		client.setTasks(tasks);
+		Assert.assertTrue(tasks == client.getTasks(pageRequest));
+		MLPTask task = new MLPTask();
+		client.setTask(task);
+		Assert.assertTrue(task == client.createTask(task));
+		client.updateTask(task);
+		client.deleteTask(0L);
+
+		List<MLPTaskStepResult> stepResults = new ArrayList<>();
 		client.setStepResults(stepResults);
-		Assert.assertTrue(stepResults == client.getStepResults(pageRequest));
-		MLPStepResult stepResult = new MLPStepResult();
+		Assert.assertTrue(stepResults == client.getTaskStepResults(0L));
+		MLPTaskStepResult stepResult = new MLPTaskStepResult();
 		client.setStepResult(stepResult);
-		Assert.assertTrue(stepResult == client.createStepResult(stepResult));
-		client.updateStepResult(stepResult);
-		client.deleteStepResult(0L);
+		Assert.assertTrue(stepResult == client.createTaskStepResult(stepResult));
+		client.updateTaskStepResult(stepResult);
+		client.deleteTaskStepResult(1L);
 
 		RestPageResponse<MLPPeerGroup> peerGroups = new RestPageResponse<>();
 		client.setPeerGroups(peerGroups);

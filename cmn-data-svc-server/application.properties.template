@@ -178,12 +178,12 @@ code-name.publish-request-status.DC=Declined
 code-name.publish-request-status.PE=Pending
 code-name.publish-request-status.WD=Withdrawn
 #
-code-name.step-status.ST=Started
-code-name.step-status.SU=Succeeded
-code-name.step-status.FA=Failed
+code-name.task-step-status.ST=Started
+code-name.task-step-status.SU=Succeeded
+code-name.task-step-status.FA=Failed
 #
-code-name.step-type.OB=Onboarding
-code-name.step-type.VL=Validation
+code-name.task-type.OB=Onboarding
+code-name.task-type.SV=Security-Verification
 #
 code-name.subscription-scope.RF=Reference
 code-name.subscription-scope.FL=Full

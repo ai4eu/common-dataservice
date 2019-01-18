@@ -51,8 +51,9 @@ import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
+import org.acumos.cds.domain.MLPTask;
+import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
@@ -145,7 +146,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPUserNotification> userNotifications;
 	private MLPUserNotifPref usrNotifPref;
 	private List<MLPUserNotifPref> userNotifPreferences;
-	private MLPStepResult stepResult;
+	private MLPTaskStepResult stepResult;
 	private List<MLPUser> solutionAccessUsers;
 	private RestPageResponse<MLPSolution> userAccessSolutions;
 	private RestPageResponse<MLPSolutionDeployment> userDeployments;
@@ -169,8 +170,8 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPSolution> searchSolutions;
 	private RestPageResponse<MLPThread> solutionRevisionThreads;
 	private RestPageResponse<MLPComment> solutionRevisionComments;
-	private RestPageResponse<MLPStepResult> stepResults;
-	private RestPageResponse<MLPStepResult> searchStepResults;
+	private List<MLPTaskStepResult> stepResults;
+	private RestPageResponse<MLPTaskStepResult> searchStepResults;
 	private MLPUserNotifPref usrNotifPrefById = null;
 	private RestPageResponse<MLPPeerGroup> peerGroups;
 	private MLPPeerGroup peerGroup;
@@ -182,7 +183,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private long peerSolutionAccess;
 	private List<MLPPeer> peerAccessList;
 	private RestPageResponse<MLPSolution> solutionsByDate;
-	private MLPStepResult stepResultById;
+	private MLPTaskStepResult stepResultById;
 	private List<MLPCodeNamePair> pairs;
 	private List<String> valueSetNames;
 	private String cachedRequestId;
@@ -203,6 +204,10 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private MLPCatalog catalog;
 	private RestPageResponse<MLPCatalog> catalogs;
 	private RestPageResponse<MLPSolution> solutionsInCatalog;
+	private MLPTask taskById;
+	private RestPageResponse<MLPTask> tasks;
+	private RestPageResponse<MLPTask> searchTasks;
+	private MLPTask task;
 
 	/**
 	 * No-argument constructor.
@@ -1384,50 +1389,50 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		return this.solutionRevisionComments;
 	}
 
-	public void setStepResultById(MLPStepResult stepResult) {
+	public void setStepResultById(MLPTaskStepResult stepResult) {
 		this.stepResultById = stepResult;
 	}
 
 	@Override
-	public MLPStepResult getStepResult(long stepResultId) {
+	public MLPTaskStepResult getTaskStepResult(long stepResultId) {
 		return stepResultById;
 	}
 
-	public void setStepResults(RestPageResponse<MLPStepResult> results) {
+	public void setStepResults(List<MLPTaskStepResult> results) {
 		this.stepResults = results;
 	}
 
 	@Override
-	public RestPageResponse<MLPStepResult> getStepResults(RestPageRequest pageRequest) {
+	public List<MLPTaskStepResult> getTaskStepResults(long taskId) {
 		return stepResults;
 	}
 
-	public void setSearchStepResults(RestPageResponse<MLPStepResult> results) {
+	public void setSearchStepResults(RestPageResponse<MLPTaskStepResult> results) {
 		this.searchStepResults = results;
 	}
 
 	@Override
-	public RestPageResponse<MLPStepResult> searchStepResults(Map<String, Object> queryParameters, boolean isOr,
+	public RestPageResponse<MLPTaskStepResult> searchTaskStepResults(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest) {
 		return this.searchStepResults;
 	}
 
-	public void setStepResult(MLPStepResult result) {
+	public void setStepResult(MLPTaskStepResult result) {
 		this.stepResult = result;
 	}
 
 	@Override
-	public MLPStepResult createStepResult(MLPStepResult stepResult) {
+	public MLPTaskStepResult createTaskStepResult(MLPTaskStepResult stepResult) {
 		return this.stepResult;
 	}
 
 	@Override
-	public void updateStepResult(MLPStepResult stepResult) {
+	public void updateTaskStepResult(MLPTaskStepResult stepResult) {
 		this.stepResult = stepResult;
 	}
 
 	@Override
-	public void deleteStepResult(Long stepResultId) {
+	public void deleteTaskStepResult(long stepResultId) {
 		// How to mock?
 	}
 
@@ -1798,6 +1803,53 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void dropSolutionFromCatalog(String solutionId, String catalogId) {
+		// How to mock?
+	}
+
+	public void setTaskById(MLPTask task) {
+		this.taskById = task;
+	}
+
+	@Override
+	public MLPTask getTask(long taskId) {
+		return taskById;
+	}
+
+	public void setTasks(RestPageResponse<MLPTask> results) {
+		this.tasks = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPTask> getTasks(RestPageRequest pageRequest) {
+		return tasks;
+	}
+
+	public void setSearchTasks(RestPageResponse<MLPTask> results) {
+		this.searchTasks = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPTask> searchTasks(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		return this.searchTasks;
+	}
+
+	public void setTask(MLPTask result) {
+		this.task = result;
+	}
+
+	@Override
+	public MLPTask createTask(MLPTask task) {
+		return this.task;
+	}
+
+	@Override
+	public void updateTask(MLPTask task) {
+		this.task = task;
+	}
+
+	@Override
+	public void deleteTask(long taskId) {
 		// How to mock?
 	}
 

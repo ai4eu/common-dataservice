@@ -61,8 +61,9 @@ import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
-import org.acumos.cds.domain.MLPStepResult;
 import org.acumos.cds.domain.MLPTag;
+import org.acumos.cds.domain.MLPTask;
+import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.domain.MLPUserLoginProvider;
@@ -98,8 +99,9 @@ import org.acumos.cds.repository.SolutionGroupRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
-import org.acumos.cds.repository.StepResultRepository;
 import org.acumos.cds.repository.TagRepository;
+import org.acumos.cds.repository.TaskRepository;
+import org.acumos.cds.repository.TaskStepResultRepository;
 import org.acumos.cds.repository.ThreadRepository;
 import org.acumos.cds.repository.UserLoginProviderRepository;
 import org.acumos.cds.repository.UserNotificationPreferenceRepository;
@@ -179,6 +181,8 @@ public class CdsRepositoryServiceTest {
 	@Autowired
 	private TagRepository tagRepository;
 	@Autowired
+	private TaskRepository taskRepository;
+	@Autowired
 	private ThreadRepository threadRepository;
 	@Autowired
 	private UserLoginProviderRepository userLoginProviderRepository;
@@ -197,7 +201,7 @@ public class CdsRepositoryServiceTest {
 	@Autowired
 	private UserSearchService userSearchService;
 	@Autowired
-	private StepResultRepository stepResultRepository;
+	private TaskStepResultRepository stepResultRepository;
 	@Autowired
 	private StepResultSearchService stepResultSearchService;
 	@Autowired
@@ -1301,39 +1305,55 @@ public class CdsRepositoryServiceTest {
 	}
 
 	@Test
-	public void testStepResults() throws Exception {
+	public void testTaskStepResults() throws Exception {
 		try {
-			MLPStepResult sr = new MLPStepResult();
-			sr.setStepCode("OB");
-			sr.setName("Solution ID creation");
-			sr.setStatusCode("FA");
-			sr.setStartDate(Instant.now().minusSeconds(60));
+			MLPUser cu = new MLPUser();
+			cu.setLoginName("user_task_step");
+			cu.setEmail("test@user.task.step.com");
+			cu = userRepository.save(cu);
+			Assert.assertNotNull(cu.getUserId());
+
+			final String taskName = "DoWorkQuickly";
+			MLPTask st = new MLPTask("OB", taskName, cu.getUserId(), "SU");
+			st = taskRepository.save(st);
+			Assert.assertNotNull(st.getTaskId());
+
+			final String statusCode = "FA";
+
+			MLPTaskStepResult sr = new MLPTaskStepResult(st.getTaskId(), "solution ID creation", statusCode,
+					Instant.now().minusSeconds(60));
 			sr = stepResultRepository.save(sr);
 			Assert.assertNotNull(sr.getStepResultId());
 
 			long srCountTrans = stepResultRepository.count();
 			Assert.assertNotEquals(0, srCountTrans);
 
-			Optional<MLPStepResult> optResult = stepResultRepository.findById(sr.getStepResultId());
+			Optional<MLPTaskStepResult> optResult = stepResultRepository.findById(sr.getStepResultId());
 			Assert.assertTrue(optResult.isPresent());
 			logger.info("First step result {}", optResult.get());
 
-			Page<MLPStepResult> page = stepResultSearchService.findStepResults(null, null, null, null, null, null, null,
-					"FA", false, PageRequest.of(0, 5));
+			Iterable<MLPTaskStepResult> steps = stepResultRepository.findByTaskId(st.getTaskId());
+			Assert.assertTrue(steps.iterator().hasNext());
+
+			Page<MLPTaskStepResult> page = stepResultSearchService.findStepResults(null, null, statusCode, false,
+					PageRequest.of(0, 5));
 			Assert.assertNotEquals(0, page.getNumberOfElements());
 
 			// Test search with empty result
-			Page<MLPStepResult> emptySteps = stepResultSearchService.findStepResults("bogus", "bogus", "bogus", "bogus",
-					"bogus", "bogus", "bogus", "bogus", false, PageRequest.of(0, 5));
+			Page<MLPTaskStepResult> emptySteps = stepResultSearchService.findStepResults(0L, "bogus", "bogus", false,
+					PageRequest.of(0, 5));
 			Assert.assertTrue(emptySteps.isEmpty());
 
 			sr.setResult("New stack trace");
 			stepResultRepository.save(sr);
 
-			Optional<MLPStepResult> optStepResult = stepResultRepository.findById(sr.getStepResultId());
+			Optional<MLPTaskStepResult> optStepResult = stepResultRepository.findById(sr.getStepResultId());
 			Assert.assertTrue(optStepResult.isPresent());
 			Assert.assertNotNull(optStepResult.get().getResult());
 			stepResultRepository.deleteById(sr.getStepResultId());
+
+			taskRepository.delete(st);
+			userRepository.delete(cu);
 		} catch (Exception ex) {
 			logger.error("testStepResults failed", ex);
 			throw ex;
@@ -1526,8 +1546,7 @@ public class CdsRepositoryServiceTest {
 			logger.info("Search failed on missing query as expected: {}", ex.toString());
 		}
 		try {
-			stepResultSearchService.findStepResults(null, null, null, null, null, null, null, null, false,
-					PageRequest.of(0, 5));
+			stepResultSearchService.findStepResults(null, null, null, false, PageRequest.of(0, 5));
 			throw new Exception("Unexpected success");
 		} catch (IllegalArgumentException ex) {
 			logger.info("Search failed on missing query as expected: {}", ex.toString());
