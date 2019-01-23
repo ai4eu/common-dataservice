@@ -271,7 +271,7 @@
 							<!-- Specify a tag to avoid default tag "latest" -->
 							<name>common-dataservice:${project.version}</name>
 							<build>
-								<from>openjdk:8-jre-alpine</from>
+								<from>openjdk:8-jre-slim</from>
 								<tags>
 									<!-- Add tag with build number -->
 									<tag>${project.version}-b${build.number}</tag>

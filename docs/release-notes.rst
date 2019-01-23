@@ -26,7 +26,7 @@ available as a Docker image in the Acumos/LF Docker registry.
 
 Version 2.0.3, 23 Jan 2019
 --------------------------
-* Use base docker image openjdk:8u191-jre-alpine3.8
+* Revise base docker image to OpenJDK
 * Requires database schema version 2.0
 
 Version 2.0.2, 7 Jan 2019
