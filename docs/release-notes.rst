@@ -27,6 +27,7 @@ available as a Docker image in the Acumos/LF Docker registry.
 Version 2.0.4, 24 Jan 2019
 --------------------------
 * Repair createUser method behavior on apiToken field (`ACUMOS-2413 <https://jira.acumos.org/browse/ACUMOS-2413>`_)
+* Add JSR310 library to deserialize Instant values (`ACUMOS-2416 <https://jira.acumos.org/browse/ACUMOS-2416>`_)
 * Requires database schema version 2.0
 
 Version 2.0.3, 23 Jan 2019
