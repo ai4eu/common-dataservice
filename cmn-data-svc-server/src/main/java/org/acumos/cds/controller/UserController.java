@@ -46,6 +46,7 @@ import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserLoginProvider.UserLoginProviderPK;
 import org.acumos.cds.domain.MLPUserRoleMap;
 import org.acumos.cds.domain.MLPUserTagMap;
+import org.acumos.cds.domain.MLPUser_;
 import org.acumos.cds.repository.NotifUserMapRepository;
 import org.acumos.cds.repository.RoleRepository;
 import org.acumos.cds.repository.SolutionDeploymentRepository;
@@ -381,17 +382,8 @@ public class UserController extends AbstractController {
 	/*
 	 * This method was an early attempt to provide a search feature. Originally
 	 * written with a generic map request parameter to avoid binding field names,
-	 * but that is not supported by Swagger web UI. Now allows use from that web UI
-	 * at the cost of hard-coding many class field names.
+	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	private static final String FIRST_NAME = "firstName";
-	private static final String MIDDLE_NAME = "middleName";
-	private static final String LAST_NAME = "lastName";
-	private static final String ORG_NAME = "orgName";
-	private static final String EMAIL = "email";
-	private static final String LOGIN_NAME = "loginName";
-	private static final String ACTIVE = "active";
-
 	@ApiOperation(value = "Searches for users with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPUser.class, responseContainer = "Page")
@@ -400,20 +392,13 @@ public class UserController extends AbstractController {
 	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
 	public Object searchUsers(@ApiParam(value = "Junction", allowableValues = "a,o") //
 	@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
-			@ApiParam(value = "First name") //
-			@RequestParam(name = FIRST_NAME, required = false) String firstName, //
-			@ApiParam(value = "Middle name") //
-			@RequestParam(name = MIDDLE_NAME, required = false) String middleName, //
-			@ApiParam(value = "Last name") //
-			@RequestParam(name = LAST_NAME, required = false) String lastName, //
-			@ApiParam(value = "Org name") //
-			@RequestParam(name = ORG_NAME, required = false) String orgName, //
-			@ApiParam(value = "Email") //
-			@RequestParam(name = EMAIL, required = false) String email, //
-			@ApiParam(value = "Login name") //
-			@RequestParam(name = LOGIN_NAME, required = false) String loginName, //
-			@ApiParam(value = "Active") //
-			@RequestParam(name = ACTIVE, required = false) Boolean active, //
+			@RequestParam(name = MLPUser_.FIRST_NAME, required = false) String firstName, //
+			@RequestParam(name = MLPUser_.MIDDLE_NAME, required = false) String middleName, //
+			@RequestParam(name = MLPUser_.LAST_NAME, required = false) String lastName, //
+			@RequestParam(name = MLPUser_.ORG_NAME, required = false) String orgName, //
+			@RequestParam(name = MLPUser_.EMAIL, required = false) String email, //
+			@RequestParam(name = MLPUser_.LOGIN_NAME, required = false) String loginName, //
+			@RequestParam(name = MLPUser_.ACTIVE, required = false) Boolean active, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchUsers enter");
 		boolean isOr = junction != null && "o".equals(junction);
@@ -492,9 +477,8 @@ public class UserController extends AbstractController {
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
 	public MLPResponse createUser(@RequestBody MLPUser user, HttpServletResponse response) {
-		// Do not log clear-text passwords or tokens!
-		logger.debug("createUser: loginName {}", user.getLoginName());
-
+		// the toString() method reveals no security hashes or tokens
+		logger.debug("createUser: user {}", user.toString());
 		try {
 			String id = user.getUserId();
 			if (id != null) {
@@ -510,9 +494,12 @@ public class UserController extends AbstractController {
 				user.setLoginHash(BCrypt.hashpw(user.getLoginHash(), BCrypt.gensalt()));
 			if (user.getVerifyTokenHash() != null)
 				user.setVerifyTokenHash(BCrypt.hashpw(user.getVerifyTokenHash(), BCrypt.gensalt()));
-			// Encrypt any API token
-			if (user.getApiToken() != null)
+			// Save and encrypt any API token
+			String savedApiToken = null;
+			if (user.getApiToken() != null) {
+				savedApiToken = user.getApiToken();
 				user.setApiToken(encryptWithJasypt(user.getApiToken()));
+			}
 			// Create a new row
 			MLPUser newUser = userRepository.save(user);
 			response.setStatus(HttpServletResponse.SC_CREATED);
@@ -522,10 +509,11 @@ public class UserController extends AbstractController {
 			// but first detach from Hibernate and wipe all hashes
 			entityManager.detach(newUser);
 			newUser.clearHashes();
+			user.setApiToken(savedApiToken);
 			return newUser;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createUser failed: {}", cve.toString());
+			logger.warn("createUser took exception {} on data {}", cve.toString(), user.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createUser failed", cve);
 		}
@@ -537,7 +525,8 @@ public class UserController extends AbstractController {
 	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
 	public MLPTransportModel updateUser(@PathVariable("userId") String userId, @RequestBody MLPUser user,
 			HttpServletResponse response) {
-		logger.debug("updateUser: userId {}", userId);
+		// the toString() method reveals no security hashes or tokens
+		logger.debug("updateUser: user {}", user.toString());
 		// Get the existing one
 		Optional<MLPUser> opt = userRepository.findById(userId);
 		if (!opt.isPresent()) {
@@ -566,7 +555,7 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateUser failed: {}", cve.toString());
+			logger.warn("updateUser took exception {} on data {}", cve.toString(), user.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateUser failed", cve);
 		}
@@ -597,7 +586,7 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteUser failed: {}", ex.toString());
+			logger.warn("deleteUser took exception {} on data {}", ex.toString(), userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteUser failed", ex);
 		}
@@ -781,7 +770,7 @@ public class UserController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createUserLoginProvider failed: {}", cve.toString());
+			logger.warn("createUserLoginProvider took exception {} on data {}", cve.toString(), ulp.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createUserLoginProvider failed", cve);
 		}
@@ -822,7 +811,7 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateUserLoginProvider failed: {}", cve.toString());
+			logger.warn("updateUserLoginProvider took exception {} on data {}", cve.toString(), ulp.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateUserLoginProvider failed", cve);
 		}
@@ -845,7 +834,7 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteLoginProvider failed: {}", ex.toString());
+			logger.warn("deleteLoginProvider took exception {} on data {}", ex.toString(), userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteLoginProvider failed", ex);
 		}
@@ -876,7 +865,7 @@ public class UserController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
 		}
 		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("createSolutionFavorite failed for usr ID {}", userId);
+			logger.warn("createSolutionFavorite failed for user ID {}", userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
 		}
@@ -893,7 +882,7 @@ public class UserController extends AbstractController {
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
-			logger.error("createSolutionFavorite failed: {}", cve.toString());
+			logger.error("createSolutionFavorite took exception {} on data {}", cve.toString(), sfv.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return new ErrorTransport(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					ex.getCause() != null ? ex.getCause().getMessage() : "createSolutionFavorite failed", cve);
@@ -908,14 +897,14 @@ public class UserController extends AbstractController {
 	public MLPTransportModel deleteSolutionFavorite(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId, HttpServletResponse response) {
 		logger.debug("deleteSolutionFavorite: solutionId {} userId {}", solutionId, userId);
+		// Build a key for fetch
+		SolutionFavoritePK pk = new SolutionFavoritePK(solutionId, userId);
 		try {
-			// Build a key for fetch
-			SolutionFavoritePK pk = new SolutionFavoritePK(solutionId, userId);
 			solutionFavoriteRepository.deleteById(pk);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteSolutionFavorite failed: {}", ex.toString());
+			logger.warn("deleteSolutionFavorite took exception {} on data {}", ex.toString(), pk);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSolutionFavorite failed", ex);
 		}
@@ -968,7 +957,7 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("dropTag failed: {}", ex.toString());
+			logger.warn("dropTag took exception {} on data {}", ex.toString(), userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropTag failed", ex);
 		}

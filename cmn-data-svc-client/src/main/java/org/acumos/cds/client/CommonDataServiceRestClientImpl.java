@@ -143,7 +143,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 				throws IOException {
-			request.getHeaders().add(AcumosLogConstants.Headers.REQUEST_ID, requestId == null ? generateRequestId() : requestId);
+			request.getHeaders().add(AcumosLogConstants.Headers.REQUEST_ID,
+					requestId == null ? generateRequestId() : requestId);
 			return execution.execute(request, body);
 		}
 

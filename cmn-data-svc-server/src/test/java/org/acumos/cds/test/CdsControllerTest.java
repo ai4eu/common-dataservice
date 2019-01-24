@@ -281,11 +281,10 @@ public class CdsControllerTest {
 			// Use this repeatedly :)
 			RestPageRequest rp = new RestPageRequest(0, 1);
 
-			Instant lastLogin = Instant.now().minusSeconds(60);
 			MLPUser cu = new MLPUser();
 			final String loginName = "artifact-user-";
 			final String loginPass = "test_client_pass";
-			final String apiToken = "test_client_api";
+			final String apiToken = "test_client_api_token";
 			final String verifyToken = "test_client_verify";
 			cu.setLoginName(loginName);
 			cu.setLoginHash(loginPass);
@@ -297,7 +296,6 @@ public class CdsControllerTest {
 			final String lastName = "LastCreateSolArt";
 			cu.setLastName(lastName);
 			cu.setActive(true);
-			cu.setLastLogin(lastLogin);
 			cu.setLoginPassExpire(Instant.now());
 			final byte[] fakePicture = new byte[] { 1, 2, 3, 4, 5 };
 			cu.setPicture(fakePicture);
@@ -305,12 +303,24 @@ public class CdsControllerTest {
 			Assert.assertNotNull(cu.getUserId());
 			Assert.assertNotNull(cu.getCreated());
 			Assert.assertNotNull(cu.getModified());
+			// The API token is lightly encrypted at the server
+			// check that cleartext is returned.
+			Assert.assertEquals(apiToken, cu.getApiToken());
 			// Created and modified are not necessarily equal; allow for minor difference
 			Assert.assertTrue(Math.abs(cu.getCreated().getEpochSecond() - cu.getModified().getEpochSecond()) < 2);
-			Assert.assertEquals(cu.getLastLogin(), lastLogin);
-			// Password must not come back in response
+			// Hashed passwords must not come back in response
 			Assert.assertNull(cu.getLoginHash());
+			Assert.assertNull(cu.getVerifyTokenHash());
 			logger.info("Created user {}", cu);
+
+			// Update last login manually
+			Instant lastLogin = Instant.now();
+			cu.setLastLogin(lastLogin);
+			client.updateUser(cu);
+			cu = client.getUser(cu.getUserId());
+			// The instant is not returned from Mysql perfectly, off by millis, why?
+			long diff = Math.abs(lastLogin.getEpochSecond() - cu.getLastLogin().getEpochSecond());
+			Assert.assertTrue(diff < 100);
 
 			MLPUser inactiveUser = new MLPUser("inactiveUser", "email@address.org", false);
 			inactiveUser.setLoginHash("cleartext");

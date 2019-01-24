@@ -474,12 +474,20 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 		return Objects.hash(userId, loginName, loginHash);
 	}
 
+	/**
+	 * This toString() method is safe for use by loggers because it reveals no
+	 * security-related field content (apiToken, authToken, loginHash).
+	 */
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[userId=" + userId + ", loginName=" + loginName + ", email=" + email
-				+ ", lastName=" + lastName + ", middleName=" + middleName + ", firstName=" + firstName + "orgName="
-				+ orgName + ", lastLogin = " + lastLogin + "loginPassExpires=" + loginPassExpire + ", created="
-				+ getCreated() + ", modified=" + getModified() + "]";
+		return this.getClass().getName() + "[userId=" + userId + ", active=" + active //
+				+ ", apiToken is " + (apiToken == null ? "null" : "present") //
+				+ ", authToken is " + (authToken == null ? "null" : "present") //
+				+ ", email=" + email + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
+				+ lastName + ", lastLogin = " + lastLogin //
+				+ ", loginHash is " + (loginHash == null ? "null" : "present") //
+				+ ", loginName=" + loginName + ", loginPassExpires=" + loginPassExpire + ", orgName=" + orgName
+				+ ", created=" + getCreated() + ", modified=" + getModified() + "]";
 	}
 
 }
