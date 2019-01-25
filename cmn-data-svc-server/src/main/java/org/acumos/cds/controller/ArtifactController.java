@@ -34,6 +34,7 @@ import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
 import org.acumos.cds.service.ArtifactSearchService;
+import org.acumos.cds.service.ArtifactService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -79,7 +80,9 @@ public class ArtifactController extends AbstractController {
 	@Autowired
 	private ArtifactRepository artifactRepository;
 	@Autowired
-	private ArtifactSearchService artifactService;
+	private ArtifactService artifactService;
+	@Autowired
+	private ArtifactSearchService artifactSearchService;
 	@Autowired
 	private SolutionRevisionRepository solutionRevisionRepository;
 
@@ -157,7 +160,7 @@ public class ArtifactController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return artifactService.findArtifacts(artifactTypeCode, name, uri, version, userId, isOr, pageRequest);
+			return artifactSearchService.findArtifacts(artifactTypeCode, name, uri, version, userId, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchArtifacts failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -239,7 +242,7 @@ public class ArtifactController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the artifact with the specified ID. Cascades delete to related records.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{artifactId}", method = RequestMethod.DELETE)
@@ -247,7 +250,7 @@ public class ArtifactController extends AbstractController {
 			HttpServletResponse response) {
 		logger.debug("deleteArtifact ID {}", artifactId);
 		try {
-			artifactRepository.deleteById(artifactId);
+			artifactService.deleteArtifact(artifactId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

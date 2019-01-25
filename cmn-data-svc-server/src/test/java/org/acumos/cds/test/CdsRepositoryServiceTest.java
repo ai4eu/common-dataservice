@@ -591,10 +591,8 @@ public class CdsRepositoryServiceTest {
 			for (MLPSolutionRevision r : revs) {
 				logger.info("\tRevision: " + r.toString());
 				Assert.assertNotEquals(0, r.getAuthors().length);
-				Iterable<MLPArtifact> arts = artifactRepository.findByRevision(r.getRevisionId());
+				Iterable<MLPSolRevArtMap> arts = solRevArtMapRepository.findByRevisionId(r.getRevisionId());
 				Assert.assertTrue(arts.iterator().hasNext());
-				for (MLPArtifact a : arts)
-					logger.info("\t\tArtifact: " + a.toString());
 			}
 
 			MLPDocument doc = new MLPDocument();
@@ -1055,10 +1053,8 @@ public class CdsRepositoryServiceTest {
 			Assert.assertTrue(revs.iterator().hasNext());
 			for (MLPSolutionRevision r : revs) {
 				logger.info("\tRevision: " + r.toString());
-				Iterable<MLPArtifact> arts = artifactRepository.findByRevision(r.getRevisionId());
+				Iterable<MLPSolRevArtMap> arts = solRevArtMapRepository.findByRevisionId(r.getRevisionId());
 				Assert.assertTrue(arts.iterator().hasNext());
-				for (MLPArtifact a : arts)
-					logger.info("\t\tArtifact: " + a.toString());
 			}
 
 			logger.info("Querying for revisions by artifact");

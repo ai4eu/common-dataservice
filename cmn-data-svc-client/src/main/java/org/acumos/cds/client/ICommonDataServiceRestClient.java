@@ -387,8 +387,10 @@ public interface ICommonDataServiceRestClient {
 	void incrementSolutionViewCount(String solutionId);
 
 	/**
-	 * Deletes a solution. A solution can be deleted if is not associated with any
-	 * revisions; if associations remain the delete will fail.
+	 * Deletes a solution. Cascades the delete to solution-revision records and
+	 * related entities such as composite solutions, solution downloads, publish
+	 * request and so on. The solution-revision in turn cascades the delete to
+	 * artifacts and related records. Answers bad request if the ID is not known.
 	 * 
 	 * @param solutionId
 	 *                       solution ID
@@ -455,8 +457,8 @@ public interface ICommonDataServiceRestClient {
 	void updateSolutionRevision(MLPSolutionRevision revision);
 
 	/**
-	 * Deletes a solution revision. A solution revision can be deleted if is not
-	 * associated with any artifacts; if associations remain the delete will fail.
+	 * Deletes a solution revision. Cascades the delete to related records including
+	 * artifacts. Answers bad request if the ID is not known.
 	 * 
 	 * @param solutionId
 	 *                       solution ID
@@ -521,7 +523,7 @@ public interface ICommonDataServiceRestClient {
 
 	/**
 	 * Deletes a solution tag. A tag can be deleted if is not associated with any
-	 * solutions; if associations remain the delete will fail.
+	 * other entities; if associations remain the delete will fail.
 	 * 
 	 * @param tag
 	 *                tag object
@@ -635,8 +637,9 @@ public interface ICommonDataServiceRestClient {
 	void updateArtifact(MLPArtifact artifact);
 
 	/**
-	 * Deletes an artifact. An artifact can be deleted if is not associated with any
-	 * solution revisions; if associations remain the delete will fail.
+	 * Deletes an artifact. Cascades the delete; e.g., removes the association with
+	 * any solution revisions and other records. Answers bad request if the ID is
+	 * not known.
 	 * 
 	 * @param artifactId
 	 *                       artifact ID

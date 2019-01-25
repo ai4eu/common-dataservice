@@ -34,9 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.MLPResponse;
-import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -48,10 +48,14 @@ import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPUser;
-import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
+import org.acumos.cds.repository.DocumentRepository;
+import org.acumos.cds.repository.PublishRequestRepository;
+import org.acumos.cds.repository.RevisionDescriptionRepository;
+import org.acumos.cds.repository.SolGrpMemMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
+import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionDeploymentRepository;
@@ -62,7 +66,9 @@ import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
 import org.acumos.cds.repository.StepResultRepository;
+import org.acumos.cds.repository.ThreadRepository;
 import org.acumos.cds.repository.UserRepository;
+import org.acumos.cds.service.ArtifactService;
 import org.acumos.cds.service.SolutionSearchService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
@@ -109,13 +115,23 @@ public class SolutionController extends AbstractController {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired
-	private ArtifactRepository artifactRepository;
+	private ArtifactService artifactService;
 	@Autowired
 	private CatSolMapRepository catSolMapRepository;
 	@Autowired
 	private CompSolMapRepository compSolMapRepository;
 	@Autowired
+	private DocumentRepository documentRepository;
+	@Autowired
+	private PublishRequestRepository publishRequestRepository;
+	@Autowired
+	private RevisionDescriptionRepository revisionDescRepository;
+	@Autowired
+	private SolGrpMemMapRepository solGroupMemMapRepository;
+	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
+	@Autowired
+	private SolRevDocMapRepository solRevDocMapRepository;
 	@Autowired
 	private SolTagMapRepository solTagMapRepository;
 	@Autowired
@@ -140,6 +156,8 @@ public class SolutionController extends AbstractController {
 	private UserRepository userRepository;
 	@Autowired
 	private StepResultRepository stepResultRepository;
+	@Autowired
+	private ThreadRepository threadRepository;
 
 	/**
 	 * Updates the cached value(s) for solution downloads.
@@ -529,29 +547,31 @@ public class SolutionController extends AbstractController {
 		logger.debug("deleteSolution: ID {}", solutionId);
 		try {
 			// Manually cascade the delete
-			solutionDeploymentRepository.deleteBySolutionId(solutionId);
-			compSolMapRepository.deleteByParentId(solutionId);
-			solTagMapRepository.deleteBySolutionId(solutionId);
-			solutionDownloadRepository.deleteBySolutionId(solutionId);
-			solutionRatingRepository.deleteBySolutionId(solutionId);
 			catSolMapRepository.deleteBySolutionId(solutionId);
-			solUserAccMapRepository.deleteBySolutionId(solutionId);
+			compSolMapRepository.deleteByParentId(solutionId);
+			compSolMapRepository.deleteByChildId(solutionId);
+			solutionDeploymentRepository.deleteBySolutionId(solutionId);
+			solutionDownloadRepository.deleteBySolutionId(solutionId);
 			solutionFavoriteRepository.deleteBySolutionId(solutionId);
+			solutionRatingRepository.deleteBySolutionId(solutionId);
+			solGroupMemMapRepository.deleteBySolutionId(solutionId);
+			solTagMapRepository.deleteBySolutionId(solutionId);
+			solUserAccMapRepository.deleteBySolutionId(solutionId);
 			stepResultRepository.deleteBySolutionId(solutionId);
-			for (MLPSolutionRevision r : solutionRevisionRepository.findBySolutionIdIn(new String[] { solutionId })) {
-				for (MLPArtifact a : artifactRepository.findByRevision(r.getRevisionId()))
-					solRevArtMapRepository
-							.deleteById(new MLPSolRevArtMap.SolRevArtMapPK(r.getRevisionId(), a.getArtifactId()));
-				// do NOT delete artifacts!
-				solutionRevisionRepository.delete(r);
-			}
+			threadRepository.deleteBySolutionId(solutionId);
+			publishRequestRepository.deleteBySolutionId(solutionId);
+			for (MLPSolutionRevision r : solutionRevisionRepository.findBySolutionIdIn(new String[] { solutionId }))
+				deleteSolutionRevision(r.getRevisionId());
 			solutionRepository.deleteById(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteSolution failed: {}", ex.toString());
+			// The most likely failure here is invalid/missing ID.
+			// But if the cascade code above is incomplete then this
+			// will fail with a constraint violation exception.
+			Exception cve = findConstraintViolationException(ex);
+			logger.warn("deleteSolution failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSolution failed", ex);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSolution failed", cve);
 		}
 	}
 
@@ -659,7 +679,35 @@ public class SolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the revision with the specified ID. Returns bad request if the ID is not found.", //
+	/*
+	 * Cascades delete of a revision to dependent records, including artifacts and
+	 * documents. Must not delete artifacts that are associated to other revisions
+	 * tho.
+	 */
+	private void deleteSolutionRevision(String revisionId) {
+		// Get the list of artifacts associated with this revision
+		Iterable<MLPSolRevArtMap> arts = solRevArtMapRepository.findByRevisionId(revisionId);
+		// Get the list of documents associated with this revision
+		Iterable<MLPSolRevDocMap> docs = solRevDocMapRepository.findByRevisionId(revisionId);
+		solRevArtMapRepository.deleteByRevisionId(revisionId);
+		revisionDescRepository.deleteByRevisionId(revisionId);
+		solRevDocMapRepository.deleteByRevisionId(revisionId);
+		solutionRevisionRepository.deleteById(revisionId);
+		// If an artifact is not associated with any other revisions, delete it.
+		for (MLPSolRevArtMap artMap : arts) {
+			Iterable<MLPSolRevArtMap> revs = solRevArtMapRepository.findByArtifactId(artMap.getArtifactId());
+			if (!revs.iterator().hasNext())
+				artifactService.deleteArtifact(artMap.getArtifactId());
+		}
+		// If a document is not associated with any other revisions, delete it.
+		for (MLPSolRevDocMap docMap : docs) {
+			Iterable<MLPSolRevDocMap> revs = solRevDocMapRepository.findByDocumentId(docMap.getDocumentId());
+			if (!revs.iterator().hasNext())
+				documentRepository.deleteById(docMap.getDocumentId());
+		}
+	}
+
+	@ApiOperation(value = "Deletes the revision with the specified ID. Cascades delete to related records. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH
@@ -668,10 +716,12 @@ public class SolutionController extends AbstractController {
 			@PathVariable("revisionId") String revisionId, HttpServletResponse response) {
 		logger.debug("deleteSolutionRevision: solutionId {} revisionId {}", solutionId, revisionId);
 		try {
-			solutionRevisionRepository.deleteById(revisionId);
+			deleteSolutionRevision(revisionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
+			// The most likely failure here is invalid/missing ID.
+			// But if the cascade code above is incomplete then this
+			// may fail with a constraint violation exception.
 			logger.warn("deleteSolutionRevision failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteRevision failed", ex);

@@ -198,11 +198,9 @@ public class CdsControllerTest {
 			logger.info("Created basicsequencedemo step result {}", sr);
 
 			logger.info("Deleting objects");
-			client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
-			client.deleteArtifact(ca.getArtifactId());
-			client.deleteRevisionDescription(cr.getRevisionId(), "PB");
-			client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
+			// This cascades
 			client.deleteSolution(cs.getSolutionId());
+			// This does not
 			client.deleteUser(cu.getUserId());
 		} catch (HttpStatusCodeException ex) {
 			logger.error("basicSequenceDemo failed: " + ex.getResponseBodyAsString(), ex);
@@ -965,6 +963,7 @@ public class CdsControllerTest {
 			// Create Solution download
 			MLPSolutionDownload sd = new MLPSolutionDownload(cs.getSolutionId(), ca.getArtifactId(), cu.getUserId());
 			sd = client.createSolutionDownload(sd);
+			Assert.assertNotNull(sd.getDownloadId());
 			logger.info("Created solution download {}", sd);
 
 			// Query for downloads
@@ -1063,6 +1062,8 @@ public class CdsControllerTest {
 			Assert.assertNull(client.getPublishRequest(pubReq.getRequestId()));
 
 			if (cleanup) {
+				// Ignore the cascade behavior for solution, revision and artifact entities.
+				// Cover all the delete methods here.
 				logger.info("Deleting newly created instances");
 				client.dropSolutionRevisionDocument(cr.getRevisionId(), "OR", doc.getDocumentId());
 				client.deleteDocument(doc.getDocumentId());
@@ -1071,26 +1072,24 @@ public class CdsControllerTest {
 				client.dropSolutionTag(cs.getSolutionId(), tagName1);
 				client.deleteTag(tag1);
 				client.deleteTag(tag2);
-				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
-				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
-				// Server SHOULD cascade deletes.
 				client.deleteSolutionRating(ur);
 				client.deleteSolutionDownload(sd);
 				client.deleteSolutionFavorite(sf1);
-				// delete-solution should cascade to sol-rev-art
+				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
+				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
+				client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
+				client.deleteArtifact(ca.getArtifactId());
+				client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
 				client.deleteSolution(cs.getSolutionId());
 				client.deleteSolution(csOrg.getSolutionId());
 				client.deleteSolution(inactive.getSolutionId());
 				client.deleteCatalog(ca1.getCatalogId());
-				client.deleteArtifact(ca.getArtifactId());
 				client.deletePeerSubscription(ps.getSubId());
 				client.deletePeer(pr.getPeerId());
 				client.deleteUserLoginProvider(clp);
 				client.deleteUser(cu.getUserId());
 				client.deleteUser(inactiveUser.getUserId());
-
 				Assert.assertNull(client.getSolution(cs.getSolutionId()));
-
 			} // cleanup
 
 		} catch (HttpStatusCodeException ex) {
