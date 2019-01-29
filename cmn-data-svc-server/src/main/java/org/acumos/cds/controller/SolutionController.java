@@ -73,6 +73,7 @@ import org.acumos.cds.service.SolutionSearchService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
+import org.acumos.cds.transport.SolutionRatingStats;
 import org.acumos.cds.transport.SuccessTransport;
 import org.acumos.cds.util.ApiPageable;
 import org.slf4j.Logger;
@@ -160,50 +161,20 @@ public class SolutionController extends AbstractController {
 	private ThreadRepository threadRepository;
 
 	/**
-	 * Updates the cached value(s) for solution downloads.
-	 * 
-	 * Is extra concurrency control required here? A spring controller is a
-	 * singleton, but what about threads?
-	 * 
-	 * @param solutionId
-	 *                       Solution ID
-	 */
-	private void updateSolutionDownloadStats(String solutionId) {
-		long count = solutionDownloadRepository.countSolutionDownloads(solutionId);
-		Optional<MLPSolution> da = solutionRepository.findById(solutionId);
-		if (count > 0 && da.isPresent()) {
-			MLPSolution sol = da.get();
-			sol.setDownloadCount(count);
-			sol.setLastDownload(Instant.now());
-			solutionRepository.save(sol);
-		}
-	}
-
-	/**
 	 * Updates the cached value(s) for solution ratings.
-	 * 
-	 * Is extra concurrency control required here? A spring controller is a
-	 * singleton, but what about threads?
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
 	 */
 	private void updateSolutionRatingStats(String solutionId) {
-		long count = solutionRatingRepository.countSolutionRatings(solutionId);
-		Double avg = solutionRatingRepository.getSolutionRatingAverage(solutionId);
-		if (count == 0 || avg == null) {
-			logger.warn("updateSolutionRatingStats failed on ID {}", solutionId);
-		} else {
-			Optional<MLPSolution> da = solutionRepository.findById(solutionId);
-			// Because the count and average are both present, the solution exists.
-			// Add this no-op to silence a Sonar warning.
-			if (da.isPresent()) {
-				MLPSolution sol = da.get();
-				sol.setRatingCount(count);
-				sol.setRatingAverageTenths(Math.round(10 * avg));
-				solutionRepository.save(sol);
-			}
-		}
+		List<SolutionRatingStats> stats = solutionRatingRepository.getSolutionRatingStats(solutionId);
+		if (stats == null || stats.size() != 1)
+			logger.warn("updateSolutionRatingStats failed to find solution {}", solutionId);
+		else if (stats.get(0).getCount() == 0)
+			solutionRepository.updateRating(solutionId, null, null);
+		else
+			solutionRepository.updateRating(solutionId, Math.round(10 * stats.get(0).getAverage()),
+					stats.get(0).getCount());
 	}
 
 	@ApiOperation(value = "Gets the count of solutions.", response = CountTransport.class)
@@ -808,7 +779,7 @@ public class SolutionController extends AbstractController {
 			response.setHeader(HttpHeaders.LOCATION, CCDSConstants.SOLUTION_PATH + "/" + sd.getSolutionId() + "/"
 					+ CCDSConstants.DOWNLOAD_PATH + sd.getDownloadId());
 			// Update cache
-			updateSolutionDownloadStats(solutionId);
+			solutionRepository.updateDownloadCount(solutionId);
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
@@ -830,7 +801,7 @@ public class SolutionController extends AbstractController {
 		try { // Build a key for fetch
 			solutionDownloadRepository.deleteById(downloadId);
 			// Update cache!
-			updateSolutionDownloadStats(solutionId);
+			solutionRepository.updateDownloadCount(solutionId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error

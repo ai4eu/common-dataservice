@@ -591,7 +591,7 @@ public class CdsControllerTest {
 			Assert.assertTrue(taggedUser.getTags().contains(tag1));
 			client.dropUserTag(cu.getUserId(), tagName1);
 
-			MLPCatalog ca1 = client.createCatalog(new MLPCatalog("PB", "name", "http://pub.org"));
+			MLPCatalog ca1 = client.createCatalog(new MLPCatalog("PB", "catalog name", "http://other.acumos.org"));
 			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 			logger.info("Created catalog {}", ca1);
 
@@ -951,14 +951,14 @@ public class CdsControllerTest {
 			RestPageResponse<MLPSolutionRating> ratings = client.getSolutionRatings(cs.getSolutionId(),
 					new RestPageRequest(0, 1));
 			Assert.assertNotNull(ratings);
-			Assert.assertNotEquals(0, ratings.getNumberOfElements());
+			Assert.assertEquals(1, ratings.getNumberOfElements());
 			logger.info("Solution rating count {}", ratings.getNumberOfElements());
 
 			// check the average rating
-			MLPSolution avgRating = client.getSolution(cs.getSolutionId());
-			Assert.assertNotNull(avgRating.getRatingAverageTenths());
-			Assert.assertTrue(avgRating.getRatingAverageTenths() > 0);
-			logger.info("Computed solution rating average: {}", avgRating.getRatingAverageTenths());
+			MLPSolution solWithRating = client.getSolution(cs.getSolutionId());
+			Assert.assertNotNull(solWithRating.getRatingAverageTenths());
+			Assert.assertTrue(solWithRating.getRatingAverageTenths() > 0);
+			logger.info("Computed solution rating average: {}", solWithRating.getRatingAverageTenths());
 
 			// Create Solution download
 			MLPSolutionDownload sd = new MLPSolutionDownload(cs.getSolutionId(), ca.getArtifactId(), cu.getUserId());
@@ -971,10 +971,17 @@ public class CdsControllerTest {
 			Assert.assertNotEquals(0, dnls.getNumberOfElements());
 
 			// Count the downloads
-			MLPSolution downloadStats = client.getSolution(cs.getSolutionId());
-			Assert.assertNotNull(downloadStats);
-			Assert.assertNotEquals(new Long(0), downloadStats.getDownloadCount());
-			logger.info("Solution download count is {}", downloadStats.getDownloadCount());
+			MLPSolution solWithDownloads = client.getSolution(cs.getSolutionId());
+			Assert.assertNotNull(solWithDownloads);
+			Long downloadCount = solWithDownloads.getDownloadCount();
+			Assert.assertEquals(new Long(1), downloadCount);
+			logger.info("Solution download count is {}", solWithDownloads.getDownloadCount());
+
+			// Attempt to update the download count, which is blocked
+			solWithDownloads.setDownloadCount(999999L);
+			client.updateSolution(solWithDownloads);
+			solWithDownloads = client.getSolution(cs.getSolutionId());
+			Assert.assertEquals(downloadCount, solWithDownloads.getDownloadCount());
 
 			// Create Solution favorite for a user
 			MLPSolutionFavorite sf1 = new MLPSolutionFavorite();
@@ -1062,8 +1069,8 @@ public class CdsControllerTest {
 			Assert.assertNull(client.getPublishRequest(pubReq.getRequestId()));
 
 			if (cleanup) {
-				// Ignore the cascade behavior for solution, revision and artifact entities.
-				// Cover all the delete methods here.
+				// Call the many different delete methods here directly to cover the code,
+				// ignore the cascade behavior for solution, revision and artifact entities.
 				logger.info("Deleting newly created instances");
 				client.dropSolutionRevisionDocument(cr.getRevisionId(), "OR", doc.getDocumentId());
 				client.deleteDocument(doc.getDocumentId());
@@ -1072,11 +1079,11 @@ public class CdsControllerTest {
 				client.dropSolutionTag(cs.getSolutionId(), tagName1);
 				client.deleteTag(tag1);
 				client.deleteTag(tag2);
+				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
+				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 				client.deleteSolutionRating(ur);
 				client.deleteSolutionDownload(sd);
 				client.deleteSolutionFavorite(sf1);
-				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
-				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 				client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
 				client.deleteArtifact(ca.getArtifactId());
 				client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
@@ -2102,7 +2109,7 @@ public class CdsControllerTest {
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 			logger.info("Created solution {}", cs);
 
-			ca = client.createCatalog(new MLPCatalog("PB", "name", "http://pub.org"));
+			ca = client.createCatalog(new MLPCatalog("PB", "unicorn", "http://pub.org"));
 			Assert.assertNotNull("Catalog ID", ca.getCatalogId());
 			logger.info("Created catalog {}", ca);
 
@@ -2111,7 +2118,7 @@ public class CdsControllerTest {
 
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
-			Assert.assertEquals(1, catalogs.getNumberOfElements());
+			Assert.assertNotEquals(0, catalogs.getNumberOfElements());
 
 			MLPCatalog c2 = client.getCatalog(ca.getCatalogId());
 			Assert.assertEquals(ca, c2);

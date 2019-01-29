@@ -30,6 +30,7 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.acumos.cds.client.ICommonDataServiceRestClient;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -100,23 +101,43 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	@ApiModelProperty(value = "URI of the peer that provided this object")
 	private String origin;
 
-	@Column(name = "VIEW_COUNT", columnDefinition = "INT")
+	/**
+	 * This computed web statistic cannot be updated directly. Updates are blocked
+	 * for concurrency safety.
+	 */
+	@Column(name = "VIEW_COUNT", updatable = false, columnDefinition = "INT")
 	@ApiModelProperty(value = "View count", example = "1")
 	private Long viewCount = 0L;
 
-	@Column(name = "DOWNLOAD_COUNT", columnDefinition = "INT")
+	/**
+	 * This computed web statistic cannot be updated directly. Updates are blocked
+	 * for concurrency safety.
+	 */
+	@Column(name = "DOWNLOAD_COUNT", updatable = false, columnDefinition = "INT")
 	@ApiModelProperty(value = "Download count", example = "1")
 	private Long downloadCount = 0L;
 
-	@Column(name = "LAST_DOWNLOAD", columnDefinition = "TIMESTAMP" /* don't attempt "NULL DEFAULT 0" here */)
+	/**
+	 * In colDef, don't attempt 'NULL DEFAULT 0'
+	 */
+	@Deprecated
+	@Column(name = "LAST_DOWNLOAD", updatable = false, columnDefinition = "TIMESTAMP")
 	@ApiModelProperty(value = "Timestamp of most recent download", example = "2018-12-16T12:34:56.789Z")
 	private Instant lastDownload;
 
-	@Column(name = "RATING_COUNT", columnDefinition = "INT")
+	/**
+	 * This computed web statistic cannot be updated directly. Updates are blocked
+	 * for concurrency safety.
+	 */
+	@Column(name = "RATING_COUNT", updatable = false, columnDefinition = "INT")
 	@ApiModelProperty(value = "Rating count", example = "1")
 	private Long ratingCount = 0L;
 
-	@Column(name = "RATING_AVG_TENTHS", columnDefinition = "INT")
+	/**
+	 * This computed web statistic cannot be updated directly. Updates are blocked
+	 * for concurrency safety.
+	 */
+	@Column(name = "RATING_AVG_TENTHS", updatable = false, columnDefinition = "INT")
 	@ApiModelProperty(value = "Rating average in tenths; e.g., value 35 means 3.5", example = "35")
 	private Long ratingAverageTenths = 0L;
 
@@ -240,6 +261,14 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		return viewCount;
 	}
 
+	/**
+	 * Clients should NOT call this method because updates are blocked. Instead use
+	 * method
+	 * {@link ICommonDataServiceRestClient#incrementSolutionViewCount(String)}.
+	 * 
+	 * @param viewCount
+	 *                      count
+	 */
 	public void setViewCount(Long viewCount) {
 		this.viewCount = viewCount;
 	}
@@ -248,14 +277,36 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		return downloadCount;
 	}
 
+	/**
+	 * Clients should NOT call this method because updates are blocked. This field
+	 * is computed from download records created via
+	 * {@link ICommonDataServiceRestClient#createSolutionDownload(MLPSolutionDownload)}.
+	 * 
+	 * 
+	 * @param downloadCount
+	 *                          count
+	 */
 	public void setDownloadCount(Long downloadCount) {
 		this.downloadCount = downloadCount;
 	}
 
+	/**
+	 * This method will be removed in a future release.
+	 * 
+	 * @return instant
+	 */
+	@Deprecated
 	public Instant getLastDownload() {
 		return lastDownload;
 	}
 
+	/**
+	 * This method will be removed in a future release.
+	 * 
+	 * @param lastDownload
+	 *                         instant
+	 */
+	@Deprecated
 	public void setLastDownload(Instant lastDownload) {
 		this.lastDownload = lastDownload;
 	}
@@ -264,6 +315,14 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		return ratingCount;
 	}
 
+	/**
+	 * Clients should NOT call this method because updates are blocked. This field
+	 * is computed from rating records created via
+	 * {@link ICommonDataServiceRestClient#createSolutionRating(MLPSolutionRating)}.
+	 * 
+	 * @param ratingCount
+	 *                        count
+	 */
 	public void setRatingCount(Long ratingCount) {
 		this.ratingCount = ratingCount;
 	}
@@ -272,6 +331,14 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 		return ratingAverageTenths;
 	}
 
+	/**
+	 * Clients should NOT call this method because updates are blocked. This field
+	 * is computed from rating records created via
+	 * {@link ICommonDataServiceRestClient#createSolutionRating(MLPSolutionRating)}.
+	 * 
+	 * @param ratingAverageTenths
+	 *                                average
+	 */
 	public void setRatingAverageTenths(Long ratingAverageTenths) {
 		this.ratingAverageTenths = ratingAverageTenths;
 	}

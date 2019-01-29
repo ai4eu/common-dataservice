@@ -20,7 +20,10 @@
 
 package org.acumos.cds.repository;
 
+import java.util.List;
+
 import org.acumos.cds.domain.MLPSolutionRating;
+import org.acumos.cds.transport.SolutionRatingStats;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,28 +36,18 @@ public interface SolutionRatingRepository
 		extends PagingAndSortingRepository<MLPSolutionRating, MLPSolutionRating.SolutionRatingPK> {
 
 	/**
-	 * Gets the count of ratings for the specified solution ID by iterating over the
-	 * table that tracks user ratings, which is slightly cheaper than getting the
-	 * entire list, but far more expensive than a cached statistic.
+	 * Gets the average and count of ratings for the specified solution ID by
+	 * iterating over the table that tracks user ratings, which is slightly cheaper
+	 * than getting the entire list, but far more expensive than a cached statistic.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
-	 * @return Count of rating records
+	 * @return List with a single object that transports the average and count of
+	 *         rating values for the specified solution
 	 */
-	@Query("SELECT COUNT(rating) FROM MLPSolutionRating WHERE solutionId = :solutionId")
-	long countSolutionRatings(@Param("solutionId") String solutionId);
-
-	/**
-	 * Gets the average of ratings for the specified solution ID by iterating over
-	 * the table that tracks user ratings, which is slightly cheaper than getting
-	 * the entire list, but far more expensive than a cached statistic.
-	 * 
-	 * @param solutionId
-	 *                       Solution ID
-	 * @return Average of rating values; null if no ratings exist.
-	 */
-	@Query("SELECT AVG(rating) FROM MLPSolutionRating WHERE solutionId = :solutionId")
-	Double getSolutionRatingAverage(@Param("solutionId") String solutionId);
+	@Query("SELECT new org.acumos.cds.transport.SolutionRatingStats(AVG(rating), COUNT(rating)) "
+			+ " FROM MLPSolutionRating WHERE solutionId = :solutionId")
+	List<SolutionRatingStats> getSolutionRatingStats(@Param("solutionId") String solutionId);
 
 	/**
 	 * Finds solution ratings for the specified solution ID.

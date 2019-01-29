@@ -40,17 +40,51 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 
 	/**
 	 * Increments the solution view count by 1, with special handling for the first
-	 * time.
+	 * time. Needed because updates are blocked on this field in the entity.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
 	 */
 	@Modifying
-	@Transactional // throws exception without this
+	@Transactional
 	@Query(value = "UPDATE MLPSolution s SET s.viewCount = "//
 			+ " CASE WHEN s.viewCount is null THEN 1 ELSE (s.viewCount + 1) END" //
 			+ " WHERE s.solutionId = :solutionId")
 	void incrementViewCount(@Param("solutionId") String solutionId);
+
+	/**
+	 * Updates the solution download count. Needed because updates are blocked on
+	 * this field in the entity.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 */
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE MLPSolution s SET s.downloadCount = "//
+			+ " (SELECT COUNT(solutionId) FROM MLPSolutionDownload WHERE solutionId = :solutionId) " //
+			+ " WHERE s.solutionId = :solutionId")
+	void updateDownloadCount(@Param("solutionId") String solutionId);
+
+	/**
+	 * Updates the solution rating statistics.
+	 * 
+	 * @param solutionId
+	 *                                Solution ID
+	 * @param ratingAverageTenths
+	 *                                Average in tenths; for example an average
+	 *                                value of 3.5 should be sent as 35L; null is
+	 *                                acceptable
+	 * @param ratingCount
+	 *                                Count of ratings; null is acceptable
+	 */
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE MLPSolution s SET s.ratingCount = :ratingCount, "//
+			+ " s.ratingAverageTenths = :ratingAverageTenths "//
+			+ " WHERE s.solutionId = :solutionId")
+	void updateRating(@Param("solutionId") String solutionId, @Param("ratingAverageTenths") Long ratingAverageTenths,
+			@Param("ratingCount") Long ratingCount);
 
 	/**
 	 * Finds solutions using a LIKE query on the text column NAME.

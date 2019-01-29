@@ -114,6 +114,7 @@ import org.acumos.cds.service.SolutionSearchService;
 import org.acumos.cds.service.StepResultSearchService;
 import org.acumos.cds.service.UserSearchService;
 import org.acumos.cds.transport.AuthorTransport;
+import org.acumos.cds.transport.SolutionRatingStats;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1033,9 +1034,11 @@ public class CdsRepositoryServiceTest {
 			logger.info("Created solution rating: " + ur);
 
 			// Fetch average rating
-			Double avgRating = solutionRatingRepository.getSolutionRatingAverage(cs.getSolutionId());
-			Assert.assertNotNull("Solution rating average", avgRating);
-			logger.info("Solution rating average: " + avgRating);
+			List<SolutionRatingStats> ratingStats = solutionRatingRepository.getSolutionRatingStats(cs.getSolutionId());
+			Assert.assertNotNull("Solution rating stats", ratingStats);
+			Assert.assertFalse(ratingStats.isEmpty());
+			Assert.assertEquals(1, ratingStats.size());
+			logger.info("Solution rating stats: " + ratingStats.get(0));
 
 			logger.info("Querying for solution by id");
 			Optional<MLPSolution> optSi = solutionRepository.findById(cs.getSolutionId());

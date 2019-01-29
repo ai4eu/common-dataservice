@@ -1048,6 +1048,7 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
+	@SuppressWarnings("deprecation")
 	private void checkMLPSolution(MLPSolution m) {
 		Assert.assertEquals(b1, m.isActive());
 		Assert.assertEquals(t1, m.getCreated());
@@ -1069,6 +1070,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(l4, m.getViewCount());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testMLPSolution() {
 		MLPSolution m = new MLPSolution(s1, s1, b1);
