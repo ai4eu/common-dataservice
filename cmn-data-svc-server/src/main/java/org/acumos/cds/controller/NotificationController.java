@@ -128,7 +128,7 @@ public class NotificationController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createNotification failed: {}", cve.toString());
+			logger.warn("createNotification took exception {} on data {}", cve.toString(), notif.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createNotification failed", cve);
 		}
@@ -155,7 +155,7 @@ public class NotificationController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateNotification failed: {}", cve.toString());
+			logger.warn("updateNotification took exception {} on data {}", cve.toString(), notif.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateNotification failed", cve);
 		}
@@ -248,7 +248,7 @@ public class NotificationController extends AbstractController {
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
-			logger.error("updateUserNotification failed: {}", cve.toString());
+			logger.warn("updateUserNotification took exception {} on data {}", cve.toString(), notifUserMap.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return new ErrorTransport(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					ex.getCause() != null ? ex.getCause().getMessage() : "updateUserNotification failed", cve);
@@ -303,7 +303,8 @@ public class NotificationController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createUserNotificationPreference failed: {}", cve.toString());
+			logger.warn("createUserNotificationPreference took exception {} on data {}", cve.toString(),
+					usrNotifPref.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createUserNotificationPreference failed",
 					cve);
@@ -334,7 +335,8 @@ public class NotificationController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateUserNotificationPreference failed: {}", cve.toString());
+			logger.warn("updateUserNotificationPreference took exception {} on data {}", cve.toString(),
+					usrNotifPref.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateUserNotificationPreference failed",
 					cve);

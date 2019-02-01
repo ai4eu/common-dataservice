@@ -127,7 +127,7 @@ public class CatalogController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createCatalog failed: {}", cve.toString());
+			logger.warn("createCatalog took exception {} on data {}", cve.toString(), catalog.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createCatalog failed", cve);
 		}
@@ -159,7 +159,7 @@ public class CatalogController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateCatalog failed: {}", cve.toString());
+			logger.warn("updateCatalog took exception {} on data {}", cve.toString(), catalog.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateCatalog failed", cve);
 		}

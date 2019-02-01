@@ -31,6 +31,7 @@ import org.acumos.cds.CodeNameType;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPeer_;
 import org.acumos.cds.repository.PeerRepository;
 import org.acumos.cds.repository.PeerSubscriptionRepository;
 import org.acumos.cds.service.PeerSearchService;
@@ -95,16 +96,8 @@ public class PeerController extends AbstractController {
 	/*
 	 * This method was an early attempt to provide a search feature. Originally
 	 * written with a generic map request parameter to avoid binding field names,
-	 * but that is not supported by Swagger web UI. Now allows use from that web UI
-	 * at the cost of hard-coding many class field names.
+	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	private static final String NAME = "name";
-	private static final String SUBJECT_NAME = "subjectName";
-	private static final String API_URL = "apiUrl";
-	private static final String WEB_URL = "webUrl";
-	private static final String CONTACT_1 = "contact1";
-	private static final String STATUS_CODE = "statusCode";
-
 	@ApiOperation(value = "Searches for peers with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPPeer.class, responseContainer = "Page")
@@ -113,18 +106,12 @@ public class PeerController extends AbstractController {
 	public Object searchPeers( //
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
-			@ApiParam(value = "Name") //
-			@RequestParam(name = NAME, required = false) String name, //
-			@ApiParam(value = "Subject name") //
-			@RequestParam(name = SUBJECT_NAME, required = false) String subjectName, //
-			@ApiParam(value = "API URL") //
-			@RequestParam(name = API_URL, required = false) String apiUrl, //
-			@ApiParam(value = "Web URL") //
-			@RequestParam(name = WEB_URL, required = false) String webUrl, //
-			@ApiParam(value = "Contact 1") //
-			@RequestParam(name = CONTACT_1, required = false) String contact1, //
-			@ApiParam(value = "Status code") //
-			@RequestParam(name = STATUS_CODE, required = false) String statusCode, //
+			@RequestParam(name = MLPPeer_.NAME, required = false) String name, //
+			@RequestParam(name = MLPPeer_.SUBJECT_NAME, required = false) String subjectName, //
+			@RequestParam(name = MLPPeer_.API_URL, required = false) String apiUrl, //
+			@RequestParam(name = MLPPeer_.WEB_URL, required = false) String webUrl, //
+			@RequestParam(name = MLPPeer_.CONTACT1, required = false) String contact1, //
+			@RequestParam(name = MLPPeer_.STATUS_CODE, required = false) String statusCode, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPeer enter");
 		boolean isOr = junction != null && "o".equals(junction);
@@ -180,7 +167,7 @@ public class PeerController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createPeer failed: {}", cve.toString());
+			logger.warn("createPeer took exception {} on data {}", cve.toString(), peer.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createPeer failed", cve);
 		}
@@ -209,7 +196,7 @@ public class PeerController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updatePeer failed: {}", cve.toString());
+			logger.warn("updatePeer took exception {} on data {}", cve.toString(), peer.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updatePeer failed", cve);
 		}
@@ -294,7 +281,7 @@ public class PeerController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createPeerSub failed: {}", cve.toString());
+			logger.warn("createPeerSub took exception {} on data {}", cve.toString(), peerSub.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createPeerSub failed", cve);
 		}
@@ -324,7 +311,7 @@ public class PeerController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updatePeerSub failed: {}", cve.toString());
+			logger.warn("updatePeerSub took exception {} on data {}", cve.toString(), peerSub.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updatePeerSub failed", cve);
 		}

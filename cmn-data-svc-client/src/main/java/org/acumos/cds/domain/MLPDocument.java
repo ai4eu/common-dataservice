@@ -21,7 +21,6 @@
 package org.acumos.cds.domain;
 
 import java.io.Serializable;
-import java.net.URISyntaxException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -77,10 +76,10 @@ public class MLPDocument extends MLPAbstractDocument implements Serializable {
 	 *                   Size of the document in bytes
 	 * @param userId
 	 *                   User ID
-	 * @throws URISyntaxException
-	 *                                if the value violates RFC 2396
+	 * @throws IllegalArgumentException
+	 *                                      if the URI value violates RFC 2396
 	 */
-	public MLPDocument(String name, String uri, int size, String userId) throws URISyntaxException {
+	public MLPDocument(String name, String uri, int size, String userId) {
 		super(name, uri, size);
 		if (userId == null)
 			throw new IllegalArgumentException("Null not permitted");

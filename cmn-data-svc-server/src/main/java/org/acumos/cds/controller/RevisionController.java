@@ -177,7 +177,8 @@ public class RevisionController extends AbstractController {
 			return revisionDescRepository.save(description);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createRevisionDescription failed: {}", cve.toString());
+			logger.warn("createRevisionDescription took exception {} on data {}", cve.toString(),
+					description.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRevisionDescription failed", cve);
 		}
@@ -209,7 +210,8 @@ public class RevisionController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateRevisionDescription failed: {}", cve.toString());
+			logger.warn("updateRevisionDescription took exception {} on data {}", cve.toString(),
+					description.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateRevisionDescription failed", cve);
 		}

@@ -122,7 +122,7 @@ public class GroupPeerSolutionController extends AbstractController {
 			return peerGroupRepository.save(group);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createPeerGroup failed: {}", cve.toString());
+			logger.warn("createPeerGroup took exception {} on data {}", cve.toString(), group.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createPeerGroup failed", cve);
 		}
@@ -150,7 +150,7 @@ public class GroupPeerSolutionController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updatePeerGroup failed: {}", cve.toString());
+			logger.warn("updatePeerGroup took exception {} on data {}", cve.toString(), group.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updatePeerGroup failed", cve);
 		}
@@ -243,7 +243,7 @@ public class GroupPeerSolutionController extends AbstractController {
 			return solutionGroupRepository.save(group);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createSolutionGroup failed: {}", cve.toString());
+			logger.warn("createSolutionGroup took exception {} on data {}", cve.toString(), group.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createSolutionGroup failed", cve);
 		}
@@ -271,7 +271,7 @@ public class GroupPeerSolutionController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateSolutionGroup failed: {}", cve.toString());
+			logger.warn("updateSolutionGroup took exception {} on data {}", cve.toString(), group.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateSolutionGroup failed", cve);
 		}

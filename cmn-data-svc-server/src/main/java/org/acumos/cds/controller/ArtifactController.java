@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPArtifact_;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
@@ -124,15 +125,8 @@ public class ArtifactController extends AbstractController {
 	/*
 	 * This method was an early attempt to provide a search feature. Originally
 	 * written with a generic map request parameter to avoid binding field names,
-	 * but that is not supported by Swagger web UI. Now allows use from that web UI
-	 * at the cost of hard-coding many class field names.
+	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	private static final String ARTIFACT_TYPE_CODE = "artifactTypeCode";
-	private static final String NAME = "name";
-	private static final String URI = "uri";
-	private static final String VERSION = "version";
-	private static final String USER_ID = "userId";
-
 	@ApiOperation(value = "Searches for artifacts with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPArtifact.class, responseContainer = "Page")
@@ -142,16 +136,11 @@ public class ArtifactController extends AbstractController {
 	public Object searchArtifacts(//
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
-			@ApiParam(value = "Artifact type code") //
-			@RequestParam(name = ARTIFACT_TYPE_CODE, required = false) String artifactTypeCode, //
-			@ApiParam(value = "Name") //
-			@RequestParam(name = NAME, required = false) String name, //
-			@ApiParam(value = "URI") //
-			@RequestParam(name = URI, required = false) String uri, //
-			@ApiParam(value = "Version") //
-			@RequestParam(name = VERSION, required = false) String version, //
-			@ApiParam(value = "User ID") //
-			@RequestParam(name = USER_ID, required = false) String userId, //
+			@RequestParam(name = MLPArtifact_.ARTIFACT_TYPE_CODE, required = false) String artifactTypeCode, //
+			@RequestParam(name = MLPArtifact_.NAME, required = false) String name, //
+			@RequestParam(name = MLPArtifact_.URI, required = false) String uri, //
+			@RequestParam(name = MLPArtifact_.VERSION, required = false) String version, //
+			@RequestParam(name = MLPArtifact_.USER_ID, required = false) String userId, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchArtifacts enter");
 		boolean isOr = junction != null && "o".equals(junction);
@@ -205,7 +194,7 @@ public class ArtifactController extends AbstractController {
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createArtifact failed: {}", cve.toString());
+			logger.warn("createArtifact took exception {} on data {}", cve.toString(), artifact.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createArtifact failed", cve);
 		}
@@ -236,7 +225,7 @@ public class ArtifactController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateArtifact failed: {}", cve.toString());
+			logger.warn("updateArtifact took exception {} on data {}", cve.toString(), artifact.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateArtifact failed", cve);
 		}

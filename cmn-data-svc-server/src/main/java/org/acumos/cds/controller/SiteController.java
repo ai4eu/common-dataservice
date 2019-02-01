@@ -109,7 +109,7 @@ public class SiteController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createSiteConfig failed: {}", cve.toString());
+			logger.warn("createSiteConfig took exception {} on data {}", cve.toString(), siteConfig.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createSiteConfig failed", cve);
 		}
@@ -135,7 +135,7 @@ public class SiteController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateSiteConfig failed: {}", cve.toString());
+			logger.warn("updateSiteConfig took exception {} on data {}", cve.toString(), siteConfig.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateSiteConfig failed", cve);
 		}
@@ -187,7 +187,8 @@ public class SiteController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createSiteContent failed: {}", cve.toString());
+			// the toString method shows the content length, not the bytes
+			logger.warn("createSiteContent took exception {} on data {}", cve.toString(), siteContent.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createSiteContent failed", cve);
 		}
@@ -213,7 +214,8 @@ public class SiteController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateSiteContent failed: {}", cve.toString());
+			// the toString method shows the content length, not the bytes
+			logger.warn("updateSiteContent took exception {} on data {}", cve.toString(), siteContent.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateSiteContent failed", cve);
 		}

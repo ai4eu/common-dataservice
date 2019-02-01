@@ -47,7 +47,7 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
 			throws IOException, ServletException {
-		logger.warn("{} on request for {} from address {}", authEx.getMessage(), request.getRequestURI(),
+		logger.warn("{} on request for {} from address {}", authEx.toString(), request.getRequestURI(),
 				request.getRemoteAddr());
 		super.commence(request, response, authEx);
 	}

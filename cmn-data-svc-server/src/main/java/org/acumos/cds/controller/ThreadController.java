@@ -152,7 +152,7 @@ public class ThreadController extends AbstractController {
 			return newThread;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createThread failed: {}", cve.toString());
+			logger.warn("createThread took exception {} on data {}", cve.toString(), thread.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createThread failed", cve);
 		}
@@ -178,7 +178,7 @@ public class ThreadController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateThread failed: {}", cve.toString());
+			logger.warn("updateThread took exception {} on data {}", cve.toString(), thread.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateThread failed", cve);
 		}
@@ -292,7 +292,7 @@ public class ThreadController extends AbstractController {
 			return newComment;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createComment failed: {}", cve.toString());
+			logger.warn("createComment took exception {} on data {}", cve.toString(), comment.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createComment failed", cve);
 		}
@@ -335,7 +335,7 @@ public class ThreadController extends AbstractController {
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateComment failed: {}", cve.toString());
+			logger.warn("updateComment took exception {} on data {}", cve.toString(), comment.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateComment failed", cve);
 		}

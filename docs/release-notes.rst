@@ -24,6 +24,11 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 2.0.6, 1 Feb 2019
+-------------------------
+* Revise client domain model setUri methods (`ACUMOS-2443 <https://jira.acumos.org/browse/ACUMOS-2443>`_)
+* Requires database schema version 2.0
+
 Version 2.0.5, 30 Jan 2019
 --------------------------
 * Extend delete methods to cascade (`ACUMOS-2417 <https://jira.acumos.org/browse/ACUMOS-2417>`_)

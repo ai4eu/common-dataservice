@@ -117,14 +117,13 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 	 *                             URI
 	 * @param size
 	 *                             Length
-	 * @throws URISyntaxException
-	 *                                if the URI violates RFC 2396
+	 * @throws IllegalArgumentException
+	 *                                      if the URI violates RFC 2396
 	 */
-	public MLPAbstractArtifact(String version, String artifactTypeCode, String name, String uri, int size)
-			throws URISyntaxException {
+	public MLPAbstractArtifact(String version, String artifactTypeCode, String name, String uri, int size) {
 		if (version == null || artifactTypeCode == null || name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
-		new URI(uri);
+		setUri(uri);
 		this.version = version;
 		this.artifactTypeCode = artifactTypeCode;
 		this.name = name;
@@ -187,12 +186,17 @@ public class MLPAbstractArtifact extends MLPTimestampedEntity {
 	 * 
 	 * @param uri
 	 *                The URI to set
-	 * @throws URISyntaxException
-	 *                                if the value is not null and violates RFC 2396
+	 * @throws IllegalArgumentException
+	 *                                      if the value is not null and violates
+	 *                                      RFC 2396
 	 */
-	public void setUri(String uri) throws URISyntaxException {
+	public void setUri(String uri) {
 		if (uri != null)
-			new URI(uri);
+			try {
+				new URI(uri);
+			} catch (URISyntaxException ex) {
+				throw new IllegalArgumentException(ex);
+			}
 		this.uri = uri;
 	}
 

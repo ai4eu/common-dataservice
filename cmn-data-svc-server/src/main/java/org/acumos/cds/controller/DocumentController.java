@@ -106,7 +106,7 @@ public class DocumentController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createDocument failed: {}", cve.toString());
+			logger.warn("createDocument took exception {} on data {}", cve.toString(), document.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createDocument failed", cve);
 		}
@@ -137,7 +137,7 @@ public class DocumentController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateDocument failed: {}", cve.toString());
+			logger.warn("updateDocument took exception {} on data {}", cve.toString(), document.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateDocument failed", cve);
 		}

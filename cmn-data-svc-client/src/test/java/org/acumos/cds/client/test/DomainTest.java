@@ -94,7 +94,7 @@ public class DomainTest extends AbstractModelTest {
 	}
 
 	@Test
-	public void testMLPArtifact() throws URISyntaxException {
+	public void testMLPArtifact() {
 		MLPArtifact m = new MLPArtifact(s1, s1, s1, s1, s1, i1);
 		m = new MLPArtifact();
 		m.setArtifactId(s1);
@@ -125,7 +125,7 @@ public class DomainTest extends AbstractModelTest {
 		try {
 			m.setUri("http://");
 			Assert.assertTrue("Unexpected success", false);
-		} catch (URISyntaxException ex) {
+		} catch (IllegalArgumentException ex) {
 			// bogus URI is rejected
 		}
 	}
@@ -333,7 +333,7 @@ public class DomainTest extends AbstractModelTest {
 		try {
 			m.setUri("http://");
 			Assert.assertTrue("Unexpected success", false);
-		} catch (URISyntaxException ex) {
+		} catch (IllegalArgumentException ex) {
 			// bogus URI is rejected
 		}
 	}

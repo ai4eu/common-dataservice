@@ -32,6 +32,7 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
+import org.acumos.cds.domain.MLPRole_;
 import org.acumos.cds.repository.RoleFunctionRepository;
 import org.acumos.cds.repository.RoleRepository;
 import org.acumos.cds.service.RoleSearchService;
@@ -104,12 +105,8 @@ public class RoleController extends AbstractController {
 	/*
 	 * This method was an early attempt to provide a search feature. Originally
 	 * written with a generic map request parameter to avoid binding field names,
-	 * but that is not supported by Swagger web UI. Now allows use from that web UI
-	 * at the cost of hard-coding many class field names.
+	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	private static final String NAME = "name";
-	private static final String ACTIVE = "active";
-
 	@ApiOperation(value = "Searches for roles with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPRole.class, responseContainer = "Page")
@@ -119,18 +116,16 @@ public class RoleController extends AbstractController {
 	public Object searchRoles(//
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
-			@ApiParam(value = "Name") //
-			@RequestParam(name = NAME, required = false) String name, //
-			@ApiParam(value = "Active") //
-			@RequestParam(name = ACTIVE, required = false) Boolean active, //
+			@RequestParam(name = MLPRole_.NAME, required = false) String name, //
+			@RequestParam(name = MLPRole_.ACTIVE, required = false) Boolean active, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchRoles enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		Map<String, Object> queryParameters = new HashMap<>();
 		if (name != null)
-			queryParameters.put(NAME, name);
+			queryParameters.put(MLPRole_.NAME, name);
 		if (active != null)
-			queryParameters.put(ACTIVE, active);
+			queryParameters.put(MLPRole_.ACTIVE, active);
 		if (queryParameters.size() == 0) {
 			logger.warn("searchRoles missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -179,7 +174,7 @@ public class RoleController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createRole failed: {}", cve.toString());
+			logger.warn("createRole took exception {} on data {}", cve.toString(), role.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRole failed", cve);
 		}
@@ -206,7 +201,7 @@ public class RoleController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateRole failed: {}", cve.toString());
+			logger.warn("updateRole took exception {} on data {}", cve.toString(), role.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateRole failed", cve);
 		}
@@ -274,7 +269,7 @@ public class RoleController extends AbstractController {
 			return result;
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createRoleFunc failed: {}", cve.toString());
+			logger.warn("createRoleFunc took exception {} on data {}", cve.toString(), roleFunction.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRoleFunc failed", cve);
 		}
@@ -307,7 +302,7 @@ public class RoleController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateRoleFunc failed: {}", cve.toString());
+			logger.warn("updateRoleFunc took exception {} on data {}", cve.toString(), roleFunction.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateRoleFunc failed", cve);
 		}

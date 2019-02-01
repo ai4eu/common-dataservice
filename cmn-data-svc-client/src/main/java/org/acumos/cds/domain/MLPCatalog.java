@@ -196,13 +196,17 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	 * 
 	 * @param url
 	 *                The URL to set
-	 * @throws MalformedURLException
-	 *                                   if the value is not null and cannot be
-	 *                                   parsed
+	 * @throws IllegalArgumentException
+	 *                                      if the URL value is not null and cannot
+	 *                                      be parsed
 	 */
-	public void setUrl(String url) throws MalformedURLException {
+	public void setUrl(String url) {
 		if (url != null)
-			new URL(url);
+			try {
+				new URL(url);
+			} catch (MalformedURLException ex) {
+				throw new IllegalArgumentException(ex);
+			}
 		this.url = url;
 	}
 

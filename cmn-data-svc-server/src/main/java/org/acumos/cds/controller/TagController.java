@@ -86,7 +86,7 @@ public class TagController extends AbstractController {
 			return tagRepository.save(tag);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createTag failed: {}", cve.toString());
+			logger.warn("createTag took exception {} on data {}", cve.toString(), tag.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createTag failed", cve);
 		}

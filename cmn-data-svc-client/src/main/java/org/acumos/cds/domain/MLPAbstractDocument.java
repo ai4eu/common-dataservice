@@ -98,13 +98,13 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 *                 URI where document can be accessed
 	 * @param size
 	 *                 Size of document in bytes
-	 * @throws URISyntaxException
-	 *                                if the URI violates RFC 2396
+	 * @throws IllegalArgumentException
+	 *                                      if the URI violates RFC 2396
 	 */
-	public MLPAbstractDocument(String name, String uri, int size) throws URISyntaxException {
+	public MLPAbstractDocument(String name, String uri, int size) {
 		if (name == null || uri == null)
 			throw new IllegalArgumentException("Null not permitted");
-		new URI(uri);
+		setUri(uri);
 		this.name = name;
 		this.uri = uri;
 		this.size = size;
@@ -150,12 +150,17 @@ public class MLPAbstractDocument extends MLPTimestampedEntity implements Seriali
 	 * 
 	 * @param uri
 	 *                The URI to set
-	 * @throws URISyntaxException
-	 *                                if the value is not null and violates RFC 2396
+	 * @throws IllegalArgumentException
+	 *                                      if the value is not null and violates
+	 *                                      RFC 2396
 	 */
-	public void setUri(String uri) throws URISyntaxException {
+	public void setUri(String uri) {
 		if (uri != null)
-			new URI(uri);
+			try {
+				new URI(uri);
+			} catch (URISyntaxException ex) {
+				throw new IllegalArgumentException(ex);
+			}
 		this.uri = uri;
 	}
 
