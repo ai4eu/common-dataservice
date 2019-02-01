@@ -39,8 +39,10 @@ import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
+import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
@@ -569,6 +571,28 @@ public class MockClientTest {
 		Assert.assertEquals(solsInCat, client.getSolutionsInGroup(0L, new RestPageRequest()));
 		client.addSolutionToCatalog("solId", "catId");
 		client.dropSolutionFromCatalog("solId", "catId");
+
+		RestPageResponse<MLPRtuReference> rtuRefs = new RestPageResponse<>();
+		client.setRtuReferences(rtuRefs);
+		Assert.assertTrue(rtuRefs == client.getRtuReferences(new RestPageRequest()));
+		MLPRtuReference rtuRef = new MLPRtuReference("some-guid");
+		client.createRtuReference(rtuRef);
+		RestPageResponse<MLPRightToUse> rtus = new RestPageResponse<>();
+		client.setRightToUses(rtus);
+		Assert.assertTrue(rtus == client.getRightToUses(new RestPageRequest()));
+		MLPRightToUse rtu = new MLPRightToUse();
+		rtu.setRtuId(0L);
+		client.setRightToUse(rtu);
+		Assert.assertEquals(rtu, client.createRightToUse(rtu));
+		client.updateRightToUse(rtu);
+		client.deleteRightToUse(rtu.getRtuId());
+		List<MLPRightToUse> rtuList = new ArrayList<>();
+		client.setRightToUseList(rtuList);
+		Assert.assertEquals(rtuList, client.getRightToUses("solution", "user"));
+		client.addRefToRtu("refId", 0L);
+		client.dropRefFromRtu("refId", 0L);
+		client.addUserToRtu("userId", 0L);
+		client.dropUserFromRtu("userId", 0L);
 	}
 
 }

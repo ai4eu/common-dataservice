@@ -38,8 +38,10 @@ import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
+import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
@@ -2037,7 +2039,7 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param userId
 	 *                   User ID
-	 * @return List of user notification preferences for the specified solution.
+	 * @return List of user notification preferences for the specified user.
 	 */
 	List<MLPUserNotifPref> getUserNotificationPreferences(String userId);
 
@@ -2464,5 +2466,149 @@ public interface ICommonDataServiceRestClient {
 	 *                   task ID
 	 */
 	void deleteTask(long taskId);
+
+	/**
+	 * Gets a page of right-to-use references.
+	 *
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of RTU reference objects
+	 */
+	RestPageResponse<MLPRtuReference> getRtuReferences(RestPageRequest pageRequest);
+
+	/**
+	 * Creates a right-to-use reference entry.
+	 * 
+	 * @param rtuRef
+	 *                   RTU reference object
+	 * @return Complete object which wraps the ref
+	 */
+	MLPRtuReference createRtuReference(MLPRtuReference rtuRef);
+
+	/**
+	 * Deletes a right-to-use reference entry. A ref can be deleted if is not
+	 * associated with any other entities; if associations remain the delete will
+	 * fail.
+	 * 
+	 * @param rtuRef
+	 *                   RTU reference object
+	 */
+	void deleteRtuReference(MLPRtuReference rtuRef);
+
+	/**
+	 * Gets the right to use record with the specified ID.
+	 * 
+	 * @param rtuId
+	 *                  Right to use ID
+	 * @return Right to Use object
+	 */
+	MLPRightToUse getRightToUse(Long rtuId);
+
+	/**
+	 * Gets a page of right-to-use records.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of objects.
+	 */
+	RestPageResponse<MLPRightToUse> getRightToUses(RestPageRequest pageRequest);
+
+	/**
+	 * Searches right-to-use records for exact matches.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: site,
+	 *                            solutionId
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of RTU objects
+	 */
+	RestPageResponse<MLPRightToUse> searchRightToUses(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets a list of right-to-use records for the specified solution and user.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @param userId
+	 *                       User ID
+	 * @return List of objects
+	 */
+	List<MLPRightToUse> getRightToUses(String solutionId, String userId);
+
+	/**
+	 * Creates a right-to-use record.
+	 * 
+	 * @param rightToUse
+	 *                       Right to use data
+	 * @return Complete object, with generated information such as ID
+	 */
+	MLPRightToUse createRightToUse(MLPRightToUse rightToUse);
+
+	/**
+	 * Updates a right-to-use record.
+	 * 
+	 * @param rightToUse
+	 *                       Right to use data
+	 */
+	void updateRightToUse(MLPRightToUse rightToUse);
+
+	/**
+	 * Deletes a right-to-use record.
+	 * 
+	 * @param rtuId
+	 *                  Right to use ID
+	 */
+	void deleteRightToUse(Long rtuId);
+
+	/**
+	 * Maps the specified user to the specified right-to-use.
+	 * 
+	 * @param refId
+	 *                  Remote LUM system reference ID
+	 * @param rtuId
+	 *                  Right to Use ID
+	 */
+	void addRefToRtu(String refId, Long rtuId);
+
+	/**
+	 * Unmaps the specified user from the specified right-to-use.
+	 * 
+	 * @param refId
+	 *                  Remote LUM system reference ID
+	 * @param rtuId
+	 *                  Right to Use ID
+	 */
+	void dropRefFromRtu(String refId, Long rtuId);
+
+	/**
+	 * Maps the specified user to the specified right-to-use.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @param rtuId
+	 *                   Right to Use ID
+	 */
+	void addUserToRtu(String userId, Long rtuId);
+
+	/**
+	 * Unmaps the specified user from the specified right-to-use.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @param rtuId
+	 *                   Right to Use ID
+	 */
+	void dropUserFromRtu(String userId, Long rtuId);
 
 }

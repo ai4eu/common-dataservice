@@ -47,8 +47,10 @@ import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
+import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
@@ -2293,6 +2295,155 @@ public class CdsControllerTest {
 
 		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
 		client.deleteCatalog(ca.getCatalogId());
+		client.deleteSolution(cs.getSolutionId());
+		client.deleteUser(cu.getUserId());
+
+	}
+
+	@Test
+	public void testRightToUse() throws Exception {
+		MLPUser cu;
+		MLPSolution cs;
+		MLPRightToUse cr;
+		MLPRtuReference ref;
+
+		try {
+			// Need a user to create a solution
+			cu = null;
+			cu = new MLPUser();
+			cu.setEmail("testrtu@abc.com");
+			cu.setActive(true);
+			cu.setLoginName("rtuuser");
+			cu = client.createUser(cu);
+			Assert.assertNotNull("User ID", cu.getUserId());
+			logger.info("Created user {}", cu);
+
+			cs = new MLPSolution("solutionName 1 for rtu", cu.getUserId(), true);
+			cs = client.createSolution(cs);
+			Assert.assertNotNull("Solution ID", cs.getSolutionId());
+			logger.info("Created solution {}", cs);
+
+			cr = new MLPRightToUse(cs.getSolutionId(), true);
+			cr = client.createRightToUse(cr);
+			Assert.assertNotNull(cr.getRtuId());
+
+			cr.setSite(false);
+			client.updateRightToUse(cr);
+
+			final String guid = UUID.randomUUID().toString();
+			ref = new MLPRtuReference(guid);
+			ref = client.createRtuReference(ref);
+			RestPageResponse<MLPRtuReference> refPage = client.getRtuReferences(new RestPageRequest(0, 5));
+			Assert.assertNotEquals(0, refPage.getNumberOfElements());
+
+			MLPRightToUse cr2 = client.getRightToUse(cr.getRtuId());
+			Assert.assertEquals(cr, cr2);
+
+			RestPageResponse<MLPRightToUse> rtuPage = client.getRightToUses(new RestPageRequest(0, 5));
+			Assert.assertFalse(rtuPage.isEmpty());
+
+			HashMap<String, Object> rtuRestr = new HashMap<>();
+			rtuRestr.put("solutionId", cs.getSolutionId());
+			RestPageResponse<MLPRightToUse> searchPage = client.searchRightToUses(rtuRestr, false,
+					new RestPageRequest(0, 5));
+			Assert.assertEquals(1, searchPage.getNumberOfElements());
+
+			client.addRefToRtu(ref.getRef(), cr.getRtuId());
+			cr = client.getRightToUse(cr.getRtuId());
+			Assert.assertTrue(cr.getRtuReferences().contains(ref));
+
+			client.dropRefFromRtu(ref.getRef(), cr.getRtuId());
+			cr = client.getRightToUse(cr.getRtuId());
+			Assert.assertTrue(cr.getRtuReferences().isEmpty());
+
+			client.addUserToRtu(cu.getUserId(), cr.getRtuId());
+			List<MLPRightToUse> rtus = client.getRightToUses(cs.getSolutionId(), cu.getUserId());
+			Assert.assertFalse(rtus.isEmpty());
+
+			client.dropUserFromRtu(cu.getUserId(), cr.getRtuId());
+			rtus = client.getRightToUses(cs.getSolutionId(), cu.getUserId());
+			Assert.assertTrue(rtus.isEmpty());
+
+		} catch (Exception ex) {
+			logger.error("testRtu failed", ex);
+			throw ex;
+		}
+
+		try {
+			client.createRightToUse(new MLPRightToUse());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createRtuReference(ref);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on dupe as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			HashMap<String, Object> empty = new HashMap<>();
+			client.searchRightToUses(empty, false, new RestPageRequest(0, 5));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("search failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPRightToUse bogusUpdate = new MLPRightToUse(cr);
+			bogusUpdate.setRtuId(999L);
+			client.updateRightToUse(bogusUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deleteRightToUse(99L);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on bad ID as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deleteRtuReference(new MLPRtuReference("bogus"));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on bad ref as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addRefToRtu("bogus", cr.getRtuId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("addRefToRtu failed on bad user id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropRefFromRtu("bogus", 9999L);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("dropRefFromRtu failed on bad ids as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addUserToRtu("bogus", cr.getRtuId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("addUserToRtu failed on bad user id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addUserToRtu(cu.getUserId(), 9999L);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("addUserToRtu failed on bad rtu id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropUserFromRtu("bogus", 9999L);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("dropUserFromRtu failed on bad ids as expected: {}", ex.getResponseBodyAsString());
+		}
+
+		client.deleteRtuReference(ref);
+		RestPageResponse<MLPRtuReference> refPage = client.getRtuReferences(new RestPageRequest(0, 5));
+		Assert.assertEquals(0, refPage.getNumberOfElements());
+		client.deleteRightToUse(cr.getRtuId());
+		Assert.assertNull(client.getRightToUse(cr.getRtuId()));
 		client.deleteSolution(cs.getSolutionId());
 		client.deleteUser(cu.getUserId());
 

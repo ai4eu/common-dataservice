@@ -51,8 +51,11 @@ import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
+import org.acumos.cds.domain.MLPRtuReference;
+import org.acumos.cds.domain.MLPRtuUserMap;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolUserAccMap;
@@ -2503,6 +2506,131 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public void deleteTask(long taskId) {
 		URI uri = buildUri(new String[] { CCDSConstants.TASK_PATH, Long.toString(taskId) }, null, null);
 		logger.debug("deleteTask: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPRtuReference> getRtuReferences(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH }, null, pageRequest);
+		logger.debug("getRtuReferences: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPRtuReference>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPRtuReference>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPRtuReference createRtuReference(MLPRtuReference ref) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH }, null, null);
+		logger.debug("createRtuReference: uri {}", uri);
+		return restTemplate.postForObject(uri, ref, MLPRtuReference.class);
+	}
+
+	@Override
+	public void deleteRtuReference(MLPRtuReference ref) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH, ref.getRef() }, null, null);
+		logger.debug("deleteRtuReference: uri {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public MLPRightToUse getRightToUse(Long rtuId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId) }, null, null);
+		logger.debug("getRightToUse: uri {}", uri);
+		ResponseEntity<MLPRightToUse> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPRightToUse>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPRightToUse> getRightToUses(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH }, null, pageRequest);
+		logger.debug("getRightToUses: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPRightToUse>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPRightToUse>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPRightToUse> searchRightToUses(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		Map<String, Object> copy = new HashMap<>(queryParameters);
+		copy.put(CCDSConstants.JUNCTION_QUERY_PARAM, isOr ? "o" : "a");
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.SEARCH_PATH }, copy, pageRequest);
+		logger.debug("searchRightToUses: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPRightToUse>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPRightToUse>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public List<MLPRightToUse> getRightToUses(String solutionId, String userId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.SOLUTION_PATH, solutionId,
+				CCDSConstants.USER_PATH, userId }, null, null);
+		logger.debug("getRightToUses: uri {}", uri);
+		ResponseEntity<List<MLPRightToUse>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPRightToUse>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPRightToUse createRightToUse(MLPRightToUse rightToUse) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH }, null, null);
+		logger.debug("createRightToUse: uri {}", uri);
+		return restTemplate.postForObject(uri, rightToUse, MLPRightToUse.class);
+	}
+
+	@Override
+	public void updateRightToUse(MLPRightToUse rightToUse) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rightToUse.getRtuId()) }, null, null);
+		logger.debug("updateRightToUse: url {}", uri);
+		restTemplate.put(uri, rightToUse);
+	}
+
+	@Override
+	public void deleteRightToUse(Long rtuId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId) }, null, null);
+		logger.debug("deleteRightToUse: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public void addRefToRtu(String refId, Long rtuId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REF_PATH, refId },
+				null, null);
+		logger.debug("addRefToRtu: url {}", uri);
+		MLPRtuUserMap map = new MLPRtuUserMap(rtuId, refId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropRefFromRtu(String refId, Long rtuId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REF_PATH, refId },
+				null, null);
+		logger.debug("dropRefFromRtu: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public void addUserToRtu(String userId, Long rtuId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.USER_PATH, userId }, null,
+				null);
+		logger.debug("addUserToRtu: url {}", uri);
+		MLPRtuUserMap map = new MLPRtuUserMap(rtuId, userId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropUserFromRtu(String userId, Long rtuId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.USER_PATH, userId }, null,
+				null);
+		logger.debug("dropUserFromRtu: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

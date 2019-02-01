@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -1174,6 +1175,23 @@ public class SolutionController extends AbstractController {
 			logger.warn("saveSolutionPicture failed: {}", cve.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "saveSolutionPicture failed", cve);
+		}
+	}
+
+	/**
+	 * Adds entries to the tags table as needed.
+	 * 
+	 * @param tags
+	 *                 Collection of tags
+	 */
+	protected void createMissingTags(Collection<MLPTag> tags) {
+		for (MLPTag tag : tags) {
+			if (tag == null || tag.getTag() == null)
+				throw new IllegalArgumentException("Unexpected null tag");
+			if (!tagRepository.findById(tag.getTag()).isPresent()) {
+				tagRepository.save(tag);
+				logger.debug("createMissingTags: tag {}", tag);
+			}
 		}
 	}
 

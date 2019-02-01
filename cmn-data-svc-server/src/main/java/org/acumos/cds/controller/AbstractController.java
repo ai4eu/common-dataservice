@@ -21,10 +21,8 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collection;
 
 import org.acumos.cds.CodeNameType;
-import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.repository.TagRepository;
 import org.acumos.cds.service.CodeNameService;
 import org.slf4j.Logger;
@@ -74,6 +72,7 @@ public abstract class AbstractController {
 		// Use a new variable to silence Sonar
 		Exception ex = thrown;
 		while (ex != null) {
+			logger.debug("findConstraintViolationException: checking ex {}", ex.toString());
 			// This once searched for database-specific exceptions by name, for example
 			// com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException,
 			// but the project is not using MySql and Sonar flagged the usage of a class
@@ -106,23 +105,6 @@ public abstract class AbstractController {
 			throw new IllegalArgumentException("Unexpected null for CodeNameType " + type.name());
 		if (!codeNameService.validateCode(code, type))
 			throw new IllegalArgumentException("Unexpected code " + code + " for CodeNameType " + type.name());
-	}
-
-	/**
-	 * Adds entries to the tags table as needed.
-	 * 
-	 * @param tags
-	 *                 Collection of tags
-	 */
-	protected void createMissingTags(Collection<MLPTag> tags) {
-		for (MLPTag tag : tags) {
-			if (tag == null || tag.getTag() == null)
-				throw new IllegalArgumentException("Unexpected null tag");
-			if (!tagRepository.findById(tag.getTag()).isPresent()) {
-				tagRepository.save(tag);
-				logger.debug("createMissingTags: tag {}", tag);
-			}
-		}
 	}
 
 }
