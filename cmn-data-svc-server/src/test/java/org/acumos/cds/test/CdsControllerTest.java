@@ -172,6 +172,7 @@ public class CdsControllerTest {
 			// Query for the revision
 			MLPSolutionRevision crq = client.getSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
 			Assert.assertNotNull(crq);
+			Assert.assertNotNull(crq.getOnboarded());
 
 			MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), AccessTypeCode.PB.name(),
 					"A public revision description");

@@ -18,8 +18,8 @@
 
 -- Script to upgrade database used by the Common Data Service
 -- FROM version 2.0 TO version 2.1.
--- This DISCARDS all existing step results.
 -- No database name is set to allow flexible deployment.
+-- This DISCARDS all existing step results.
 
 DROP TABLE C_STEP_RESULT;
 
@@ -48,3 +48,6 @@ CREATE TABLE C_STEP_RESULT (
   START_DATE TIMESTAMP NOT NULL DEFAULT 0,
   END_DATE TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE C_SOLUTION_REV ADD COLUMN ONBOARDED_DATE TIMESTAMP NOT NULL DEFAULT 0;
+UPDATE C_SOLUTION_REV SET ONBOARDED_DATE = CREATED_DATE;

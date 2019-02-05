@@ -20,7 +20,7 @@
 
 # Acumos Common Data Service configuration file TEMPLATE. Developers can copy this
 # to a file 'application.properties' and use it for development and test. The same
-# can be done for deployment, but when using Docker the better way is via a JSON 
+# can be done for deployment, but when using Docker the better way is via a JSON
 # block in the environment variable SPRING_APPLICATION_JSON like the following.
 # Values in ALL UPPER CASE must be replaced.
 #      SPRING_APPLICATION_JSON: '{
@@ -49,7 +49,9 @@
 #          }
 #      }'
 
-# The following properties are different in all deployments; 
+###############################################################
+
+# The following properties are different in all deployments;
 # values MUST be overridden in docker configuration such as
 # docker-compose.yml
 
@@ -74,7 +76,7 @@ spring.datasource.password = db-user-pass
 # spring.datasource.password = ENC(neXyzs+frWL6UQmH5Ii+tO5eo0Lkk9x+)
 # Platform name is used to find data.sql file on classpath (only for test)
 # spring.datasource.platform = mariadb
-# Specify ORM dialect 
+# Specify ORM dialect
 spring.jpa.database-platform=org.hibernate.dialect.MariaDB102Dialect
 # don't create the schema, just validate the contents
 spring.jpa.hibernate.ddl-auto=validate
@@ -113,7 +115,7 @@ jasypt.encryptor.password=supersecret
 # configurable behavior on authentication failure
 # When does temp block start
 login.failure.count = 3
-# in seconds
+# duration of block in seconds
 login.failure.block.time = 900
 
 # App root logger level can be configured here:

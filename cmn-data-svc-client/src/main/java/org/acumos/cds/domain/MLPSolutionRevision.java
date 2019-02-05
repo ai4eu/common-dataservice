@@ -61,7 +61,8 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	private String sourceId;
 
 	/**
-	 * No-arg constructor
+	 * No-arg constructor. The on-boarded date defaults to the current date and
+	 * time.
 	 */
 	public MLPSolutionRevision() {
 		// no-arg constructor
@@ -70,7 +71,7 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
 	 * must supply to create a valid instance. Omits revision ID, which is generated
-	 * on save.
+	 * on save. The on-boarded date defaults to the current date and time.
 	 * 
 	 * @param solutionId
 	 *                           Solution ID

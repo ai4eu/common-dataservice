@@ -44,13 +44,13 @@ public abstract class MLPTimestampedEntity implements MLPDomainModel {
 	@Column(name = "CREATED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT '0000-00-00 00:00:00'")
 	// Defined by DDL as default 0 to disable Mysql/Mariadb auto-update behavior
 	// REST clients should not send this property
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Created date set by system", example = "2018-12-16T12:34:56.789Z")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Created timestamp set by system", example = "2018-12-16T12:34:56.789Z")
 	private Instant created;
 
 	@UpdateTimestamp
-	@Column(name = "MODIFIED_DATE", nullable = false, columnDefinition = "TIMESTAMP")
+	@Column(name = "MODIFIED_DATE", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
 	// REST clients should not send this property
-	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Modified date set by system", example = "2018-12-16T12:34:56.789Z")
+	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Modified timestamp set by system", example = "2018-12-16T12:34:56.789Z")
 	private Instant modified;
 
 	public MLPTimestampedEntity() {

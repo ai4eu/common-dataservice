@@ -292,7 +292,7 @@ Attributes:
 * IsActive
 * IsSelf
 * Contacts (a pair, one as primary and another as backup)
-* Create timestamp
+* Created timestamp
 * Modified timestamp
 
 
@@ -347,8 +347,8 @@ Attributes:
 * Config key
 * Config value, which is required to be a JSON block
 * User ID, the last person who updated the entry; optional to allow creation of initial row without a user ID
-* Created date
-* Modified date
+* Created timestamp
+* Modified timestamp
 
 
 Site Content
@@ -362,8 +362,8 @@ Attributes:
 * Content key
 * Content value, which is a binary long object (BLOB)
 * Mime type, a description of the content
-* Created date
-* Modified date
+* Created timestamp
+* Modified timestamp
 
 
 Solution
@@ -427,13 +427,13 @@ Attributes:
 
      -    The person's ID who created the artifact and is the owner of it.
 
-*    Create time
+*    Created timestamp
 
-      -  Time when the artifact is created
+     -   Date and time when this row was created
 
-*    Modification time
+*    Modified timestamp
 
-     -   The time when the artifact gets updated
+     -   Date and time when this row was last modified
 
 *    Description
 
@@ -515,9 +515,17 @@ Attributes:
 
      -   Chosen by the user. This serves as the solution's child revision entry identifier. This needs to be unique for any solution revision within the same solution.
 
-* Create time
+* Onboarded timestamp
 
-     -   The time when this revision of the solution is created
+     -   Date and time when this revision of the solution was on-boarded
+
+* Created timestamp
+
+     -   Date and time when this row was created
+
+* Modified timestamp
+
+     -   Date and time when this row was last modified
 
 * Creator
 
@@ -802,13 +810,13 @@ Attributes:
      -  A numerical rating scale, for example 1-5
 
 * Text of review
-* Create time
+* Created timestamp
 
-     -   The time when the solution rating was created by the user
+     -   The date and time when the solution rating was created by the user
 
-* Modification time
+* Modified timestamp
 
-     -   The time when the rating gets updated
+     -   The date and time when the rating gets updated
 
 Descriptive statistics are derived from individual solution ratings; for example average rating. The statistics may be cached and updated on change to reduce the time needed to fetch information about a solution. For example, update the cached number of reviews and average rating each time a solution is reviewed.
 

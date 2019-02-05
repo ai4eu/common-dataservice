@@ -20,6 +20,7 @@
 
 package org.acumos.cds.domain;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -117,16 +118,24 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	private String verifiedVulnerability;
 
 	/**
+	 * Defined by DDL as default 0 to disable Mysql/Mariadb auto-update behavior
+	 */
+	@Column(name = "ONBOARDED_DATE", nullable = false, columnDefinition = "TIMESTAMP DEFAULT '0000-00-00 00:00:00'")
+	@ApiModelProperty(value = "On-boarded timestamp", example = "2018-12-16T12:34:56.789Z")
+	private Instant onboarded;
+
+	/**
 	 * No-arg constructor
 	 */
 	public MLPAbstractSolutionRevision() {
 		// no-arg constructor
+		this.onboarded = Instant.now();
 	}
 
 	/**
 	 * This constructor accepts the required fields; i.e., the minimum that the user
 	 * must supply to create a valid instance. Omits revision ID, which is generated
-	 * on save.
+	 * on save. Sets the onboarded value to the current date and time.
 	 * 
 	 * @param version
 	 *                           User-assigned version string
@@ -138,6 +147,7 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 			throw new IllegalArgumentException("Null not permitted");
 		this.version = version;
 		this.accessTypeCode = accessTypeCode;
+		this.onboarded = Instant.now();
 	}
 
 	/**
@@ -151,6 +161,7 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 		this.accessTypeCode = that.accessTypeCode;
 		this.authors = that.authors;
 		this.metadata = that.metadata;
+		this.onboarded = that.onboarded;
 		this.origin = that.origin;
 		this.publisher = that.publisher;
 		this.revisionId = that.revisionId;
@@ -275,6 +286,14 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 
 	public void setVerifiedVulnerability(String verifiedVulnerability) {
 		this.verifiedVulnerability = verifiedVulnerability;
+	}
+
+	public Instant getOnboarded() {
+		return onboarded;
+	}
+
+	public void setOnboarded(Instant onboarded) {
+		this.onboarded = onboarded;
 	}
 
 	@Override

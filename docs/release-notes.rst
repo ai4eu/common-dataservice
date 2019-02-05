@@ -26,6 +26,7 @@ available as a Docker image in the Acumos/LF Docker registry.
 
 Version 2.1.0, 11 Feb 2019
 --------------------------
+* Add on-boarded timestamp to solution revision (`ACUMOS-1827 <https://jira.acumos.org/browse/ACUMOS-1827>`_)
 * Add MLPTask and revise MLPTaskStepResult for on-boarding status (`ACUMOS-2387 <https://jira.acumos.org/browse/ACUMOS-2387>`_)
 * Requires database schema version 2.1
 
