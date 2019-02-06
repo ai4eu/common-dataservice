@@ -454,10 +454,13 @@ public class CdsControllerTest {
 			pr.setContact1("Katherine Globe");
 			pr.setStatusCode("AC");
 			pr = client.createPeer(pr);
+			pr.setSelf(false);
 			logger.info("Created peer with ID {}", pr.getPeerId());
 
-			pr.setSelf(false);
+			pr.setSelf(true);
 			client.updatePeer(pr);
+			pr = client.getPeer(pr.getPeerId());
+			Assert.assertTrue(pr.isSelf());
 
 			RestPageResponse<MLPPeer> peerPage = client.getPeers(rp);
 			Assert.assertNotEquals(0, peerPage.getNumberOfElements());
@@ -469,8 +472,9 @@ public class CdsControllerTest {
 					new RestPageRequest(0, 1));
 			Assert.assertEquals(0, emptyPerSearchResult.getNumberOfElements());
 
-			// Conver case of non-zero results
-			peerRestr.put("name", peerName);
+			// Cover case of non-zero results
+			peerRestr.clear();
+			peerRestr.put("self", Boolean.TRUE);
 			Map<String, String> peerFieldMap = new HashMap<>();
 			peerFieldMap.put("name", "ASC");
 			RestPageResponse<MLPPeer> peerSearchResult = client.searchPeers(peerRestr, false,

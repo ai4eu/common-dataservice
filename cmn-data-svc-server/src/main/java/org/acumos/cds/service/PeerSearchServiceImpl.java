@@ -53,7 +53,7 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 	 * @return Predicate
 	 */
 	private Predicate createPeerPredicate(Root<MLPPeer> from, String name, String subjectName, String apiUrl,
-			String webUrl, String contact1, String statusCode, boolean isOr) {
+			String webUrl, String contact1, String statusCode, Boolean self, boolean isOr) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<>();
@@ -69,6 +69,11 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPPeer_.contact1)), contact1.toLowerCase()));
 		if (statusCode != null && !statusCode.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPPeer_.statusCode)), statusCode.toLowerCase()));
+		if (self != null) {
+			Predicate activePredicate = self ? cb.isTrue(from.<Boolean>get(MLPPeer_.self))
+					: cb.isFalse(from.<Boolean>get(MLPPeer_.self));
+			predicates.add(activePredicate);
+		}
 		if (predicates.isEmpty())
 			throw new IllegalArgumentException("Missing query values, must have at least one non-null");
 		Predicate[] predArray = new Predicate[predicates.size()];
@@ -81,7 +86,7 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 	 */
 	@Override
 	public Page<MLPPeer> findPeers(String name, String subjectName, String apiUrl, String webUrl, String contact1,
-			String statusCode, boolean isOr, Pageable pageable) {
+			String statusCode, Boolean self, boolean isOr, Pageable pageable) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
@@ -90,8 +95,8 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 		countQueryDef.distinct(true);
 		Root<MLPPeer> countFrom = countQueryDef.from(MLPPeer.class);
 		countQueryDef.select(cb.count(countFrom));
-		countQueryDef
-				.where(createPeerPredicate(countFrom, name, subjectName, apiUrl, webUrl, contact1, statusCode, isOr));
+		countQueryDef.where(
+				createPeerPredicate(countFrom, name, subjectName, apiUrl, webUrl, contact1, statusCode, self, isOr));
 		TypedQuery<Long> countQuery = entityManager.createQuery(countQueryDef);
 		Long count = countQuery.getSingleResult();
 		logger.debug("findPeers: count {}", count);
@@ -104,8 +109,8 @@ public class PeerSearchServiceImpl extends AbstractSearchServiceImpl implements 
 		rootQueryDef.distinct(true);
 		Root<MLPPeer> fromRoot = rootQueryDef.from(MLPPeer.class);
 		rootQueryDef.select(fromRoot);
-		rootQueryDef
-				.where(createPeerPredicate(countFrom, name, subjectName, apiUrl, webUrl, contact1, statusCode, isOr));
+		rootQueryDef.where(
+				createPeerPredicate(countFrom, name, subjectName, apiUrl, webUrl, contact1, statusCode, self, isOr));
 		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
 			rootQueryDef.orderBy(buildOrderList(cb, fromRoot, pageable.getSort()));
 		TypedQuery<MLPPeer> itemQuery = entityManager.createQuery(rootQueryDef);

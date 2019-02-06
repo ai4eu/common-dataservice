@@ -42,6 +42,8 @@ public interface PeerSearchService {
 	 *                        Contact info; ignored if null
 	 * @param statusCode
 	 *                        Status code; ignored if null
+	 * @param self
+	 *                        Self (is-self); ignored if null
 	 * @param isOr
 	 *                        If true, the query is a disjunction ("or"); otherwise
 	 *                        the query is a conjunction ("and").
@@ -50,6 +52,6 @@ public interface PeerSearchService {
 	 * @return Page of instances, which may be empty.
 	 */
 	Page<MLPPeer> findPeers(String name, String subjectName, String apiUrl, String webUrl, String contact1,
-			String statusCode, boolean isOr, Pageable pageable);
+			String statusCode, Boolean self, boolean isOr, Pageable pageable);
 
 }

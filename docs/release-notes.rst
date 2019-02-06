@@ -24,10 +24,15 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.1.0, 4 Feb 2019
--------------------------
+Version 2.1.0, 11 Feb 2019
+--------------------------
 * Add MLPTask and revise MLPTaskStepResult for on-boarding status (`ACUMOS-2387 <https://jira.acumos.org/browse/ACUMOS-2387>`_)
 * Requires database schema version 2.1
+
+Version 2.0.7, 6 Feb 2019
+-------------------------
+* Restore self as peer search parameter (`ACUMOS-2470 <https://jira.acumos.org/browse/ACUMOS-2470>`_)
+* Requires database schema version 2.0
 
 Version 2.0.6, 1 Feb 2019
 -------------------------

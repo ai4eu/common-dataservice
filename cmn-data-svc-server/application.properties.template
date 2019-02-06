@@ -18,45 +18,39 @@
 # ===============LICENSE_END=========================================================
 ###
 
-# MLP common data service configuration file template.
-# Developers can copy this to a file "application.properties"
-# and use it for development and test.  The same can be done
-# for deployment, but when using Docker-Compose the better way
-# is via a JSON block in the environment variable 
-# SPRING_APPLICATION_JSON like this:
-#
+# Acumos Common Data Service configuration file TEMPLATE. Developers can copy this
+# to a file 'application.properties' and use it for development and test. The same
+# can be done for deployment, but when using Docker the better way is via a JSON 
+# block in the environment variable SPRING_APPLICATION_JSON like the following.
+# Values in ALL UPPER CASE must be replaced.
 #      SPRING_APPLICATION_JSON: '{
 #          "server" : {
-#              "port" : 8002
-#          },
-#          "security" : {
-#              "user" : {
-#                  "name"     : "ccds_client",
-#                  "password" : "ENC(encrypted-string-here)"
-#              }
+#                "port" : 8000
 #          },
 #          "spring" : {
-#              "database" : {
-#                  "driver" : {
-#                      "classname" : "org.mariadb.jdbc.Driver"
-#                  }
-#              },
 #              "datasource" : {
-#                  "url"      : "jdbc:mariadb://hostname-db:3306/cds?useSSL=false",
-#                  "username" : "cds",
-#                  "password" : "ENC(encrypted-string-here)"
+#                  "jdbc-url" : "jdbc:mariadb://HOST-NAME:3306/DB-NAME?useLegacyDatetimeCode=false&useSSL=false",
+#                  "username" : "DB-USERNAME",
+#                  "password" : "ENC(DB-PASSWORD)"
 #              },
 #              "jpa" : {
-#                  "database-platform" : "org.hibernate.dialect.MySQLDialect",
+#                  "database-platform" : "org.hibernate.dialect.MariaDB102Dialect",
 #                  "hibernate" : {
 #                      "ddl-auto" : "validate"
+#                  },
+#                  "show-sql" : false
+#              },
+#              "security" : {
+#                  "user" : {
+#                      "name"     : "CLIENT-USERNAME",
+#                      "password" : "ENC(CLIENT-PASSWORD)"
 #                  }
 #              }
 #          }
-#     }'
-#
+#      }'
+
 # The following properties are different in all deployments; 
-# values must be externalized in docker-start scripts like
+# values MUST be overridden in docker configuration such as
 # docker-compose.yml
 
 server.port=8081
@@ -87,8 +81,9 @@ spring.jpa.hibernate.ddl-auto=validate
 
 ###############################################################
 
-# The following properties are similar in all deployments,
-# so the values can be externalized as needed.
+# The following properties are similar in all deployments;
+# values can be overridden in docker configuration such as
+# docker-compose.yml
 
 # don't want a reactive web server
 spring.main.web-application-type=SERVLET
@@ -115,14 +110,29 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 # Guards passwords
 jasypt.encryptor.password=supersecret
 
-# Enumerated code-name value sets.
+# configurable behavior on authentication failure
+# When does temp block start
+login.failure.count = 3
+# in seconds
+login.failure.block.time = 900
+
+# App root logger level can be configured here:
+# logging.level.root=INFO
+# Specific loggers can be configured here:
+# logging.level.org.springframework.web=INFO
+# Add this to see SQL
+# logging.level.org.hibernate.SQL=debug
+# Add this to see query values
+# logging.level.org.hibernate.type.descriptor.sql=trace
+
+# Rest of file defines enumerated code-name value sets.
 # Case *IS* relevant here!
-#
+
 code-name.access-type.OR=Organization
 code-name.access-type.PB=Public
 code-name.access-type.PR=Private
 code-name.access-type.RS=Restricted
-#
+
 code-name.artifact-type.BP=Blueprint File
 code-name.artifact-type.CD=Cdump File
 code-name.artifact-type.DI=Docker Image
@@ -142,52 +152,52 @@ code-name.artifact-type.TG=TOSCA Generator Input File
 code-name.artifact-type.TS=TOSCA Schema
 code-name.artifact-type.TT=TOSCA Translate
 code-name.artifact-type.PJ=Protobuf File
-#
+
 code-name.deployment-status.DP=Deployed
 code-name.deployment-status.FA=Failed
 code-name.deployment-status.IP=In Progress
 code-name.deployment-status.ST=Started
-#
+
 code-name.login-provider.FB=Facebook
 code-name.login-provider.GH=GitHub
 code-name.login-provider.GP=Google Plus
 code-name.login-provider.LI=LinkedIn
-#
+
 code-name.message-severity.HI=High
 code-name.message-severity.ME=Medium
 code-name.message-severity.LO=Low
-#
+
 code-name.model-type.CL=Classification
 code-name.model-type.DS=Data Sources
 code-name.model-type.DT=Data Transformer
 code-name.model-type.PR=Prediction
 code-name.model-type.RG=Regression
-#
+
 code-name.notification-delivery-mechanism.EM=Email
 code-name.notification-delivery-mechanism.TX=Text
-#
+
 code-name.peer-status.AC=Active
 code-name.peer-status.IN=Inactive
 code-name.peer-status.RQ=Requested
 code-name.peer-status.RN=Renounced
 code-name.peer-status.DC=Declined
 code-name.peer-status.RM=Removed
-#
+
 code-name.publish-request-status.AP=Approved
 code-name.publish-request-status.DC=Declined
 code-name.publish-request-status.PE=Pending
 code-name.publish-request-status.WD=Withdrawn
-#
+
 code-name.task-step-status.ST=Started
 code-name.task-step-status.SU=Succeeded
 code-name.task-step-status.FA=Failed
-#
+
 code-name.task-type.OB=Onboarding
 code-name.task-type.SV=Security-Verification
-#
+
 code-name.subscription-scope.RF=Reference
 code-name.subscription-scope.FL=Full
-#
+
 code-name.toolkit-type.CO=Collator
 code-name.toolkit-type.CP=Composite Solution
 code-name.toolkit-type.DS=Design Studio
@@ -202,28 +212,13 @@ code-name.toolkit-type.BR=Data Broker
 code-name.toolkit-type.ON=ONAP
 code-name.toolkit-type.OX=ONNX
 code-name.toolkit-type.PF=PFA
-#
+
 code-name.verified-license.SU=Success
 code-name.verified-license.FA=Failed
 code-name.verified-license.IP=In progress
 code-name.verified-license.UR=Unrequested
-#
+
 code-name.verified-vulnerability.SU=Success
 code-name.verified-vulnerability.FA=Failed
 code-name.verified-vulnerability.IP=In progress
 code-name.verified-vulnerability.UR=Unrequested
-
-# configurable behavior on authentication failure
-# When does temp block start
-login.failure.count = 3
-# in seconds
-login.failure.block.time = 900
-
-# App root logger level can be configured here:
-# logging.level.root=INFO
-# Specific loggers can be configured here:
-# logging.level.org.springframework.web=INFO
-# Add this to see SQL
-# logging.level.org.hibernate.SQL=debug
-# Add this to see query values
-# logging.level.org.hibernate.type.descriptor.sql=trace

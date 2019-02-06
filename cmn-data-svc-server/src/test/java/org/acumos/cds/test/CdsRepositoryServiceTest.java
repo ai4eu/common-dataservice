@@ -336,13 +336,13 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull(pr.getCreated());
 
 			// Fetch back
-			Page<MLPPeer> searchPeers = peerSearchService.findPeers(pr.getName(), null, null, null, null, null, false,
-					PageRequest.of(0, 5));
+			Page<MLPPeer> searchPeers = peerSearchService.findPeers(pr.getName(), null, null, null, null, null, null,
+					false, PageRequest.of(0, 5));
 			Assert.assertEquals(1, searchPeers.getNumberOfElements());
 
 			// Test search with empty result
 			Page<MLPPeer> emptyPeers = peerSearchService.findPeers("bogus", "bogus", "bogus", "bogus", "bogus", "bogus",
-					false, PageRequest.of(0, 5));
+					null, false, PageRequest.of(0, 5));
 			Assert.assertTrue(emptyPeers.isEmpty());
 
 			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL",
@@ -1528,7 +1528,7 @@ public class CdsRepositoryServiceTest {
 			logger.info("Search failed on missing query as expected: {}", ex.toString());
 		}
 		try {
-			peerSearchService.findPeers(null, null, null, null, null, null, false, PageRequest.of(0, 5));
+			peerSearchService.findPeers(null, null, null, null, null, null, null, false, PageRequest.of(0, 5));
 			throw new Exception("Unexpected success");
 		} catch (IllegalArgumentException ex) {
 			logger.info("Search failed on missing query as expected: {}", ex.toString());

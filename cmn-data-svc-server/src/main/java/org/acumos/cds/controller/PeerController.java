@@ -112,17 +112,18 @@ public class PeerController extends AbstractController {
 			@RequestParam(name = MLPPeer_.WEB_URL, required = false) String webUrl, //
 			@RequestParam(name = MLPPeer_.CONTACT1, required = false) String contact1, //
 			@RequestParam(name = MLPPeer_.STATUS_CODE, required = false) String statusCode, //
+			@RequestParam(name = MLPPeer_.SELF, required = false) Boolean self, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchPeer enter");
 		boolean isOr = junction != null && "o".equals(junction);
 		if (name == null && subjectName == null && apiUrl == null && webUrl == null && contact1 == null
-				&& statusCode == null) {
+				&& statusCode == null && self == null) {
 			logger.warn("searchPeers: no parameters");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return peerSearchService.findPeers(name, subjectName, apiUrl, webUrl, contact1, statusCode, isOr,
+			return peerSearchService.findPeers(name, subjectName, apiUrl, webUrl, contact1, statusCode, self, isOr,
 					pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchPeers failed: {}", ex.toString());
