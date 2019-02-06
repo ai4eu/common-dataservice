@@ -59,8 +59,8 @@ public class RoleSearchServiceImpl extends AbstractSearchServiceImpl implements 
 		if (name != null && !name.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPRole_.name)), name.toLowerCase()));
 		if (active != null) {
-			Predicate activePredicate = active ? cb.isTrue(from.<Boolean>get("active"))
-					: cb.isFalse(from.<Boolean>get("active"));
+			Predicate activePredicate = active ? cb.isTrue(from.<Boolean>get(MLPRole_.active))
+					: cb.isFalse(from.<Boolean>get(MLPRole_.active));
 			predicates.add(activePredicate);
 		}
 		if (predicates.isEmpty())

@@ -6,6 +6,22 @@ layer between system components and a relational database.
 
 Please see the documentation in the "docs" folder.
 
+## Running
+
+For development and testing purposes, working from this source tree you can start an
+instance of the CDS server that creates and uses an in-memory database like this:
+
+    cd cmn-data-svc-client
+    mvn install
+    cd ../cmn-data-svc-server
+    mvn spring-boot:run
+
+You can configure the server to use a specific database by entering the URL, username
+and password in the file 'cmn-data-svc-server/application-mariadb.properties' then modify 
+the last command shown above to be the following:
+
+    mvn -Dspring.config.name=application-mariadb spring-boot:run
+
 ## License
 
 Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.

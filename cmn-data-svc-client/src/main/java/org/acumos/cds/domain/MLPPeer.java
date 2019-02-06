@@ -90,13 +90,13 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	@NotNull(message = "isSelf cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator, true if this entry refers to self")
-	private boolean isSelf;
+	private boolean self;
 
 	@Column(name = "IS_LOCAL", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
 	@NotNull(message = "isLocal cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
-	private boolean isLocal;
+	private boolean local;
 
 	@Column(name = "CONTACT1", nullable = false, columnDefinition = "VARCHAR(100)")
 	@NotNull(message = "contact1 cannot be null")
@@ -144,8 +144,8 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 		this.name = name;
 		this.subjectName = subjectName;
 		this.apiUrl = apiUrl;
-		this.isSelf = isSelf;
-		this.isLocal = isLocal;
+		this.self = isSelf;
+		this.local = isLocal;
 		this.contact1 = contact1;
 		this.statusCode = statusCode;
 	}
@@ -161,8 +161,8 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 		this.apiUrl = that.apiUrl;
 		this.contact1 = that.contact1;
 		this.description = that.description;
-		this.isLocal = that.isLocal;
-		this.isSelf = that.isSelf;
+		this.local = that.local;
+		this.self = that.self;
 		this.name = that.name;
 		this.peerId = that.peerId;
 		this.statusCode = that.statusCode;
@@ -264,7 +264,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 * @return the isSelf
 	 */
 	public boolean isSelf() {
-		return isSelf;
+		return self;
 	}
 
 	/**
@@ -272,14 +272,14 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 *                   the isSelf to set
 	 */
 	public void setSelf(boolean isSelf) {
-		this.isSelf = isSelf;
+		this.self = isSelf;
 	}
 
 	/**
 	 * @return the isLocal
 	 */
 	public boolean isLocal() {
-		return isLocal;
+		return local;
 	}
 
 	/**
@@ -287,7 +287,7 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	 *                    the isLocal to set
 	 */
 	public void setLocal(boolean isLocal) {
-		this.isLocal = isLocal;
+		this.local = isLocal;
 	}
 
 	/**
