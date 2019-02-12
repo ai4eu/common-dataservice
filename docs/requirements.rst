@@ -130,10 +130,11 @@ Peer Status
 ^^^^^^^^^^^
 
 | AC "Active"
-| IN "Inactive"
-| RQ "Requested"
-| RN "Renounced"
 | DC "Declined"
+| IN "Inactive"
+| RN "Renounced"
+| RQ "Requested"
+| UK "Unknown"
 
 Publish Request Status
 ^^^^^^^^^^^^^^^^^^^^^^

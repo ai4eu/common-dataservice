@@ -184,6 +184,7 @@ code-name.peer-status.RQ=Requested
 code-name.peer-status.RN=Renounced
 code-name.peer-status.DC=Declined
 code-name.peer-status.RM=Removed
+code-name.peer-status.UK=Unknown
 
 code-name.publish-request-status.AP=Approved
 code-name.publish-request-status.DC=Declined
