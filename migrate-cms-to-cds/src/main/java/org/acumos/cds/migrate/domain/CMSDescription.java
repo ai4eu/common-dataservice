@@ -2,7 +2,7 @@
  * ===============LICENSE_START=======================================================
  * Acumos
  * ===================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
  * ===================================================================================
  * This Acumos software file is distributed by AT&T and Tech Mahindra
  * under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,39 @@
  * ===============LICENSE_END=========================================================
  */
 
-package org.acumos.cds.repository;
+package org.acumos.cds.migrate.domain;
 
-import org.acumos.cds.domain.MLPSiteContent;
-import org.springframework.data.repository.PagingAndSortingRepository;
+/**
+ * <pre>
+ * {
+ * "description":" Test",
+ * }
+ * </pre>
+ */
+public class CMSDescription {
 
-public interface SiteContentRepository extends PagingAndSortingRepository<MLPSiteContent, String> {
+	private String description;
 
+	public CMSDescription() {
+	}
+
+	public CMSDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		int max = 100;
+		String shortDesc = description == null ? ""
+				: description.length() < max ? description : description.substring(0, max) + "..";
+		return this.getClass().getName() + "[description=" + shortDesc + "]";
+	}
 }

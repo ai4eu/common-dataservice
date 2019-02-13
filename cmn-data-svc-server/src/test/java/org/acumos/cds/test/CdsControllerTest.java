@@ -1614,6 +1614,8 @@ public class CdsControllerTest {
 		logger.info("Created site config {}", config);
 		config = client.getSiteConfig(key);
 		Assert.assertNotNull(config);
+		RestPageResponse<MLPSiteConfig> configs = client.getSiteConfigs(new RestPageRequest(0, 10));
+		Assert.assertNotEquals(0, configs.getTotalElements());
 
 		try {
 			client.createSiteConfig(config);
@@ -1664,6 +1666,8 @@ public class CdsControllerTest {
 		logger.info("Created site config {}", content);
 		content = client.getSiteContent(key);
 		Assert.assertNotNull(content);
+		RestPageResponse<MLPSiteContent> contents = client.getSiteContents(new RestPageRequest(0, 10));
+		Assert.assertNotEquals(0, contents.getTotalElements());
 
 		try {
 			client.createSiteContent(content);

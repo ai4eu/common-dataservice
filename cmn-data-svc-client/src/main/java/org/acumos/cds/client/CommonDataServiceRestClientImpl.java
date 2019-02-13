@@ -1614,6 +1614,16 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public RestPageResponse<MLPSiteConfig> getSiteConfigs(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH }, null, null);
+		logger.debug("getSiteConfigs: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPSiteConfig>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPSiteConfig>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public MLPSiteConfig getSiteConfig(String configKey) {
 		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH, configKey }, null, null);
 		logger.debug("getSiteConfig: uri {}", uri);
@@ -1643,6 +1653,16 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONFIG_PATH, configKey }, null, null);
 		logger.debug("deleteSiteConfig: url {}", uri);
 		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPSiteContent> getSiteContents(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.SITE_PATH, CCDSConstants.CONTENT_PATH }, null, null);
+		logger.debug("getSiteContents: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPSiteContent>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPSiteContent>>() {
+				});
+		return response.getBody();
 	}
 
 	@Override

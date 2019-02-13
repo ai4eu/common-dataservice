@@ -1480,6 +1480,15 @@ public interface ICommonDataServiceRestClient {
 	void deleteSolutionDeployment(MLPSolutionDeployment deployment);
 
 	/**
+	 * Gets a page of site configuration entries.
+	 * 
+	 * @param pageRequest
+	 *                        Page request
+	 * @return Page of site configurations, possibly empty
+	 */
+	RestPageResponse<MLPSiteConfig> getSiteConfigs(RestPageRequest pageRequest);
+
+	/**
 	 * Gets one site configuration entry.
 	 * 
 	 * @param configKey
@@ -1512,6 +1521,15 @@ public interface ICommonDataServiceRestClient {
 	 *                      key of instance to delete
 	 */
 	void deleteSiteConfig(String configKey);
+
+	/**
+	 * Gets a page of site content entries.
+	 * 
+	 * @param pageRequest
+	 *                        Page request
+	 * @return Page of site contents, possibly empty
+	 */
+	RestPageResponse<MLPSiteContent> getSiteContents(RestPageRequest pageRequest);
 
 	/**
 	 * Gets one site content entry.

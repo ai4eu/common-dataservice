@@ -215,6 +215,8 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<MLPRightToUse> rightToUseList;
 	private RestPageResponse<MLPRtuReference> refs;
 	private MLPRtuReference ref;
+	private RestPageResponse<MLPSiteConfig> siteConfigs;
+	private RestPageResponse<MLPSiteContent> siteContents;
 
 	/**
 	 * No-argument constructor.
@@ -1180,6 +1182,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		this.siteConfigByKey = config;
 	}
 
+	public void setSiteConfigs(RestPageResponse<MLPSiteConfig> siteConfigs) {
+		this.siteConfigs = siteConfigs;
+	}
+
+	@Override
+	public RestPageResponse<MLPSiteConfig> getSiteConfigs(RestPageRequest pageRequest) {
+		return siteConfigs;
+	}
+
 	@Override
 	public MLPSiteConfig getSiteConfig(String configKey) {
 		return siteConfigByKey;
@@ -1202,6 +1213,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void deleteSiteConfig(String configKey) {
 		// How to mock?
+	}
+
+	public void setSiteContents(RestPageResponse<MLPSiteContent> siteContents) {
+		this.siteContents = siteContents;
+	}
+
+	@Override
+	public RestPageResponse<MLPSiteContent> getSiteContents(RestPageRequest pageRequest) {
+		return siteContents;
 	}
 
 	public void setSiteContentByKey(MLPSiteContent content) {

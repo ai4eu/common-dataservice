@@ -335,6 +335,6 @@ public class MLPPeer extends MLPTimestampedEntity implements Serializable {
 	@Override
 	public String toString() {
 		return this.getClass().getName() + "[peerId=" + peerId + ", name=" + name + ", subjectName=" + subjectName
-				+ "webUrl=" + webUrl + "]";
+				+ ", webUrl=" + webUrl + "]";
 	}
 }

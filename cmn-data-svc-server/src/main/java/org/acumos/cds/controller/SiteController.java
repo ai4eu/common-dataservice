@@ -34,9 +34,12 @@ import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
 import org.acumos.cds.transport.SuccessTransport;
+import org.acumos.cds.util.ApiPageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,6 +76,15 @@ public class SiteController extends AbstractController {
 	private SiteContentRepository siteContentRepository;
 	@Autowired
 	private UserRepository userRepository;
+
+	@ApiOperation(value = "Gets a page of site configurations, optionally sorted on fields. Returns empty if none are found.", //
+			response = MLPSiteConfig.class, responseContainer = "Page")
+	@ApiPageable
+	@RequestMapping(value = CCDSConstants.CONFIG_PATH, method = RequestMethod.GET)
+	public Page<MLPSiteConfig> getSiteConfigs(Pageable pageable) {
+		logger.debug("getSiteConfigs query {}", pageable);
+		return siteConfigRepository.findAll(pageable);
+	}
 
 	@ApiOperation(value = "Gets the site configuration value for the specified key. Returns null if not found.", response = MLPSiteConfig.class)
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.GET)
@@ -157,6 +169,15 @@ public class SiteController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSiteConfig failed", ex);
 		}
+	}
+
+	@ApiOperation(value = "Gets a page of site contents, optionally sorted on fields. Returns empty if none are found.", //
+			response = MLPSiteContent.class, responseContainer = "Page")
+	@ApiPageable
+	@RequestMapping(value = CCDSConstants.CONTENT_PATH, method = RequestMethod.GET)
+	public Page<MLPSiteContent> getSiteContents(Pageable pageable) {
+		logger.debug("getSiteContents query {}", pageable);
+		return siteContentRepository.findAll(pageable);
 	}
 
 	@ApiOperation(value = "Gets the site content value for the specified key. Answers null if the key is not found.", response = MLPSiteContent.class)

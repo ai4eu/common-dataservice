@@ -379,6 +379,9 @@ public class MockClientTest {
 		client.updateSolutionDeployment(deployment);
 		client.deleteSolutionDeployment(deployment);
 
+		RestPageResponse<MLPSiteConfig> siteConfigs = new RestPageResponse<>();
+		client.setSiteConfigs(siteConfigs);
+		client.getSiteConfigs(pageRequest);
 		MLPSiteConfig siteConfig = new MLPSiteConfig();
 		client.setSiteConfigByKey(siteConfig);
 		Assert.assertTrue(siteConfig == client.getSiteConfig("key"));
@@ -387,6 +390,9 @@ public class MockClientTest {
 		client.updateSiteConfig(siteConfig);
 		client.deleteSiteConfig("key");
 
+		RestPageResponse<MLPSiteContent> siteContents = new RestPageResponse<>();
+		client.setSiteContents(siteContents);
+		client.getSiteContents(pageRequest);
 		MLPSiteContent siteContent = new MLPSiteContent();
 		client.setSiteContentByKey(siteContent);
 		Assert.assertTrue(siteContent == client.getSiteContent("key"));

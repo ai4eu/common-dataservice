@@ -6,7 +6,7 @@ cds.user =
 cds.pass = 
 
 # must include host, port and base context path
-cms.url = http://cmshost.myproject.org:8085/site
+cms.url = http://cmshost.myproject.org:9080/site
 cms.user = 
 cms.pass = 
 

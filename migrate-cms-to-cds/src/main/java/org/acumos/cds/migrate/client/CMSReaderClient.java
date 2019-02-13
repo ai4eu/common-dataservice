@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.acumos.cds.migrate.domain.CMSDescription;
 import org.acumos.cds.migrate.domain.CMSNameList;
 import org.acumos.cds.migrate.domain.CMSRevisionDescription;
 import org.apache.http.HttpHost;
@@ -62,13 +63,18 @@ public class CMSReaderClient {
 	private final String ASSETS_PATH = "assets";
 	private final String BINARIES_PATH = "binaries";
 	private final String CONTENT_PATH = "content";
-	private final String GALLERY_PATH = "gallery";
 	private final String DESCRIPTION_PATH = "description";
+	private final String GALLERY_PATH = "gallery";
+	private final String SOL_DESCRIPTION_PATH = "solDescription";
 	private final String SOLUTION_UC_PATH = "Solution";
 	private final String SOLUTION_LC_PATH = "solution";
 	private final String SOLUTION_ASSETS_PATH = "solutionAssets";
 	private final String SOLUTIONDOCS_PATH = "solutiondocs";
 	private final String SOLUTION_IMAGES_PATH = "solutionImages";
+	private final String CO_BRAND_LOGO_PATH = "coBrandLogo";
+	private final String CAROUSEL_IMAGES_PATH = "carouselImages";
+	private final String GLOBAL_PATH = "global";
+	private final String TERMS_CONDITION_PATH = "termsCondition";
 
 	/** URL request parameters */
 	private final String PATH_PARAM = "path";
@@ -114,10 +120,11 @@ public class CMSReaderClient {
 	 * "foo=a&amp;foo=b".
 	 * 
 	 * @param path
-	 *            Array of path segments
+	 *                        Array of path segments
 	 * @param queryParams
-	 *            key-value pairs; ignored if null or empty. Gives special treatment
-	 *            to Date-type values, Array values, and null values inside arrays.
+	 *                        key-value pairs; ignored if null or empty. Gives
+	 *                        special treatment to Date-type values, Array values,
+	 *                        and null values inside arrays.
 	 * @return URI with the specified path segments and query parameters
 	 */
 	protected URI buildUri(final String[] path, final Map<String, Object> queryParams) {
@@ -153,7 +160,7 @@ public class CMSReaderClient {
 	 * Body : [image.jpg]
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @return Image name
 	 */
 	public CMSNameList getSolutionImageName(String solutionId) {
@@ -170,9 +177,9 @@ public class CMSReaderClient {
 	 * http://acumos.org:8085/site/binaries/content/gallery/acumoscms/solution/{solutionId}/{imageName}
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param imageName
-	 *            Image name
+	 *                       Image name
 	 * @return Image
 	 */
 	public byte[] getSolutionImage(String solutionId, String imageName) {
@@ -199,11 +206,11 @@ public class CMSReaderClient {
 	 * </pre>
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                       Revision ID
 	 * @param workspace
-	 *            "workspace" can be "public" or "org"
+	 *                       "workspace" can be "public" or "org"
 	 * @return Description object
 	 * 
 	 */
@@ -223,11 +230,11 @@ public class CMSReaderClient {
 	 * http://acumos.org:8085/site/api-manual/Solution/solutionAssets/{solutionId}/{revisionId}?path={workspace}
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                       Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                       Revision ID
 	 * @param workspace
-	 *            "workspace" can be "public" or "org"
+	 *                       "workspace" can be "public" or "org"
 	 * @return List of document names
 	 */
 	public CMSNameList getRevisionDocumentNames(String solutionId, String revisionId, String workspace) {
@@ -248,13 +255,13 @@ public class CMSReaderClient {
 	 * http://acumos.org:8085/site/binaries/content/assets/solutiondocs/solution/{solutionId}/{RevisionId}/{workspace}/{documentName}
 	 * 
 	 * @param solutionId
-	 *            Solution ID
+	 *                         Solution ID
 	 * @param revisionId
-	 *            Revision ID
+	 *                         Revision ID
 	 * @param workspace
-	 *            "workspace" can be "public" or "org"
+	 *                         "workspace" can be "public" or "org"
 	 * @param documentName
-	 *            document name
+	 *                         document name
 	 * @return Document content
 	 */
 	public byte[] getRevisionDocument(String solutionId, String revisionId, String workspace, String documentName) {
@@ -263,6 +270,93 @@ public class CMSReaderClient {
 		logger.debug("getRevisionDocument: uri {}", uri);
 		ResponseEntity<byte[]> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<byte[]>() {
+				});
+		return response.getBody();
+	}
+
+	/**
+	 * Downloads the co-brand logo bytes
+	 * 
+	 * GET
+	 * http://acumos.org:8085/site/binaries/content/gallery/acumoscms/global/coBrandLogo
+	 * 
+	 * @return Bytes
+	 */
+	public byte[] getCoBrandLogo() {
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, GLOBAL_PATH, CO_BRAND_LOGO_PATH }, null);
+		logger.debug("getCoBrandLogo: uri {}", uri);
+		ResponseEntity<byte[]> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<byte[]>() {
+				});
+		return response.getBody();
+	}
+
+	/**
+	 * Gets a carousel binary image as byte array
+	 * 
+	 * GET
+	 * http://acumos.org:8085/site/binaries/content/gallery/acumoscms/global/{type}/{name}
+	 * 
+	 * @param type
+	 *                 Carousel image type; one of carousel_background,
+	 *                 carousel_infoGraphic, event_carousel_bg, event_carousel_ig
+	 * @param name
+	 *                 Image name
+	 * @return Bytes
+	 */
+	public byte[] getCarouselImage(String type, String name) {
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, CAROUSEL_IMAGES_PATH, type, name }, null);
+		logger.debug("getCarouselImage: uri {}", uri);
+		ResponseEntity<byte[]> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<byte[]>() {
+				});
+		return response.getBody();
+	}
+
+	/**
+	 * Gets footer contact info
+	 * 
+	 * GET
+	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/footer&name=contactinfo
+	 * 
+	 * Sample:
+	 * 
+	 * <pre>
+	 * {"description":"<p>Contact Info</p>"}
+	 * </pre>
+	 * 
+	 * @return CMSDescription
+	 */
+	public CMSDescription getFooterContactInfo() {
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put("path", "global/footer");
+		queryParams.put("name", "contactinfo");
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, SOL_DESCRIPTION_PATH }, queryParams);
+		logger.debug("getFooterContactInfo: uri {}", uri);
+		ResponseEntity<CMSDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CMSDescription>() {
+				});
+		return response.getBody();
+	}
+
+	/**
+	 * Gets footer contact info
+	 * 
+	 * GET http://acumos.org:8085/site/api-manual/Solution/global/termsCondition
+	 * 
+	 * Sample:
+	 * 
+	 * <pre>
+	 * {"description":"<p>Footer terms</p>"}
+	 * </pre>
+	 * 
+	 * @return CMSDescription
+	 */
+	public CMSDescription getFooterTermsConditions() {
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, GLOBAL_PATH, TERMS_CONDITION_PATH }, null);
+		logger.debug("getFooterTermsConditions: uri {}", uri);
+		ResponseEntity<CMSDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CMSDescription>() {
 				});
 		return response.getBody();
 	}

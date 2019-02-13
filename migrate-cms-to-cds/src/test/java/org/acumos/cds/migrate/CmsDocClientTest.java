@@ -24,8 +24,10 @@ import java.lang.invoke.MethodHandles;
 
 import org.acumos.cds.migrate.client.CMSReaderClient;
 import org.acumos.cds.migrate.client.CMSWorkspace;
+import org.acumos.cds.migrate.domain.CMSDescription;
 import org.acumos.cds.migrate.domain.CMSNameList;
 import org.acumos.cds.migrate.domain.CMSRevisionDescription;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -43,6 +45,7 @@ public class CmsDocClientTest {
 	String workspace = CMSWorkspace.ORG.getCmsKey();
 
 	// This only works in our development enviroment
+	@Test
 	public void testGetDocumentNames() throws Exception {
 		try {
 			MigrateProperties props = new MigrateProperties();
@@ -68,6 +71,16 @@ public class CmsDocClientTest {
 				byte[] doc = client.getRevisionDocument(solutionId, revisionId, workspace, docName);
 				logger.debug("doc length: {}", doc.length);
 			}
+
+			byte[] coBrandLogo = client.getCoBrandLogo();
+			logger.debug("Co-brand logo length {}", coBrandLogo == null ? 0 : coBrandLogo.length);
+
+			CMSDescription footerContact = client.getFooterContactInfo();
+			logger.debug("Footer contact length {}",
+					footerContact == null ? 0 : footerContact.getDescription().length());
+
+			CMSDescription footerTc = client.getFooterTermsConditions();
+			logger.debug("Footer T&C length {}", footerTc == null ? 0 : footerTc.getDescription().length());
 
 		} catch (HttpStatusCodeException ex) {
 			// Helpful to see what the server replies when things go south

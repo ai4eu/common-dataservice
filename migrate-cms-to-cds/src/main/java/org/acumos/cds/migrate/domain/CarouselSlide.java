@@ -2,7 +2,7 @@
  * ===============LICENSE_START=======================================================
  * Acumos
  * ===================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+ * Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
  * ===================================================================================
  * This Acumos software file is distributed by AT&T and Tech Mahindra
  * under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,34 @@
  * ===============LICENSE_END=========================================================
  */
 
-package org.acumos.cds.repository;
+package org.acumos.cds.migrate.domain;
 
-import org.acumos.cds.domain.MLPSiteContent;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public interface SiteContentRepository extends PagingAndSortingRepository<MLPSiteContent, String> {
+@JsonInclude(Include.NON_NULL)
+public class CarouselSlide {
+
+	public String name;
+	public Boolean graphicImgEnabled;
+	public String headline;
+	public String infoImageAling; // sic
+	public Integer number;
+	public Boolean slideEnabled;
+	public String supportingContent;
+	public String textAling; // sic
+
+	// For images in CMS
+	public String bgImageUrl;
+	// For images in CMS
+	public String infoImageUrl;
+	// For images in CDS
+	public Integer uniqueKey;
+	// For images in CDS
+	public Boolean hasInfographic;
+	// For images in CDS
+	public String bgImgKey;
+	// For images in CDS
+	public String infoImgKey;
 
 }

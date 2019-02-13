@@ -21,8 +21,8 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPSiteConfig;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface SiteConfigRepository extends CrudRepository<MLPSiteConfig, String> {
+public interface SiteConfigRepository extends PagingAndSortingRepository<MLPSiteConfig, String> {
 
 }

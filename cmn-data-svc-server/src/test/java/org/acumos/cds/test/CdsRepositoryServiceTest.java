@@ -278,6 +278,9 @@ public class CdsRepositoryServiceTest {
 			logger.info("Created user {}", cu);
 			cu.setAuthToken("JWT is Greek to me");
 			cu.setLastLogin(lastLogin);
+			// Occasionally the assertion fails, for whatever reason the modified date is
+			// not updated in MariaDB.  Add a tiny delay to increase chance of passing.
+			Thread.sleep(10);
 			cu = userRepository.save(cu);
 			// Check hibernate behavior on timestamps
 			Assert.assertEquals(originalCreated, cu.getCreated());
