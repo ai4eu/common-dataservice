@@ -24,9 +24,10 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.1.1, 15 Feb 2019
+Version 2.1.1, 20 Feb 2019
 --------------------------
 * Add peer-status code UK (`ACUMOS-2513 <https://jira.acumos.org/browse/ACUMOS-2513>`_)
+* Allow server to run as unprivileged user (`ACUMOS-2533 <https://jira.acumos.org/browse/ACUMOS-2533>`_)
 * Requires database schema version 2.1
 
 Version 2.1.0, 11 Feb 2019
