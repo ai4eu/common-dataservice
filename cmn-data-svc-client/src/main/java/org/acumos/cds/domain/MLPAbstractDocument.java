@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
  * ID, and could be exposed as a string or as an object via Hibernate magic.
  */
 @MappedSuperclass
-public class MLPAbstractDocument extends MLPTimestampedEntity implements Serializable {
+public abstract class MLPAbstractDocument extends MLPTimestampedEntity implements Serializable {
 
 	private static final long serialVersionUID = -388921848287330617L;
 

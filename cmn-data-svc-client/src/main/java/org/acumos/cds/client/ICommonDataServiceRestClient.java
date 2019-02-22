@@ -30,12 +30,15 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -1367,7 +1370,7 @@ public interface ICommonDataServiceRestClient {
 	List<MLPUser> getSolutionAccessUsers(String solutionId);
 
 	/**
-	 * Gets the solutions accessible to the specified user.
+	 * Gets a page of solutions accessible to the specified user.
 	 * 
 	 * @param userId
 	 *                        User ID
@@ -2628,5 +2631,270 @@ public interface ICommonDataServiceRestClient {
 	 *                   Right to Use ID
 	 */
 	void dropUserFromRtu(String userId, Long rtuId);
+
+	/**
+	 * Gets a page of workbench projects.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of workbench project objects.
+	 */
+	RestPageResponse<MLPProject> getProjects(RestPageRequest pageRequest);
+
+	/**
+	 * Searches workbench project records for exact matches.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: name,
+	 *                            active, userId, version, serviceStatus,
+	 *                            repositoryUrl, serviceUrl
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of Project objects
+	 */
+	RestPageResponse<MLPProject> searchProjects(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets the workbench project record with the specified ID.
+	 * 
+	 * @param projectId
+	 *                      Project ID
+	 * @return Workbench project object
+	 */
+	MLPProject getProject(String projectId);
+
+	/**
+	 * Creates a workbench project.
+	 * 
+	 * @param project
+	 *                    Project data. If the ID field is null a new value is
+	 *                    generated; otherwise the ID value is used if valid and not
+	 *                    already known.
+	 * @return Complete object, with generated information such as ID
+	 */
+	MLPProject createProject(MLPProject project);
+
+	/**
+	 * Updates a workbench project.
+	 * 
+	 * @param project
+	 *                    Project data
+	 */
+	void updateProject(MLPProject project);
+
+	/**
+	 * Deletes a workbench project. Cascades the delete; e.g., removes the
+	 * association with any notebooks, pipelines, users, etc. Answers bad request if
+	 * the ID is not known.
+	 * 
+	 * @param projectId
+	 *                      project ID
+	 */
+	void deleteProject(String projectId);
+
+	/**
+	 * Maps the specified workbench notebook to the specified project.
+	 * 
+	 * @param projectId
+	 *                       Project ID
+	 * @param notebookId
+	 *                       Notebook ID
+	 */
+	void addProjectNotebook(String projectId, String notebookId);
+
+	/**
+	 * Unmaps the specified workbench notebook from the specified project.
+	 * 
+	 * @param projectId
+	 *                       Project ID
+	 * @param notebookId
+	 *                       Notebook ID
+	 */
+	void dropProjectNotebook(String projectId, String notebookId);
+
+	/**
+	 * Maps the specified workbench pipeline to the specified project.
+	 * 
+	 * @param projectId
+	 *                       Project ID
+	 * @param pipelineId
+	 *                       Pipeline ID
+	 */
+	void addProjectPipeline(String projectId, String pipelineId);
+
+	/**
+	 * Unmaps the specified workbench pipeline from the specified project.
+	 * 
+	 * @param projectId
+	 *                       Project ID
+	 * @param pipelineId
+	 *                       Pipeline ID
+	 */
+	void dropProjectPipeline(String projectId, String pipelineId);
+
+	/**
+	 * Gets the workbench notebooks mapped to the specified project ID.
+	 * 
+	 * @param projectId
+	 *                      Project ID.
+	 * @return List of Notebook objects; empty if none are found
+	 */
+	List<MLPNotebook> getProjectNotebooks(String projectId);
+
+	/**
+	 * Gets the workbench pipelines mapped to the specified project ID.
+	 * 
+	 * @param projectId
+	 *                      Project ID.
+	 * @return List of Pipeline objects; empty if none are found
+	 */
+	List<MLPPipeline> getProjectPipelines(String projectId);
+
+	/**
+	 * Gets a page of workbench notebooks.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of workbench notebook objects.
+	 */
+	RestPageResponse<MLPNotebook> getNotebooks(RestPageRequest pageRequest);
+
+	/**
+	 * Searches workbench notebook records for exact matches.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: name,
+	 *                            active, userId, version, serviceStatus,
+	 *                            repositoryUrl, serviceUrl
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of Notebook objects
+	 */
+	RestPageResponse<MLPNotebook> searchNotebooks(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets the workbench notebook record with the specified ID.
+	 * 
+	 * @param notebookId
+	 *                       Notebook ID
+	 * @return Workbench notebook object
+	 */
+	MLPNotebook getNotebook(String notebookId);
+
+	/**
+	 * Creates a workbench notebook.
+	 * 
+	 * @param notebook
+	 *                     Notebook data. If the ID field is null a new value is
+	 *                     generated; otherwise the ID value is used if valid and
+	 *                     not already known.
+	 * @return Complete object, with generated information such as ID
+	 */
+	MLPNotebook createNotebook(MLPNotebook notebook);
+
+	/**
+	 * Updates a workbench notebook.
+	 * 
+	 * @param notebook
+	 *                     Notebook data
+	 */
+	void updateNotebook(MLPNotebook notebook);
+
+	/**
+	 * Deletes a workbench notebook. Cascades the delete; e.g., removes the
+	 * association with any projects, users, etc. Answers bad request if the ID is
+	 * not known.
+	 * 
+	 * @param notebookId
+	 *                       notebook ID
+	 */
+	void deleteNotebook(String notebookId);
+
+	/**
+	 * Gets a page of workbench pipelines.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of workbench pipeline objects.
+	 */
+	RestPageResponse<MLPPipeline> getPipelines(RestPageRequest pageRequest);
+
+	/**
+	 * Searches workbench pipeline records for exact matches.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names: name,
+	 *                            active, userId, version, serviceStatus,
+	 *                            repositoryUrl, serviceUrl
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of Project objects
+	 */
+	RestPageResponse<MLPPipeline> searchPipelines(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets the workbench pipeline record with the specified ID.
+	 * 
+	 * @param pipelineId
+	 *                       Pipeline ID
+	 * @return Workbench pipeline object
+	 */
+	MLPPipeline getPipeline(String pipelineId);
+
+	/**
+	 * Creates a workbench pipeline.
+	 * 
+	 * @param pipeline
+	 *                     Pipeline data. If the ID field is null a new value is
+	 *                     generated; otherwise the ID value is used if valid and
+	 *                     not already known.
+	 * @return Complete object, with generated information such as ID
+	 */
+	MLPPipeline createPipeline(MLPPipeline pipeline);
+
+	/**
+	 * Updates a workbench pipeline.
+	 * 
+	 * @param pipeline
+	 *                     Pipeline data
+	 */
+	void updatePipeline(MLPPipeline pipeline);
+
+	/**
+	 * Deletes a workbench pipeline. Cascades the delete; e.g., removes the
+	 * association with any projects, users, etc. Answers bad request if the ID is
+	 * not known.
+	 * 
+	 * @param pipelineId
+	 *                       pipeline ID
+	 */
+	void deletePipeline(String pipelineId);
 
 }

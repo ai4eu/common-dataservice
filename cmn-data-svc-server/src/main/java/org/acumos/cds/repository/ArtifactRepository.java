@@ -51,7 +51,7 @@ public interface ArtifactRepository extends PagingAndSortingRepository<MLPArtifa
 	 *                        fragment to find in text columns
 	 * @param pageRequest
 	 *                        Start index, page size, sort criteria
-	 * @return Iterable of MLPArtifact
+	 * @return Page of MLPArtifact
 	 */
 	@Query("SELECT s FROM MLPArtifact s " //
 			+ " WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))" //

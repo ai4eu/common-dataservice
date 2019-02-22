@@ -30,7 +30,8 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// Serves data from config; no DB access so no @Transactional annotation
+// Serves data from configured property files only.
+// No DB access so no @Transactional annotation needed here.
 @Service("codeNameService")
 public class CodeNameServiceImpl implements CodeNameService {
 
@@ -40,8 +41,9 @@ public class CodeNameServiceImpl implements CodeNameService {
 	/**
 	 * Translates a value set name into a set of pairs.
 	 * 
-	 * Unfortunately the structure of the CodeNameConfiguration class required the
-	 * big switch-case to answer appropriately.
+	 * Unfortunately the structure of
+	 * {@link org.acumos.cds.config.CodeNameProperties} required the big switch-case
+	 * to answer appropriately.
 	 */
 	private Map<String, String> getPairs(CodeNameType type) {
 		switch (type) {
@@ -51,18 +53,24 @@ public class CodeNameServiceImpl implements CodeNameService {
 			return codeNameProps.getArtifactType();
 		case DEPLOYMENT_STATUS:
 			return codeNameProps.getDeploymentStatus();
+		case KERNEL_TYPE:
+			return codeNameProps.getKernelType();
 		case LOGIN_PROVIDER:
 			return codeNameProps.getLoginProvider();
 		case MESSAGE_SEVERITY:
 			return codeNameProps.getMessageSeverity();
 		case MODEL_TYPE:
 			return codeNameProps.getModelType();
+		case NOTEBOOK_TYPE:
+			return codeNameProps.getNotebookType();
 		case NOTIFICATION_DELIVERY_MECHANISM:
 			return codeNameProps.getNotificationDeliveryMechanism();
 		case PEER_STATUS:
 			return codeNameProps.getPeerStatus();
 		case PUBLISH_REQUEST_STATUS:
 			return codeNameProps.getPublishRequestStatus();
+		case SERVICE_STATUS:
+			return codeNameProps.getServiceStatus();
 		case SUBSCRIPTION_SCOPE:
 			return codeNameProps.getSubscriptionScope();
 		case TASK_STEP_STATUS:

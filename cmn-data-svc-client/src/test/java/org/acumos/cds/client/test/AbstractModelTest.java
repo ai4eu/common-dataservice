@@ -62,6 +62,7 @@ public abstract class AbstractModelTest {
 	final String s13 = "string13";
 	final Set<MLPTag> tags = new HashSet<>();
 	final String u1 = "http://foo.com";
+	final String u2 = "http://bar.com";
 
 	public AbstractModelTest() {
 		tags.add(new MLPTag("taggy"));

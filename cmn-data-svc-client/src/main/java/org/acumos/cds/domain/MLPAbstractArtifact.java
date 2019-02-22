@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiModelProperty;
  * could be exposed as a string or as an object via Hibernate magic.
  */
 @MappedSuperclass
-public class MLPAbstractArtifact extends MLPTimestampedEntity {
+public abstract class MLPAbstractArtifact extends MLPTimestampedEntity {
 
 	/* package */ static final String TABLE_NAME = "C_ARTIFACT";
 

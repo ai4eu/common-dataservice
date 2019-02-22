@@ -27,12 +27,21 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Publishes enumerated value sets, aka code-name pairs, from property sources
- * chosen dynamically by Spring, which most likely includes the file
+ * chosen dynamically by Spring, which by default is the file
  * application.properties.
  * 
- * The field names must match the keys in the application.properties file,
- * including the key prefix as annotated below. The following example publishes
- * two code-name pairs in the toolkitType value set:
+ * The entries here must be kept in sync with these other CDS classes:
+ * <UL>
+ * <LI>The Enum {@link org.acumos.cds.CodeNameType}
+ * <LI>All implementations of
+ * {@link org.acumos.cds.service.CodeNameService#getCodeNamePairs(org.acumos.cds.CodeNameType)}
+ * </UL>
+ * 
+ * The field names in this class must match the keys in the configured
+ * properties file including the key prefix as annotated below. But note that
+ * Spring requires hyphens in the file and matches them against camel case here!
+ * For example, the following entries become two code-name pairs in the
+ * "toolkitType" value set:
  * 
  * <PRE>
    code-name.toolkit-type.PY=Python
@@ -53,10 +62,13 @@ public class CodeNameProperties {
 	private Map<String, String> deploymentStatus;
 	private Map<String, String> loginProvider;
 	private Map<String, String> messageSeverity;
+	private Map<String, String> kernelType;
 	private Map<String, String> modelType;
+	private Map<String, String> notebookType;
 	private Map<String, String> notificationDeliveryMechanism;
 	private Map<String, String> peerStatus;
 	private Map<String, String> publishRequestStatus;
+	private Map<String, String> serviceStatus;
 	private Map<String, String> subscriptionScope;
 	private Map<String, String> taskStepStatus;
 	private Map<String, String> taskType;
@@ -182,6 +194,30 @@ public class CodeNameProperties {
 
 	public void setVerifiedVulnerability(Map<String, String> verifiedVulnerability) {
 		this.verifiedVulnerability = verifiedVulnerability;
+	}
+
+	public Map<String, String> getKernelType() {
+		return kernelType;
+	}
+
+	public void setKernelType(Map<String, String> kernelType) {
+		this.kernelType = kernelType;
+	}
+
+	public Map<String, String> getNotebookType() {
+		return notebookType;
+	}
+
+	public void setNotebookType(Map<String, String> notebookType) {
+		this.notebookType = notebookType;
+	}
+
+	public Map<String, String> getServiceStatus() {
+		return serviceStatus;
+	}
+
+	public void setServiceStatus(Map<String, String> serviceStatus) {
+		this.serviceStatus = serviceStatus;
 	}
 
 }

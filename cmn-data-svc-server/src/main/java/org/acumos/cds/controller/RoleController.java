@@ -21,8 +21,6 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -121,12 +119,7 @@ public class RoleController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchRoles enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		Map<String, Object> queryParameters = new HashMap<>();
-		if (name != null)
-			queryParameters.put(MLPRole_.NAME, name);
-		if (active != null)
-			queryParameters.put(MLPRole_.ACTIVE, active);
-		if (queryParameters.size() == 0) {
+		if (name == null && active == null) {
 			logger.warn("searchRoles missing query");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);

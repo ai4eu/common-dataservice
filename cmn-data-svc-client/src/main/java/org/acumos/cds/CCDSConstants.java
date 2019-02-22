@@ -49,10 +49,13 @@ public class CCDSConstants {
 	public static final String GROUP_PATH = "group";
 	public static final String KEYWORD_PATH = "kw";
 	public static final String KW_TAG_PATH = "kwtag";
+	public static final String NOTEBOOK_PATH = "ntbk";
 	public static final String NOTIFICATION_PATH = "notif";
 	public static final String NOTIFICATION_PREF_PATH = "notifpref";
 	public static final String PEER_PATH = "peer";
+	public static final String PIPELINE_PATH = "ppl";
 	public static final String PICTURE_PATH = "pic";
+	public static final String PROJECT_PATH = "proj";
 	public static final String PUBLISH_REQUEST_PATH = "pubreq";
 	public static final String RATING_PATH = "rating";
 	public static final String REF_PATH = "ref";
@@ -69,6 +72,7 @@ public class CCDSConstants {
 	public static final String USER_PATH = "user";
 	public static final String VIEW_PATH = "view";
 	public static final String UNREAD_PATH = "unread";
+	public static final String WORKBENCH_PATH = "wkbn";
 
 	// Code-name pairs
 	public static final String CODE_PATH = "code";

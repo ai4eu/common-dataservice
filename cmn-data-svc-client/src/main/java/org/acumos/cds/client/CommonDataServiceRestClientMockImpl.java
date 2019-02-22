@@ -23,6 +23,7 @@ package org.acumos.cds.client;
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +33,15 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -217,6 +221,18 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private MLPRtuReference ref;
 	private RestPageResponse<MLPSiteConfig> siteConfigs;
 	private RestPageResponse<MLPSiteContent> siteContents;
+	private RestPageResponse<MLPProject> projects;
+	private MLPProject projectById;
+	private MLPProject project;
+	private RestPageResponse<MLPNotebook> notebooks;
+	private MLPNotebook notebookById;
+	private MLPNotebook notebook;
+	private RestPageResponse<MLPPipeline> pipelines;
+	private MLPPipeline pipelineById;
+	private MLPPipeline pipeline;
+	private RestPageResponse<MLPProject> searchProjects;
+	private RestPageResponse<MLPNotebook> searchNotebooks;
+	private RestPageResponse<MLPPipeline> searchPipelines;
 
 	/**
 	 * No-argument constructor.
@@ -1967,6 +1983,177 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void dropUserFromRtu(String userId, Long rtuId) {
+		// How to mock?
+	}
+
+	public void setProjects(RestPageResponse<MLPProject> results) {
+		this.projects = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPProject> getProjects(RestPageRequest pageRequest) {
+		return projects;
+	}
+
+	public void setSearchProjects(RestPageResponse<MLPProject> results) {
+		this.searchProjects = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPProject> searchProjects(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		return this.searchProjects;
+	}
+
+	public void setProjectById(MLPProject object) {
+		this.projectById = object;
+	}
+
+	@Override
+	public MLPProject getProject(String projectId) {
+		return projectById;
+	}
+
+	public void setProject(MLPProject object) {
+		this.project = object;
+	}
+
+	@Override
+	public MLPProject createProject(MLPProject project) {
+		return this.project;
+	}
+
+	@Override
+	public void updateProject(MLPProject project) {
+		this.project = project;
+	}
+
+	@Override
+	public void deleteProject(String projectId) {
+		this.project = null;
+	}
+
+	@Override
+	public List<MLPNotebook> getProjectNotebooks(String projectId) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<MLPPipeline> getProjectPipelines(String projectId) {
+		return Collections.emptyList();
+	}
+
+	public void setNotebooks(RestPageResponse<MLPNotebook> results) {
+		this.notebooks = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPNotebook> getNotebooks(RestPageRequest pageRequest) {
+		return notebooks;
+	}
+
+	public void setSearchNotebooks(RestPageResponse<MLPNotebook> results) {
+		this.searchNotebooks = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPNotebook> searchNotebooks(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		return this.searchNotebooks;
+	}
+
+	public void setNotebookById(MLPNotebook object) {
+		this.notebookById = object;
+	}
+
+	@Override
+	public MLPNotebook getNotebook(String notebookId) {
+		return notebookById;
+	}
+
+	public void setNotebook(MLPNotebook object) {
+		this.notebook = object;
+	}
+
+	@Override
+	public MLPNotebook createNotebook(MLPNotebook notebook) {
+		return this.notebook;
+	}
+
+	@Override
+	public void updateNotebook(MLPNotebook notebook) {
+		this.notebook = notebook;
+	}
+
+	@Override
+	public void deleteNotebook(String notebookId) {
+		this.notebook = null;
+	}
+
+	public void setPipelines(RestPageResponse<MLPPipeline> results) {
+		this.pipelines = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPPipeline> getPipelines(RestPageRequest pageRequest) {
+		return pipelines;
+	}
+
+	public void setSearchPipelines(RestPageResponse<MLPPipeline> results) {
+		this.searchPipelines = results;
+	}
+
+	@Override
+	public RestPageResponse<MLPPipeline> searchPipelines(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		return this.searchPipelines;
+	}
+
+	public void setPipelineById(MLPPipeline object) {
+		this.pipelineById = object;
+	}
+
+	@Override
+	public MLPPipeline getPipeline(String pipelineId) {
+		return this.pipelineById;
+	}
+
+	public void setPipeline(MLPPipeline object) {
+		this.pipeline = object;
+	}
+
+	@Override
+	public MLPPipeline createPipeline(MLPPipeline pipeline) {
+		return this.pipeline;
+	}
+
+	@Override
+	public void updatePipeline(MLPPipeline pipeline) {
+		this.pipeline = pipeline;
+	}
+
+	@Override
+	public void deletePipeline(String pipelineId) {
+		this.pipeline = null;
+	}
+
+	@Override
+	public void addProjectNotebook(String projectId, String notebookId) {
+		// How to mock?
+	}
+
+	@Override
+	public void dropProjectNotebook(String projectId, String notebookId) {
+		// How to mock?
+	}
+
+	@Override
+	public void addProjectPipeline(String projectId, String pipelineId) {
+		// How to mock?
+	}
+
+	@Override
+	public void dropProjectPipeline(String projectId, String pipelineId) {
 		// How to mock?
 	}
 

@@ -36,17 +36,17 @@ with each other:
 * A public "root" instance will be used to publish some information
 * Users can publish their solutions for use by others.
 
-This has implications for identifiers used in the system, because they must be usable globally.
+This has implications for identifiers used in the system, because some must be usable globally.
 
 Entity and Relationship Overview
 --------------------------------
 
 Entities in the system are the main items that users create and manipulate, including solutions,
-solution revisions, solution artifacts. For the purpose of CDS a user is also an entity, to track 
+solution revisions, solution artifacts. For the purpose of CDS a user is also an entity, to track
 name, credentials and so on.  To name another example, federation peers are also entities.
 
-Solutions and revisions are in a one-to-many relationship; a solution may be considered just a 
-collection of revisions. Similarly a revision is just a collection of artifacts. Users are in a 
+Solutions and revisions are in a one-to-many relationship; a solution may be considered just a
+collection of revisions. Similarly a revision is just a collection of artifacts. Users are in a
 many-to-many relationship with most of the other entities in the system.
 
 Entity and Attribute Details
@@ -75,24 +75,24 @@ Access Type
 Artifact Type
 ^^^^^^^^^^^^^
 
-| BP "BLUEPRINT FILE"
-| CD "CDUMP FILE"
-| DI "DOCKER IMAGE"
-| DP "DOCKER IMAGE PREDOCKERIZED"
-| DS "DATA SOURCE"
-| LG "LOG FILE"
-| LI "LICENSE"
-| MD "METADATA"
-| MH "MODEL-H2O"
-| MI "MODEL IMAGE"
-| MR "MODEL-R"
-| MS "MODEL-SCIKIT"
-| MT "MODEL-TENSORFLOW"
-| TE "TOSCA TEMPLATE"
+| BP "Blueprint File"
+| CD "CDUMP File"
+| DI "Docker Image"
+| DP "Docker Image Pre-dockerized"
+| DS "Data Source"
+| LG "Log File"
+| LI "License"
+| MD "Metadata"
+| MH "Model H2O"
+| MI "Model Image"
+| MR "Model R"
+| MS "Model Scikit"
+| MT "Model Tensorflow"
+| PJ "Protobuf File"
+| TE "TOSCA Template"
 | TG "TOSCA Generator Input File"
-| TS "TOSCA SCHEMA"
-| TT "TOSCA TRANSLATE"
-| PJ "PROTOBUF FILE"
+| TS "TOSCA Schema"
+| TT "TOSCA Translate"
 
 Deployment Status
 ^^^^^^^^^^^^^^^^^
@@ -101,6 +101,16 @@ Deployment Status
 | FA "Failed"
 | IP "In Progress"
 | ST "Started"
+
+Kernel Type
+^^^^^^^^^^^
+
+Applies to workbench notebooks.
+
+| PY "Python"
+| RR "R"
+| JA "Java"
+| SC "Scala"
 
 Login Provider
 ^^^^^^^^^^^^^^
@@ -126,6 +136,20 @@ Model Type
 | PR "Prediction"
 | RG "Regression"
 
+Notebook Type
+^^^^^^^^^^^^^
+
+Applies to workbench notebooks.
+
+| JB "jupyter/base-notebook"
+| JM "jupyter/minimal-notebook"
+| JR "jupyter/r-notebook"
+| JS "jupyter/scipy-notebook"
+| JT "jupyter/tensorflow-notebook"
+| JD "jupyter/datascience-notebook"
+| JP "jupyter/pyspark-notebook"
+| JA "jupyter/all-spark-notebook"
+
 Peer Status
 ^^^^^^^^^^^
 
@@ -144,15 +168,28 @@ Publish Request Status
 | PE "Pending"
 | WD "Withdrawn"
 
-TaskStepStatus
+Service Status
 ^^^^^^^^^^^^^^
+
+Applies to projects, notebooks and pipelines in the workbench.
+
+| AC "Active"
+| CO "Completed"
+| ER "Error"
+| EX "Exception"
+| FA "Failed"
+| IN "Inactive"
+| IP "In progress"
+
+Task Step Status
+^^^^^^^^^^^^^^^^
 
 | ST "Started"
 | SU "Succeeded"
 | FA "Failed"
 
-TaskType
-^^^^^^^^
+Task Type
+^^^^^^^^^
 
 | OB "Onboarding"
 | SV "Security-Verification"
@@ -232,7 +269,7 @@ Composite Solution
 ^^^^^^^^^^^^^^^^^^
 
 A composite solution is composed by a user in the Design Studio and consists of other
-simple and composite solutions.  
+simple and composite solutions.
 
 Attributes:
 
@@ -251,6 +288,27 @@ Attributes:
 * Size
 * User ID
 
+
+Notebook
+^^^^^^^^
+
+A notebook, part of the workbench, is a virtual computing environment used for literate programming.
+
+Attributes:
+
+* Notebook ID (UUID)
+* Notebook type (value from restricted value set Notebook Type)
+* Kernel type (value from restricted value set Kernel Type)
+* Service status (value from restricted value set Service Status)
+* Active status (true/false)
+* Name (string)
+* Version (string)
+* Description (long string)
+* Repository URL
+* Service URL
+* User (ID of creator)
+
+Notebooks are mapped to several other entities in many:many relationships, as documented below.
 
 Notification
 ^^^^^^^^^^^^
@@ -272,8 +330,8 @@ Notifications are mapped to users in a many:many relationship.  That relationshi
 Peer
 ^^^^
 
-Registered and authorized external instances of the platform that communicate with this instance.  
-The registration is intended to be controlled by any user with admin roles.  
+Registered and authorized external instances of the platform that communicate with this instance.
+The registration is intended to be controlled by any user with admin roles.
 This model is used to support the federated architecture.
 
 Attributes:
@@ -309,6 +367,45 @@ Attributes:
 * Description (additional textual information about this group)
 
 
+Pipeline
+^^^^^^^^
+
+A pipeline, part of the workbench, is an assembly of runnable components.
+
+Attributes:
+
+* Pipeline ID (UUID)
+* Active status (true/false)
+* Service status (value from restricted value set Service Status)
+* Name (string)
+* Version (string)
+* Description (long string)
+* Repository URL
+* Service URL
+* User (ID of creator)
+
+Pipelines are mapped to several other entities in many:many relationships, as documented below.
+
+
+Project
+^^^^^^^
+
+A project, part of the workbench, groups notebooks and pipelines.
+
+Attributes:
+
+* Project ID (UUID)
+* Active status (true/false)
+* Service status (value from restricted value set Service Status)
+* Name (string)
+* Version (string)
+* Description (long string)
+* Repository URL
+* User (ID of creator)
+
+Projects are mapped to several other entities in many:many relationships, as documented below.
+
+
 Right to Use
 ^^^^^^^^^^^^
 
@@ -325,7 +422,7 @@ Attributes:
 Role for Users
 ^^^^^^^^^^^^^^
 
-Roles are named like "designer" or "administrator" and are used to assign privilege levels to users, 
+Roles are named like "designer" or "administrator" and are used to assign privilege levels to users,
 in terms of the functions those users may perform; i.e., the system features they are authorized to use.
 
 Attributes:
@@ -338,10 +435,10 @@ Attributes:
 Role Function
 ^^^^^^^^^^^^^
 
-A role function is a name for an action that may be performed by a user within a specific role, such as createModel. 
-The software system may grant access to specific features based on whether the user role function is assigned to the 
-user making a request. Role functions are related to roles in a many:mnany relationship.  
-So for example, a "designer" role may have many functions such as "read", "create", "update" and "delete" while 
+A role function is a name for an action that may be performed by a user within a specific role, such as createModel.
+The software system may grant access to specific features based on whether the user role function is assigned to the
+user making a request. Role functions are related to roles in a many:mnany relationship.
+So for example, a "designer" role may have many functions such as "read", "create", "update" and "delete" while
 an "operator" role may have only the function "read".
 
 Attributes:
@@ -368,7 +465,7 @@ Attributes:
 Site Content
 ^^^^^^^^^^^^
 
-This stores data such as plain text, HTML or images to show on the web site. 
+This stores data such as plain text, HTML or images to show on the web site.
 Provided to store content that was previously held in a content management system (CMS) database.
 
 Attributes:
@@ -400,7 +497,7 @@ Attributes:
 * List of authorized users (to facilitate review and collaborative work with a team)
 * Provider (name of organization that sponsored and/or supports the solution)
 * Peer (ID of Acumos peer where the solution was first on-boarded)
-* Toolkit aka implementation technology code (underlying ML technology; e.g., Scikit, RCloud, Composite solution, and more TBD)
+* Toolkit aka implementation technology code (underlying ML technology; e.g., Scikit, RCloud, Composite solution)
 * Model type code (underlying ML category; valid values include CLASSIFICATION and PREDICTION)
 * Proposed attribute: System ID where created (supports federation, exchange of solutions among peer systems)
 * Create time (time when the solution was created; i.e., upload time)
@@ -427,7 +524,7 @@ Attributes:
 
 *    Type
 
-     -   An artifact type can be either a statistical model, metadata, docker image or TOSCA file (and TBD).
+     -   An artifact type can be either a statistical model, metadata, docker image or TOSCA file.
 
 *    Descriptive name
 
@@ -586,7 +683,7 @@ Attributes:
 Task Step Result
 ^^^^^^^^^^^^^^^^
 
-This tracks the status of a single step within a task. For example, the on-boarding feature can store information 
+This tracks the status of a single step within a task. For example, the on-boarding feature can store information
 about the status and outcome of every step during the task of on-boarding a model.
 
 Attributes:
@@ -618,9 +715,9 @@ User Notification Preference
 
 This stores the delivery mechanism and message priority preferences by the user for receiving notifications
 
-Attributes: 
+Attributes:
 
-* User ID (notification recipient) 
+* User ID (notification recipient)
 * Notification type (email/text/web)
 * Message Severity code. This uses the Message Severity Code value set defined above.
 
@@ -701,13 +798,13 @@ Attributes:
 Entity Mapping Relationships
 ----------------------------
 
-This section documents the relationships among entities that are managed in separate mapping tables.  
-The extra tables allow many-many relationships using entity ID values. 
-These standalone relationship tables do not define new entities, but may store information about the 
+This section documents the relationships among entities that are managed in separate mapping tables.
+The extra tables allow many-many relationships using entity ID values.
+These standalone relationship tables do not define new entities, but may store information about the
 relationship, such as the time when it was created.
 
-Please note this section does not document simple relationships managed within entities, which includes 
-one-to-one and many-to-one relationships.  For example, every comment has the ID of the containing thread, 
+Please note this section does not document simple relationships managed within entities, which includes
+one-to-one and many-to-one relationships.  For example, every comment has the ID of the containing thread,
 so a separate table is not required to manage that relationship.
 
 Relationship Catalog - Solution
@@ -941,13 +1038,68 @@ Attributes:
 Relationship Peer Group - Peer Group for Access
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Represents granting of access to resource peers for principal peers.  
+Represents granting of access to resource peers for principal peers.
 
 Attributes:
 
 * Principal peer group ID
 * Resource peer group ID
 * Create timestamp
+
+
+Relationship Project - Notebook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The workbench Project entity is in a many-to-many relationship with notebooks.
+
+Attributes:
+
+* Project ID
+* Notebook ID
+
+
+Relationship Project - Pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The workbench Project entity is in a many-to-many relationship with pipelines.
+
+Attributes:
+
+* Project ID
+* Pipeline ID
+
+
+Relationship Project - User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The workbench Project entity is in a many-to-many relationship with users.
+
+Attributes:
+
+* Project ID
+* User ID
+
+
+Relationship Notebook - User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The workbench Notebook entity is in a many-to-many relationship with users.
+
+Attributes:
+
+* Notebook ID
+* User ID
+
+
+Relationship Pipeline - User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The workbench Pipeline entity is in a many-to-many relationship with users.
+
+Attributes:
+
+* Pipeline ID
+* User ID
 
 
 Required Operations

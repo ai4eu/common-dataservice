@@ -39,12 +39,15 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -218,7 +221,7 @@ public class CdsControllerTest {
 	}
 
 	@Test
-	public void getCodeValueConstants() throws Exception {
+	public void testCodeValueConstants() throws Exception {
 		List<String> valueSetNames = client.getValueSetNames();
 		Assert.assertEquals(valueSetNames.size(), CodeNameType.values().length);
 		for (String vsName : valueSetNames)
@@ -227,11 +230,11 @@ public class CdsControllerTest {
 		for (CodeNameType name : CodeNameType.values()) {
 			try {
 				List<MLPCodeNamePair> list = client.getCodeNamePairs(name);
-				logger.info("getCodeValueConstants: name {} -> values {}", name, list);
+				logger.info("testCodeValueConstants: name {} -> values {}", name, list);
 				Assert.assertFalse(name.toString(), list.isEmpty());
 				// Cannot validate here - list of values is defined by server config
 			} catch (HttpStatusCodeException ex) {
-				logger.error("getCodeValueConstants failed", ex.getResponseBodyAsString());
+				logger.error("testCodeValueConstants failed", ex.getResponseBodyAsString());
 				throw ex;
 			}
 		}
@@ -2312,7 +2315,7 @@ public class CdsControllerTest {
 		MLPRtuReference ref;
 
 		try {
-			// Need a user to create a solution
+			// Need a user to create anything
 			cu = null;
 			cu = new MLPUser();
 			cu.setEmail("testrtu@abc.com");
@@ -2451,6 +2454,286 @@ public class CdsControllerTest {
 		client.deleteSolution(cs.getSolutionId());
 		client.deleteUser(cu.getUserId());
 
+	}
+
+	@Test
+	public void testWorkbenchArtifacts() throws Exception {
+		MLPUser cu;
+		MLPProject cpr;
+		MLPNotebook cnb;
+		MLPPipeline cpl;
+
+		try {
+			// Need a user to create anything
+			cu = null;
+			cu = new MLPUser();
+			cu.setEmail("testrtu@abc.com");
+			cu.setActive(true);
+			cu.setLoginName("rtuuser");
+			cu = client.createUser(cu);
+			Assert.assertNotNull("User ID", cu.getUserId());
+			logger.info("Created user {}", cu);
+
+			HashMap<String, Object> userIdRestr = new HashMap<>();
+			userIdRestr.put("userId", cu.getUserId());
+
+			final String projName = "proj name 1";
+			cpr = new MLPProject(projName, cu.getUserId(), "ver");
+			cpr.setServiceStatusCode("AC");
+			cpr.setRepositoryUrl("http://repo.url.io:12345");
+			cpr = client.createProject(cpr);
+			Assert.assertNotNull("Project ID", cpr.getProjectId());
+			logger.info("Created project {}", cpr);
+			cpr.setDescription("desc");
+			client.updateProject(cpr);
+			MLPProject updCpr = client.getProject(cpr.getProjectId());
+			Assert.assertNotNull(updCpr.getDescription());
+			RestPageResponse<MLPProject> projects = client.getProjects(new RestPageRequest(0, 5));
+			Assert.assertNotEquals(0, projects.getNumberOfElements());
+			RestPageResponse<MLPProject> srchProj = client.searchProjects(userIdRestr, false,
+					new RestPageRequest(0, 5));
+			Assert.assertEquals(1, srchProj.getNumberOfElements());
+
+			cnb = new MLPNotebook("nb name 1", cu.getUserId(), "ver", "JP", "PY");
+			cnb.setServiceStatusCode("AC");
+			cnb.setRepositoryUrl("http://repo.url.io:12345");
+			cnb.setServiceUrl("http://service.url.io:54321");
+			cnb = client.createNotebook(cnb);
+			Assert.assertNotNull("Notebook ID", cnb.getNotebookId());
+			logger.info("Created notebook {}", cnb);
+			cnb.setDescription("desc");
+			client.updateNotebook(cnb);
+			MLPNotebook updCnb = client.getNotebook(cnb.getNotebookId());
+			Assert.assertNotNull(updCnb.getDescription());
+			RestPageResponse<MLPNotebook> notebooks = client.getNotebooks(new RestPageRequest(0, 5));
+			Assert.assertNotEquals(0, notebooks.getNumberOfElements());
+			RestPageResponse<MLPNotebook> srchNb = client.searchNotebooks(userIdRestr, false,
+					new RestPageRequest(0, 5));
+			Assert.assertEquals(1, srchNb.getNumberOfElements());
+
+			cpl = new MLPPipeline("pl name 1", cu.getUserId(), "vers");
+			cpl.setServiceStatusCode("AC");
+			cpl.setRepositoryUrl("http://repo.url.io:12345");
+			cpl.setServiceUrl("http://service.url.io:54321");
+			cpl = client.createPipeline(cpl);
+			Assert.assertNotNull("Pipeline ID", cpl.getPipelineId());
+			logger.info("Created pipeline {}", cpl);
+			cpl.setDescription("desc");
+			client.updatePipeline(cpl);
+			MLPPipeline updCpl = client.getPipeline(cpl.getPipelineId());
+			Assert.assertNotNull(updCpl.getDescription());
+			RestPageResponse<MLPPipeline> pipelines = client.getPipelines(new RestPageRequest(0, 5));
+			Assert.assertNotEquals(0, pipelines.getNumberOfElements());
+			RestPageResponse<MLPPipeline> srchPl = client.searchPipelines(userIdRestr, false,
+					new RestPageRequest(0, 5));
+			Assert.assertEquals(1, srchPl.getNumberOfElements());
+
+			client.addProjectNotebook(cpr.getProjectId(), cnb.getNotebookId());
+			List<MLPNotebook> nbList = client.getProjectNotebooks(cpr.getProjectId());
+			Assert.assertFalse(nbList.isEmpty());
+
+			client.addProjectPipeline(cpr.getProjectId(), cpl.getPipelineId());
+			List<MLPPipeline> plList = client.getProjectPipelines(cpr.getProjectId());
+			Assert.assertFalse(plList.isEmpty());
+
+		} catch (HttpStatusCodeException ex) {
+			logger.error("testWorkbenchArtifacts failed", ex.getResponseBodyAsString());
+			throw ex;
+		}
+
+		try {
+			client.createProject(cpr);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on existing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createProject(new MLPProject());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createProject(new MLPProject("name", "foo", "extra super long version should blow up"));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on long ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPProject badIdUpdate = new MLPProject(cpr);
+			badIdUpdate.setProjectId("999L");
+			client.updateProject(badIdUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPProject constrVioUpdate = new MLPProject(cpr);
+			constrVioUpdate.setVersion("super long string to hit the size constraint");
+			client.updateProject(constrVioUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deleteProject("999");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on missing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createNotebook(cnb);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on existing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createNotebook(new MLPNotebook());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createNotebook(
+					new MLPNotebook("name", "foo", "extra super long version should blow up", "JP", "PY"));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on long ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPNotebook badIdUpdate = new MLPNotebook(cnb);
+			badIdUpdate.setNotebookId("999L");
+			client.updateNotebook(badIdUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPNotebook constrVioUpdate = new MLPNotebook(cnb);
+			constrVioUpdate.setVersion("super long string to hit the size constraint");
+			client.updateNotebook(constrVioUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deleteNotebook("999");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on missing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createPipeline(cpl);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on existing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createPipeline(new MLPPipeline());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createPipeline(new MLPPipeline("name", "foo", "extra super long version should blow up"));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on long ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPPipeline bogusUpdate = new MLPPipeline(cpl);
+			bogusUpdate.setPipelineId("999L");
+			client.updatePipeline(bogusUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPPipeline constrVioUpdate = new MLPPipeline(cpl);
+			constrVioUpdate.setVersion("super long string to hit the size constraint");
+			client.updatePipeline(constrVioUpdate);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on bad ver as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deletePipeline("999");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on missing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addProjectNotebook("bogus", "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add proj nb failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addProjectNotebook(cpr.getProjectId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info(" failed  as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropProjectNotebook("bogus", "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("drop proj nb failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addProjectPipeline("bogus", "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add proj pl failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addProjectPipeline(cpr.getProjectId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info(" failed  as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropProjectPipeline("bogus", "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("drop proj pl failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		HashMap<String, Object> emptyRestr = new HashMap<>();
+		emptyRestr.put("unknown", "key");
+		try {
+			client.searchProjects(emptyRestr, false, new RestPageRequest(0, 5));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("search proj failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.searchNotebooks(emptyRestr, false, new RestPageRequest(0, 5));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("search nb failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.searchPipelines(emptyRestr, false, new RestPageRequest(0, 5));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("search pl failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+
+		client.dropProjectPipeline(cpr.getProjectId(), cpl.getPipelineId());
+		List<MLPPipeline> plList = client.getProjectPipelines(cpr.getProjectId());
+		Assert.assertTrue(plList.isEmpty());
+
+		client.dropProjectNotebook(cpr.getProjectId(), cnb.getNotebookId());
+		List<MLPNotebook> nbList = client.getProjectNotebooks(cpr.getProjectId());
+		Assert.assertTrue(nbList.isEmpty());
+
+		client.deletePipeline(cpl.getPipelineId());
+		Assert.assertNull(client.getPipeline(cpl.getPipelineId()));
+		client.deleteNotebook(cnb.getNotebookId());
+		Assert.assertNull(client.getNotebook(cnb.getNotebookId()));
+		client.deleteProject(cpr.getProjectId());
+		Assert.assertNull(client.getProject(cpr.getProjectId()));
+		client.deleteUser(cu.getUserId());
 	}
 
 	@Test

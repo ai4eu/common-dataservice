@@ -37,6 +37,7 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPeer;
@@ -45,6 +46,10 @@ import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProjNotebookMap;
+import org.acumos.cds.domain.MLPProjPipelineMap;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -80,6 +85,7 @@ import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.CommentRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
+import org.acumos.cds.repository.NotebookRepository;
 import org.acumos.cds.repository.NotifUserMapRepository;
 import org.acumos.cds.repository.NotificationRepository;
 import org.acumos.cds.repository.PeerGroupRepository;
@@ -88,6 +94,10 @@ import org.acumos.cds.repository.PeerPeerAccMapRepository;
 import org.acumos.cds.repository.PeerRepository;
 import org.acumos.cds.repository.PeerSolAccMapRepository;
 import org.acumos.cds.repository.PeerSubscriptionRepository;
+import org.acumos.cds.repository.PipelineRepository;
+import org.acumos.cds.repository.ProjNotebookMapRepository;
+import org.acumos.cds.repository.ProjPipelineMapRepository;
+import org.acumos.cds.repository.ProjectRepository;
 import org.acumos.cds.repository.PublishRequestRepository;
 import org.acumos.cds.repository.RevisionDescriptionRepository;
 import org.acumos.cds.repository.RightToUseRepository;
@@ -246,6 +256,16 @@ public class CdsRepositoryServiceTest {
 	private RtuRefMapRepository rtuRefMapRepository;
 	@Autowired
 	private RtuUserMapRepository rtuUserMapRepository;
+	@Autowired
+	private ProjectRepository projectRepository;
+	@Autowired
+	private NotebookRepository notebookRepository;
+	@Autowired
+	private PipelineRepository pipelineRepository;
+	@Autowired
+	private ProjNotebookMapRepository projNbMapRepository;
+	@Autowired
+	private ProjPipelineMapRepository projPlMapRepository;
 
 	@Test
 	public void testRepositories() throws Exception {
@@ -279,7 +299,7 @@ public class CdsRepositoryServiceTest {
 			cu.setAuthToken("JWT is Greek to me");
 			cu.setLastLogin(lastLogin);
 			// Occasionally the assertion fails, for whatever reason the modified date is
-			// not updated in MariaDB.  Add a tiny delay to increase chance of passing.
+			// not updated in MariaDB. Add a tiny delay to increase chance of passing.
 			Thread.sleep(10);
 			cu = userRepository.save(cu);
 			// Check hibernate behavior on timestamps
@@ -1571,6 +1591,52 @@ public class CdsRepositoryServiceTest {
 			userRepository.delete(cu);
 		} catch (Exception ex) {
 			logger.error("testRtu failed", ex);
+			throw ex;
+		}
+	}
+
+	@Test
+	public void testWorkbenchArtifacts() throws Exception {
+		try {
+			MLPUser cu = null;
+			cu = new MLPUser();
+			cu.setActive(true);
+			cu.setLoginName("mlwb_user");
+			cu.setEmail("testMlbWbUser@acumos.org");
+			cu = userRepository.save(cu);
+			Assert.assertNotNull(cu.getUserId());
+
+			MLPProject cpr = new MLPProject("proj name", cu.getUserId(), "v1");
+			cpr = projectRepository.save(cpr);
+			Assert.assertNotNull(cpr.getProjectId());
+
+			MLPNotebook cnb = new MLPNotebook("nb name", cu.getUserId(), "v2", "JP", "PY");
+			cnb = notebookRepository.save(cnb);
+			Assert.assertNotNull(cnb.getNotebookId());
+
+			MLPPipeline cpl = new MLPPipeline("pl name", cu.getUserId(), "v3");
+			cpl = pipelineRepository.save(cpl);
+			Assert.assertNotNull(cpl.getPipelineId());
+
+			MLPProjNotebookMap projNbMap = new MLPProjNotebookMap(cpr.getProjectId(), cnb.getNotebookId());
+			projNbMapRepository.save(projNbMap);
+
+			MLPProjPipelineMap projPlMap = new MLPProjPipelineMap(cpr.getProjectId(), cpl.getPipelineId());
+			projPlMapRepository.save(projPlMap);
+
+			Iterable<MLPNotebook> nbs = projNbMapRepository.findProjectNotebooks(cpr.getProjectId());
+			Assert.assertTrue(nbs.iterator().hasNext());
+			Iterable<MLPPipeline> pls = projPlMapRepository.findProjectPipelines(cpr.getProjectId());
+			Assert.assertTrue(pls.iterator().hasNext());
+
+			projPlMapRepository.delete(projPlMap);
+			projNbMapRepository.delete(projNbMap);
+			pipelineRepository.delete(cpl);
+			notebookRepository.delete(cnb);
+			projectRepository.delete(cpr);
+			userRepository.delete(cu);
+		} catch (Exception ex) {
+			logger.error("testWorkbenchArtifacts failed", ex);
 			throw ex;
 		}
 	}

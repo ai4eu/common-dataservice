@@ -31,12 +31,15 @@ import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -599,6 +602,56 @@ public class MockClientTest {
 		client.dropRefFromRtu("refId", 0L);
 		client.addUserToRtu("userId", 0L);
 		client.dropUserFromRtu("userId", 0L);
+
+		RestPageResponse<MLPProject> projects = new RestPageResponse<>();
+		client.setProjects(projects);
+		Assert.assertEquals(projects, client.getProjects(new RestPageRequest()));
+		RestPageResponse<MLPProject> searchProjects = new RestPageResponse<>();
+		client.setSearchProjects(searchProjects);
+		Assert.assertEquals(searchProjects, client.searchProjects(queryParameters, isOr, new RestPageRequest()));
+		MLPProject project = new MLPProject("abc", "def", "ghi");
+		client.setProjectById(project);
+		Assert.assertEquals(project, client.getProject("id"));
+		client.setProject(project);
+		client.createProject(project);
+		client.updateProject(project);
+		client.deleteProject(project.getProjectId());
+
+		RestPageResponse<MLPNotebook> notebooks = new RestPageResponse<>();
+		client.setNotebooks(notebooks);
+		Assert.assertEquals(notebooks, client.getNotebooks(new RestPageRequest()));
+		RestPageResponse<MLPNotebook> searchNotebooks = new RestPageResponse<>();
+		client.setSearchNotebooks(searchNotebooks);
+		Assert.assertEquals(searchNotebooks, client.searchNotebooks(queryParameters, isOr, new RestPageRequest()));
+		MLPNotebook notebook = new MLPNotebook("abc", "def", "ghi", "jkl", "mno");
+		client.setNotebookById(notebook);
+		Assert.assertEquals(notebook, client.getNotebook("id"));
+		client.setNotebook(notebook);
+		client.createNotebook(notebook);
+		client.updateNotebook(notebook);
+		client.deleteNotebook(notebook.getNotebookId());
+
+		RestPageResponse<MLPPipeline> pipelines = new RestPageResponse<>();
+		client.setPipelines(pipelines);
+		Assert.assertEquals(pipelines, client.getPipelines(new RestPageRequest()));
+		RestPageResponse<MLPPipeline> searchPipelines = new RestPageResponse<>();
+		client.setSearchPipelines(searchPipelines);
+		Assert.assertEquals(searchPipelines, client.searchPipelines(queryParameters, isOr, new RestPageRequest()));
+		MLPPipeline pipeline = new MLPPipeline("abc", "def", "ghi");
+		client.setPipelineById(pipeline);
+		Assert.assertEquals(pipeline, client.getPipeline("id"));
+		client.setPipeline(pipeline);
+		client.createPipeline(pipeline);
+		client.updatePipeline(pipeline);
+		client.deletePipeline(pipeline.getPipelineId());
+
+		client.addProjectNotebook(project.getProjectId(), notebook.getNotebookId());
+		client.addProjectPipeline(project.getProjectId(), pipeline.getPipelineId());
+		client.getProjectNotebooks("id");
+		client.getProjectPipelines("id");
+		client.dropProjectNotebook(project.getProjectId(), notebook.getNotebookId());
+		client.dropProjectPipeline(project.getProjectId(), pipeline.getPipelineId());
+
 	}
 
 }

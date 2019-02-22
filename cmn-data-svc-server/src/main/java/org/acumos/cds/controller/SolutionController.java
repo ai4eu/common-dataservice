@@ -947,7 +947,6 @@ public class SolutionController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropUserFromSolutionACL failed", ex);
 		}
-
 	}
 
 	@ApiOperation(value = "Gets a page of solutions with the specified user in the ACL, optionally sorted on fields. Answers empty if none are found.", //

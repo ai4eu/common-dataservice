@@ -40,6 +40,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
@@ -49,6 +50,10 @@ import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
 import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
+import org.acumos.cds.domain.MLPPipeline;
+import org.acumos.cds.domain.MLPProjNotebookMap;
+import org.acumos.cds.domain.MLPProjPipelineMap;
+import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
@@ -2651,6 +2656,245 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.USER_PATH, userId }, null,
 				null);
 		logger.debug("dropUserFromRtu: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPProject> getProjects(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH }, null,
+				pageRequest);
+		logger.debug("getProjects: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPProject>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPProject>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPProject> searchProjects(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		Map<String, Object> copy = new HashMap<>(queryParameters);
+		copy.put(CCDSConstants.JUNCTION_QUERY_PARAM, isOr ? "o" : "a");
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, CCDSConstants.SEARCH_PATH },
+				copy, pageRequest);
+		logger.debug("searchProjects: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPProject>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPProject>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPProject getProject(String projectId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId }, null,
+				null);
+		logger.debug("getProject: uri {}", uri);
+		ResponseEntity<MLPProject> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPProject>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPProject createProject(MLPProject project) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH }, null, null);
+		logger.debug("createProject: url {}", uri);
+		return restTemplate.postForObject(uri, project, MLPProject.class);
+	}
+
+	@Override
+	public void updateProject(MLPProject project) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, project.getProjectId() }, null,
+				null);
+		logger.debug("updateProject: uri {}", uri);
+		restTemplate.put(uri, project);
+	}
+
+	@Override
+	public void deleteProject(String projectId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId }, null,
+				null);
+		logger.debug("deleteProject: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public void addProjectNotebook(String projectId, String notebookId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.NOTEBOOK_PATH, notebookId }, null, null);
+		logger.debug("addProjectNotebook: url {}", uri);
+		MLPProjNotebookMap map = new MLPProjNotebookMap(projectId, notebookId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropProjectNotebook(String projectId, String notebookId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.NOTEBOOK_PATH, notebookId }, null, null);
+		logger.debug("dropProjectNotebook: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public void addProjectPipeline(String projectId, String pipelineId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.PIPELINE_PATH, pipelineId }, null, null);
+		logger.debug("addProjectPipeline: url {}", uri);
+		MLPProjPipelineMap map = new MLPProjPipelineMap(projectId, pipelineId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropProjectPipeline(String projectId, String pipelineId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.PIPELINE_PATH, pipelineId }, null, null);
+		logger.debug("dropProjectPipeline: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<MLPNotebook> getProjectNotebooks(String projectId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.NOTEBOOK_PATH }, null, null);
+		logger.debug("getProjectNotebooks: uri {}", uri);
+		ResponseEntity<List<MLPNotebook>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPNotebook>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public List<MLPPipeline> getProjectPipelines(String projectId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
+				CCDSConstants.PIPELINE_PATH }, null, null);
+		logger.debug("getProjectPipelines: uri {}", uri);
+		ResponseEntity<List<MLPPipeline>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPPipeline>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPNotebook> getNotebooks(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH }, null,
+				pageRequest);
+		logger.debug("getNotebooks: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPNotebook>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPNotebook>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPNotebook> searchNotebooks(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		Map<String, Object> copy = new HashMap<>(queryParameters);
+		copy.put(CCDSConstants.JUNCTION_QUERY_PARAM, isOr ? "o" : "a");
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH, CCDSConstants.SEARCH_PATH },
+				copy, pageRequest);
+		logger.debug("searchNotebooks: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPNotebook>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPNotebook>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPNotebook getNotebook(String notebookId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH, notebookId }, null,
+				null);
+		logger.debug("getProject: uri {}", uri);
+		ResponseEntity<MLPNotebook> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPNotebook>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPNotebook createNotebook(MLPNotebook notebook) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH }, null, null);
+		logger.debug("createNotebook: url {}", uri);
+		return restTemplate.postForObject(uri, notebook, MLPNotebook.class);
+	}
+
+	@Override
+	public void updateNotebook(MLPNotebook notebook) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH, notebook.getNotebookId() },
+				null, null);
+		logger.debug("updateNotebook: uri {}", uri);
+		restTemplate.put(uri, notebook);
+	}
+
+	@Override
+	public void deleteNotebook(String notebookId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH, notebookId }, null,
+				null);
+		logger.debug("deleteNotebook: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPPipeline> getPipelines(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH }, null,
+				pageRequest);
+		logger.debug("getPipelines: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPPipeline>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPPipeline>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPPipeline> searchPipelines(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		Map<String, Object> copy = new HashMap<>(queryParameters);
+		copy.put(CCDSConstants.JUNCTION_QUERY_PARAM, isOr ? "o" : "a");
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, CCDSConstants.SEARCH_PATH },
+				copy, pageRequest);
+		logger.debug("searchPipelines: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPPipeline>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPPipeline>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPPipeline getPipeline(String pipelineId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, pipelineId }, null,
+				null);
+		logger.debug("getPipeline: uri {}", uri);
+		ResponseEntity<MLPPipeline> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPPipeline>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPPipeline createPipeline(MLPPipeline pipeline) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH }, null, null);
+		logger.debug("createPipeline: url {}", uri);
+		return restTemplate.postForObject(uri, pipeline, MLPPipeline.class);
+	}
+
+	@Override
+	public void updatePipeline(MLPPipeline pipeline) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, pipeline.getPipelineId() },
+				null, null);
+		logger.debug("updatePipeline: uri {}", uri);
+		restTemplate.put(uri, pipeline);
+	}
+
+	@Override
+	public void deletePipeline(String pipelineId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, pipelineId }, null,
+				null);
+		logger.debug("deletePipeline: url {}", uri);
 		restTemplate.delete(uri);
 	}
 
