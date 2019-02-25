@@ -41,6 +41,7 @@ import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPeer;
+import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
@@ -75,6 +76,7 @@ import org.acumos.cds.domain.MLPTask;
 import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
+import org.acumos.cds.domain.MLPUserCatFavMap;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
@@ -88,6 +90,7 @@ import org.acumos.cds.repository.DocumentRepository;
 import org.acumos.cds.repository.NotebookRepository;
 import org.acumos.cds.repository.NotifUserMapRepository;
 import org.acumos.cds.repository.NotificationRepository;
+import org.acumos.cds.repository.PeerCatAccMapRepository;
 import org.acumos.cds.repository.PeerGroupRepository;
 import org.acumos.cds.repository.PeerGrpMemMapRepository;
 import org.acumos.cds.repository.PeerPeerAccMapRepository;
@@ -121,6 +124,7 @@ import org.acumos.cds.repository.TagRepository;
 import org.acumos.cds.repository.TaskRepository;
 import org.acumos.cds.repository.TaskStepResultRepository;
 import org.acumos.cds.repository.ThreadRepository;
+import org.acumos.cds.repository.UserCatFavMapRepository;
 import org.acumos.cds.repository.UserLoginProviderRepository;
 import org.acumos.cds.repository.UserNotificationPreferenceRepository;
 import org.acumos.cds.repository.UserRepository;
@@ -266,6 +270,10 @@ public class CdsRepositoryServiceTest {
 	private ProjNotebookMapRepository projNbMapRepository;
 	@Autowired
 	private ProjPipelineMapRepository projPlMapRepository;
+	@Autowired
+	private PeerCatAccMapRepository peerCatAccMapRepository;
+	@Autowired
+	private UserCatFavMapRepository userCatFavMapRepository;
 
 	@Test
 	public void testRepositories() throws Exception {
@@ -509,6 +517,7 @@ public class CdsRepositoryServiceTest {
 
 			MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs.getSolutionId());
 			catSolMapRepository.save(csm);
+			Assert.assertEquals(1, catSolMapRepository.countCatalogSolutions(ca1.getCatalogId()));
 
 			// This solution has one tag
 			MLPSolution cs2 = new MLPSolution();
@@ -581,8 +590,9 @@ public class CdsRepositoryServiceTest {
 			Assert.assertEquals(2, oneTagSearchResult.getNumberOfElements());
 
 			String[] ids = { cs.getSolutionId() };
+			String[] catIds = { ca1.getCatalogId() };
 			Page<MLPSolution> idSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(ids, active,
-					userIds, modelTypeCodes, accTypeCodes, searchTags, null, ca1.getCatalogId(),
+					userIds, modelTypeCodes, accTypeCodes, searchTags, null, catIds,
 					PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertEquals(1, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
@@ -1516,7 +1526,6 @@ public class CdsRepositoryServiceTest {
 
 	@Test
 	public void testCatalogs() {
-		// Need a user to create a solution
 		MLPUser cu = null;
 		cu = new MLPUser();
 		cu.setEmail("testcatalog@abc.com");
@@ -1525,6 +1534,12 @@ public class CdsRepositoryServiceTest {
 		cu = userRepository.save(cu);
 		Assert.assertNotNull("User ID", cu.getUserId());
 		logger.info("Created user {}", cu);
+
+		final String peerName = "Peer-Name-Restr-Cat";
+		MLPPeer pr = new MLPPeer(peerName, "cat.fqdn.subject.name.a.b.c", "http://peer-api", true, false, "contact",
+				"AC");
+		pr = peerRepository.save(pr);
+		logger.info("Created peer {}", pr);
 
 		MLPSolution cs1 = new MLPSolution("solutionName 1 for cat", cu.getUserId(), true);
 		cs1 = solutionRepository.save(cs1);
@@ -1538,14 +1553,27 @@ public class CdsRepositoryServiceTest {
 
 		MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs1.getSolutionId());
 		catSolMapRepository.save(csm);
-
-		Page<MLPSolution> sols = catSolMapRepository.findSolutionsByCatalogId(ca1.getCatalogId(), PageRequest.of(0, 3));
+		Page<MLPSolution> sols = catSolMapRepository.findSolutionsByCatalogIds(new String[] { ca1.getCatalogId() },
+				PageRequest.of(0, 3));
 		Assert.assertNotNull(sols);
 		Assert.assertEquals(1, sols.getNumberOfElements());
 
+		MLPPeerCatAccMap pcm = new MLPPeerCatAccMap(pr.getPeerId(), ca1.getCatalogId());
+		peerCatAccMapRepository.save(pcm);
+		Iterable<String> peerCatIds = peerCatAccMapRepository.findCatalogIdsByPeerId(pr.getPeerId());
+		Assert.assertTrue(peerCatIds.iterator().hasNext());
+
+		MLPUserCatFavMap ucfm = new MLPUserCatFavMap(cu.getUserId(), ca1.getCatalogId());
+		userCatFavMapRepository.save(ucfm);
+		Iterable<String> userCatIds = userCatFavMapRepository.findCatalogIdsByUserId(cu.getUserId());
+		Assert.assertTrue(userCatIds.iterator().hasNext());
+
+		userCatFavMapRepository.delete(ucfm);
+		peerCatAccMapRepository.delete(pcm);
 		catSolMapRepository.delete(csm);
 		catalogRepository.delete(ca1);
 		solutionRepository.delete(cs1);
+		peerRepository.delete(pr);
 		userRepository.delete(cu);
 	}
 

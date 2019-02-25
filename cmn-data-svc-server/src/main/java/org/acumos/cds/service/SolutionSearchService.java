@@ -111,17 +111,17 @@ public interface SolutionSearchService {
 	 *                            Tags that ALL must match
 	 * @param anyTags
 	 *                            Tags that ANY must match
-	 * @param catalogId
-	 *                            Catalog ID
+	 * @param catalogIds
+	 *                            Catalog IDs
 	 * @param pageable
 	 *                            Page and sort info
 	 * @return Page of solutions
 	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPortalSolutionsByKwAndTags(String[],
-	 *      boolean, String[], String[], String[], String[], String[], String,
+	 *      boolean, String[], String[], String[], String[], String[], String[],
 	 *      org.acumos.cds.transport.RestPageRequest)
 	 */
 	Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] modelTypeCodes, String[] accessTypeCodes, String[] allTags, String[] anyTags, String catalogId,
+			String[] modelTypeCodes, String[] accessTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			Pageable pageable);
 
 	/**

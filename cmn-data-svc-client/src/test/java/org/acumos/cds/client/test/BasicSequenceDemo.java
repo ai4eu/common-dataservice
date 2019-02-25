@@ -36,7 +36,7 @@ import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
  * Demonstrates use of the CDS client.
@@ -58,55 +58,57 @@ public class BasicSequenceDemo {
 		ICommonDataServiceRestClient client = CommonDataServiceRestClientImpl.getInstance(url.toString(), userName,
 				password);
 
+		MLPUser cu = new MLPUser("user_login1", "login1user@abc.com", true);
+		cu.setLoginHash("user_pass");
+		cu.setFirstName("First Name");
+		cu.setLastName("Last Name");
+		cu.setEmail(cu.getLoginName() + "@nowhere.com");
+		cu = client.createUser(cu);
+		logger.info("Created user {}", cu);
+
+		MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
+		cs.setModelTypeCode("CL");
+		cs.setToolkitTypeCode("CP");
+		cs = client.createSolution(cs);
+		logger.info("Created solution {}", cs);
+
+		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
+		cr.setPublisher("Big Data Org");
+		cr = client.createSolutionRevision(cr);
+		logger.info("Created solution revision {}", cr);
+
+		MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), "PB", "A revision description");
+		rd = client.createRevisionDescription(rd);
+
+		MLPArtifact ca = new MLPArtifact("1.0A", "DI", "artifact name", "http://nexus/artifact", cu.getUserId(), 1);
+		ca = client.createArtifact(ca);
+		logger.info("Created artifact {}", ca);
+
+		logger.info("Adding artifact to revision");
+		client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
+
+		logger.info("Searching for active solutions");
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put("active", Boolean.TRUE);
+		RestPageResponse<MLPSolution> activeSolutions = client.searchSolutions(queryParams, false,
+				new RestPageRequest(0, 10));
+		logger.info("Active solution count: " + activeSolutions.getTotalElements());
+
+		// Demonstrate failure handling
 		try {
-			MLPUser cu = new MLPUser("user_login1", "login1user@abc.com", true);
-			cu.setLoginHash("user_pass");
-			cu.setFirstName("First Name");
-			cu.setLastName("Last Name");
-			cu.setEmail(cu.getLoginName() + "@nowhere.com");
-			cu = client.createUser(cu);
-			logger.info("Created user {}", cu);
-
-			MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
-			cs.setModelTypeCode("CL");
-			cs.setToolkitTypeCode("CP");
-			cs = client.createSolution(cs);
-			logger.info("Created solution {}", cs);
-
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
-			cr.setPublisher("Big Data Org");
-			cr = client.createSolutionRevision(cr);
-			logger.info("Created solution revision {}", cr);
-
-			MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), "PB", "A revision description");
-			rd = client.createRevisionDescription(rd);
-
-			MLPArtifact ca = new MLPArtifact("1.0A", "DI", "artifact name", "http://nexus/artifact", cu.getUserId(), 1);
-			ca = client.createArtifact(ca);
-			logger.info("Created artifact {}", ca);
-
-			logger.info("Adding artifact to revision");
-			client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
-
-			logger.info("Searching for active solutions");
-			Map<String, Object> queryParams = new HashMap<>();
-			queryParams.put("active", Boolean.TRUE);
-			RestPageResponse<MLPSolution> activeSolutions = client.searchSolutions(queryParams, false,
-					new RestPageRequest(0, 10));
-			logger.info("Active solution count: " + activeSolutions.getTotalElements());
-
-			logger.info("Deleting objects");
-			client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
-			client.deleteArtifact(ca.getArtifactId());
-			client.deleteRevisionDescription(cr.getRevisionId(), "PB");
-			client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
-			client.deleteSolution(cs.getSolutionId());
-			client.deleteUser(cu.getUserId());
-
-		} catch (HttpStatusCodeException ex) {
-			logger.error("basicSequenceDemo failed, server reports: {}", ex.getResponseBodyAsString());
-			throw ex;
+			client.createUser(new MLPUser());
+		} catch (RestClientResponseException ex) {
+			logger.error("Failed as expected on empty user with exception {}, server reports: {}",
+					ex.toString(), ex.getResponseBodyAsString());
 		}
+
+		logger.info("Deleting objects");
+		client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
+		client.deleteArtifact(ca.getArtifactId());
+		client.deleteRevisionDescription(cr.getRevisionId(), "PB");
+		client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
+		client.deleteSolution(cs.getSolutionId());
+		client.deleteUser(cu.getUserId());
 	}
 
 }

@@ -32,6 +32,7 @@ public class CCDSConstants {
 	public static final String VERSION_PATH = "version";
 
 	// Path components
+	public static final String ACCESS_PATH = "access";
 	public static final String ARTIFACT_PATH = "artifact";
 	public static final String CATALOG_PATH = "catalog";
 	public static final String COMMENT_PATH = "comment";
@@ -50,6 +51,7 @@ public class CCDSConstants {
 	public static final String KEYWORD_PATH = "kw";
 	public static final String KW_TAG_PATH = "kwtag";
 	public static final String NOTEBOOK_PATH = "ntbk";
+	public static final String LOGIN_PROVIDER_PATH = "logprov";
 	public static final String NOTIFICATION_PATH = "notif";
 	public static final String NOTIFICATION_PREF_PATH = "notifpref";
 	public static final String PEER_PATH = "peer";
@@ -78,9 +80,6 @@ public class CCDSConstants {
 	public static final String CODE_PATH = "code";
 	public static final String NAME_PATH = "name";
 	public static final String PAIR_PATH = "pair";
-	// Other paths
-	public static final String ACCESS_PATH = "access";
-	public static final String LOGIN_PROVIDER_PATH = "logprov";
 
 	// Actions on entities
 	public static final String LIKE_PATH = "like";
@@ -92,7 +91,7 @@ public class CCDSConstants {
 	public static final String VERIFY_PATH = "verify";
 	public static final String CHPASS_PATH = "chgpw";
 
-	// Portal search interface
+	// Search interface parameters
 	public static final String SEARCH_ACCESS_TYPES = "atc";
 	public static final String SEARCH_ACTIVE = "active";
 	public static final String SEARCH_AUTH = "auth";

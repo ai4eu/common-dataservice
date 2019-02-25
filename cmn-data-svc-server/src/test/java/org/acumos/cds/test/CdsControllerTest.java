@@ -616,6 +616,7 @@ public class CdsControllerTest {
 			logger.info("Created public solution {}", cs);
 
 			client.addSolutionToCatalog(cs.getSolutionId(), ca1.getCatalogId());
+			Assert.assertEquals(1, client.getCatalogSolutionCount(ca1.getCatalogId()));
 
 			byte[] saved = client.getSolutionPicture(cs.getSolutionId());
 			Assert.assertNull(saved);
@@ -871,7 +872,7 @@ public class CdsControllerTest {
 			// Check fetch by ID to ensure both are found
 			logger.info("Querying for solutions by id");
 			String[] ids = { cs.getSolutionId(), csOrg.getSolutionId() };
-			String catalogId = null;
+			String[] catalogId = null;
 			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKwAndTags(ids, true, null, null,
 					null, null, null, catalogId, new RestPageRequest(0, 2));
 			Assert.assertNotNull(idSearchResult);
@@ -900,13 +901,13 @@ public class CdsControllerTest {
 
 			logger.info("Querying for solutions by catalog");
 			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, null, ca1.getCatalogId(), new RestPageRequest(0, 2));
+					null, null, null, null, new String[] { ca1.getCatalogId() }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(ctlgSearchResult);
 			Assert.assertNotEquals(0, ctlgSearchResult.getNumberOfElements());
 
 			logger.info("Querying for solutions by bogus catalog");
 			RestPageResponse<MLPSolution> noCtlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, null, "bogus", new RestPageRequest(0, 2));
+					null, null, null, null, new String[] { "bogus" }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(noCtlgSearchResult);
 			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
@@ -2197,11 +2198,11 @@ public class CdsControllerTest {
 	public void testCatalogs() throws Exception {
 
 		MLPUser cu;
+		MLPPeer pr;
 		MLPSolution cs;
 		MLPCatalog ca;
 
 		try {
-			// Need a user to create a solution
 			cu = null;
 			cu = new MLPUser();
 			cu.setEmail("testcatalog@abc.com");
@@ -2210,6 +2211,12 @@ public class CdsControllerTest {
 			cu = client.createUser(cu);
 			Assert.assertNotNull("User ID", cu.getUserId());
 			logger.info("Created user {}", cu);
+
+			pr = new MLPPeer("Peer-Name-Restr-Cat", "cat.fqdn.subject.name.a.b.c", "http://peer-api", true, false,
+					"contact", "AC");
+			pr = client.createPeer(pr);
+			Assert.assertNotNull("Peer ID", pr.getPeerId());
+			logger.info("Created peer {}", pr);
 
 			cs = new MLPSolution("solutionName 1 for cat", cu.getUserId(), true);
 			cs = client.createSolution(cs);
@@ -2232,9 +2239,18 @@ public class CdsControllerTest {
 
 			client.addSolutionToCatalog(cs.getSolutionId(), ca.getCatalogId());
 
-			RestPageResponse<MLPSolution> sols = client.getSolutionsInCatalog(ca.getCatalogId(), new RestPageRequest());
+			RestPageResponse<MLPSolution> sols = client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() },
+					new RestPageRequest());
 			Assert.assertNotNull(sols);
 			Assert.assertEquals(1, sols.getNumberOfElements());
+
+			client.addPeerAccessCatalog(pr.getPeerId(), ca.getCatalogId());
+			List<String> peerAcc = client.getPeerAccessCatalogIds(pr.getPeerId());
+			Assert.assertEquals(1, peerAcc.size());
+
+			client.addUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
+			List<String> userFavs = client.getUserFavoriteCatalogIds(cu.getUserId());
+			Assert.assertEquals(1, userFavs.size());
 
 		} catch (HttpStatusCodeException ex) {
 			logger.error("testCatalogs failed {}", ex.getResponseBodyAsString());
@@ -2299,12 +2315,54 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add solution to catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
 		}
+		try {
+			client.addPeerAccessCatalog("bogus", ca.getCatalogId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add peer access catalog failed on bad peer id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addPeerAccessCatalog(pr.getPeerId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add peer access catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropPeerAccessCatalog("bogus", ca.getCatalogId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("drop peer access catalog failed on bad id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addUserFavoriteCatalog("bogus", ca.getCatalogId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addUserFavoriteCatalog(cu.getUserId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add user fave catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.dropUserFavoriteCatalog("bogus", ca.getCatalogId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("drop user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
+		}
 
+		client.dropPeerAccessCatalog(pr.getPeerId(), ca.getCatalogId());
+		Assert.assertEquals(0, client.getPeerAccessCatalogIds(cu.getUserId()).size());
+		client.dropUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
+		Assert.assertEquals(0, client.getUserFavoriteCatalogIds(cu.getUserId()).size());
 		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
+		Assert.assertEquals(0, client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() }, new RestPageRequest())
+				.getNumberOfElements());
 		client.deleteCatalog(ca.getCatalogId());
 		client.deleteSolution(cs.getSolutionId());
+		client.deletePeer(pr.getPeerId());
 		client.deleteUser(cu.getUserId());
-
 	}
 
 	@Test

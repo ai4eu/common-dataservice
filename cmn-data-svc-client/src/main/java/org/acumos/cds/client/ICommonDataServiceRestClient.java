@@ -65,18 +65,32 @@ import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
- * Defines the interface of the Controller REST client. The server answers 400
- * (bad request) on any problem in the request, such as missing required data or
- * attempting to update or delete an item that does not exists.
- * 
- * Callers are STRONGLY advised to catch the runtime (unchecked) exception
- * HttpStatusCodeException and call its method
- * {@link org.springframework.web.client.HttpStatusCodeException#getResponseBodyAsString()}
- * to obtain the detailed error message sent by the server.
+ * <P>
+ * Defines the interface of the Controller REST client.
+ * </P>
+ * <P>
+ * The server answers 400 (bad request) on any problem in the request, such as
+ * missing required data or attempting to update or delete an item that does not
+ * exists. Any non-success code results in an exception. Users are STRONGLY
+ * advised to catch the unchecked runtime exception RestClientResponseException
+ * and get the detailed error message reported by the server via method
+ * {@link org.springframework.web.client.RestClientResponseException#getResponseBodyAsString()}.
+ * </P>
  */
 public interface ICommonDataServiceRestClient {
+
+	/**
+	 * Sets the request ID to use in a header on every request to the server. If no
+	 * request ID is set, or if this method is called with null, the implementation
+	 * must generate a new ID for each request.
+	 * 
+	 * @param requestId
+	 *                      A request identifier
+	 */
+	void setRequestId(String requestId);
 
 	/**
 	 * Checks the health of the server.
@@ -288,16 +302,16 @@ public interface ICommonDataServiceRestClient {
 	 * @param anyTags
 	 *                            Solutions must have ANY tag in the supplied set
 	 *                            (one or more); ignored if null or empty.
-	 * @param catalogId
-	 *                            Solutions must be mapped to the specified catalog;
-	 *                            ignored if null or empty
+	 * @param catalogIds
+	 *                            Solutions must be mapped to one of the specified
+	 *                            catalogs; ignored if null or empty
 	 * @param pageRequest
 	 *                            Page index, page size and sort information;
 	 *                            defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags, String catalogId,
+			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			RestPageRequest pageRequest);
 
 	/**
@@ -370,16 +384,20 @@ public interface ICommonDataServiceRestClient {
 	 *                     not already known. Any tags in the entry will be created
 	 *                     if needed.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolution createSolution(MLPSolution solution);
+	MLPSolution createSolution(MLPSolution solution) throws RestClientResponseException;
 
 	/**
 	 * Updates a solution. Any tags in the entry will be created if needed.
 	 * 
 	 * @param solution
 	 *                     Solution data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSolution(MLPSolution solution);
+	void updateSolution(MLPSolution solution) throws RestClientResponseException;
 
 	/**
 	 * A convenience method that increments the view count of a solution by 1.
@@ -389,8 +407,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param solutionId
 	 *                       solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void incrementSolutionViewCount(String solutionId);
+	void incrementSolutionViewCount(String solutionId) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution. Cascades the delete to solution-revision records and
@@ -400,8 +420,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param solutionId
 	 *                       solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolution(String solutionId);
+	void deleteSolution(String solutionId) throws RestClientResponseException;
 
 	/**
 	 * Gets the solution revisions for the specified solution ID.
@@ -451,16 +473,20 @@ public interface ICommonDataServiceRestClient {
 	 *                     value is generated; otherwise the ID value is used if
 	 *                     valid and not already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionRevision createSolutionRevision(MLPSolutionRevision revision);
+	MLPSolutionRevision createSolutionRevision(MLPSolutionRevision revision) throws RestClientResponseException;
 
 	/**
 	 * Updates a solution revision.
 	 * 
 	 * @param revision
 	 *                     Solution revision data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSolutionRevision(MLPSolutionRevision revision);
+	void updateSolutionRevision(MLPSolutionRevision revision) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution revision. Cascades the delete to related records including
@@ -470,8 +496,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       solution ID
 	 * @param revisionId
 	 *                       revision ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionRevision(String solutionId, String revisionId);
+	void deleteSolutionRevision(String solutionId, String revisionId) throws RestClientResponseException;
 
 	/**
 	 * Gets the artifacts for a solution revision
@@ -493,8 +521,11 @@ public interface ICommonDataServiceRestClient {
 	 *                       Revision ID
 	 * @param artifactId
 	 *                       Artifact Id
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionRevisionArtifact(String solutionId, String revisionId, String artifactId);
+	void addSolutionRevisionArtifact(String solutionId, String revisionId, String artifactId)
+			throws RestClientResponseException;
 
 	/**
 	 * Removes an artifact from a solution revision
@@ -505,8 +536,11 @@ public interface ICommonDataServiceRestClient {
 	 *                       Revision ID
 	 * @param artifactId
 	 *                       Artifact Id
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionRevisionArtifact(String solutionId, String revisionId, String artifactId);
+	void dropSolutionRevisionArtifact(String solutionId, String revisionId, String artifactId)
+			throws RestClientResponseException;
 
 	/**
 	 * Gets a page of solution tags.
@@ -524,8 +558,10 @@ public interface ICommonDataServiceRestClient {
 	 * @param tag
 	 *                tag object
 	 * @return Complete object which wraps the tag
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPTag createTag(MLPTag tag);
+	MLPTag createTag(MLPTag tag) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution tag. A tag can be deleted if is not associated with any
@@ -533,8 +569,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param tag
 	 *                tag object
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteTag(MLPTag tag);
+	void deleteTag(MLPTag tag) throws RestClientResponseException;
 
 	/**
 	 * Gets the solution tags for the specified solution ID.
@@ -552,8 +590,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       tag string
 	 * @param solutionId
 	 *                       solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionTag(String solutionId, String tag);
+	void addSolutionTag(String solutionId, String tag) throws RestClientResponseException;
 
 	/**
 	 * Removes the specified tag from the specified solution.
@@ -562,8 +602,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       tag string
 	 * @param solutionId
 	 *                       solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionTag(String solutionId, String tag);
+	void dropSolutionTag(String solutionId, String tag) throws RestClientResponseException;
 
 	/**
 	 * Gets the count of artifacts.
@@ -631,16 +673,20 @@ public interface ICommonDataServiceRestClient {
 	 *                     generated; otherwise the ID value is used if valid and
 	 *                     not already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPArtifact createArtifact(MLPArtifact artifact);
+	MLPArtifact createArtifact(MLPArtifact artifact) throws RestClientResponseException;
 
 	/**
 	 * Updates an artifact.
 	 * 
 	 * @param artifact
 	 *                     Artifact data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateArtifact(MLPArtifact artifact);
+	void updateArtifact(MLPArtifact artifact) throws RestClientResponseException;
 
 	/**
 	 * Deletes an artifact. Cascades the delete; e.g., removes the association with
@@ -649,8 +695,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param artifactId
 	 *                       artifact ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteArtifact(String artifactId);
+	void deleteArtifact(String artifactId) throws RestClientResponseException;
 
 	/**
 	 * Gets count of users.
@@ -704,11 +752,8 @@ public interface ICommonDataServiceRestClient {
 			RestPageRequest pageRequest);
 
 	/**
-	 * Checks credentials for the specified active user. Throws an exception if the
-	 * user is not found, is not active or the password does not match. The
-	 * exception message reveals details such as existence of the user, and should
-	 * NOT be passed on to end users. Does NOT check the expiration date of the
-	 * password, the client must do that as needed.
+	 * Checks credentials for the specified active user. Does NOT check the
+	 * expiration date of the password, the client must do that as needed.
 	 * 
 	 * Side effects: updates last-login field on success, count on failure. Imposes
 	 * a temporary block after repeated failures as configured at server.
@@ -718,14 +763,19 @@ public interface ICommonDataServiceRestClient {
 	 * @param pass
 	 *                 clear-text password
 	 * @return User object if a match for an active user is found.
+	 * @throws RestClientResponseException
+	 *                                         If the user is not found, is not
+	 *                                         active or the password does not
+	 *                                         match. The exception message reveals
+	 *                                         details such as existence of the
+	 *                                         user, and should NOT be passed on to
+	 *                                         end users. Error message is in the
+	 *                                         response body.
 	 */
-	MLPUser loginUser(String name, String pass);
+	MLPUser loginUser(String name, String pass) throws RestClientResponseException;
 
 	/**
-	 * Checks API token for the specified active user. Throws an exception if the
-	 * user is not found, is not active or the token does not match. The exception
-	 * message reveals details such as existence of the user, and should NOT be
-	 * passed on to end users.
+	 * Checks API token for the specified active user.
 	 * 
 	 * Side effects: updates last-login field on success, count on failure. Imposes
 	 * a temporary block after repeated failures as configured at server.
@@ -735,15 +785,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param apiToken
 	 *                     clear-text API token
 	 * @return User object if a match for an active user is found.
+	 * @throws RestClientResponseException
+	 *                                         If the user is not found, is not
+	 *                                         active or the token does not match.
+	 *                                         The exception message reveals details
+	 *                                         such as existence of the user, and
+	 *                                         should NOT be passed on to end users.
+	 *                                         Error message is in the response
+	 *                                         body.
 	 */
-	MLPUser loginApiUser(String name, String apiToken);
+	MLPUser loginApiUser(String name, String apiToken) throws RestClientResponseException;
 
 	/**
-	 * Checks verification credentials for the specified active user. Throws an
-	 * exception if the user is not found, is not active or the token does not
-	 * match. The exception message reveals details such as existence of the user,
-	 * and should NOT be passed on to end users. This does NOT check the expiration
-	 * date of the token, the client must do that as needed.
+	 * Checks verification credentials for the specified active user. This does NOT
+	 * check the expiration date of the token, the client must do that as needed.
 	 * 
 	 * Side effects: updates last-login field on success, count on failure. Imposes
 	 * a temporary block after repeated failures as configured at server.
@@ -754,8 +809,16 @@ public interface ICommonDataServiceRestClient {
 	 * @param verifyToken
 	 *                        clear-text verification token
 	 * @return User object if a match for an active user is found.
+	 * @throws RestClientResponseException
+	 *                                         If the user is not found, is not
+	 *                                         active or the token does not match.
+	 *                                         The exception message reveals details
+	 *                                         such as existence of the user, and
+	 *                                         should NOT be passed on to end users.
+	 *                                         Error message is in the response
+	 *                                         body.
 	 */
-	MLPUser verifyUser(String name, String verifyToken);
+	MLPUser verifyUser(String name, String verifyToken) throws RestClientResponseException;
 
 	/**
 	 * Gets the user with the specified ID.
@@ -774,16 +837,20 @@ public interface ICommonDataServiceRestClient {
 	 *                 otherwise the ID value is used if valid and not already
 	 *                 known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPUser createUser(MLPUser user);
+	MLPUser createUser(MLPUser user) throws RestClientResponseException;
 
 	/**
 	 * Updates a user.
 	 * 
 	 * @param user
 	 *                 User data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateUser(MLPUser user);
+	void updateUser(MLPUser user) throws RestClientResponseException;
 
 	/**
 	 * Deletes a user. Cascades the delete to login-provider, notification and role
@@ -792,8 +859,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param userId
 	 *                   user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteUser(String userId);
+	void deleteUser(String userId) throws RestClientResponseException;
 
 	/**
 	 * Gets the roles for the specified user ID.
@@ -811,8 +880,10 @@ public interface ICommonDataServiceRestClient {
 	 *                   user ID
 	 * @param roleId
 	 *                   role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addUserRole(String userId, String roleId);
+	void addUserRole(String userId, String roleId) throws RestClientResponseException;
 
 	/**
 	 * Updates the user to have exactly the specified roles only; i.e., remove any
@@ -822,8 +893,10 @@ public interface ICommonDataServiceRestClient {
 	 *                    user ID
 	 * @param roleIds
 	 *                    List of role IDs
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateUserRoles(String userId, List<String> roleIds);
+	void updateUserRoles(String userId, List<String> roleIds) throws RestClientResponseException;
 
 	/**
 	 * Removes the specified role from the specified user.
@@ -832,8 +905,10 @@ public interface ICommonDataServiceRestClient {
 	 *                   user ID
 	 * @param roleId
 	 *                   role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropUserRole(String userId, String roleId);
+	void dropUserRole(String userId, String roleId) throws RestClientResponseException;
 
 	/**
 	 * Assigns the specified role to each user in the specified list.
@@ -842,8 +917,10 @@ public interface ICommonDataServiceRestClient {
 	 *                    List of user IDs
 	 * @param roleId
 	 *                    role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addUsersInRole(List<String> userIds, String roleId);
+	void addUsersInRole(List<String> userIds, String roleId) throws RestClientResponseException;
 
 	/**
 	 * Removes the specified role from each user in the specified list.
@@ -852,8 +929,10 @@ public interface ICommonDataServiceRestClient {
 	 *                    List of user IDs
 	 * @param roleId
 	 *                    role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropUsersInRole(List<String> userIds, String roleId);
+	void dropUsersInRole(List<String> userIds, String roleId) throws RestClientResponseException;
 
 	/**
 	 * Gets count of users with the specified role.
@@ -892,24 +971,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param provider
 	 *                     data to populate new entry
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPUserLoginProvider createUserLoginProvider(MLPUserLoginProvider provider);
+	MLPUserLoginProvider createUserLoginProvider(MLPUserLoginProvider provider) throws RestClientResponseException;
 
 	/**
 	 * Updates a user login provider
 	 * 
 	 * @param provider
 	 *                     data to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateUserLoginProvider(MLPUserLoginProvider provider);
+	void updateUserLoginProvider(MLPUserLoginProvider provider) throws RestClientResponseException;
 
 	/**
 	 * Deletes a user login provider.
 	 * 
 	 * @param provider
 	 *                     data to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteUserLoginProvider(MLPUserLoginProvider provider);
+	void deleteUserLoginProvider(MLPUserLoginProvider provider) throws RestClientResponseException;
 
 	/**
 	 * Gets count of roles.
@@ -965,16 +1050,20 @@ public interface ICommonDataServiceRestClient {
 	 *                 otherwise the ID value is used if valid and not already
 	 *                 known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPRole createRole(MLPRole role);
+	MLPRole createRole(MLPRole role) throws RestClientResponseException;
 
 	/**
 	 * Updates the specified role.
 	 * 
 	 * @param role
 	 *                 instance to save
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateRole(MLPRole role);
+	void updateRole(MLPRole role) throws RestClientResponseException;
 
 	/**
 	 * Deletes a role. A role can be deleted if is not associated with any users.
@@ -982,8 +1071,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param roleId
 	 *                   Role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteRole(String roleId);
+	void deleteRole(String roleId) throws RestClientResponseException;
 
 	/**
 	 * Gets the role functions for the specified role
@@ -1011,16 +1102,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param roleFunction
 	 *                         instance to save
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPRoleFunction createRoleFunction(MLPRoleFunction roleFunction);
+	MLPRoleFunction createRoleFunction(MLPRoleFunction roleFunction) throws RestClientResponseException;
 
 	/**
 	 * Creates the specified role function.
 	 * 
 	 * @param roleFunction
 	 *                         instance to save
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateRoleFunction(MLPRoleFunction roleFunction);
+	void updateRoleFunction(MLPRoleFunction roleFunction) throws RestClientResponseException;
 
 	/**
 	 * Deletes a role function.
@@ -1029,8 +1124,10 @@ public interface ICommonDataServiceRestClient {
 	 *                           role ID
 	 * @param roleFunctionId
 	 *                           role function ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteRoleFunction(String roleId, String roleFunctionId);
+	void deleteRoleFunction(String roleId, String roleFunctionId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of peers.
@@ -1080,16 +1177,20 @@ public interface ICommonDataServiceRestClient {
 	 *                 otherwise the ID value is used if valid and not already
 	 *                 known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPPeer createPeer(MLPPeer peer);
+	MLPPeer createPeer(MLPPeer peer) throws RestClientResponseException;
 
 	/**
 	 * Updates a peer.
 	 * 
 	 * @param user
 	 *                 Peer data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updatePeer(MLPPeer user);
+	void updatePeer(MLPPeer user) throws RestClientResponseException;
 
 	/**
 	 * Deletes a peer. Cascades the delete to peer subscriptions. If other
@@ -1097,8 +1198,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param peerId
 	 *                   Instance ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deletePeer(String peerId);
+	void deletePeer(String peerId) throws RestClientResponseException;
 
 	/**
 	 * Gets the count of subscriptions for the specified peer.
@@ -1133,24 +1236,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param peerSub
 	 *                    subscription to create
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPPeerSubscription createPeerSubscription(MLPPeerSubscription peerSub);
+	MLPPeerSubscription createPeerSubscription(MLPPeerSubscription peerSub) throws RestClientResponseException;
 
 	/**
 	 * Updates a peer subscription
 	 * 
 	 * @param peerSub
 	 *                    subscription to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updatePeerSubscription(MLPPeerSubscription peerSub);
+	void updatePeerSubscription(MLPPeerSubscription peerSub) throws RestClientResponseException;
 
 	/**
 	 * Deletes a peer subscription.
 	 *
 	 * @param subscriptionId
 	 *                           Peer subscription ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deletePeerSubscription(Long subscriptionId);
+	void deletePeerSubscription(Long subscriptionId) throws RestClientResponseException;
 
 	/**
 	 * Gets the artifact download details for the specified solution.
@@ -1170,16 +1279,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param download
 	 *                     Instance to save
 	 * @return Complete object.
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionDownload createSolutionDownload(MLPSolutionDownload download);
+	MLPSolutionDownload createSolutionDownload(MLPSolutionDownload download) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution-artifact download record.
 	 * 
 	 * @param download
 	 *                     Instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionDownload(MLPSolutionDownload download);
+	void deleteSolutionDownload(MLPSolutionDownload download) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of solutions that the specified user has marked as favorite.
@@ -1202,8 +1315,10 @@ public interface ICommonDataServiceRestClient {
 	 * @param fs
 	 *               favorite solution model
 	 * @return Complete object
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionFavorite createSolutionFavorite(MLPSolutionFavorite fs);
+	MLPSolutionFavorite createSolutionFavorite(MLPSolutionFavorite fs) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution favorite record; i.e., unmarks a solution as a favorite of
@@ -1211,8 +1326,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param fs
 	 *               favorite solution model
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionFavorite(MLPSolutionFavorite fs);
+	void deleteSolutionFavorite(MLPSolutionFavorite fs) throws RestClientResponseException;
 
 	/**
 	 * Gets the user ratings for the specified solution.
@@ -1243,24 +1360,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param rating
 	 *                   Instance to save
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionRating createSolutionRating(MLPSolutionRating rating);
+	MLPSolutionRating createSolutionRating(MLPSolutionRating rating) throws RestClientResponseException;
 
 	/**
 	 * Updates a solution rating.
 	 * 
 	 * @param rating
 	 *                   Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSolutionRating(MLPSolutionRating rating);
+	void updateSolutionRating(MLPSolutionRating rating) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution rating.
 	 * 
 	 * @param rating
 	 *                   Instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionRating(MLPSolutionRating rating);
+	void deleteSolutionRating(MLPSolutionRating rating) throws RestClientResponseException;
 
 	/**
 	 * Gets the count of notifications.
@@ -1287,16 +1410,20 @@ public interface ICommonDataServiceRestClient {
 	 *                         value is generated; otherwise the ID value is used if
 	 *                         valid and not already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPNotification createNotification(MLPNotification notification);
+	MLPNotification createNotification(MLPNotification notification) throws RestClientResponseException;
 
 	/**
 	 * Updates a notification.
 	 * 
 	 * @param notification
 	 *                         Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateNotification(MLPNotification notification);
+	void updateNotification(MLPNotification notification) throws RestClientResponseException;
 
 	/**
 	 * Deletes a notification. A notification can be deleted if is not associated
@@ -1304,8 +1431,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param notificationId
 	 *                           ID of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteNotification(String notificationId);
+	void deleteNotification(String notificationId) throws RestClientResponseException;
 
 	/**
 	 * Gets the count of user notifications not yet viewed.
@@ -1337,8 +1466,10 @@ public interface ICommonDataServiceRestClient {
 	 *                           notification ID
 	 * @param userId
 	 *                           user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addUserToNotification(String notificationId, String userId);
+	void addUserToNotification(String notificationId, String userId) throws RestClientResponseException;
 
 	/**
 	 * Drops the specified user as a recipient of the specified notification.
@@ -1347,8 +1478,10 @@ public interface ICommonDataServiceRestClient {
 	 *                           notification ID
 	 * @param userId
 	 *                           user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropUserFromNotification(String notificationId, String userId);
+	void dropUserFromNotification(String notificationId, String userId) throws RestClientResponseException;
 
 	/**
 	 * Sets the indicator that the user has viewed the notification.
@@ -1357,8 +1490,10 @@ public interface ICommonDataServiceRestClient {
 	 *                           notification ID
 	 * @param userId
 	 *                           user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void setUserViewedNotification(String notificationId, String userId);
+	void setUserViewedNotification(String notificationId, String userId) throws RestClientResponseException;
 
 	/**
 	 * Gets the users with access to the specified solution.
@@ -1388,8 +1523,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       solution ID
 	 * @param userId
 	 *                       user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionUserAccess(String solutionId, String userId);
+	void addSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
 
 	/**
 	 * Removes access to the specified solution for the specified user.
@@ -1398,20 +1535,25 @@ public interface ICommonDataServiceRestClient {
 	 *                       solution ID
 	 * @param userId
 	 *                       user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionUserAccess(String solutionId, String userId);
+	void dropSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
 
 	/**
-	 * Updates the password for the specified active user. Throws an exception if
-	 * the old password does not match or the user is not active.
+	 * Updates the password for the specified active user.
 	 * 
 	 * @param user
 	 *                          User object
 	 * @param changeRequest
 	 *                          Old and new passwords. Old password may be null, new
 	 *                          password must not be present.
+	 * @throws RestClientResponseException
+	 *                                         If the old password does not match or
+	 *                                         the user is not active. Error message
+	 *                                         is in the response body.
 	 */
-	void updatePassword(MLPUser user, MLPPasswordChangeRequest changeRequest);
+	void updatePassword(MLPUser user, MLPPasswordChangeRequest changeRequest) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of deployments for the specified user.
@@ -1463,24 +1605,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param deployment
 	 *                       Instance to save
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionDeployment createSolutionDeployment(MLPSolutionDeployment deployment);
+	MLPSolutionDeployment createSolutionDeployment(MLPSolutionDeployment deployment) throws RestClientResponseException;
 
 	/**
 	 * Updates a solution deployment record.
 	 * 
 	 * @param deployment
 	 *                       Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSolutionDeployment(MLPSolutionDeployment deployment);
+	void updateSolutionDeployment(MLPSolutionDeployment deployment) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution deployment record.
 	 * 
 	 * @param deployment
 	 *                       Instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionDeployment(MLPSolutionDeployment deployment);
+	void deleteSolutionDeployment(MLPSolutionDeployment deployment) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of site configuration entries.
@@ -1506,24 +1654,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param config
 	 *                   Instance to save
 	 * @return Complete object
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSiteConfig createSiteConfig(MLPSiteConfig config);
+	MLPSiteConfig createSiteConfig(MLPSiteConfig config) throws RestClientResponseException;
 
 	/**
 	 * Updates a site configuration entry.
 	 * 
 	 * @param config
 	 *                   Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSiteConfig(MLPSiteConfig config);
+	void updateSiteConfig(MLPSiteConfig config) throws RestClientResponseException;
 
 	/**
 	 * Deletes a site configuration entry.
 	 * 
 	 * @param configKey
 	 *                      key of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSiteConfig(String configKey);
+	void deleteSiteConfig(String configKey) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of site content entries.
@@ -1549,24 +1703,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param content
 	 *                    Instance to save
 	 * @return Complete object
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSiteContent createSiteContent(MLPSiteContent content);
+	MLPSiteContent createSiteContent(MLPSiteContent content) throws RestClientResponseException;
 
 	/**
 	 * Updates a site content entry.
 	 * 
 	 * @param content
 	 *                    Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSiteContent(MLPSiteContent content);
+	void updateSiteContent(MLPSiteContent content) throws RestClientResponseException;
 
 	/**
 	 * Deletes a site content entry.
 	 * 
 	 * @param contentKey
 	 *                       key of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSiteContent(String contentKey);
+	void deleteSiteContent(String contentKey) throws RestClientResponseException;
 
 	/**
 	 * Gets count of threads.
@@ -1621,31 +1781,37 @@ public interface ICommonDataServiceRestClient {
 	MLPThread getThread(String threadId);
 
 	/**
-	 * Creates a thread.
+	 * Creates a thread for comment.
 	 * 
 	 * @param thread
 	 *                   Thread data. If the ID field is null a new value is
 	 *                   generated; otherwise the ID value is used if valid and not
 	 *                   already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPThread createThread(MLPThread thread);
+	MLPThread createThread(MLPThread thread) throws RestClientResponseException;
 
 	/**
 	 * Updates a thread.
 	 * 
 	 * @param thread
 	 *                   Thread data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateThread(MLPThread thread);
+	void updateThread(MLPThread thread) throws RestClientResponseException;
 
 	/**
 	 * Deletes a thread. Cascades the delete to comment associations.
 	 * 
 	 * @param threadId
 	 *                     thread ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteThread(String threadId);
+	void deleteThread(String threadId) throws RestClientResponseException;
 
 	/**
 	 * Gets count of comments in a thread.
@@ -1715,16 +1881,20 @@ public interface ICommonDataServiceRestClient {
 	 *                    generated; otherwise the ID value is used if valid and not
 	 *                    already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPComment createComment(MLPComment comment);
+	MLPComment createComment(MLPComment comment) throws RestClientResponseException;
 
 	/**
 	 * Updates a comment.
 	 * 
 	 * @param comment
 	 *                    Comment data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateComment(MLPComment comment);
+	void updateComment(MLPComment comment) throws RestClientResponseException;
 
 	/**
 	 * Deletes a comment.
@@ -1733,8 +1903,10 @@ public interface ICommonDataServiceRestClient {
 	 *                      Thread ID
 	 * @param commentId
 	 *                      comment ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteComment(String threadId, String commentId);
+	void deleteComment(String threadId, String commentId) throws RestClientResponseException;
 
 	/**
 	 * Gets a task step result.
@@ -1783,8 +1955,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       Step Result data. The ID field should be null; the
 	 *                       taskId field must be valid.
 	 * @return Complete object, with generated information including ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPTaskStepResult createTaskStepResult(MLPTaskStepResult stepResult);
+	MLPTaskStepResult createTaskStepResult(MLPTaskStepResult stepResult) throws RestClientResponseException;
 
 	/**
 	 * Updates an existing task step result.
@@ -1792,16 +1966,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param stepResult
 	 *                       Step Result data. The stepResultId and taskId fields
 	 *                       must be valid.
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateTaskStepResult(MLPTaskStepResult stepResult);
+	void updateTaskStepResult(MLPTaskStepResult stepResult) throws RestClientResponseException;
 
 	/**
 	 * Deletes a task step result.
 	 * 
 	 * @param stepResultId
 	 *                         stepResult ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteTaskStepResult(long stepResultId);
+	void deleteTaskStepResult(long stepResultId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of peer groups.
@@ -1819,16 +1997,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param peerGroup
 	 *                      Group name
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPPeerGroup createPeerGroup(MLPPeerGroup peerGroup);
+	MLPPeerGroup createPeerGroup(MLPPeerGroup peerGroup) throws RestClientResponseException;
 
 	/**
 	 * Updates a peer group.
 	 * 
 	 * @param peerGroup
 	 *                      Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updatePeerGroup(MLPPeerGroup peerGroup);
+	void updatePeerGroup(MLPPeerGroup peerGroup) throws RestClientResponseException;
 
 	/**
 	 * Deletes a peer group. A group can be deleted if is not associated with any
@@ -1836,8 +2018,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param peerGroupId
 	 *                        ID of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deletePeerGroup(Long peerGroupId);
+	void deletePeerGroup(Long peerGroupId) throws RestClientResponseException;
 
 	/**
 	 * Gets the solution groups.
@@ -1855,16 +2039,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param solutionGroup
 	 *                          Group name
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPSolutionGroup createSolutionGroup(MLPSolutionGroup solutionGroup);
+	MLPSolutionGroup createSolutionGroup(MLPSolutionGroup solutionGroup) throws RestClientResponseException;
 
 	/**
 	 * Updates a solution group.
 	 * 
 	 * @param solutionGroup
 	 *                          Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateSolutionGroup(MLPSolutionGroup solutionGroup);
+	void updateSolutionGroup(MLPSolutionGroup solutionGroup) throws RestClientResponseException;
 
 	/**
 	 * Deletes a solution group. A group can be deleted if is not associated with
@@ -1872,8 +2060,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param solutionGroupId
 	 *                            ID of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteSolutionGroup(Long solutionGroupId);
+	void deleteSolutionGroup(Long solutionGroupId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of peers in the specified peer group.
@@ -1894,8 +2084,10 @@ public interface ICommonDataServiceRestClient {
 	 *                        peer ID
 	 * @param peerGroupId
 	 *                        Peer group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addPeerToGroup(String peerId, Long peerGroupId);
+	void addPeerToGroup(String peerId, Long peerGroupId) throws RestClientResponseException;
 
 	/**
 	 * Drops the specified peer as a member of the specified peer group.
@@ -1904,8 +2096,10 @@ public interface ICommonDataServiceRestClient {
 	 *                        peer ID
 	 * @param peerGroupId
 	 *                        Peer group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropPeerFromGroup(String peerId, Long peerGroupId);
+	void dropPeerFromGroup(String peerId, Long peerGroupId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of solutions in the specified solution group.
@@ -1926,8 +2120,10 @@ public interface ICommonDataServiceRestClient {
 	 *                            Solution ID
 	 * @param solutionGroupId
 	 *                            Solution group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionToGroup(String solutionId, Long solutionGroupId);
+	void addSolutionToGroup(String solutionId, Long solutionGroupId) throws RestClientResponseException;
 
 	/**
 	 * Drops the specified solution as a member of the specified solution group.
@@ -1936,8 +2132,10 @@ public interface ICommonDataServiceRestClient {
 	 *                            Solution ID
 	 * @param solutionGroupId
 	 *                            Solution group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionFromGroup(String solutionId, Long solutionGroupId);
+	void dropSolutionFromGroup(String solutionId, Long solutionGroupId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of peer group - solution group mappings.
@@ -1956,8 +2154,10 @@ public interface ICommonDataServiceRestClient {
 	 *                            Peer group ID
 	 * @param solutionGroupId
 	 *                            Solution group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void mapPeerSolutionGroups(Long peerGroupId, Long solutionGroupId);
+	void mapPeerSolutionGroups(Long peerGroupId, Long solutionGroupId) throws RestClientResponseException;
 
 	/**
 	 * Drops the mapping between the specified peer and solution groups.
@@ -1966,8 +2166,10 @@ public interface ICommonDataServiceRestClient {
 	 *                            Peer group ID
 	 * @param solutionGroupId
 	 *                            Solution group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void unmapPeerSolutionGroups(Long peerGroupId, Long solutionGroupId);
+	void unmapPeerSolutionGroups(Long peerGroupId, Long solutionGroupId) throws RestClientResponseException;
 
 	/**
 	 * Adds the mapping between the specified principal and resource peer groups.
@@ -1976,8 +2178,10 @@ public interface ICommonDataServiceRestClient {
 	 *                             Peer group ID
 	 * @param resourceGroupId
 	 *                             Peer group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void mapPeerPeerGroups(Long principalGroupId, Long resourceGroupId);
+	void mapPeerPeerGroups(Long principalGroupId, Long resourceGroupId) throws RestClientResponseException;
 
 	/**
 	 * Drops the mapping between the specified principal and resource peer groups.
@@ -1986,8 +2190,10 @@ public interface ICommonDataServiceRestClient {
 	 *                             Peer group ID
 	 * @param resourceGroupId
 	 *                             Peer group ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void unmapPeerPeerGroups(Long principalGroupId, Long resourceGroupId);
+	void unmapPeerPeerGroups(Long principalGroupId, Long resourceGroupId) throws RestClientResponseException;
 
 	/**
 	 * Checks whether the specified peer ID may access the specified solution ID by
@@ -2036,24 +2242,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param usrNotifPref
 	 *                         user notification preference data
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPUserNotifPref createUserNotificationPreference(MLPUserNotifPref usrNotifPref);
+	MLPUserNotifPref createUserNotificationPreference(MLPUserNotifPref usrNotifPref) throws RestClientResponseException;
 
 	/**
 	 * Updates a user notification preference.
 	 * 
 	 * @param usrNotifPref
 	 *                         user notification preference data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateUserNotificationPreference(MLPUserNotifPref usrNotifPref);
+	void updateUserNotificationPreference(MLPUserNotifPref usrNotifPref) throws RestClientResponseException;
 
 	/**
 	 * Deletes a user notification preference.
 	 * 
 	 * @param userNotifPrefId
 	 *                            user notification preference ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteUserNotificationPreference(Long userNotifPrefId);
+	void deleteUserNotificationPreference(Long userNotifPrefId) throws RestClientResponseException;
 
 	/**
 	 * Gets a list of user notification preferences for the specified user.
@@ -2074,16 +2286,6 @@ public interface ICommonDataServiceRestClient {
 	MLPUserNotifPref getUserNotificationPreference(Long usrNotifPrefId);
 
 	/**
-	 * Sets the request ID to use in a header on every request to the server. If no
-	 * request ID is set, or if this method is called with null, the implementation
-	 * must generate a new ID for each request.
-	 * 
-	 * @param requestId
-	 *                      A request identifier
-	 */
-	void setRequestId(String requestId);
-
-	/**
 	 * Gets the member solution IDs in the specified composite solution.
 	 * 
 	 * @param parentId
@@ -2099,8 +2301,10 @@ public interface ICommonDataServiceRestClient {
 	 *                     parent solution ID.
 	 * @param childId
 	 *                     child solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addCompositeSolutionMember(String parentId, String childId);
+	void addCompositeSolutionMember(String parentId, String childId) throws RestClientResponseException;
 
 	/**
 	 * Removes the specified member from the specified composite solution.
@@ -2109,8 +2313,10 @@ public interface ICommonDataServiceRestClient {
 	 *                     parent solution ID.
 	 * @param childId
 	 *                     child solution ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropCompositeSolutionMember(String parentId, String childId);
+	void dropCompositeSolutionMember(String parentId, String childId) throws RestClientResponseException;
 
 	/**
 	 * Gets the description for a revision and access type.
@@ -2129,16 +2335,21 @@ public interface ICommonDataServiceRestClient {
 	 * @param description
 	 *                        Revision description to create
 	 * @return MLPRevisionDescription
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPRevisionDescription createRevisionDescription(MLPRevisionDescription description);
+	MLPRevisionDescription createRevisionDescription(MLPRevisionDescription description)
+			throws RestClientResponseException;
 
 	/**
 	 * Updates an existing description for a revision and access type.
 	 * 
 	 * @param description
 	 *                        Revision description to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateRevisionDescription(MLPRevisionDescription description);
+	void updateRevisionDescription(MLPRevisionDescription description) throws RestClientResponseException;
 
 	/**
 	 * Deletes a description for a revision and access type.
@@ -2147,8 +2358,10 @@ public interface ICommonDataServiceRestClient {
 	 *                           revision ID
 	 * @param accessTypeCode
 	 *                           access type code
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteRevisionDescription(String revisionId, String accessTypeCode);
+	void deleteRevisionDescription(String revisionId, String accessTypeCode) throws RestClientResponseException;
 
 	/**
 	 * Gets the document with the specified ID. This is usually metadata about a
@@ -2169,8 +2382,10 @@ public interface ICommonDataServiceRestClient {
 	 *                     generated; otherwise the ID value is used if valid and
 	 *                     not already known.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPDocument createDocument(MLPDocument document);
+	MLPDocument createDocument(MLPDocument document) throws RestClientResponseException;
 
 	/**
 	 * Updates a document. This is usually metadata about a user-supplied document
@@ -2179,8 +2394,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param document
 	 *                     Document data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateDocument(MLPDocument document);
+	void updateDocument(MLPDocument document) throws RestClientResponseException;
 
 	/**
 	 * Deletes a document. An document can be deleted if is not associated with any
@@ -2188,8 +2405,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param documentId
 	 *                       document ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteDocument(String documentId);
+	void deleteDocument(String documentId) throws RestClientResponseException;
 
 	/**
 	 * Gets the documents for a solution revision at the specified access type.
@@ -2211,8 +2430,11 @@ public interface ICommonDataServiceRestClient {
 	 *                           Access type code; e.g., "PB"
 	 * @param documentId
 	 *                           Document Id
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId);
+	void addSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId)
+			throws RestClientResponseException;
 
 	/**
 	 * Removes a user document from a solution revision at the specified access
@@ -2224,15 +2446,18 @@ public interface ICommonDataServiceRestClient {
 	 *                           Access type code; e.g., "PB"
 	 * @param documentId
 	 *                           Document Id
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId);
+	void dropSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId)
+			throws RestClientResponseException;
 
 	/**
-	 * Gets a publish request. Throws if ID is not found.
+	 * Gets a publish request.
 	 * 
 	 * @param requestId
 	 *                      Publish request ID
-	 * @return MLPPublishRequest
+	 * @return MLPPublishRequest, null if not found
 	 */
 	MLPPublishRequest getPublishRequest(long requestId);
 
@@ -2285,24 +2510,30 @@ public interface ICommonDataServiceRestClient {
 	 * @param publishRequest
 	 *                           result Publish Request data.
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPPublishRequest createPublishRequest(MLPPublishRequest publishRequest);
+	MLPPublishRequest createPublishRequest(MLPPublishRequest publishRequest) throws RestClientResponseException;
 
 	/**
 	 * Updates a publish request.
 	 * 
 	 * @param publishRequest
 	 *                           Publish Request data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updatePublishRequest(MLPPublishRequest publishRequest);
+	void updatePublishRequest(MLPPublishRequest publishRequest) throws RestClientResponseException;
 
 	/**
 	 * Deletes a publish request.
 	 * 
 	 * @param publishRequestId
 	 *                             publishRequest ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deletePublishRequest(long publishRequestId);
+	void deletePublishRequest(long publishRequestId) throws RestClientResponseException;
 
 	/**
 	 * Adds the specified tag to the specified user. Creates the tag if needed.
@@ -2311,8 +2542,10 @@ public interface ICommonDataServiceRestClient {
 	 *                   tag string
 	 * @param userId
 	 *                   User ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addUserTag(String userId, String tag);
+	void addUserTag(String userId, String tag) throws RestClientResponseException;
 
 	/**
 	 * Removes the specified tag from the specified user.
@@ -2321,12 +2554,13 @@ public interface ICommonDataServiceRestClient {
 	 *                   tag string
 	 * @param userId
 	 *                   User ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropUserTag(String userId, String tag);
+	void dropUserTag(String userId, String tag) throws RestClientResponseException;
 
 	/**
-	 * Gets the image for the specified solution ID. Throws an exception if the
-	 * solution ID is not known.
+	 * Gets the image for the specified solution ID. solution ID is not known.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
@@ -2335,16 +2569,17 @@ public interface ICommonDataServiceRestClient {
 	byte[] getSolutionPicture(String solutionId);
 
 	/**
-	 * Saves or updates a solution image. Throws an exception if the solution ID is
-	 * not known.
+	 * Saves or updates a solution image.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
 	 * @param picture
 	 *                       Image to save or update; send null to delete an
 	 *                       existing image.
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void saveSolutionPicture(String solutionId, byte[] picture);
+	void saveSolutionPicture(String solutionId, byte[] picture) throws RestClientResponseException;
 
 	/**
 	 * Gets a catalog
@@ -2371,16 +2606,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param catalog
 	 *                    Catalog
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPCatalog createCatalog(MLPCatalog catalog);
+	MLPCatalog createCatalog(MLPCatalog catalog) throws RestClientResponseException;
 
 	/**
 	 * Updates a catalog.
 	 * 
 	 * @param catalog
 	 *                    Instance to update
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateCatalog(MLPCatalog catalog);
+	void updateCatalog(MLPCatalog catalog) throws RestClientResponseException;
 
 	/**
 	 * Deletes a catalog. A catalog can be deleted if is not associated with any
@@ -2388,20 +2627,31 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param catalogId
 	 *                      ID of instance to delete
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteCatalog(String catalogId);
+	void deleteCatalog(String catalogId) throws RestClientResponseException;
 
 	/**
-	 * Gets a page of solutions in the specified catalog.
+	 * Gets the count of solutions in the specified catalog.
 	 * 
 	 * @param catalogId
-	 *                        Catalog ID
+	 *                      Catalog ID
+	 * @return Number of solutions for the specified catalog ID
+	 */
+	long getCatalogSolutionCount(String catalogId);
+
+	/**
+	 * Gets a page of solutions in the specified catalog(s).
+	 * 
+	 * @param catalogIds
+	 *                        Catalog IDs, minimum 1.
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
 	 * @return Page of objects; empty if none are found
 	 */
-	RestPageResponse<MLPSolution> getSolutionsInCatalog(String catalogId, RestPageRequest pageRequest);
+	RestPageResponse<MLPSolution> getSolutionsInCatalogs(String[] catalogIds, RestPageRequest pageRequest);
 
 	/**
 	 * Adds the specified solution as a member of the specified catalog.
@@ -2410,8 +2660,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       Solution ID
 	 * @param catalogId
 	 *                       Catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addSolutionToCatalog(String solutionId, String catalogId);
+	void addSolutionToCatalog(String solutionId, String catalogId) throws RestClientResponseException;
 
 	/**
 	 * Drops the specified solution as a member of the specified catalog.
@@ -2420,8 +2672,10 @@ public interface ICommonDataServiceRestClient {
 	 *                       Solution ID
 	 * @param catalogId
 	 *                       Catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropSolutionFromCatalog(String solutionId, String catalogId);
+	void dropSolutionFromCatalog(String solutionId, String catalogId) throws RestClientResponseException;
 
 	/**
 	 * Gets a task.
@@ -2468,16 +2722,20 @@ public interface ICommonDataServiceRestClient {
 	 * @param task
 	 *                 Task data. The ID field should be null.
 	 * @return Complete object, with generated information including ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPTask createTask(MLPTask task);
+	MLPTask createTask(MLPTask task) throws RestClientResponseException;
 
 	/**
 	 * Updates the specified task, which must exist.
 	 * 
 	 * @param task
 	 *                 Task data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateTask(MLPTask task);
+	void updateTask(MLPTask task) throws RestClientResponseException;
 
 	/**
 	 * Deletes the specified task. Cascades the delete to associated task step
@@ -2485,8 +2743,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param taskId
 	 *                   task ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteTask(long taskId);
+	void deleteTask(long taskId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of right-to-use references.
@@ -2504,8 +2764,10 @@ public interface ICommonDataServiceRestClient {
 	 * @param rtuRef
 	 *                   RTU reference object
 	 * @return Complete object which wraps the ref
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPRtuReference createRtuReference(MLPRtuReference rtuRef);
+	MLPRtuReference createRtuReference(MLPRtuReference rtuRef) throws RestClientResponseException;
 
 	/**
 	 * Deletes a right-to-use reference entry. A ref can be deleted if is not
@@ -2514,8 +2776,10 @@ public interface ICommonDataServiceRestClient {
 	 * 
 	 * @param rtuRef
 	 *                   RTU reference object
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteRtuReference(MLPRtuReference rtuRef);
+	void deleteRtuReference(MLPRtuReference rtuRef) throws RestClientResponseException;
 
 	/**
 	 * Gets the right to use record with the specified ID.
@@ -2573,44 +2837,54 @@ public interface ICommonDataServiceRestClient {
 	 * @param rightToUse
 	 *                       Right to use data
 	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	MLPRightToUse createRightToUse(MLPRightToUse rightToUse);
+	MLPRightToUse createRightToUse(MLPRightToUse rightToUse) throws RestClientResponseException;
 
 	/**
-	 * Updates a right-to-use record.
+	 * Updates the specified right-to-use record.
 	 * 
 	 * @param rightToUse
 	 *                       Right to use data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void updateRightToUse(MLPRightToUse rightToUse);
+	void updateRightToUse(MLPRightToUse rightToUse) throws RestClientResponseException;
 
 	/**
-	 * Deletes a right-to-use record.
+	 * Deletes the specified right-to-use record.
 	 * 
 	 * @param rtuId
 	 *                  Right to use ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void deleteRightToUse(Long rtuId);
+	void deleteRightToUse(Long rtuId) throws RestClientResponseException;
 
 	/**
-	 * Maps the specified user to the specified right-to-use.
+	 * Maps the specified reference to the specified right-to-use.
 	 * 
 	 * @param refId
 	 *                  Remote LUM system reference ID
 	 * @param rtuId
 	 *                  Right to Use ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addRefToRtu(String refId, Long rtuId);
+	void addRefToRtu(String refId, Long rtuId) throws RestClientResponseException;
 
 	/**
-	 * Unmaps the specified user from the specified right-to-use.
+	 * Unmaps the specified reference from the specified right-to-use.
 	 * 
 	 * @param refId
 	 *                  Remote LUM system reference ID
 	 * @param rtuId
 	 *                  Right to Use ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropRefFromRtu(String refId, Long rtuId);
+	void dropRefFromRtu(String refId, Long rtuId) throws RestClientResponseException;
 
 	/**
 	 * Maps the specified user to the specified right-to-use.
@@ -2619,8 +2893,10 @@ public interface ICommonDataServiceRestClient {
 	 *                   User ID
 	 * @param rtuId
 	 *                   Right to Use ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void addUserToRtu(String userId, Long rtuId);
+	void addUserToRtu(String userId, Long rtuId) throws RestClientResponseException;
 
 	/**
 	 * Unmaps the specified user from the specified right-to-use.
@@ -2629,8 +2905,78 @@ public interface ICommonDataServiceRestClient {
 	 *                   User ID
 	 * @param rtuId
 	 *                   Right to Use ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
 	 */
-	void dropUserFromRtu(String userId, Long rtuId);
+	void dropUserFromRtu(String userId, Long rtuId) throws RestClientResponseException;
+
+	/**
+	 * Gets the IDs of all the peer's special-access catalogs.
+	 * 
+	 * @param peerId
+	 *                   Peer ID
+	 * @return List of String
+	 */
+	List<String> getPeerAccessCatalogIds(String peerId);
+
+	/**
+	 * Marks the specified catalog as accessible to the specified peer. The catalog
+	 * must be restricted.
+	 * 
+	 * @param peerId
+	 *                      peer ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Removes the marking that the specified catalog is accessible to the specified
+	 * peer.
+	 * 
+	 * @param peerId
+	 *                      peer ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Gets the IDs of ALL the user's favorite catalogs.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @return List of String
+	 */
+	List<String> getUserFavoriteCatalogIds(String userId);
+
+	/**
+	 * Marks the specified catalog as a favorite of the specified user.
+	 * 
+	 * @param userId
+	 *                      user ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addUserFavoriteCatalog(String userId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Removes the specified catalog as a favorite of the specified user.
+	 * 
+	 * @param userId
+	 *                      user ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropUserFavoriteCatalog(String userId, String catalogId) throws RestClientResponseException;
 
 	/**
 	 * Gets a page of workbench projects.

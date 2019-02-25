@@ -24,11 +24,12 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.2.0, ?? Feb 2019
---------------------------
+Version 2.2.0, 5 Mar 2019
+-------------------------
 * Add project for workbench (`ACUMOS-2516 <https://jira.acumos.org/browse/ACUMOS-2516>`_)
 * Add pipeline for workbench (`ACUMOS-2534 <https://jira.acumos.org/browse/ACUMOS-2534>`_)
 * Add notebook for workbench (`ACUMOS-2535 <https://jira.acumos.org/browse/ACUMOS-2535>`_)
+* Extend data and APIs for catalog features (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Requires database schema version 2.2
 
 Version 2.1.2, 4 Mar 2019
@@ -129,8 +130,8 @@ with the following structure.  All values in upper case must be replaced::
         "spring" : {
             "datasource" : {
                 "jdbc-url" : "jdbc:mariadb://HOST-NAME:3306/DB-NAME?useLegacyDatetimeCode=false&useSSL=false",
-                "username" : "DB-USERNAME",
-                "password" : "ENC(DB-PASSWORD)"
+                "username" : "DB_USERNAME",
+                "password" : "DB_PASSWORD"
             },
             "jpa" : {
                 "database-platform" : "org.hibernate.dialect.MariaDB102Dialect",
@@ -141,8 +142,8 @@ with the following structure.  All values in upper case must be replaced::
             },
             "security" : {
                 "user" : {
-                    "name"     : "CLIENT-USERNAME",
-                    "password" : "ENC(CLIENT-PASSWORD)"
+                    "name"     : "CLIENT_USERNAME",
+                    "password" : "CLIENT_PASSWORD"
                 }
             }
         }
@@ -616,7 +617,7 @@ with the following structure.  All values in upper case must be replaced::
         "security" : {
             "user" : {
                 "name"     : "CLIENT_USERNAME",
-                "password" : "ENC(ENCRYPTED_CLIENT_PASSWORD)"
+                "password" : "CLIENT_PASSWORD"
             }
         },
         "spring" : {
@@ -628,7 +629,7 @@ with the following structure.  All values in upper case must be replaced::
             "datasource" : {
                 "url" : "jdbc:mysql://HOST-NAME.DOMAIN-NAME:3306/DATABASE-NAME?useSSL=false",
                 "username" : "DATABASE_USERNAME",
-                "password" : "ENC(ENCRYPTED_DATABASE_PASSWORD)"
+                "password" : "DATABASE_PASSWORD"
             },
             "jpa" : {
                 "database-platform" : "org.hibernate.dialect.MySQLDialect",

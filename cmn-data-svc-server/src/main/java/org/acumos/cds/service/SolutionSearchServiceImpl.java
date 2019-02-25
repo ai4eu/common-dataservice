@@ -607,7 +607,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] modelTypeCode, String[] accessTypeCode, String[] allTags, String[] anyTags, String catalogId,
+			String[] modelTypeCode, String[] accessTypeCode, String[] allTags, String[] anyTags, String[] catalogIds,
 			Pageable pageable) {
 
 		try (Session session = getSessionFactory().openSession()) {
@@ -662,11 +662,11 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 						.setProjection(Projections.count(tag2ValueField));
 				criteria.add(Subqueries.lt(0L, anyTagsQuery));
 			}
-			if (catalogId != null && !catalogId.isEmpty()) {
+			if (catalogIds != null && catalogIds.length > 0) {
 				final String catAlias = "ctlg";
 				// Use inner join here
 				criteria.createAlias(MLPSolutionFOM_.CATALOGS, catAlias);
-				criteria.add(Restrictions.eq(catAlias + "." + MLPCatalog_.CATALOG_ID, catalogId));
+				criteria.add(Restrictions.in(catAlias + "." + MLPCatalog_.CATALOG_ID, (Object[]) catalogIds));
 			}
 			Page<MLPSolution> result = runSolutionFomQuery(criteria, pageable);
 			logger.debug("findPortalSolutionsByKwAndTags: result size={}", result.getNumberOfElements());

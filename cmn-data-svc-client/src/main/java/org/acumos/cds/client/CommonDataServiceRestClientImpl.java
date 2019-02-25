@@ -45,6 +45,7 @@ import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
+import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
@@ -76,6 +77,7 @@ import org.acumos.cds.domain.MLPTask;
 import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
+import org.acumos.cds.domain.MLPUserCatFavMap;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
@@ -546,7 +548,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active,
 			String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
-			String catalogId, RestPageRequest pageRequest) {
+			String[] catalogIds, RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		// This is the only required parameter.
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
@@ -562,8 +564,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_ALL_TAGS, allTags);
 		if (anyTags != null && anyTags.length > 0)
 			parms.put(CCDSConstants.SEARCH_ANY_TAGS, anyTags);
-		if (catalogId != null && !catalogId.isEmpty())
-			parms.put(CCDSConstants.SEARCH_CATALOG, catalogId);
+		if (catalogIds != null && catalogIds.length > 0)
+			parms.put(CCDSConstants.SEARCH_CATALOG, catalogIds);
 		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH,
 				CCDSConstants.PORTAL_PATH, CCDSConstants.KW_TAG_PATH }, parms, pageRequest);
 		logger.debug("findPortalSolutionsByKwAndTags: uri {}", uri);
@@ -2451,10 +2453,23 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> getSolutionsInCatalog(String catalogId, RestPageRequest pageRequest) {
-		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.SOLUTION_PATH }, null,
+	public long getCatalogSolutionCount(String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.SOLUTION_PATH,
+				CCDSConstants.COUNT_PATH }, null, null);
+		logger.debug("getCatalogSolutionCount: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount();
+	}
+
+	@Override
+	public RestPageResponse<MLPSolution> getSolutionsInCatalogs(String[] catalogIds, RestPageRequest pageRequest) {
+		HashMap<String, Object> parms = new HashMap<>();
+		parms.put(CCDSConstants.SEARCH_CATALOG, catalogIds);
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.SOLUTION_PATH }, parms,
 				pageRequest);
-		logger.debug("getSolutionsInCatalog: uri {}", uri);
+		logger.debug("getSolutionsInCatalogs: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
 				});
@@ -2895,6 +2910,63 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, pipelineId }, null,
 				null);
 		logger.debug("deletePipeline: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<String> getPeerAccessCatalogIds(String peerId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.PEER_PATH, peerId, CCDSConstants.ACCESS_PATH },
+				null, null);
+		logger.debug("getPeerAccessCatalogIds: uri {}", uri);
+		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addPeerAccessCatalog(String peerId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.PEER_PATH, peerId },
+				null, null);
+		logger.debug("addPeerAccessCatalog: url {}", uri);
+		MLPPeerCatAccMap map = new MLPPeerCatAccMap(peerId, catalogId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropPeerAccessCatalog(String peerId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.PEER_PATH, peerId },
+				null, null);
+		logger.debug("dropPeerAccessCatalog: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<String> getUserFavoriteCatalogIds(String userId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.FAVORITE_PATH }, null, null);
+		logger.debug("getUserFavoriteCatalogIds: uri {}", uri);
+		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addUserFavoriteCatalog(String userId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.FAVORITE_PATH }, null, null);
+		logger.debug("addUserFavoriteCatalog: url {}", uri);
+		MLPUserCatFavMap map = new MLPUserCatFavMap(userId, catalogId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropUserFavoriteCatalog(String userId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.FAVORITE_PATH }, null, null);
+		logger.debug("dropUserFavoriteCatalog: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

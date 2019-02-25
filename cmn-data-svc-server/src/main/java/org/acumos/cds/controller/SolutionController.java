@@ -315,13 +315,13 @@ public class SolutionController extends AbstractController {
 			@RequestParam(name = CCDSConstants.SEARCH_ALL_TAGS, required = false) String[] allTags, //
 			@ApiParam(value = "Any tags, solution must have at least one", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ANY_TAGS, required = false) String[] anyTags, //
-			@ApiParam(value = "Catalog ID", allowMultiple = false) //
-			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String catalogId, //
+			@ApiParam(value = "Catalog IDs", allowMultiple = true) //
+			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String[] catalogIds, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findPortalSolutionsByKwAndTags: active {} kw {}", active, kws);
 		try {
 			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes,
-					accTypeCodes, allTags, anyTags, catalogId, pageRequest);
+					accTypeCodes, allTags, anyTags, catalogIds, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findPortalSolutionsByKwAndTags failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

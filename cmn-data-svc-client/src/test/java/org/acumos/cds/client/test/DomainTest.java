@@ -36,6 +36,7 @@ import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
+import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerGrpMemMap;
 import org.acumos.cds.domain.MLPPeerPeerAccMap;
@@ -70,6 +71,7 @@ import org.acumos.cds.domain.MLPTask;
 import org.acumos.cds.domain.MLPTaskStepResult;
 import org.acumos.cds.domain.MLPThread;
 import org.acumos.cds.domain.MLPUser;
+import org.acumos.cds.domain.MLPUserCatFavMap;
 import org.acumos.cds.domain.MLPUserLoginProvider;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
@@ -542,6 +544,41 @@ public class DomainTest extends AbstractModelTest {
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
 		}
+	}
+
+	private void checkMLPPeerCatAccMap(MLPPeerCatAccMap m) {
+		Assert.assertEquals(s1, m.getPeerId());
+		Assert.assertEquals(s2, m.getCatalogId());
+	}
+
+	@Test
+	public void testMLPPeerCatAccMap() {
+		MLPPeerCatAccMap m = new MLPPeerCatAccMap(s1, s1);
+		m = new MLPPeerCatAccMap(m);
+		m = new MLPPeerCatAccMap();
+		m.setPeerId(s1);
+		m.setCatalogId(s2);
+		checkMLPPeerCatAccMap(m);
+		m = new MLPPeerCatAccMap(m);
+		checkMLPPeerCatAccMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPPeerCatAccMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		MLPPeerCatAccMap.PeerCatAccMapPK pk = new MLPPeerCatAccMap.PeerCatAccMapPK();
+		pk = new MLPPeerCatAccMap.PeerCatAccMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
 	}
 
 	private void checkMLPPeerGroup(MLPPeerGroup m) {
@@ -1829,6 +1866,41 @@ public class DomainTest extends AbstractModelTest {
 		} catch (IllegalArgumentException iae) {
 			// null email is rejected
 		}
+	}
+
+	private void checkMLPUserCatFavMap(MLPUserCatFavMap m) {
+		Assert.assertEquals(s1, m.getUserId());
+		Assert.assertEquals(s2, m.getCatalogId());
+	}
+
+	@Test
+	public void testMLPUserCatFavMap() {
+		MLPUserCatFavMap m = new MLPUserCatFavMap(s1, s1);
+		m = new MLPUserCatFavMap(m);
+		m = new MLPUserCatFavMap();
+		m.setUserId(s1);
+		m.setCatalogId(s2);
+		checkMLPUserCatFavMap(m);
+		m = new MLPUserCatFavMap(m);
+		checkMLPUserCatFavMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPUserCatFavMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		MLPUserCatFavMap.UserCatFavMapPK pk = new MLPUserCatFavMap.UserCatFavMapPK();
+		pk = new MLPUserCatFavMap.UserCatFavMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
 	}
 
 	private void checkMLPUserLoginProvider(MLPUserLoginProvider m) {

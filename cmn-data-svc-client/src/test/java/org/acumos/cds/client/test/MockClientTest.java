@@ -576,10 +576,11 @@ public class MockClientTest {
 		client.updateCatalog(catalog);
 		client.deleteCatalog(catalog.getCatalogId());
 		RestPageResponse<MLPSolution> solsInCat = new RestPageResponse<>();
-		client.setSolutionsInCatalog(solsInCat);
+		client.setSolutionsInCatalogs(solsInCat);
 		Assert.assertEquals(solsInCat, client.getSolutionsInGroup(0L, new RestPageRequest()));
 		client.addSolutionToCatalog("solId", "catId");
 		client.dropSolutionFromCatalog("solId", "catId");
+		client.getCatalogSolutionCount("catId");
 
 		RestPageResponse<MLPRtuReference> rtuRefs = new RestPageResponse<>();
 		client.setRtuReferences(rtuRefs);
@@ -651,6 +652,17 @@ public class MockClientTest {
 		client.getProjectPipelines("id");
 		client.dropProjectNotebook(project.getProjectId(), notebook.getNotebookId());
 		client.dropProjectPipeline(project.getProjectId(), pipeline.getPipelineId());
+
+		List<String> catalogIds = new ArrayList<>();
+		client.setPeerAccessCatalogIds(catalogIds);
+		Assert.assertEquals(catalogIds, client.getPeerAccessCatalogIds("peerId"));
+		client.addPeerAccessCatalog("peer", "catalog");
+		client.dropPeerAccessCatalog("peer", "catalog");
+
+		client.setUserFavoriteCatalogIds(catalogIds);
+		Assert.assertEquals(catalogIds, client.getUserFavoriteCatalogIds("userId"));
+		client.addUserFavoriteCatalog("user", "catalog");
+		client.dropUserFavoriteCatalog("user", "catalog");
 
 	}
 
