@@ -107,6 +107,37 @@ Version 2.0.0, 19 Dec 2018
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
+Versions 2.* require configuration data in an environment variable SPRING_APPLICATION_JSON 
+with the following structure.  All values in upper case must be replaced::
+
+    SPRING_APPLICATION_JSON: '{
+        "server" : {
+            "port" : 8000
+        },
+        "spring" : {
+            "datasource" : {
+                "jdbc-url" : "jdbc:mariadb://HOST-NAME:3306/DB-NAME?useLegacyDatetimeCode=false&useSSL=false",
+                "username" : "DB-USERNAME",
+                "password" : "ENC(DB-PASSWORD)"
+            },
+            "jpa" : {
+                "database-platform" : "org.hibernate.dialect.MariaDB102Dialect",
+                "hibernate" : {
+                    "ddl-auto" : "validate"
+                },
+                "show-sql" : false
+            },
+            "security" : {
+                "user" : {
+                    "name"     : "CLIENT-USERNAME",
+                    "password" : "ENC(CLIENT-PASSWORD)"
+                }
+            }
+        }
+    }'
+
+------------
+
 Version 1.18.4, 23 Oct 2018
 ---------------------------
 
@@ -562,3 +593,37 @@ Version 1.0.0, 15 June 2017
 ---------------------------
 
 * Supports solutions, artifacts and users.
+
+Versions 1.* require configuration data in an environment variable SPRING_APPLICATION_JSON 
+with the following structure.  All values in upper case must be replaced::
+
+    SPRING_APPLICATION_JSON: '{
+        "server" : {
+            "port" : 8000
+        },
+        "security" : {
+            "user" : {
+                "name"     : "CLIENT_USERNAME",
+                "password" : "ENC(ENCRYPTED_CLIENT_PASSWORD)"
+            }
+        },
+        "spring" : {
+            "database" : {
+                "driver" : {
+                    "classname" : "org.mariadb.jdbc.Driver"
+                }
+            },
+            "datasource" : {
+                "url" : "jdbc:mysql://HOST-NAME.DOMAIN-NAME:3306/DATABASE-NAME?useSSL=false",
+                "username" : "DATABASE_USERNAME",
+                "password" : "ENC(ENCRYPTED_DATABASE_PASSWORD)"
+            },
+            "jpa" : {
+                "database-platform" : "org.hibernate.dialect.MySQLDialect",
+                "hibernate" : {
+                    "ddl-auto" : "validate"
+                },
+                "show-sql" : false
+            }
+        }
+    }'
