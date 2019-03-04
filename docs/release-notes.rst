@@ -31,6 +31,11 @@ Version 2.2.0, ?? Feb 2019
 * Add notebook for workbench (`ACUMOS-2535 <https://jira.acumos.org/browse/ACUMOS-2535>`_)
 * Requires database schema version 2.2
 
+Version 2.1.2, 4 Mar 2019
+-------------------------
+* Add task type MS for micro service generation (`ACUMOS-2600 <https://jira.acumos.org/browse/ACUMOS-2600>`_)
+* Requires database schema version 2.1
+
 Version 2.1.1, 20 Feb 2019
 --------------------------
 * Add controller methods to get pages of configs and contents (`ACUMOS-2423 <https://jira.acumos.org/browse/ACUMOS-2423>`_)
