@@ -35,6 +35,8 @@ public class MLPCodeNamePair implements MLPDomainModel {
 	}
 
 	public MLPCodeNamePair(String code, String name) {
+		if (code == null || name == null)
+			throw new IllegalArgumentException("Null not permitted");
 		this.code = code;
 		this.name = name;
 	}

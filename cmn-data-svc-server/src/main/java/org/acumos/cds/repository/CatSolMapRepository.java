@@ -23,6 +23,7 @@ package org.acumos.cds.repository;
 import javax.transaction.Transactional;
 
 import org.acumos.cds.domain.MLPCatSolMap;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPSolution;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +58,19 @@ public interface CatSolMapRepository extends PagingAndSortingRepository<MLPCatSo
 			+ " where s.solutionId =  m.solutionId " //
 			+ " and m.catalogId in (:catalogIds)")
 	Page<MLPSolution> findSolutionsByCatalogIds(@Param("catalogIds") String[] catalogIds, Pageable pageable);
+
+	/**
+	 * Gets all catalogs for the specified solution by joining on the
+	 * catalog-solution mapping table.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @return Iterable of MLPCatalog
+	 */
+	@Query(value = "select c from MLPCatalog c, MLPCatSolMap m " //
+			+ " where c.catalogId =  m.catalogId " //
+			+ " and m.solutionId = :solutionId")
+	Iterable<MLPCatalog> findCatalogsBySolutionId(@Param("solutionId") String solutionId);
 
 	/**
 	 * Deletes all entries for the specified solution ID.

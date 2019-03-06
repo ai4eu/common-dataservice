@@ -225,6 +225,14 @@ public class CatalogController extends AbstractController {
 		return catSolMapRepository.findSolutionsByCatalogIds(catalogIds, pageRequest);
 	}
 
+	@ApiOperation(value = "Gets the catalogs where the specified solution appears; empty if none are found.", //
+			response = MLPCatalog.class, responseContainer = "List")
+	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}", method = RequestMethod.GET)
+	public Object getSolutionCatalogs(@PathVariable("solutionId") String solutionId) {
+		logger.debug("getSolutionCatalogs solutionId {}", solutionId);
+		return catSolMapRepository.findCatalogsBySolutionId(solutionId);
+	}
+
 	@ApiOperation(value = "Adds the specified solution to the specified catalog. Answers bad request if an ID is invalid.", //
 			response = SuccessTransport.class)
 	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.SOLUTION_PATH

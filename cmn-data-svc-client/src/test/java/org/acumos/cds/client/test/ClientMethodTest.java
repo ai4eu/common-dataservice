@@ -200,7 +200,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateSolution(new MLPSolution());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -245,12 +245,12 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createSolutionRevision(new MLPSolutionRevision());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.updateSolutionRevision(new MLPSolutionRevision());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -285,7 +285,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.deleteTag(new MLPTag());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -335,7 +335,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateArtifact(new MLPArtifact());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -390,7 +390,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateUser(new MLPUser());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -415,7 +415,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateUserRoles("userId", new ArrayList<String>());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -440,18 +440,17 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createUserLoginProvider(new MLPUserLoginProvider());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.updateUserLoginProvider(new MLPUserLoginProvider());
-
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.deleteUserLoginProvider(new MLPUserLoginProvider());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -486,7 +485,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateRole(new MLPRole());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -506,12 +505,12 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createRoleFunction(new MLPRoleFunction());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.updateRoleFunction(new MLPRoleFunction());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -541,7 +540,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updatePeer(new MLPPeer());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -587,9 +586,8 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			MLPSolutionDownload s = new MLPSolutionDownload();
-			client.createSolutionDownload(s);
-		} catch (ResourceAccessException ex) {
+			client.createSolutionDownload(new MLPSolutionDownload());
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -606,12 +604,12 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createSolutionFavorite(new MLPSolutionFavorite());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.deleteSolutionFavorite(new MLPSolutionFavorite());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -621,7 +619,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createSolutionRating(new MLPSolutionRating());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -631,12 +629,12 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateSolutionRating(new MLPSolutionRating());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.deleteSolutionRating(new MLPSolutionRating());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -656,7 +654,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateNotification(new MLPNotification());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -711,7 +709,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updatePassword(new MLPUser(), new MLPPasswordChangeRequest());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 
@@ -732,17 +730,17 @@ public class ClientMethodTest {
 		}
 		try {
 			client.createSolutionDeployment(new MLPSolutionDeployment());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.updateSolutionDeployment(new MLPSolutionDeployment());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
 			client.deleteSolutionDeployment(new MLPSolutionDeployment());
-		} catch (ResourceAccessException ex) {
+		} catch (Exception ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -762,7 +760,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateSiteConfig(new MLPSiteConfig());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -787,7 +785,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateSiteContent(new MLPSiteContent());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -827,7 +825,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateThread(new MLPThread());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -867,7 +865,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateComment(new MLPComment("a", "b", "c"));
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -1117,7 +1115,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateCatalog(new MLPCatalog());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -1204,7 +1202,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateProject(new MLPProject());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -1234,7 +1232,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updateNotebook(new MLPNotebook());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
@@ -1264,7 +1262,7 @@ public class ClientMethodTest {
 		}
 		try {
 			client.updatePipeline(new MLPPipeline());
-		} catch (ResourceAccessException ex) {
+		} catch (IllegalArgumentException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {

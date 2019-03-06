@@ -1051,7 +1051,7 @@ public class CdsControllerTest {
 			Assert.assertEquals(0, kids.size());
 
 			MLPPublishRequest pubReq = new MLPPublishRequest(cs.getSolutionId(), cr.getRevisionId(), cu.getUserId(),
-					"PE");
+					ca1.getCatalogId(), "PE");
 			pubReq = client.createPublishRequest(pubReq);
 			Assert.assertNotNull(pubReq.getRequestId());
 			pubReq.setComment("foo bar");
@@ -1891,7 +1891,9 @@ public class CdsControllerTest {
 			reply.setText("short");
 		}
 		try {
-			client.updateComment(new MLPComment(thread.getThreadId(), "bogus", "text"));
+			MLPComment fakeComment = new MLPComment(thread.getThreadId(), "bogus", "text");
+			fakeComment.setCommentId("bogus");
+			client.updateComment(fakeComment);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Failed to update missing comment as expected {}", ex.getResponseBodyAsString());
@@ -2238,6 +2240,10 @@ public class CdsControllerTest {
 					new RestPageRequest());
 			Assert.assertNotNull(sols);
 			Assert.assertEquals(1, sols.getNumberOfElements());
+
+			List<MLPCatalog> cats = client.getSolutionCatalogs(cs.getSolutionId());
+			Assert.assertNotNull(cats);
+			Assert.assertEquals(1, cats.size());
 
 			client.addPeerAccessCatalog(pr.getPeerId(), ca.getCatalogId());
 			List<String> peerAcc = client.getPeerAccessCatalogIds(pr.getPeerId());
@@ -3547,7 +3553,7 @@ public class CdsControllerTest {
 		}
 		try {
 			MLPSolutionDownload sd = new MLPSolutionDownload(s64, "artId", s64);
-			sd.setSolutionId(null);
+			sd.setSolutionId("bogus");
 			client.createSolutionDownload(sd);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
@@ -3949,7 +3955,7 @@ public class CdsControllerTest {
 			logger.info("create publish request failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createPublishRequest(new MLPPublishRequest("bogus", "name", "bogus", "bogus"));
+			client.createPublishRequest(new MLPPublishRequest("bogus", "name", "bogus", "bogus", "bogus"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create publish request failed on bad status code as expected: {}",

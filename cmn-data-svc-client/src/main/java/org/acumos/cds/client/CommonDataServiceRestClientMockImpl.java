@@ -210,6 +210,8 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private MLPCatalog catalog;
 	private RestPageResponse<MLPCatalog> catalogs;
 	private RestPageResponse<MLPSolution> solutionsInCatalogs;
+	private List<MLPCatalog> solutionCatalogs;
+	private long catalogSolutionCount;
 	private MLPTask taskById;
 	private RestPageResponse<MLPTask> tasks;
 	private RestPageResponse<MLPTask> searchTasks;
@@ -233,7 +235,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPProject> searchProjects;
 	private RestPageResponse<MLPNotebook> searchNotebooks;
 	private RestPageResponse<MLPPipeline> searchPipelines;
-	private long catalogSolutionCount;
 	private List<String> peerAccessCatalogIds;
 	private List<String> userFavoriteCatalogIds;
 
@@ -1849,6 +1850,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public RestPageResponse<MLPSolution> getSolutionsInCatalogs(String[] catalogIds, RestPageRequest pageRequest) {
 		return solutionsInCatalogs;
+	}
+
+	public void setSolutionCatalogs(List<MLPCatalog> cats) {
+		this.solutionCatalogs = cats;
+	}
+
+	@Override
+	public List<MLPCatalog> getSolutionCatalogs(String solId) {
+		return this.solutionCatalogs;
 	}
 
 	@Override

@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModelProperty.AccessMode;
 
 /**
- * Model for requesting approval to publish a solution to PUBLIC.
+ * Model for requesting approval to publish a solution to a catalog.
  */
 @Entity
 @Table(name = "C_PUBLISH_REQUEST")
@@ -69,6 +69,12 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	@Size(max = 36)
 	@ApiModelProperty(value = "Revision ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String revisionId;
+
+	@Column(name = "CATALOG_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "CatalogID cannot be null")
+	@Size(max = 36)
+	@ApiModelProperty(value = "Catalog ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	private String catalogId;
 
 	@Column(name = "REQ_USER_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "Requesting user ID cannot be null")
@@ -110,15 +116,20 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	 *                          Revision ID
 	 * @param requestUserId
 	 *                          Request user ID
+	 * @param catalogId
+	 *                          Destination catalog ID
 	 * @param statusCode
 	 *                          Request status code
 	 */
-	public MLPPublishRequest(String solutionId, String revisionId, String requestUserId, String statusCode) {
-		if (solutionId == null || revisionId == null || requestUserId == null || statusCode == null)
+	public MLPPublishRequest(String solutionId, String revisionId, String requestUserId, String catalogId,
+			String statusCode) {
+		if (solutionId == null || revisionId == null || requestUserId == null || catalogId == null
+				|| statusCode == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.solutionId = solutionId;
 		this.revisionId = revisionId;
 		this.requestUserId = requestUserId;
+		this.catalogId = catalogId;
 		this.statusCode = statusCode;
 	}
 
@@ -130,6 +141,7 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	 */
 	public MLPPublishRequest(MLPPublishRequest that) {
 		super(that);
+		this.catalogId = that.catalogId;
 		this.comment = that.comment;
 		this.requestId = that.requestId;
 		this.requestUserId = that.requestUserId;
@@ -161,6 +173,14 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 
 	public void setRevisionId(String revisionId) {
 		this.revisionId = revisionId;
+	}
+
+	public String getCatalogId() {
+		return catalogId;
+	}
+
+	public void setCatalogId(String catalogId) {
+		this.catalogId = catalogId;
 	}
 
 	public String getRequestUserId() {
@@ -207,13 +227,14 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(requestId, requestUserId, revisionId, solutionId);
+		return Objects.hash(requestId, catalogId, requestUserId, revisionId, solutionId);
 	}
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[requestId=" + requestId + "solutionId=" + solutionId + "revisionId="
-				+ revisionId + ", requestUserId=" + requestUserId + "statusCode=" + statusCode + "]";
+		return this.getClass().getName() + "[requestId=" + requestId + ", solutionId=" + solutionId + ", revisionId="
+				+ revisionId + ", requestUserId=" + requestUserId + ", catalogId=" + catalogId + ", statusCode="
+				+ statusCode + "]";
 	}
 
 }

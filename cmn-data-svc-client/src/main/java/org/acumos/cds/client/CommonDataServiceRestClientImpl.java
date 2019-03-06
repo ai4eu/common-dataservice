@@ -369,8 +369,11 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	 */
 	protected URI buildUri(final String[] path, final Map<String, Object> queryParams, RestPageRequest pageRequest) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(this.baseUrl);
-		for (int p = 0; p < path.length; ++p)
+		for (int p = 0; p < path.length; ++p) {
+			if (path[p] == null)
+				throw new IllegalArgumentException("Unexpected null at index " + Integer.toString(p));
 			builder.pathSegment(path[p]);
+		}
 		if (queryParams != null && queryParams.size() > 0) {
 			for (Map.Entry<String, ? extends Object> entry : queryParams.entrySet()) {
 				if (entry.getValue() instanceof Instant) {
@@ -2472,6 +2475,17 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		logger.debug("getSolutionsInCatalogs: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public List<MLPCatalog> getSolutionCatalogs(String solutionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.SOLUTION_PATH, solutionId }, null,
+				null);
+		logger.debug("getSolutionCatalogs: uri {}", uri);
+		ResponseEntity<List<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPCatalog>>() {
 				});
 		return response.getBody();
 	}

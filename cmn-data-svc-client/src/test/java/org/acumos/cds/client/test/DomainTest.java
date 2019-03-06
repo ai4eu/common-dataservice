@@ -229,7 +229,7 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(m.toString());
 		try {
 			String n = null;
-			new MLPPeerGroup(n);
+			new MLPCodeNamePair(n, n);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
@@ -918,30 +918,32 @@ public class DomainTest extends AbstractModelTest {
 	}
 
 	private void checkMLPPublishRequest(MLPPublishRequest m) {
-		Assert.assertEquals(s1, m.getComment());
+		Assert.assertEquals(s1, m.getCatalogId());
+		Assert.assertEquals(s2, m.getComment());
 		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(t2, m.getModified());
 		Assert.assertTrue(l1 == m.getRequestId());
-		Assert.assertEquals(s2, m.getRequestUserId());
-		Assert.assertEquals(s3, m.getReviewUserId());
-		Assert.assertEquals(s4, m.getRevisionId());
-		Assert.assertEquals(s5, m.getSolutionId());
-		Assert.assertEquals(s6, m.getStatusCode());
+		Assert.assertEquals(s3, m.getRequestUserId());
+		Assert.assertEquals(s4, m.getReviewUserId());
+		Assert.assertEquals(s5, m.getRevisionId());
+		Assert.assertEquals(s6, m.getSolutionId());
+		Assert.assertEquals(s7, m.getStatusCode());
 	}
 
 	@Test
 	public void testMLPPublishRequest() {
-		MLPPublishRequest m = new MLPPublishRequest(s1, s2, s3, s4);
+		MLPPublishRequest m = new MLPPublishRequest(s1, s2, s3, s4, s5);
 		m = new MLPPublishRequest();
-		m.setComment(s1);
+		m.setCatalogId(s1);
+		m.setComment(s2);
 		m.setCreated(t1);
 		m.setModified(t2);
 		m.setRequestId(l1);
-		m.setRequestUserId(s2);
-		m.setReviewUserId(s3);
-		m.setRevisionId(s4);
-		m.setSolutionId(s5);
-		m.setStatusCode(s6);
+		m.setRequestUserId(s3);
+		m.setReviewUserId(s4);
+		m.setRevisionId(s5);
+		m.setSolutionId(s6);
+		m.setStatusCode(s7);
 		checkMLPPublishRequest(m);
 		m = new MLPPublishRequest(m);
 		checkMLPPublishRequest(m);
@@ -951,7 +953,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPPublishRequest(null, null, null, null);
+			new MLPPublishRequest(null, null, null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

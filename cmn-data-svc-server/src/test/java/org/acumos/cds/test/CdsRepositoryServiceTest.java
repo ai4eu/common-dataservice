@@ -820,7 +820,7 @@ public class CdsRepositoryServiceTest {
 			compSolMapRepository.deleteById(compSolMapKey);
 
 			MLPPublishRequest pubReq = new MLPPublishRequest(cs.getSolutionId(), cr.getRevisionId(), cu.getUserId(),
-					"PE");
+					ca1.getCatalogId(), "PE");
 			pubReq = publishRequestRepository.save(pubReq);
 			Assert.assertNotNull(pubReq.getRequestId());
 			long reqCountTrans = publishRequestRepository.count();
@@ -1551,6 +1551,9 @@ public class CdsRepositoryServiceTest {
 				PageRequest.of(0, 3));
 		Assert.assertNotNull(sols);
 		Assert.assertEquals(1, sols.getNumberOfElements());
+		Iterable<MLPCatalog> cats = catSolMapRepository.findCatalogsBySolutionId(cs1.getSolutionId());
+		Assert.assertNotNull(cats);
+		Assert.assertTrue(cats.iterator().hasNext());
 
 		MLPPeerCatAccMap pcm = new MLPPeerCatAccMap(pr.getPeerId(), ca1.getCatalogId());
 		peerCatAccMapRepository.save(pcm);
