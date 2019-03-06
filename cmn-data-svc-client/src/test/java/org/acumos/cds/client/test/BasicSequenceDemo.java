@@ -98,8 +98,8 @@ public class BasicSequenceDemo {
 		try {
 			client.createUser(new MLPUser());
 		} catch (RestClientResponseException ex) {
-			logger.error("Failed as expected on empty user with exception {}, server reports: {}",
-					ex.toString(), ex.getResponseBodyAsString());
+			logger.error("Failed as expected on empty user with exception {}, server reports: {}", ex.toString(),
+					ex.getResponseBodyAsString());
 		}
 
 		logger.info("Deleting objects");

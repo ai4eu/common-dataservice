@@ -272,7 +272,8 @@ public class CatalogController extends AbstractController {
 
 	@ApiOperation(value = "Gets the list of catalog IDs accessible to the specified peer; empty if none are found.", //
 			response = String.class, responseContainer = "List")
-	@RequestMapping(value = CCDSConstants.PEER_PATH + "/{peerId}/" + CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.PEER_PATH + "/{peerId}/"
+			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
 	public Iterable<String> getPeerAccessCatalogIds(@PathVariable("peerId") String peerId) {
 		logger.debug("getPeerAccessCatalogIds peerId {}", peerId);
 		return peerCatAccMapRepository.findCatalogIdsByPeerId(peerId);
@@ -318,7 +319,8 @@ public class CatalogController extends AbstractController {
 
 	@ApiOperation(value = "Gets the list of catalog IDs that are favorites of the specified user; empty if none are found.", //
 			response = String.class, responseContainer = "List")
-	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/" + CCDSConstants.FAVORITE_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/"
+			+ CCDSConstants.FAVORITE_PATH, method = RequestMethod.GET)
 	public Iterable<String> getUserFavoriteCatalogIds(@PathVariable("userId") String userId) {
 		logger.debug("getUserFavoriteCatalogIds userId {}", userId);
 		return userCatFavMapRepository.findCatalogIdsByUserId(userId);
@@ -326,7 +328,8 @@ public class CatalogController extends AbstractController {
 
 	@ApiOperation(value = "Marks the specified catalog as a favorite of the specified user. Answers bad request if an ID is invalid.", //
 			response = SuccessTransport.class)
-	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.USER_PATH + "/{userId}/" + CCDSConstants.FAVORITE_PATH, method = RequestMethod.POST)
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.USER_PATH + "/{userId}/"
+			+ CCDSConstants.FAVORITE_PATH, method = RequestMethod.POST)
 	public MLPResponse addUserFavoriteCatalog(@PathVariable("catalogId") String catalogId,
 			@PathVariable("userId") String userId, HttpServletResponse response) {
 		logger.debug("addUserFavoriteCatalog catalogId {} userId {}", catalogId, userId);
@@ -347,7 +350,8 @@ public class CatalogController extends AbstractController {
 	@ApiOperation(value = "Unmarks the specified catalog as a favorite of the specified user.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.USER_PATH + "/{userId}/" + CCDSConstants.FAVORITE_PATH, method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.USER_PATH + "/{userId}/"
+			+ CCDSConstants.FAVORITE_PATH, method = RequestMethod.DELETE)
 	public MLPTransportModel dropUserFavoriteCatalog(@PathVariable("catalogId") String catalogId,
 			@PathVariable("userId") String userId, HttpServletResponse response) {
 		logger.debug("dropUserFavoriteCatalog catalogId {} userId {}", catalogId, userId);

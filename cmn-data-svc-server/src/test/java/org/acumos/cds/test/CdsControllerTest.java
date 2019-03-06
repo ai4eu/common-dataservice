@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import org.acumos.cds.AccessTypeCode;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.client.CommonDataServiceRestClientImpl;
 import org.acumos.cds.client.ICommonDataServiceRestClient;
@@ -168,8 +167,7 @@ public class CdsControllerTest {
 			Assert.assertNotNull(fetched);
 			Assert.assertNotNull(fetched.getTags());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
-					AccessTypeCode.PB.name());
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
 			cr.setPublisher("Big Data Org");
 			cr = client.createSolutionRevision(cr);
 			logger.info("Created solution revision {}", cr);
@@ -179,12 +177,12 @@ public class CdsControllerTest {
 			Assert.assertNotNull(crq);
 			Assert.assertNotNull(crq.getOnboarded());
 
-			MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), AccessTypeCode.PB.name(),
+			MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), "PB",
 					"A public revision description");
 			rd = client.createRevisionDescription(rd);
 
 			// query for the description
-			MLPRevisionDescription qrd = client.getRevisionDescription(cr.getRevisionId(), AccessTypeCode.PB.name());
+			MLPRevisionDescription qrd = client.getRevisionDescription(cr.getRevisionId(), "PB");
 			Assert.assertEquals(rd, qrd);
 
 			final String version = "1.0A";
@@ -492,8 +490,7 @@ public class CdsControllerTest {
 
 			Assert.assertEquals(0, client.getPeerSubscriptionCount(pr.getPeerId()));
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL",
-					AccessTypeCode.PB.toString());
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
 			ps = client.createPeerSubscription(ps);
 			logger.info("Created peer subscription {}", ps);
 
@@ -736,7 +733,7 @@ public class CdsControllerTest {
 			logger.info("Got solutions accessible by user {}", cu.getUserId());
 
 			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), //
-					AccessTypeCode.PB.name());
+					"PB");
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("my name", "http://github") });
 			cr.setPublisher("publisher 1");
 			cr = client.createSolutionRevision(cr);
@@ -746,8 +743,7 @@ public class CdsControllerTest {
 			cr.setVerifiedVulnerability("FA");
 			client.updateSolutionRevision(cr);
 
-			MLPSolutionRevision crOrg = new MLPSolutionRevision(csOrg.getSolutionId(), "1.0R", cu.getUserId(), //
-					AccessTypeCode.OR.name());
+			MLPSolutionRevision crOrg = new MLPSolutionRevision(csOrg.getSolutionId(), "1.0R", cu.getUserId(), "OR");
 			crOrg.setAuthors(new AuthorTransport[] { new AuthorTransport("your name", "email") });
 			crOrg.setPublisher("publisher 2");
 			crOrg = client.createSolutionRevision(crOrg);
@@ -922,7 +918,7 @@ public class CdsControllerTest {
 			String[] nameKw = null;
 			String[] descKw = null;
 			String[] owners = { cu.getUserId() };
-			String[] accessTypeCodes = { AccessTypeCode.OR.name(), AccessTypeCode.PB.toString() };
+			String[] accessTypeCodes = { "OR", "PB" };
 			String[] modelTypeCodes = null;
 			String[] authKw = { "github" };
 			String[] pubKw = { "publisher" };
@@ -933,7 +929,7 @@ public class CdsControllerTest {
 			Assert.assertNotEquals(0, portalActiveMatches.getNumberOfElements());
 
 			// Requires revisions and artifacts!
-			String[] searchAccessTypeCodes = new String[] { AccessTypeCode.OR.name() };
+			String[] searchAccessTypeCodes = new String[] { "OR" };
 			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
 			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(true, searchAccessTypeCodes, anHourAgo,
 					new RestPageRequest(0, 1));
@@ -1707,8 +1703,7 @@ public class CdsControllerTest {
 		cs = client.createSolution(cs);
 		Assert.assertNotNull(cs.getSolutionId());
 
-		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0", cu.getUserId(),
-				AccessTypeCode.PR.name());
+		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0", cu.getUserId(), "PR");
 		cr.setVerifiedLicense("FA");
 		cr.setVerifiedVulnerability("FA");
 		cr = client.createSolutionRevision(cr);
@@ -3274,14 +3269,14 @@ public class CdsControllerTest {
 			logger.info("Create solution rev failed on acc code as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), s64, cu.getUserId(), AccessTypeCode.PR.name());
+			csr = new MLPSolutionRevision(cs.getSolutionId(), s64, cu.getUserId(), "PR");
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create revision failed on constraints as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), AccessTypeCode.PR.name());
+			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), "PR");
 			csr.setVerifiedLicense("bogus");
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
@@ -3289,7 +3284,7 @@ public class CdsControllerTest {
 			logger.info("Create revision failed on enum as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), AccessTypeCode.PR.name());
+			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), "PR");
 			csr.setVerifiedVulnerability("bogus");
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
@@ -3298,7 +3293,7 @@ public class CdsControllerTest {
 		}
 		// This one is supposed to work
 		final String solRevVersion = "1.0R";
-		csr = new MLPSolutionRevision(cs.getSolutionId(), solRevVersion, cu.getUserId(), AccessTypeCode.PR.name());
+		csr = new MLPSolutionRevision(cs.getSolutionId(), solRevVersion, cu.getUserId(), "PR");
 		csr = client.createSolutionRevision(csr);
 		try {
 			client.createSolutionRevision(csr);
@@ -3334,8 +3329,7 @@ public class CdsControllerTest {
 			logger.info("Update solution revision failed on enum as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPSolutionRevision r = new MLPSolutionRevision(cs.getSolutionId(), "version", "userId",
-					AccessTypeCode.PB.name());
+			MLPSolutionRevision r = new MLPSolutionRevision(cs.getSolutionId(), "version", "userId", "PB");
 			r.setRevisionId("bogus");
 			client.updateSolutionRevision(r);
 			throw new Exception("Unexpected success");
@@ -3822,8 +3816,7 @@ public class CdsControllerTest {
 			logger.info("Create peer sub failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createPeerSubscription(
-					new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "bogus", AccessTypeCode.PB.toString()));
+			client.createPeerSubscription(new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "bogus", "PB"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create peer sub failed on bad scope code as expected: {}", ex.getResponseBodyAsString());
@@ -3844,8 +3837,7 @@ public class CdsControllerTest {
 			logger.info("Create peer sub failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		// Supposed to work
-		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL",
-				AccessTypeCode.PB.toString());
+		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL", "PB");
 		ps = client.createPeerSubscription(ps);
 		try {
 			ps.setSelector(

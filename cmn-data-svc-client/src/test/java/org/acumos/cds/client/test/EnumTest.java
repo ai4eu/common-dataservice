@@ -20,7 +20,6 @@
 
 package org.acumos.cds.client.test;
 
-import org.acumos.cds.AccessTypeCode;
 import org.acumos.cds.PublishRequestStatusCode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +31,6 @@ public class EnumTest {
 
 	@Test
 	public void testEnums() {
-		Assert.assertTrue(AccessTypeCode.values().length > 0);
 		Assert.assertTrue(PublishRequestStatusCode.values().length > 0);
 	}
 }

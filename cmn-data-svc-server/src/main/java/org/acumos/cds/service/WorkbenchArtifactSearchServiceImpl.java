@@ -83,8 +83,7 @@ public class WorkbenchArtifactSearchServiceImpl extends AbstractSearchServiceImp
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPAbstractWorkbenchArtifact_.repositoryUrl)),
 					repositoryUrl.toLowerCase()));
 		if (serviceUrl != null && !serviceUrl.isEmpty())
-			predicates.add(cb.equal(cb.lower(from.<String>get(MLPNotebook_.SERVICE_URL)),
-					serviceUrl.toLowerCase()));
+			predicates.add(cb.equal(cb.lower(from.<String>get(MLPNotebook_.SERVICE_URL)), serviceUrl.toLowerCase()));
 		if (predicates.isEmpty())
 			throw new IllegalArgumentException("Missing query values, must have at least one non-null");
 		Predicate[] predArray = new Predicate[predicates.size()];

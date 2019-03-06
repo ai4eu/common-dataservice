@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import javax.validation.ConstraintViolationException;
 
-import org.acumos.cds.AccessTypeCode;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCatSolMap;
@@ -392,8 +391,7 @@ public class CdsRepositoryServiceTest {
 					null, false, PageRequest.of(0, 5));
 			Assert.assertTrue(emptyPeers.isEmpty());
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL",
-					AccessTypeCode.PB.name());
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
 			ps = peerSubscriptionRepository.save(ps);
 			Assert.assertNotNull(ps.getSubId());
 			// Column was defined as timestamp with autoupdate :(
@@ -541,8 +539,7 @@ public class CdsRepositoryServiceTest {
 			// Ensure both tags were retrieved
 			Assert.assertEquals(2, searchSols.getContent().get(0).getTags().size());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0X", cu.getUserId(),
-					AccessTypeCode.PR.name());
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0X", cu.getUserId(), "PR");
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("name1", "contact1"),
 					new AuthorTransport("name2", "contact2") });
 			cr.setPublisher("Big Data Org");
@@ -550,8 +547,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
 			logger.info("Created solution revision " + cr.getRevisionId());
 
-			MLPSolutionRevision rev2 = new MLPSolutionRevision(cs2.getSolutionId(), "1.0X", cu.getUserId(),
-					AccessTypeCode.PR.name());
+			MLPSolutionRevision rev2 = new MLPSolutionRevision(cs2.getSolutionId(), "1.0X", cu.getUserId(), "PR");
 			rev2 = revisionRepository.save(rev2);
 			Assert.assertNotNull("Revision ID", rev2.getRevisionId());
 			logger.info("Created solution revision " + rev2.getRevisionId());
@@ -574,7 +570,7 @@ public class CdsRepositoryServiceTest {
 			boolean active = true;
 			String[] userIds = { cu.getUserId() };
 			String[] modelTypeCodes = { "CL" };
-			String[] accTypeCodes = { AccessTypeCode.PR.name(), AccessTypeCode.OR.name() };
+			String[] accTypeCodes = { "PR", "OR" };
 			String[] searchTags = { solTag1.getTag() };
 			String[] searchAuths = null;
 			String[] searchPubs = { "Data" };
@@ -675,7 +671,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertFalse(docs.iterator().hasNext());
 
 			// Find by modified date
-			String[] accTypes = new String[] { AccessTypeCode.PR.name() };
+			String[] accTypes = new String[] { "PR" };
 			Instant modifiedTs = Instant.now().minusSeconds(60);
 			Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedTs,
 					PageRequest.of(0, 5));
@@ -766,7 +762,7 @@ public class CdsRepositoryServiceTest {
 			logger.info("Solutions by tag: {}", solByTag);
 			Assert.assertFalse(solByTag.getContent().isEmpty());
 
-			String[] accessTypes = new String[] { AccessTypeCode.PR.name() };
+			String[] accessTypes = new String[] { "PR" };
 			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
 			Page<MLPSolution> solByCriteria = solutionSearchService.findSolutionsByModifiedDate(true, accessTypes,
 					anHourAgo, PageRequest.of(0, 5));
@@ -963,8 +959,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull(pr.getPeerId());
 			Assert.assertNotNull(pr.getCreated());
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL",
-					AccessTypeCode.PB.toString());
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
 			ps = peerSubscriptionRepository.save(ps);
 			Assert.assertNotNull(ps.getSubId());
 
@@ -1058,8 +1053,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Solution 2 ID", cs2.getSolutionId());
 			logger.info("Created solution 2 " + cs2.getSolutionId());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(),
-					AccessTypeCode.PB.name());
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("other name", "other contact") });
 			cr.setPublisher("Big Data Org");
 			cr = revisionRepository.save(cr);

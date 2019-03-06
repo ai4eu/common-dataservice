@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.List;
 
-import org.acumos.cds.AccessTypeCode;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.domain.MLPRevisionDescription;
@@ -106,7 +105,7 @@ public class FOMRepositoryTest {
 		MLPSolRevDocMap revDocMap = null;
 		MLPSolUserAccMap accMap = null;
 		final String name = "name";
-		final String accCode = AccessTypeCode.PR.name();
+		final String accCode = "PB";
 
 		if (setupTeardown) {
 			// Create entities for query
