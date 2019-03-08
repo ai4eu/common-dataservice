@@ -111,6 +111,7 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 */
 	@Id
 	@Column(name = REVISION_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Revision ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Revision ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String revisionId;
@@ -122,7 +123,7 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	@Column(name = ACCESS_TYPE_CODE_COL_NAME, nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Access type code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Access type code that is valid for this site", example = "PB")
+	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
 	private String accessTypeCode;
 
 	/**
@@ -135,8 +136,9 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 */
 	@Lob
 	@Column(name = "DESCRIPTION", nullable = false)
+	@NotNull(message = "Description cannot be null")
 	@Size(max = 2 * 1024 * 1024)
-	@ApiModelProperty(value = "Text description up to 2MB")
+	@ApiModelProperty(required = true, value = "Text description up to 2MB")
 	private String description;
 
 	/**

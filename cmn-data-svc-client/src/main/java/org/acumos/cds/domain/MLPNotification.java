@@ -81,11 +81,13 @@ public class MLPNotification extends MLPTimestampedEntity implements Serializabl
 
 	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "START_DATE", nullable = false, columnDefinition = "TIMESTAMP")
+	@NotNull(message = "Start timestamp cannot be null")
 	@ApiModelProperty(required = true, value = "Start date", example = "2018-12-16T12:34:56.789Z")
 	private Instant start;
 
 	// No auto-update behaviors here, neither Hibernate nor database
 	@Column(name = "END_DATE", nullable = false, columnDefinition = "TIMESTAMP")
+	@NotNull(message = "End timestamp cannot be null")
 	@ApiModelProperty(required = true, value = "End date", example = "2018-12-16T12:34:56.789Z")
 	private Instant end;
 

@@ -1277,10 +1277,10 @@ public class CdsControllerTest {
 			no2.setMessage("notif2 msg");
 			no2.setUrl("http://notify2.me");
 			no2.setMsgSeverityCode(String.valueOf("HI"));
-			// A minute ago
-			no2.setStart(Instant.now().minusSeconds(60));
-			// A minute from now
-			no2.setEnd(Instant.now().plusSeconds(60));
+			// 5 minutes ago
+			no2.setStart(Instant.now().minusSeconds(5 * 60));
+			// 5 minutes from now
+			no2.setEnd(Instant.now().plusSeconds(5 * 60));
 			no2 = client.createNotification(no2);
 
 			// A populated database may yield a large number

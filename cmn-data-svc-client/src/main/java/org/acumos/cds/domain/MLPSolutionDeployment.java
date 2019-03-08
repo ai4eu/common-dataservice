@@ -73,6 +73,7 @@ public class MLPSolutionDeployment extends MLPTimestampedEntity implements Seria
 	private String userId;
 
 	@Column(name = "DEP_STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
+	@NotNull(message = "Deployment status code cannot be null")
 	@Size(max = 2)
 	@ApiModelProperty(required = true, example = "DP")
 	private String deploymentStatusCode;

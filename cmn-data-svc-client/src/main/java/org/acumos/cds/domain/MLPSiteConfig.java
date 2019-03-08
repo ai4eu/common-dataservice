@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -43,12 +44,14 @@ public class MLPSiteConfig extends MLPTimestampedEntity implements Serializable 
 	// Alas the column name "KEY" isn't usable in most databases
 	@Id
 	@Column(name = "CONFIG_KEY", nullable = false, updatable = false, columnDefinition = "VARCHAR(50)")
+	@NotNull(message = "Config key cannot be null")
 	@Size(max = 50)
 	@ApiModelProperty(required = true, value = "Unique key", example = "site_config_key_1")
 	private String configKey;
 
 	// JSON
 	@Column(name = "CONFIG_VAL", nullable = false, columnDefinition = "VARCHAR(8192)")
+	@NotNull(message = "Config value cannot be null")
 	@ApiModelProperty(required = true, value = "JSON", example = "{ \"tag\" : \"value\" }")
 	@Size(max = 8192)
 	private String configValue;

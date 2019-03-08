@@ -32,7 +32,8 @@ public interface NotificationRepository extends PagingAndSortingRepository<MLPNo
 
 	/**
 	 * Gets the count of notifications that are active (current time falls within
-	 * the notification's time window), assigned to the specified user unread.
+	 * the notification's time window), assigned to the specified user, and unread
+	 * (viewed timestamp is null).
 	 * 
 	 * @param userId
 	 *                   User ID
@@ -44,7 +45,7 @@ public interface NotificationRepository extends PagingAndSortingRepository<MLPNo
 			+ "   and n.end >= CURRENT_TIMESTAMP " //
 			+ "   and n.notificationId = m.notificationId " //
 			+ "   and m.userId = :userId " //
-			+ "   and m.viewed is null ")
+			+ "   and m.viewed is null")
 	long countActiveUnreadByUser(@Param("userId") String userId);
 
 	/**

@@ -101,14 +101,14 @@ public class MLPUserCatFavMap implements MLPDomainModel, Serializable {
 	@Column(name = MLPUserCatFavMap.USER_ID_COL_NAME, nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "User ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "User ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
 	@Id
 	@Column(name = MLPUserCatFavMap.CATALOG_ID_COL_NAME, nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "Catalog ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Catalog ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Catalog ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String catalogId;
 
 	/**

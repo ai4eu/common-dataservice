@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -53,6 +54,7 @@ public class MLPComment extends MLPTimestampedEntity implements Serializable {
 	private String commentId;
 
 	@Column(name = "THREAD_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Thread ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Generated thread ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String threadId;
@@ -63,11 +65,13 @@ public class MLPComment extends MLPTimestampedEntity implements Serializable {
 	private String parentId;
 
 	@Column(name = "USER_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
 	@Column(name = "TEXT", nullable = false, columnDefinition = "VARCHAR(8192)")
+	@NotNull(message = "Text cannot be null")
 	@Size(max = 8192)
 	@ApiModelProperty(required = true, value = "The comment text", example = "Best model ever")
 	private String text;

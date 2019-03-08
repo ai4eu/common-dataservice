@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.acumos.cds.domain.MLPSolRevArtMap.SolRevArtMapPK;
@@ -96,12 +97,14 @@ public class MLPSolRevArtMap implements MLPDomainModel, Serializable {
 
 	@Id
 	@Column(name = REVISION_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Revision ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String revisionId;
 
 	@Id
 	@Column(name = ARTIFACT_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Artifact ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String artifactId;

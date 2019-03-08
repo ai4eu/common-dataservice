@@ -85,7 +85,7 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	@Column(name = "ACCESS_TYPE_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Access type code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Access type code that is valid for this site", example = "PB")
+	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
 	private String accessTypeCode;
 
 	/**
@@ -121,7 +121,8 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * Defined by DDL as default 0 to disable Mysql/Mariadb auto-update behavior
 	 */
 	@Column(name = "ONBOARDED_DATE", nullable = false, columnDefinition = "TIMESTAMP DEFAULT '0000-00-00 00:00:00'")
-	@ApiModelProperty(value = "On-boarded timestamp", example = "2018-12-16T12:34:56.789Z")
+	@NotNull(message = "On-boarded timestamp may not be null")
+	@ApiModelProperty(required = true, value = "On-boarded timestamp", example = "2018-12-16T12:34:56.789Z")
 	private Instant onboarded;
 
 	/**

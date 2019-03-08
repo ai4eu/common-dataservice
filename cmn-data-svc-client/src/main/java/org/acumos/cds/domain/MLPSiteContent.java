@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -44,6 +45,7 @@ public class MLPSiteContent extends MLPTimestampedEntity implements Serializable
 	// Alas the column name "KEY" isn't usable in most databases
 	@Id
 	@Column(name = "CONTENT_KEY", nullable = false, updatable = false, columnDefinition = "VARCHAR(50)")
+	@NotNull(message = "Content key cannot be null")
 	@Size(max = 50)
 	@ApiModelProperty(required = true, value = "Unique key", example = "site_config_key_1")
 	private String contentKey;
@@ -58,12 +60,14 @@ public class MLPSiteContent extends MLPTimestampedEntity implements Serializable
 	 */
 	@Lob
 	@Column(name = "CONTENT_VAL", nullable = false, length = 2000000 /* DO NOT USE: columnDefinition = "BLOB" */)
-	@ApiModelProperty(value = "Value as byte array")
+	@NotNull(message = "Content value cannot be null")
+	@ApiModelProperty(required = true, value = "Value as byte array")
 	private byte[] contentValue;
 
 	@Column(name = "MIME_TYPE", nullable = false, columnDefinition = "VARCHAR(50)")
+	@NotNull(message = "MIME type cannot be null")
 	@Size(max = 50)
-	@ApiModelProperty(value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String mimeType;
 
 	/**

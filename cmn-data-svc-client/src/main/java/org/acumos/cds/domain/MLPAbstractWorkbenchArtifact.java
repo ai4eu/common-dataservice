@@ -48,6 +48,7 @@ public abstract class MLPAbstractWorkbenchArtifact extends MLPTimestampedEntity 
 	 * Inactive means archived or deleted.
 	 */
 	@Column(name = "ACTIVE_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	@NotNull(message = "Active flag cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
 	private boolean active;

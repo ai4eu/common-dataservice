@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.acumos.cds.domain.MLPSolUserAccMap.SolUserAccessMapPK;
@@ -96,12 +97,14 @@ public class MLPSolUserAccMap implements MLPDomainModel, Serializable {
 
 	@Id
 	@Column(name = SOL_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Solution ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String solutionId;
 
 	@Id
 	@Column(name = USER_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;

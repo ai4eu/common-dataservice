@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.acumos.cds.domain.MLPUserRoleMap.UserRoleMapPK;
@@ -92,12 +93,14 @@ public class MLPUserRoleMap implements MLPDomainModel, Serializable {
 
 	@Id
 	@Column(name = "USER_ID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
 	@Id
 	@Column(name = "ROLE_ID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Role ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Role ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String roleId;

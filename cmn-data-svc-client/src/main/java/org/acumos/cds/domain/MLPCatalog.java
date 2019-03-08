@@ -66,7 +66,7 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	@Column(name = "ACCESS_TYPE_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Access type code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Access type code that is valid for this site", example = "PB")
+	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
 	private String accessTypeCode;
 
 	@Column(name = "NAME", nullable = false, unique = true, columnDefinition = "VARCHAR(50)")
@@ -91,8 +91,9 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	private String origin;
 
 	@Column(name = "URL", nullable = false, columnDefinition = "VARCHAR(512)")
+	@NotNull(message = "URL cannot be null")
 	@Size(max = 512)
-	@ApiModelProperty(value = "URL of publisher system", example = "http://peer.company.com/api")
+	@ApiModelProperty(required = true, value = "URL of publisher system", example = "http://peer.company.com/api")
 	private String url;
 
 	/**
