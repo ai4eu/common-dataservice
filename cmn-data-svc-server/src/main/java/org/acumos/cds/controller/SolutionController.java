@@ -54,7 +54,6 @@ import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
 import org.acumos.cds.repository.RevisionDescriptionRepository;
-import org.acumos.cds.repository.SolGrpMemMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
 import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
@@ -125,8 +124,6 @@ public class SolutionController extends AbstractController {
 	private DocumentRepository documentRepository;
 	@Autowired
 	private RevisionDescriptionRepository revisionDescRepository;
-	@Autowired
-	private SolGrpMemMapRepository solGroupMemMapRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
 	@Autowired
@@ -505,7 +502,6 @@ public class SolutionController extends AbstractController {
 			solutionDownloadRepository.deleteBySolutionId(solutionId);
 			solutionFavoriteRepository.deleteBySolutionId(solutionId);
 			solutionRatingRepository.deleteBySolutionId(solutionId);
-			solGroupMemMapRepository.deleteBySolutionId(solutionId);
 			solTagMapRepository.deleteBySolutionId(solutionId);
 			solUserAccMapRepository.deleteBySolutionId(solutionId);
 			solutionFavoriteRepository.deleteBySolutionId(solutionId);

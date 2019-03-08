@@ -37,10 +37,6 @@ import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerCatAccMap;
-import org.acumos.cds.domain.MLPPeerGroup;
-import org.acumos.cds.domain.MLPPeerGrpMemMap;
-import org.acumos.cds.domain.MLPPeerPeerAccMap;
-import org.acumos.cds.domain.MLPPeerSolAccMap;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProjNotebookMap;
@@ -54,7 +50,6 @@ import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
-import org.acumos.cds.domain.MLPSolGrpMemMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
 import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolTagMap;
@@ -63,7 +58,6 @@ import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
 import org.acumos.cds.domain.MLPSolutionFavorite;
-import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPTag;
@@ -581,37 +575,6 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
-	private void checkMLPPeerGroup(MLPPeerGroup m) {
-		Assert.assertEquals(t1, m.getCreated());
-		Assert.assertEquals(s1, m.getDescription());
-		Assert.assertEquals(l1, m.getGroupId());
-		Assert.assertEquals(t2, m.getModified());
-		Assert.assertEquals(s2, m.getName());
-	}
-
-	@Test
-	public void testMLPPeerGroup() {
-		MLPPeerGroup m = new MLPPeerGroup(s1);
-		m = new MLPPeerGroup();
-		m.setCreated(t1);
-		m.setDescription(s1);
-		m.setGroupId(l1);
-		m.setModified(t2);
-		m.setName(s2);
-		checkMLPPeerGroup(m);
-		m = new MLPPeerGroup(m);
-		checkMLPPeerGroup(m);
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			String n = null;
-			new MLPPeerGroup(n);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-	}
-
 	private void checkMLPPeerSubscription(MLPPeerSubscription m) {
 		Assert.assertEquals(s1, m.getAccessType());
 		Assert.assertEquals(t1, m.getCreated());
@@ -657,110 +620,6 @@ public class DomainTest extends AbstractModelTest {
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
 		}
-	}
-
-	private void checkMLPPeerGrpMemMap(MLPPeerGrpMemMap m) {
-		Assert.assertEquals(t1, m.getCreated());
-		Assert.assertEquals(l1, m.getGroupId());
-		Assert.assertEquals(s1, m.getPeerId());
-	}
-
-	@Test
-	public void testMLPPeerGrpMemMap() {
-		MLPPeerGrpMemMap m = new MLPPeerGrpMemMap(l1, s1);
-		m = new MLPPeerGrpMemMap();
-		m.setCreated(t1);
-		m.setGroupId(l1);
-		m.setPeerId(s1);
-		checkMLPPeerGrpMemMap(m);
-		m = new MLPPeerGrpMemMap(m);
-		checkMLPPeerGrpMemMap(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		try {
-			new MLPPeerGrpMemMap(null, null);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		logger.info(m.toString());
-		MLPPeerGrpMemMap.PeerGrpMemMapPK pk = new MLPPeerGrpMemMap.PeerGrpMemMapPK();
-		pk = new MLPPeerGrpMemMap.PeerGrpMemMapPK(l1, s1);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
-	}
-
-	private void checkMLPPeerPeerAccMap(MLPPeerPeerAccMap m) {
-		Assert.assertEquals(l1, m.getPrincipalPeerGroupId());
-		Assert.assertEquals(l2, m.getResourcePeerGroupId());
-	}
-
-	@Test
-	public void testMLPPeerPeerAccMap() {
-		MLPPeerPeerAccMap m = new MLPPeerPeerAccMap(l1, l2);
-		m = new MLPPeerPeerAccMap();
-		m.setPrincipalPeerGroupId(l1);
-		m.setResourcePeerGroupId(l2);
-		checkMLPPeerPeerAccMap(m);
-		m = new MLPPeerPeerAccMap(m);
-		checkMLPPeerPeerAccMap(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		try {
-			new MLPPeerPeerAccMap(null, null);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		logger.info(m.toString());
-		MLPPeerPeerAccMap.PeerPeerAccMapPK pk = new MLPPeerPeerAccMap.PeerPeerAccMapPK();
-		pk = new MLPPeerPeerAccMap.PeerPeerAccMapPK(l1, l2);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
-	}
-
-	private void checkMLPPeerSolAccMap(MLPPeerSolAccMap m) {
-		Assert.assertEquals(l1, m.getPeerGroupId());
-		Assert.assertEquals(l2, m.getSolutionGroupId());
-	}
-
-	@Test
-	public void testMLPPeerSolAccMap() {
-		MLPPeerSolAccMap m = new MLPPeerSolAccMap(l1, l2, true);
-		m = new MLPPeerSolAccMap();
-		m.setPeerGroupId(l1);
-		m.setSolutionGroupId(l2);
-		checkMLPPeerSolAccMap(m);
-		m = new MLPPeerSolAccMap(m);
-		checkMLPPeerSolAccMap(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		try {
-			new MLPPeerSolAccMap(null, null, false);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		logger.info(m.toString());
-		MLPPeerSolAccMap.PeerSolAccMapPK pk = new MLPPeerSolAccMap.PeerSolAccMapPK();
-		pk = new MLPPeerSolAccMap.PeerSolAccMapPK(l1, l2);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
 	}
 
 	private void checkMLPPipeline(MLPPipeline m) {
@@ -1289,40 +1148,6 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
-	private void checkMLPSolGrpMemMap(MLPSolGrpMemMap m) {
-		Assert.assertEquals(l1, m.getGroupId());
-		Assert.assertEquals(s1, m.getSolutionId());
-	}
-
-	@Test
-	public void testMLPSolGrpMemMap() {
-		MLPSolGrpMemMap m = new MLPSolGrpMemMap(l1, s1);
-		m = new MLPSolGrpMemMap();
-		m.setGroupId(l1);
-		m.setSolutionId(s1);
-		checkMLPSolGrpMemMap(m);
-		m = new MLPSolGrpMemMap(m);
-		checkMLPSolGrpMemMap(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		try {
-			new MLPSolGrpMemMap(null, null);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-		logger.info(m.toString());
-		MLPSolGrpMemMap.SolGrpMemMapPK pk = new MLPSolGrpMemMap.SolGrpMemMapPK();
-		pk = new MLPSolGrpMemMap.SolGrpMemMapPK(l1, s1);
-		Assert.assertFalse(pk.equals(null));
-		Assert.assertFalse(pk.equals(new Object()));
-		Assert.assertTrue(pk.equals(pk));
-		Assert.assertFalse(pk.hashCode() == 0);
-		logger.info(pk.toString());
-	}
-
 	private void checkMLPSolUserAccMap(MLPSolUserAccMap m) {
 		Assert.assertEquals(s1, m.getSolutionId());
 		Assert.assertEquals(s2, m.getUserId());
@@ -1525,40 +1350,6 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertTrue(pk.equals(pk));
 		Assert.assertFalse(pk.hashCode() == 0);
 		logger.info(pk.toString());
-	}
-
-	private void checkMLPSolutionGroup(MLPSolutionGroup m) {
-		Assert.assertEquals(t1, m.getCreated());
-		Assert.assertEquals(s1, m.getDescription());
-		Assert.assertEquals(l1, m.getGroupId());
-		Assert.assertEquals(t2, m.getModified());
-		Assert.assertEquals(s2, m.getName());
-	}
-
-	@Test
-	public void testMLPSolutionGroup() {
-		MLPSolutionGroup m = new MLPSolutionGroup(s1);
-		m = new MLPSolutionGroup();
-		m.setCreated(t1);
-		m.setDescription(s1);
-		m.setGroupId(l1);
-		m.setModified(t2);
-		m.setName(s2);
-		checkMLPSolutionGroup(m);
-		m = new MLPSolutionGroup(m);
-		checkMLPSolutionGroup(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			String n = null;
-			new MLPSolutionGroup(n);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
 	}
 
 	private void checkMLPSolutionRating(MLPSolutionRating m) {

@@ -35,7 +35,6 @@ import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
 import org.acumos.cds.domain.MLPPeer;
-import org.acumos.cds.domain.MLPPeerGroup;
 import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
@@ -49,7 +48,6 @@ import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
 import org.acumos.cds.domain.MLPSolutionFavorite;
-import org.acumos.cds.domain.MLPSolutionGroup;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPTag;
@@ -929,120 +927,6 @@ public class ClientMethodTest {
 		}
 		try {
 			client.deleteTaskStepResult(1L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getPeerGroups(new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.createPeerGroup(new MLPPeerGroup());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			MLPPeerGroup pg = new MLPPeerGroup();
-			pg.setGroupId(0L);
-			client.updatePeerGroup(pg);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.deletePeerGroup(0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getSolutionGroups(new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.createSolutionGroup(new MLPSolutionGroup());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			MLPSolutionGroup sg = new MLPSolutionGroup();
-			sg.setGroupId(0L);
-			client.updateSolutionGroup(sg);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.deleteSolutionGroup(0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getPeersInGroup(0L, new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.addPeerToGroup("peerId", 0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.dropPeerFromGroup("peer", 0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getSolutionsInGroup(0L, new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.addSolutionToGroup("sol", 0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.dropSolutionFromGroup("sol", 0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getPeerSolutionGroupMaps(new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.mapPeerSolutionGroups(0L, 1L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.unmapPeerSolutionGroups(0L, 1L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.mapPeerPeerGroups(0L, 1L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.unmapPeerPeerGroups(0L, 1L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.checkRestrictedAccessSolution("peer", "sol");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getPeerAccess("peer");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.findRestrictedAccessSolutions("peer", new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}

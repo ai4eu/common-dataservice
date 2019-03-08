@@ -113,22 +113,4 @@ public interface SolutionRepository extends JpaRepository<MLPSolution, String>, 
 			+ "   AND m.tag = :tag")
 	Page<MLPSolution> findByTag(@Param("tag") String tag, Pageable pageRequest);
 
-	/**
-	 * Searches for active solutions accessible to the specified peer by traversing
-	 * the peer group and solution group membership mapping tables. Those solutions
-	 * are expected to have only private revisions, but that's not checked here.
-	 * 
-	 * @param peerId
-	 *                        Peer ID
-	 * @param pageRequest
-	 *                        Page and sort criteria
-	 * @return Page of MLPSolution, which may be empty
-	 */
-	@Query(value = "SELECT DISTINCT s FROM MLPSolution s, MLPPeerGrpMemMap pg, MLPPeerSolAccMap psg, MLPSolGrpMemMap sg "
-			+ " WHERE s.active = true "//
-			+ "   AND pg.peerId = :peerId "//
-			+ "   AND pg.groupId = psg.peerGroupId " //
-			+ "   AND psg.solutionGroupId = sg.groupId ")
-	Page<MLPSolution> findRestrictedSolutions(@Param("peerId") String peerId, Pageable pageRequest);
-
 }
