@@ -60,13 +60,13 @@ public class MLPTask extends MLPTimestampedEntity implements Serializable {
 	@Column(name = "TASK_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Task code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Task code", required = true, example = "OB")
+	@ApiModelProperty(required = true, value = "Task code", example = "OB")
 	private String taskCode;
 
 	@Column(name = "USER_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "UUID", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
 	@Column(name = "NAME", nullable = false, columnDefinition = "VARCHAR(100)")
@@ -78,7 +78,7 @@ public class MLPTask extends MLPTimestampedEntity implements Serializable {
 	@Column(name = "STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Status code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Status code", required = true, example = "SU")
+	@ApiModelProperty(required = true, value = "Status code", example = "SU")
 	private String statusCode;
 
 	@Column(name = "TRACKING_ID", columnDefinition = "CHAR(36)")

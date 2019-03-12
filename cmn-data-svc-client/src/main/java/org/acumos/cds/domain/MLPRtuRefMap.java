@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.acumos.cds.domain.MLPRtuRefMap.RtuRefMapPK;
@@ -96,11 +97,13 @@ public class MLPRtuRefMap implements MLPDomainModel, Serializable {
 
 	@Id
 	@Column(name = RTU_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "INT")
+	@NotNull(message = "RTU ID cannot be null")
 	@ApiModelProperty(required = true, value = "Right-to-USE ID", example = "12345")
 	private Long rtuId;
 
 	@Id
 	@Column(name = REF_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Ref ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Reference ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String refId;

@@ -102,14 +102,14 @@ public class MLPPeerCatAccMap implements MLPDomainModel, Serializable {
 	@Column(name = MLPPeerCatAccMap.PEER_ID_COL_NAME, nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "Peer ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Peer ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Peer ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String peerId;
 
 	@Id
 	@Column(name = MLPPeerCatAccMap.CATALOG_ID_COL_NAME, nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "Catalog ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Catalog ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Catalog ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String catalogId;
 
 	/**

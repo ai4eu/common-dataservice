@@ -61,7 +61,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	@Column(name = "NAME", nullable = false, columnDefinition = "VARCHAR(100)")
 	@NotNull(message = "Name cannot be null")
 	@Size(max = 100)
-	@ApiModelProperty(value = "Solution name", example = "My solution")
+	@ApiModelProperty(required = true, value = "Solution name", example = "My solution")
 	private String name;
 
 	@Column(name = "METADATA", columnDefinition = "VARCHAR(1024)")
@@ -73,6 +73,7 @@ public abstract class MLPAbstractSolution extends MLPTimestampedEntity {
 	 * Inactive means deleted.
 	 */
 	@Column(name = "ACTIVE_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	@NotNull(message = "Active flag cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
 	private boolean active;

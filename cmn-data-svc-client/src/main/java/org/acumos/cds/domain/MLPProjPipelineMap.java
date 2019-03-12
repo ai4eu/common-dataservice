@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.acumos.cds.domain.MLPProjPipelineMap.ProjPlMapPK;
@@ -91,12 +92,14 @@ public class MLPProjPipelineMap implements MLPDomainModel, Serializable {
 
 	@Id
 	@Column(name = "PROJECT_ID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Project ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Project ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String projectId;
 
 	@Id
 	@Column(name = "PIPELINE_ID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Pipeline ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Pipeline ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String pipelineId;

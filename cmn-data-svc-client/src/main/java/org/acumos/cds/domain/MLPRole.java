@@ -67,6 +67,7 @@ public class MLPRole extends MLPTimestampedEntity implements Serializable {
 	private String name;
 
 	@Column(name = "ACTIVE_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	@NotNull(message = "Active indicator cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
 	private boolean active;

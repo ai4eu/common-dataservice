@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -45,6 +46,7 @@ public class MLPRtuReference implements MLPDomainModel, Serializable {
 	// A GUID is always 36 char
 	@Id
 	@Column(name = "REF", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Ref cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, example = "GUID")
 	private String ref;

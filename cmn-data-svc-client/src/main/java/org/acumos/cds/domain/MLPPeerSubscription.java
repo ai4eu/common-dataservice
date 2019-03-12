@@ -30,6 +30,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -58,21 +59,25 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	private Long subId;
 
 	@Column(name = "PEER_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Peer ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "Peer ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String peerId;
 
 	@Column(name = "USER_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "User ID cannot be null")
 	@Size(max = 36)
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
 	@Column(name = "SCOPE_TYPE", nullable = false, columnDefinition = "CHAR(2)")
+	@NotNull(message = "Scope type cannot be null")
 	@Size(max = 2)
 	@ApiModelProperty(required = true, value = "Subscription scope type code", example = "RF")
 	private String scopeType;
 
 	@Column(name = "ACCESS_TYPE", nullable = false, columnDefinition = "CHAR(2)")
+	@NotNull(message = "Access type cannot be null")
 	@Size(max = 2)
 	@ApiModelProperty(required = true, value = "Access type code", example = "PB")
 	private String accessType;

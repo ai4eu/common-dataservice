@@ -77,6 +77,7 @@ public abstract class MLPAbstractDocument extends MLPTimestampedEntity implement
 	private String uri;
 
 	@Column(name = "SIZE", nullable = false, columnDefinition = "INT")
+	@NotNull(message = "Size cannot be null")
 	@ApiModelProperty(required = true, value = "Size in bytes on the disk", example = "65536")
 	private Integer size;
 

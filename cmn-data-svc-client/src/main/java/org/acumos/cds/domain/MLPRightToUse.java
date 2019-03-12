@@ -67,12 +67,13 @@ public class MLPRightToUse extends MLPTimestampedEntity implements Serializable 
 	private Long rtuId;
 
 	@Column(name = "SOLUTION_ID", nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Solution ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "GUID", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
-	@NotNull
+	@ApiModelProperty(required = true, value = "GUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String solutionId;
 
 	@Column(name = "SITE_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
+	@NotNull(message = "Site indicator cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
 	private boolean site;

@@ -61,25 +61,25 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	@Column(name = "SOLUTION_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "SolutionID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Solution ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Solution ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String solutionId;
 
 	@Column(name = "REVISION_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "RevisionID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Revision ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Revision ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String revisionId;
 
 	@Column(name = "CATALOG_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "CatalogID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Catalog ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Catalog ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String catalogId;
 
 	@Column(name = "REQ_USER_ID", nullable = false, columnDefinition = "CHAR(36)")
 	@NotNull(message = "Requesting user ID cannot be null")
 	@Size(max = 36)
-	@ApiModelProperty(value = "Requesting user ID (UUID)", required = true, example = "12345678-abcd-90ab-cdef-1234567890ab")
+	@ApiModelProperty(required = true, value = "Requesting user ID (UUID)", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String requestUserId;
 
 	@Column(name = "RVW_USER_ID", columnDefinition = "CHAR(36)")
@@ -90,7 +90,7 @@ public class MLPPublishRequest extends MLPTimestampedEntity implements Serializa
 	@Column(name = "STATUS_CD", nullable = false, columnDefinition = "CHAR(2)")
 	@NotNull(message = "Request status code cannot be null")
 	@Size(max = 2)
-	@ApiModelProperty(value = "Status code", required = true, example = "AP")
+	@ApiModelProperty(required = true, value = "Status code", example = "AP")
 	private String statusCode;
 
 	@Column(name = "COMMENT", columnDefinition = "VARCHAR(8192)")

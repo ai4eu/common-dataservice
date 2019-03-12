@@ -88,6 +88,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	private String orgName;
 
 	@Column(name = "EMAIL", nullable = false, unique = true, columnDefinition = "VARCHAR(50)")
+	@NotNull(message = "Email cannot be null")
 	@Size(max = 50)
 	@ApiModelProperty(required = true, value = "User email address", example = "Mary.Jane.Doe@TheModelingCompany.org")
 	private String email;
@@ -127,6 +128,7 @@ public class MLPUser extends MLPTimestampedEntity implements Serializable {
 	private String authToken;
 
 	@Column(name = "ACTIVE_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	@NotNull(message = "Active indicator cannot be null")
 	@Type(type = "yes_no")
 	@ApiModelProperty(required = true, value = "Boolean indicator")
 	private boolean active;

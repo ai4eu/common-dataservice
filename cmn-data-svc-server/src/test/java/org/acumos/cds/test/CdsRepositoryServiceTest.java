@@ -1398,7 +1398,7 @@ public class CdsRepositoryServiceTest {
 			taskRepository.delete(st);
 			userRepository.delete(cu);
 		} catch (Exception ex) {
-			logger.error("testStepResults failed", ex);
+			logger.error("testTaskStepResults failed", ex);
 			throw ex;
 		}
 	}

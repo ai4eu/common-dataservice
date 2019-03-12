@@ -24,6 +24,7 @@ import org.acumos.cds.CdsApplication;
 import org.acumos.cds.controller.AbstractController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -39,6 +40,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
+//The import tells Swagger to use JPA annotations like @NotNull
+//https://stackoverflow.com/questions/43771283/springfox-swagger-optional-and-mandatory-fields-in-model
+@Import({springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class})
 public class SwaggerConfiguration {
 
 	/**
