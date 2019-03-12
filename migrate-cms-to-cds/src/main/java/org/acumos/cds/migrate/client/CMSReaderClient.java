@@ -317,12 +317,12 @@ public class CMSReaderClient {
 	 * Gets footer contact info
 	 * 
 	 * GET
-	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/footer&name=contactinfo
+	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/footer&amp;name=contactinfo
 	 * 
 	 * Sample:
 	 * 
 	 * <pre>
-	 * {"description":"<p>Contact Info</p>"}
+	 * {"description":"&lt;p&gt;Contact Info&lt;/p&gt;"}
 	 * </pre>
 	 * 
 	 * @return CMSDescription
@@ -347,7 +347,7 @@ public class CMSReaderClient {
 	 * Sample:
 	 * 
 	 * <pre>
-	 * {"description":"<p>Footer terms</p>"}
+	 * {"description":"&lt;p&gt;Footer terms&lt;/p&gt;"}
 	 * </pre>
 	 * 
 	 * @return CMSDescription
@@ -355,6 +355,31 @@ public class CMSReaderClient {
 	public CMSDescription getFooterTermsConditions() {
 		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, GLOBAL_PATH, TERMS_CONDITION_PATH }, null);
 		logger.debug("getFooterTermsConditions: uri {}", uri);
+		ResponseEntity<CMSDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CMSDescription>() {
+				});
+		return response.getBody();
+	}
+
+	/**
+	 * Gets onboarding instructions
+	 * 
+	 * GET
+	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/onboarding-model-screen&amp;name=overview
+	 * Sample:
+	 * 
+	 * <pre>
+	 * {"description":"&lt;p&gt;Onboarding overview here&lt;/p&gt;"}
+	 * </pre>
+	 * 
+	 * @return CMSDescription
+	 */
+	public CMSDescription getOnboardingOverview() {
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put("path", "global/onboarding-model-screen");
+		queryParams.put("name", "overview");
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, SOL_DESCRIPTION_PATH }, queryParams);
+		logger.debug("getOnboardingOverview: uri {}", uri);
 		ResponseEntity<CMSDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<CMSDescription>() {
 				});

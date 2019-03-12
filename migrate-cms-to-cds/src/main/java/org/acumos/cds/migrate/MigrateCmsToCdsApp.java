@@ -45,6 +45,7 @@ import org.acumos.nexus.client.RepositoryLocation;
 import org.acumos.nexus.client.data.UploadArtifactInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -301,6 +302,7 @@ public class MigrateCmsToCdsApp {
 		final String keyCobrandLogo = "global.coBrandLogo";
 		final String keyContactInfo = "global.footer.contactInfo";
 		final String keyTermsCondition = "global.termsCondition";
+		final String keyOnboardingOverview = "global.onboarding.overview";
 
 		byte[] coBrandLogo = cmsClient.getCoBrandLogo();
 		if (coBrandLogo == null || coBrandLogo.length == 0) {
@@ -334,7 +336,8 @@ public class MigrateCmsToCdsApp {
 			} else {
 				try {
 					logger.info("Creating footer contact site content in CDS");
-					cdsFootCi = new MLPSiteContent(keyContactInfo, cmsFootCi.getDescription().getBytes(), "text/html");
+					cdsFootCi = new MLPSiteContent(keyContactInfo, cmsFootCi.getDescription().getBytes(),
+							MediaType.APPLICATION_JSON_VALUE);
 					cdsClient.createSiteContent(cdsFootCi);
 					++globalContentSucc;
 				} catch (HttpStatusCodeException ex) {
@@ -355,11 +358,33 @@ public class MigrateCmsToCdsApp {
 				try {
 					logger.info("Creating footer T&C site content in CDS");
 					cdsFootTc = new MLPSiteContent(keyTermsCondition, cmsFootTc.getDescription().getBytes(),
-							"text/html");
+							MediaType.APPLICATION_JSON_VALUE);
 					cdsClient.createSiteContent(cdsFootTc);
 					++globalContentSucc;
 				} catch (HttpStatusCodeException ex) {
 					logger.error("Failed to create footer T&C {}; server response {}", cdsFootTc,
+							ex.getResponseBodyAsString());
+					++globalContentFail;
+				}
+			}
+		}
+
+		CMSDescription cmsOnbrdOvw = cmsClient.getOnboardingOverview();
+		if (cmsOnbrdOvw == null || cmsOnbrdOvw.getDescription() == null || cmsOnbrdOvw.getDescription().isEmpty()) {
+			logger.info("Source CMS has no onboarding overview, continuing");
+		} else {
+			MLPSiteContent cdsOnbrdOvw = cdsClient.getSiteContent(keyOnboardingOverview);
+			if (cdsOnbrdOvw != null && cdsOnbrdOvw.getContentValue().length > 0) {
+				logger.info("Target CDS already has onboarding overview, continuing");
+			} else {
+				try {
+					logger.info("Creating onboarding overview site content in CDS");
+					cdsOnbrdOvw = new MLPSiteContent(keyOnboardingOverview, cmsOnbrdOvw.getDescription().getBytes(),
+							"text/html");
+					cdsClient.createSiteContent(cdsOnbrdOvw);
+					++globalContentSucc;
+				} catch (HttpStatusCodeException ex) {
+					logger.error("Failed to create onboarding overview {}; server response {}", cdsOnbrdOvw,
 							ex.getResponseBodyAsString());
 					++globalContentFail;
 				}
@@ -374,7 +399,7 @@ public class MigrateCmsToCdsApp {
 				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeTopBg, typeTopIg, "top",
 						topCarouselConfig.getConfigValue());
 				topCarouselConfig.setConfigValue(revisedConfig);
-				// TODO cdsClient.updateSiteConfig(topCarouselConfig);
+				cdsClient.updateSiteConfig(topCarouselConfig);
 				++globalContentSucc;
 			} catch (Exception ex) { //
 				logger.error("Failed to migrate top carousel, exception {}", ex.toString());
