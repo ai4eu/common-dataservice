@@ -139,7 +139,7 @@ Run Instructions
 
 Run the migration tool as below, after replacing "x" with the current version number::
 
-    java -jar target/migrate-cms-to-cds-1.0.x-SNAPSHOT-spring-boot.jar
+    java -jar target/migrate-cms-to-cds-2.0.x-SNAPSHOT-spring-boot.jar
 
 The tool expects to find file "migrate.properties" in the current directory.
 It will write a log file to the current directory.
