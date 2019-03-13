@@ -156,7 +156,7 @@ public class RoleController extends AbstractController {
 				if (roleRepository.findById(id).isPresent()) {
 					logger.warn("createRole failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Create a new row

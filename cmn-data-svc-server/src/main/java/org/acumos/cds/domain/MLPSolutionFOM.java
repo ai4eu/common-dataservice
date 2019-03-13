@@ -36,7 +36,7 @@ import org.hibernate.annotations.Immutable;
 
 /**
  * Solution entity with full object mappings (FOM, a lousy name I know) for all
- * complex fields including revisions, user, tags and web stats. Inherits all
+ * complex fields including catalogs, revisions, user, tags etc. Inherits all
  * simple field mappings from the abstract superclass.
  * 
  * Defined in the server project because it's not exposed to clients.

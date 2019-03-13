@@ -47,7 +47,6 @@ public class CCDSConstants {
 	public static final String DOWNLOAD_PATH = "dnld";
 	public static final String FAVORITE_PATH = "favorite";
 	public static final String FUNCTION_PATH = "function";
-	public static final String GROUP_PATH = "group";
 	public static final String KEYWORD_PATH = "kw";
 	public static final String KW_TAG_PATH = "kwtag";
 	public static final String NOTEBOOK_PATH = "ntbk";

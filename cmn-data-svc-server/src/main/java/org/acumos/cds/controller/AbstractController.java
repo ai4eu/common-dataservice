@@ -45,6 +45,7 @@ public abstract class AbstractController {
 	protected TagRepository tagRepository;
 
 	protected static final String NO_ENTRY_WITH_ID = "No entry with ID ";
+	protected static final String ENTRY_EXISTS_WITH_ID = "Entry exists with ID ";
 
 	/**
 	 * For general use in these methods and subclasses

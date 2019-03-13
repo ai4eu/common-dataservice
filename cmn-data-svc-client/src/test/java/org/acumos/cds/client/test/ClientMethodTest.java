@@ -177,7 +177,7 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.findSolutionsByDate(true, new String[0], Instant.now(), new RestPageRequest());
+			client.findSolutionsByDate("catId", Instant.now(), new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
@@ -984,6 +984,11 @@ public class ClientMethodTest {
 		}
 		try {
 			client.getCatalogs(new RestPageRequest());
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.searchCatalogs(new HashMap<String, Object>(), true, new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}

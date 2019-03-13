@@ -92,7 +92,7 @@ public class DocumentController extends AbstractController {
 				if (documentRepository.findById(id).isPresent()) {
 					logger.warn("createDocument: failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Validate the URI

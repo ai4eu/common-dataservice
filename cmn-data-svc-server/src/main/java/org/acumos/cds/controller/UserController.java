@@ -206,7 +206,7 @@ public class UserController extends AbstractController {
 			// This is a second or subsequent failure
 			if (user.getLoginFailCount() < this.loginFailureLimit) {
 				logger.warn("checkUserCredentials: user {} attempt after failure {}", user.getLoginName(),
-						Integer.toString(user.getLoginFailCount()));
+						user.getLoginFailCount());
 			} else {
 				// Exceeds threshold. Defend against null fail date in db.
 				long lastFailureTimeEpochSec = user.getLoginFailDate() == null ? Instant.now().getEpochSecond()
@@ -486,7 +486,7 @@ public class UserController extends AbstractController {
 				if (userRepository.findById(id).isPresent()) {
 					logger.warn("createUser unknown user {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Hash any clear-text sensitive user credentials

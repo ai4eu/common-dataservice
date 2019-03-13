@@ -152,22 +152,19 @@ public interface SolutionSearchService {
 			String userId, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, Pageable pageable);
 
 	/**
-	 * Searches for solutions modified after a specified point in time. Primarily
-	 * for federation.
+	 * Searches for active solutions in the specified catalog modified after the
+	 * specified point in time. Primarily for federation.
 	 * 
-	 * @param active
-	 *                            Active status
-	 * @param accessTypeCodes
-	 *                            Access type codes
+	 * @param catalogId
+	 *                       Catalog ID *
 	 * @param modifiedTs
-	 *                            Point in time
+	 *                       Point in time
 	 * @param pageable
-	 *                            Page and sort info
+	 *                       Page and sort info
 	 * @return Page of matches
-	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findSolutionsByDate(boolean,
-	 *      String[], Instant, org.acumos.cds.transport.RestPageRequest)
+	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findSolutionsByDate(
+	 *      String, Instant, org.acumos.cds.transport.RestPageRequest)
 	 */
-	Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes, Instant modifiedTs,
-			Pageable pageable);
+	Page<MLPSolution> findCatalogSolutionsByModifiedDate(String catalogId, Instant modifiedTs, Pageable pageable);
 
 }

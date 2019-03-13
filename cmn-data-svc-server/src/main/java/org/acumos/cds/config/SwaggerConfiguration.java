@@ -40,9 +40,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
-//The import tells Swagger to use JPA annotations like @NotNull
-//https://stackoverflow.com/questions/43771283/springfox-swagger-optional-and-mandatory-fields-in-model
-@Import({springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class})
+// The import tells Swagger to use JPA annotations like @NotNull
+// https://stackoverflow.com/questions/43771283/springfox-swagger-optional-and-mandatory-fields-in-model
+@Import({ springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class })
 public class SwaggerConfiguration {
 
 	/**

@@ -380,7 +380,7 @@ public class MigrateCmsToCdsApp {
 				try {
 					logger.info("Creating onboarding overview site content in CDS");
 					cdsOnbrdOvw = new MLPSiteContent(keyOnboardingOverview, cmsOnbrdOvw.getDescription().getBytes(),
-							"text/html");
+							MediaType.APPLICATION_JSON_VALUE);
 					cdsClient.createSiteContent(cdsOnbrdOvw);
 					++globalContentSucc;
 				} catch (HttpStatusCodeException ex) {

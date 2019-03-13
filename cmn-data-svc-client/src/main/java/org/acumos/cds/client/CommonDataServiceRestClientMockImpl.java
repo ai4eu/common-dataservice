@@ -176,7 +176,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<MLPTaskStepResult> stepResults;
 	private RestPageResponse<MLPTaskStepResult> searchStepResults;
 	private MLPUserNotifPref usrNotifPrefById = null;
-	private RestPageResponse<MLPSolution> solutionsByDate;
+	private RestPageResponse<MLPSolution> catSolsByDate;
 	private MLPTaskStepResult stepResultById;
 	private List<MLPCodeNamePair> pairs;
 	private List<String> valueSetNames;
@@ -195,6 +195,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private long userNotificationCount;
 	private byte[] solutionImage;
 	private MLPCatalog catalog;
+	private RestPageResponse<MLPCatalog> searchCatalogs;
 	private RestPageResponse<MLPCatalog> catalogs;
 	private RestPageResponse<MLPSolution> solutionsInCatalogs;
 	private List<MLPCatalog> solutionCatalogs;
@@ -345,13 +346,12 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	}
 
 	public void setSolutionsByDate(RestPageResponse<MLPSolution> solutions) {
-		this.solutionsByDate = solutions;
+		this.catSolsByDate = solutions;
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant i,
-			RestPageRequest pageRequest) {
-		return solutionsByDate;
+	public RestPageResponse<MLPSolution> findSolutionsByDate(String catalogId, Instant i, RestPageRequest pageRequest) {
+		return catSolsByDate;
 	}
 
 	public void setSolutionById(MLPSolution solution) {
@@ -384,7 +384,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolution(String solutionId) {
-		// What to mock here?
+		this.solution = null;
 	}
 
 	public void setSolutionRevisionsById(List<MLPSolutionRevision> list) {
@@ -439,7 +439,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolutionRevision(String solutionId, String revisionId) {
-		// What to mock here?
+		this.solutionRevision = null;
 	}
 
 	public void setSolutionRevisionArtifacts(List<MLPArtifact> artifacts) {
@@ -481,7 +481,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteTag(MLPTag tag) {
-		// what to mock?
+		this.tag = null;
 	}
 
 	public void setSolutionTags(List<MLPTag> tags) {
@@ -565,7 +565,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteArtifact(String artifactId) {
-		// How to mock?
+		this.artifact = null;
 	}
 
 	public void setUserCount(long count) {
@@ -649,7 +649,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteUser(String userId) {
-		// How to mock?
+		this.user = null;
 	}
 
 	public void setUserRoles(List<MLPRole> roles) {
@@ -729,7 +729,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteUserLoginProvider(MLPUserLoginProvider provider) {
-		// How to mock?
+		this.userLoginProvider = null;
 	}
 
 	public void setRoleCount(long count) {
@@ -785,7 +785,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteRole(String roleId) {
-		// How to mock?
+		this.role = null;
 	}
 
 	public void setRoleFunctions(List<MLPRoleFunction> functions) {
@@ -822,7 +822,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteRoleFunction(String roleId, String roleFunctionId) {
-		// How to mock?
+		this.roleFunction = null;
 	}
 
 	public void setPeers(RestPageResponse<MLPPeer> peers) {
@@ -869,7 +869,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deletePeer(String peerId) {
-		// How to mock?
+		this.peer = null;
 	}
 
 	@Override
@@ -911,7 +911,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deletePeerSubscription(Long subscriptionId) {
-		// How to mock?
+		this.peerSubscription = null;
 	}
 
 	public void setSolutionDownloads(RestPageResponse<MLPSolutionDownload> downloads) {
@@ -934,7 +934,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolutionDownload(MLPSolutionDownload download) {
-		// How to mock?
+		this.solutionDownload = null;
 	}
 
 	public void setFavoriteSolutions(RestPageResponse<MLPSolution> solutions) {
@@ -957,7 +957,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolutionFavorite(MLPSolutionFavorite favorite) {
-		// How to mock?
+		this.solutionFavorite = null;
 	}
 
 	public void setSolutionRatings(RestPageResponse<MLPSolutionRating> ratings) {
@@ -994,7 +994,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolutionRating(MLPSolutionRating rating) {
-		// How to mock?
+		this.solutionRating = null;
 	}
 
 	public void setNotificationCount(long count) {
@@ -1031,7 +1031,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteNotification(String notificationId) {
-		// How to mock?
+		this.notification = null;
 	}
 
 	public void setUserNotificationCount(long count) {
@@ -1096,7 +1096,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteUserNotificationPreference(Long usrNotifprefId) {
-		// How to mock?
+		this.usrNotifPrefById = null;
 	}
 
 	@Override
@@ -1182,7 +1182,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSolutionDeployment(MLPSolutionDeployment deployment) {
-		// How to mock?
+		this.solutionDeployment = null;
 	}
 
 	public void setSiteConfigByKey(MLPSiteConfig config) {
@@ -1219,7 +1219,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSiteConfig(String configKey) {
-		// How to mock?
+		this.siteConfig = null;
 	}
 
 	public void setSiteContents(RestPageResponse<MLPSiteContent> siteContents) {
@@ -1256,7 +1256,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteSiteContent(String contentKey) {
-		// How to mock?
+		this.siteContent = null;
 	}
 
 	public void setThreadCount(long count) {
@@ -1302,7 +1302,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteThread(String threadId) {
-		// How to mock?
+		this.thread = null;
 	}
 
 	public void setThreadCommentCount(long count) {
@@ -1348,7 +1348,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteComment(String threadId, String commentId) {
-		// How to mock?
+		this.comment = null;
 	}
 
 	public void setPortalSolutions(RestPageResponse<MLPSolution> solutions) {
@@ -1467,7 +1467,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteTaskStepResult(long stepResultId) {
-		// How to mock?
+		this.stepResult = null;
 	}
 
 	@Override
@@ -1516,7 +1516,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteRevisionDescription(String revisionId, String accessTypeCode) {
-		// How to mock?
+		this.description = null;
 	}
 
 	public void setDocumentById(MLPDocument document) {
@@ -1544,7 +1544,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteDocument(String documentId) {
-		// How to mock?
+		this.document = null;
 	}
 
 	public void setSolutionRevisionDocuments(List<MLPDocument> documents) {
@@ -1615,7 +1615,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deletePublishRequest(long publishRequestId) {
-		// How to mock?
+		this.publishRequest = null;
 	}
 
 	@Override
@@ -1649,6 +1649,16 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	public void setCatalogs(RestPageResponse<MLPCatalog> catalogs) {
 		this.catalogs = catalogs;
+	}
+
+	public void setSearchCatalogs(RestPageResponse<MLPCatalog> catalogs) {
+		this.searchCatalogs = catalogs;
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> searchCatalogs(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		return searchCatalogs;
 	}
 
 	@Override
@@ -1752,6 +1762,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteTask(long taskId) {
+		this.task = null;
 	}
 
 	public void setRtuReferences(RestPageResponse<MLPRtuReference> refs) {
@@ -1774,7 +1785,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public void deleteRtuReference(MLPRtuReference ref) {
-		// what to mock?
+		this.ref = null;
 	}
 
 	public void setRightToUse(MLPRightToUse rtu) {

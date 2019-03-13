@@ -926,9 +926,8 @@ public class CdsControllerTest {
 			Assert.assertNotEquals(0, portalActiveMatches.getNumberOfElements());
 
 			// Requires revisions and artifacts!
-			String[] searchAccessTypeCodes = new String[] { "OR" };
 			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
-			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(true, searchAccessTypeCodes, anHourAgo,
+			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(ca1.getCatalogId(), anHourAgo,
 					new RestPageRequest(0, 1));
 			Assert.assertNotNull(sld);
 			Assert.assertNotEquals(0, sld.getNumberOfElements());
@@ -1949,6 +1948,12 @@ public class CdsControllerTest {
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
 			Assert.assertNotEquals(0, catalogs.getNumberOfElements());
+
+			HashMap<String, Object> queryParameters = new HashMap<>();
+			queryParameters.put("name", ca.getName());
+			RestPageResponse<MLPCatalog> searchCatalogs = client.searchCatalogs(queryParameters, true,
+					new RestPageRequest(0, 2, "name"));
+			Assert.assertEquals(1, searchCatalogs.getNumberOfElements());
 
 			MLPCatalog c2 = client.getCatalog(ca.getCatalogId());
 			Assert.assertEquals(ca, c2);

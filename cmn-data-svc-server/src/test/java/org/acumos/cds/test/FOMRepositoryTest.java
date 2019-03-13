@@ -24,6 +24,8 @@ import java.time.Instant;
 import java.util.List;
 
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatSolMap;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPSolRevArtMap;
@@ -34,6 +36,8 @@ import org.acumos.cds.domain.MLPSolutionFOM;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.ArtifactRepository;
+import org.acumos.cds.repository.CatSolMapRepository;
+import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.DocumentRepository;
 import org.acumos.cds.repository.RevisionDescriptionRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
@@ -68,6 +72,8 @@ public class FOMRepositoryTest {
 	@Autowired
 	private ArtifactRepository artifactRepository;
 	@Autowired
+	private CatalogRepository catalogRepository;
+	@Autowired
 	private DocumentRepository documentRepository;
 	@Autowired
 	private RevisionDescriptionRepository descriptionRepository;
@@ -77,6 +83,8 @@ public class FOMRepositoryTest {
 	private SolutionRepository solutionRepository;
 	@Autowired
 	private SolutionFOMRepository solutionFOMRepository;
+	@Autowired
+	private CatSolMapRepository catSolMapRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
 	@Autowired
@@ -96,11 +104,13 @@ public class FOMRepositoryTest {
 
 		MLPUser cu = null;
 		MLPUser cu2 = null;
+		MLPCatalog cc = null;
 		MLPSolution cs = null;
 		MLPSolutionRevision cr = null;
 		MLPArtifact ca = null;
 		MLPRevisionDescription rd = null;
 		MLPDocument cd = null;
+		MLPCatSolMap catSolMap = null;
 		MLPSolRevArtMap revArtMap = null;
 		MLPSolRevDocMap revDocMap = null;
 		MLPSolUserAccMap accMap = null;
@@ -120,6 +130,10 @@ public class FOMRepositoryTest {
 			Assert.assertNotNull(cu2.getUserId());
 			logger.info("Created user {}", cu2);
 
+			cc = new MLPCatalog("PB", "catalog name", "publisher");
+			cc = catalogRepository.save(cc);
+			Assert.assertNotNull("Catalog ID", cc.getCatalogId());
+
 			cs = new MLPSolution("some solution " + name, cu.getUserId(), true);
 			cs = solutionRepository.save(cs);
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
@@ -134,6 +148,10 @@ public class FOMRepositoryTest {
 			Assert.assertNotNull(ca.getArtifactId());
 			logger.info("Created artifact {}", ca);
 
+			catSolMap = new MLPCatSolMap(cc.getCatalogId(), cs.getSolutionId());
+			catSolMap = catSolMapRepository.save(catSolMap);
+			logger.info("Created cat-sol map {}", catSolMap);
+			
 			revArtMap = new MLPSolRevArtMap(cr.getRevisionId(), ca.getArtifactId());
 			revArtMap = solRevArtMapRepository.save(revArtMap);
 			logger.info("Created sol-rev-art map {}", revArtMap);
@@ -179,8 +197,8 @@ public class FOMRepositoryTest {
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
 
-		Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedTs,
-				pageable);
+		Page<MLPSolution> solsByDate = solutionSearchService.findCatalogSolutionsByModifiedDate(cc.getCatalogId(),
+				modifiedTs, pageable);
 		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
 		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());
 
@@ -196,11 +214,13 @@ public class FOMRepositoryTest {
 			solUserAccMapRepository.delete(accMap);
 			solRevDocMapRepository.delete(revDocMap);
 			solRevArtMapRepository.delete(revArtMap);
+			catSolMapRepository.delete(catSolMap);
 			documentRepository.delete(cd);
 			descriptionRepository.delete(rd);
 			artifactRepository.delete(ca);
 			revisionRepository.delete(cr);
 			solutionRepository.delete(cs);
+			catalogRepository.delete(cc);
 			userRepository.delete(cu2);
 			userRepository.delete(cu);
 		}

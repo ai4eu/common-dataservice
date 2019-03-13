@@ -368,15 +368,13 @@ public class SolutionController extends AbstractController {
 	public Object findSolutionsByDate( //
 			@ApiParam(value = "Milliseconds since the Epoch", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_INSTANT, required = true) long millis, //
-			@ApiParam(value = "Active Y/N") //
-			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = false) boolean active, //
-			@ApiParam(value = "Access type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
+			@ApiParam(value = "Catalog ID", required = true) //
+			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String catalogId, //
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findSolutionsByDate: date {}", millis);
 		Instant ts = Instant.ofEpochMilli(millis);
 		try {
-			return solutionSearchService.findSolutionsByModifiedDate(active, accTypeCodes, ts, pageRequest);
+			return solutionSearchService.findCatalogSolutionsByModifiedDate(catalogId, ts, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findSolutionsByDate failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

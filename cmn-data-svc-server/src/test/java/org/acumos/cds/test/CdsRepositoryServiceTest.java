@@ -117,6 +117,7 @@ import org.acumos.cds.repository.UserNotificationPreferenceRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.repository.UserRoleMapRepository;
 import org.acumos.cds.service.ArtifactSearchService;
+import org.acumos.cds.service.CatalogSearchService;
 import org.acumos.cds.service.CodeNameService;
 import org.acumos.cds.service.PeerSearchService;
 import org.acumos.cds.service.PublishRequestSearchService;
@@ -153,6 +154,8 @@ public class CdsRepositoryServiceTest {
 	private ArtifactRepository artifactRepository;
 	@Autowired
 	private CatalogRepository catalogRepository;
+	@Autowired
+	private CatalogSearchService catalogSearchService;
 	@Autowired
 	private CatSolMapRepository catSolMapRepository;
 	@Autowired
@@ -647,13 +650,12 @@ public class CdsRepositoryServiceTest {
 			Assert.assertFalse(docs.iterator().hasNext());
 
 			// Find by modified date
-			String[] accTypes = new String[] { "PR" };
 			Instant modifiedTs = Instant.now().minusSeconds(60);
-			Page<MLPSolution> solsByDate = solutionSearchService.findSolutionsByModifiedDate(true, accTypes, modifiedTs,
-					PageRequest.of(0, 5));
-			Assert.assertNotNull(solsByDate);
-			Assert.assertNotEquals(0, solsByDate.getNumberOfElements());
-			logger.info("Found sols by date {}", solsByDate);
+			Page<MLPSolution> catSolsByDate = solutionSearchService
+					.findCatalogSolutionsByModifiedDate(ca1.getCatalogId(), modifiedTs, PageRequest.of(0, 5));
+			Assert.assertNotNull(catSolsByDate);
+			Assert.assertNotEquals(0, catSolsByDate.getNumberOfElements());
+			logger.info("Found cat sols by date {}", catSolsByDate);
 
 			// Touch artifact then search for it by modified date.
 			// Use the created TS, a database time. Using a time of this server sorta
@@ -665,8 +667,8 @@ public class CdsRepositoryServiceTest {
 			ca.setDescription(ca.getDescription() + " a bit more");
 			ca = artifactRepository.save(ca);
 			Assert.assertNotEquals(beforeUpdateTs, ca.getModified());
-			Page<MLPSolution> recentlyUpdated = solutionSearchService.findSolutionsByModifiedDate(true, accTypes,
-					beforeUpdateTs, PageRequest.of(0, 5));
+			Page<MLPSolution> recentlyUpdated = solutionSearchService
+					.findCatalogSolutionsByModifiedDate(ca1.getCatalogId(), beforeUpdateTs, PageRequest.of(0, 5));
 			Assert.assertNotNull(recentlyUpdated);
 			Assert.assertNotEquals(0, recentlyUpdated.getNumberOfElements());
 			Assert.assertTrue(recentlyUpdated.getContent().contains(cs));
@@ -737,13 +739,6 @@ public class CdsRepositoryServiceTest {
 			Page<MLPSolution> solByTag = solutionRepository.findByTag("Java", PageRequest.of(0, 5));
 			logger.info("Solutions by tag: {}", solByTag);
 			Assert.assertFalse(solByTag.getContent().isEmpty());
-
-			String[] accessTypes = new String[] { "PR" };
-			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
-			Page<MLPSolution> solByCriteria = solutionSearchService.findSolutionsByModifiedDate(true, accessTypes,
-					anHourAgo, PageRequest.of(0, 5));
-			logger.info("Solutions by date: {}", solByCriteria);
-			Assert.assertFalse(solByCriteria.getContent().isEmpty());
 
 			MLPUser founduser = userRepository.findByLoginOrEmail("test_user7");
 			logger.info("Found user: {}", founduser);
@@ -1405,6 +1400,10 @@ public class CdsRepositoryServiceTest {
 		ca1 = catalogRepository.save(ca1);
 		Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 		logger.info("Created catalog {}", ca1);
+
+		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", null, "name", null, null, null, false,
+				PageRequest.of(0, 5));
+		Assert.assertEquals(1, searchCats.getNumberOfElements());
 
 		MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs1.getSolutionId());
 		catSolMapRepository.save(csm);

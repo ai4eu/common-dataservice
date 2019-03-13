@@ -499,11 +499,10 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant instant,
+	public RestPageResponse<MLPSolution> findSolutionsByDate(String catalogId, Instant instant,
 			RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
-		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
-		parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
+		parms.put(CCDSConstants.SEARCH_CATALOG, catalogId);
 		parms.put(CCDSConstants.SEARCH_INSTANT, instant);
 		URI uri = buildUri(
 				new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH, CCDSConstants.DATE_PATH }, parms,
@@ -2205,6 +2204,19 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest) {
 		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH }, null, pageRequest);
 		logger.debug("getCatalogs: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPCatalog>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> searchCatalogs(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest) {
+		Map<String, Object> copy = new HashMap<>(queryParameters);
+		copy.put(CCDSConstants.JUNCTION_QUERY_PARAM, isOr ? "o" : "a");
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.SEARCH_PATH }, copy, pageRequest);
+		logger.debug("searchCatalogs: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPCatalog>>() {
 				});

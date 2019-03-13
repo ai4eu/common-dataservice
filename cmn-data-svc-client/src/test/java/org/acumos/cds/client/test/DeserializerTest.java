@@ -55,7 +55,7 @@ public class DeserializerTest {
 			Assert.assertEquals(3, r.getContent().size());
 			Assert.assertTrue(r.isFirst());
 			Assert.assertFalse(r.isLast());
-			Assert.assertEquals(r.getNumber(), 0);
+			Assert.assertEquals(0, r.getNumber());
 			Assert.assertEquals(3, r.getNumberOfElements());
 			Assert.assertEquals(3, r.getSize());
 			Assert.assertEquals(30, r.getTotalPages());

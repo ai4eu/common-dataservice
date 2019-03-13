@@ -33,6 +33,7 @@ import org.acumos.cds.CodeNameType;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
+import org.acumos.cds.domain.MLPCatalog_;
 import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPUserCatFavMap;
@@ -43,6 +44,7 @@ import org.acumos.cds.repository.PeerRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.UserCatFavMapRepository;
 import org.acumos.cds.repository.UserRepository;
+import org.acumos.cds.service.CatalogSearchService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -88,6 +90,8 @@ public class CatalogController extends AbstractController {
 	@Autowired
 	private CatalogRepository catalogRepository;
 	@Autowired
+	private CatalogSearchService catalogSearchService;
+	@Autowired
 	private PeerRepository peerRepository;
 	@Autowired
 	private SolutionRepository solutionRepository;
@@ -117,6 +121,40 @@ public class CatalogController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
+	@ApiOperation(value = "Searches for catalogs with attributes matching the values specified as query parameters. " //
+			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
+			response = MLPCatalog.class, responseContainer = "Page")
+	@ApiPageable
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
+	public Object searchCatalogs(//
+			@ApiParam(value = "Junction", allowableValues = "a,o") //
+			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
+			@RequestParam(name = MLPCatalog_.ACCESS_TYPE_CODE, required = false) String accessTypeCode, //
+			@RequestParam(name = MLPCatalog_.DESCRIPTION, required = false) String description, //
+			@RequestParam(name = MLPCatalog_.NAME, required = false) String name, //
+			@RequestParam(name = MLPCatalog_.ORIGIN, required = false) String origin, //
+			@RequestParam(name = MLPCatalog_.PUBLISHER, required = false) String publisher, //
+			@RequestParam(name = MLPCatalog_.URL, required = false) String url, //
+			Pageable pageRequest, HttpServletResponse response) {
+		logger.debug("searchCatalogs enter");
+		boolean isOr = junction != null && "o".equals(junction);
+		if (accessTypeCode == null && description == null && name == null && origin == null && publisher == null
+				&& url == null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
+		}
+		try {
+			return catalogSearchService.findCatalogs(accessTypeCode, description, name, origin, publisher, url, isOr,
+					pageRequest);
+		} catch (Exception ex) {
+			logger.error("searchCatalogs failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return new ErrorTransport(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					ex.getCause() != null ? ex.getCause().getMessage() : "searchCatalogs failed", ex);
+		}
+	}
+
 	@ApiOperation(value = "Creates a new catalog and generates an ID if needed. Returns bad request on bad URL, constraint violation etc.", //
 			response = MLPCatalog.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
@@ -130,7 +168,7 @@ public class CatalogController extends AbstractController {
 				if (catalogRepository.findById(id).isPresent()) {
 					logger.warn("createCatalog: failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			if (catalog.getAccessTypeCode() != null)

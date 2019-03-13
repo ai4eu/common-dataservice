@@ -141,7 +141,7 @@ public class ThreadController extends AbstractController {
 				if (threadRepository.findById(id).isPresent()) {
 					logger.warn("createThread failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Create a new row
@@ -266,7 +266,7 @@ public class ThreadController extends AbstractController {
 				if (commentRepository.findById(id).isPresent()) {
 					logger.warn("createComment failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			if (comment.getParentId() != null && !commentRepository.findById(comment.getParentId()).isPresent()) {

@@ -115,7 +115,7 @@ public class MockClientTest {
 		Assert.assertTrue(solutions3 == client.findSolutionsByTag("string", pageRequest));
 		RestPageResponse<MLPSolution> solutions4 = new RestPageResponse<>();
 		client.setSolutionsByDate(solutions4);
-		Assert.assertTrue(solutions4 == client.findSolutionsByDate(true, new String[0], Instant.now(), pageRequest));
+		Assert.assertTrue(solutions4 == client.findSolutionsByDate("bogus", Instant.now(), pageRequest));
 
 		MLPSolution solution = new MLPSolution();
 		client.setSolutionById(solution);
@@ -518,6 +518,9 @@ public class MockClientTest {
 		RestPageResponse<MLPCatalog> catalogs = new RestPageResponse<>();
 		client.setCatalogs(catalogs);
 		Assert.assertTrue(catalogs == client.getCatalogs(new RestPageRequest()));
+		RestPageResponse<MLPCatalog> catPage = new RestPageResponse<>();
+		client.setSearchCatalogs(catPage);
+		Assert.assertTrue(catPage == client.searchCatalogs(queryParameters, isOr, pageRequest));
 		MLPCatalog catalog = new MLPCatalog();
 		client.setCatalog(catalog);
 		Assert.assertEquals(catalog, client.createCatalog(catalog));
@@ -525,7 +528,7 @@ public class MockClientTest {
 		client.deleteCatalog(catalog.getCatalogId());
 		RestPageResponse<MLPSolution> solsInCats = new RestPageResponse<>();
 		client.setSolutionsInCatalogs(solsInCats);
-		Assert.assertEquals(solsInCats, client.getSolutionsInCatalogs(new String[] {"abc"}, new RestPageRequest()));
+		Assert.assertEquals(solsInCats, client.getSolutionsInCatalogs(new String[] { "abc" }, new RestPageRequest()));
 		client.addSolutionToCatalog("solId", "catId");
 		client.dropSolutionFromCatalog("solId", "catId");
 		client.getCatalogSolutionCount("catId");

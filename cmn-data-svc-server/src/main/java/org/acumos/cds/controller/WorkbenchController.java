@@ -176,7 +176,7 @@ public class WorkbenchController extends AbstractController {
 				if (projectRepository.findById(id).isPresent()) {
 					logger.warn("createProject failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Validate data
@@ -313,7 +313,7 @@ public class WorkbenchController extends AbstractController {
 				if (notebookRepository.findById(id).isPresent()) {
 					logger.warn("createNotebook failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Mandatory fields
@@ -500,7 +500,7 @@ public class WorkbenchController extends AbstractController {
 				if (pipelineRepository.findById(id).isPresent()) {
 					logger.warn("createPipeline failed on ID {}", id);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "ID exists: " + id);
+					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
 			// Validate data

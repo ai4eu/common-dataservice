@@ -81,8 +81,7 @@ public class CdsApplication implements ApplicationContextAware {
 	public static String getVersion() {
 		Class<?> clazz = MethodHandles.lookup().lookupClass();
 		String classPath = clazz.getResource(clazz.getSimpleName() + ".class").toString();
-		String version = classPath.startsWith("jar") ? clazz.getPackage().getImplementationVersion() : "unknown";
-		return version;
+		return classPath.startsWith("jar") ? clazz.getPackage().getImplementationVersion() : "unknown";
 	}
 
 	@Override

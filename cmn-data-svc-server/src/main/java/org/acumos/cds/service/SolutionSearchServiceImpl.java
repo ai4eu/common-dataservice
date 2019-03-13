@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import org.acumos.cds.domain.MLPArtifactFOM;
 import org.acumos.cds.domain.MLPArtifactFOM_;
+import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCatalog_;
 import org.acumos.cds.domain.MLPDocument;
 import org.acumos.cds.domain.MLPDocument_;
@@ -507,10 +508,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		return buildSolutionPage(foms, pageable);
 	}
 
-	@Override
-	public Page<MLPSolution> findSolutionsByModifiedDate(boolean active, String[] accessTypeCodes, Instant modifiedTs,
+	public Page<MLPSolution> findCatalogSolutionsByModifiedDate(String catalogId, Instant modifiedTs,
 			Pageable pageable) {
-
 		// build the query using FOM class to access child attributes
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<MLPSolutionFOM> rootQueryDef = cb.createQuery(MLPSolutionFOM.class);
@@ -521,9 +520,13 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			rootQueryDef.orderBy(buildOrderList(cb, solutionFom, pageable.getSort()));
 
 		List<Predicate> predicates = new ArrayList<>();
-		// Active is a required parameter
-		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
-				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
+		// Only check for Active solutions
+		predicates.add(cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active)));
+
+		// Limit to catalog matches with inner join
+		Join<MLPSolutionFOM, MLPCatalog> catFom = solutionFom.join(MLPSolutionFOM_.catalogs);
+		Predicate catEquals = cb.equal(catFom.<String>get(MLPCatalog_.catalogId), catalogId);
+		catFom.on(catEquals);
 
 		// Revisions and artifacts are mandatory, so use inner join
 		Join<MLPSolutionFOM, MLPSolutionRevisionFOM> revFom = solutionFom.join(MLPSolutionFOM_.revisions);
@@ -542,16 +545,11 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		Predicate docMod = cb.greaterThanOrEqualTo(revDoc.<Instant>get(MLPDocument_.modified), modifiedTs);
 		predicates.add(cb.or(solMod, revMod, artMod, descMod, docMod));
 
-		if (accessTypeCodes != null && accessTypeCodes.length > 0) {
-			Predicate p = revFom.<String>get(MLPSolutionRevisionFOM_.accessTypeCode).in((Object[]) accessTypeCodes);
-			predicates.add(p);
-		}
-
 		TypedQuery<MLPSolutionFOM> typedQuery = entityManager.createQuery(rootQueryDef);
 		List<MLPSolutionFOM> foms = typedQuery.getResultList();
 		if (foms.isEmpty() || foms.size() < pageable.getOffset())
 			return new PageImpl<>(new ArrayList<>(), pageable, 0);
-		logger.info("findSolutionsByModifiedDate: result size {}", foms.size());
+		logger.info("findCatalogSolutionsByModifiedDate: result size {}", foms.size());
 		return buildSolutionPage(foms, pageable);
 	}
 

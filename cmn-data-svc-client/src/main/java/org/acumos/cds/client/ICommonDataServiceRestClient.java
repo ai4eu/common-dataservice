@@ -188,30 +188,24 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPSolution> findSolutionsByTag(String tag, RestPageRequest pageRequest);
 
 	/**
-	 * Gets a page of solutions that were modified after the specified point in time
-	 * and match the additional parameter values. Checks the modified field on the
-	 * solution, the revisions for the solution, and the artifacts in the revisions.
-	 * A solution must have revision(s) and artifact(s) to match.
+	 * Gets a page of active solutions in the specified catalog that were modified
+	 * after the specified point in time and match the additional parameter values.
+	 * Checks the modified field on the solution, the revisions for the solution,
+	 * and the artifacts in the revisions. A solution must have revision(s) and
+	 * artifact(s) to match.
 	 * 
-	 * @param active
-	 *                            Solution active status; true for active, false for
-	 *                            inactive
-	 * @param accessTypeCodes
-	 *                            Limits match to solutions containing revisions
-	 *                            with ANY of the specified values including null
-	 *                            (which is different from the special-case
-	 *                            4-character sequence "null"); required
+	 * @param catalogId
+	 *                        Solution is in the specified catalog
 	 * @param instant
-	 *                            Point in time. Entities with modification dates
-	 *                            prior to (i.e., smaller than) this point in time
-	 *                            are ignored.
+	 *                        Point in time. Entities with modification dates prior
+	 *                        to (i.e., smaller than) this point in time are
+	 *                        ignored.
 	 * @param pageRequest
-	 *                            Page index, page size and sort information;
-	 *                            defaults to page 0 of size 20 if null.
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
-	RestPageResponse<MLPSolution> findSolutionsByDate(boolean active, String[] accessTypeCodes, Instant instant,
-			RestPageRequest pageRequest);
+	RestPageResponse<MLPSolution> findSolutionsByDate(String catalogId, Instant instant, RestPageRequest pageRequest);
 
 	/**
 	 * Gets a page of solutions matching all query parameters. Most parameters can
@@ -2325,15 +2319,6 @@ public interface ICommonDataServiceRestClient {
 	void saveSolutionPicture(String solutionId, byte[] picture) throws RestClientResponseException;
 
 	/**
-	 * Gets a catalog
-	 * 
-	 * @param catalogId
-	 *                      Catalog ID
-	 * @return MLPCatalog; null if not found
-	 */
-	MLPCatalog getCatalog(String catalogId);
-
-	/**
 	 * Gets a page of catalogs.
 	 * 
 	 * @param pageRequest
@@ -2342,6 +2327,36 @@ public interface ICommonDataServiceRestClient {
 	 * @return Page of objects.
 	 */
 	RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest);
+
+	/**
+	 * Searches catalog records for exact matches.
+	 * 
+	 * @param queryParameters
+	 *                            Map of field-name, field-value pairs to use as
+	 *                            query criteria. Accepts these field names:
+	 *                            accessTypeCode, description, name, origin,
+	 *                            publisher, url
+	 * @param isOr
+	 *                            If true, finds matches on any field-value pair
+	 *                            (conditions are OR-ed together); otherwise finds
+	 *                            matches on all field-value pairs (conditions are
+	 *                            AND-ed together).
+	 * @param pageRequest
+	 *                            Page index, page size and sort information;
+	 *                            defaults to page 0 of size 20 if null.
+	 * @return Page of Catalog objects
+	 */
+	RestPageResponse<MLPCatalog> searchCatalogs(Map<String, Object> queryParameters, boolean isOr,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets a catalog
+	 * 
+	 * @param catalogId
+	 *                      Catalog ID
+	 * @return MLPCatalog; null if not found
+	 */
+	MLPCatalog getCatalog(String catalogId);
 
 	/**
 	 * Creates a catalog.
@@ -2953,7 +2968,7 @@ public interface ICommonDataServiceRestClient {
 	 * @param pageRequest
 	 *                            Page index, page size and sort information;
 	 *                            defaults to page 0 of size 20 if null.
-	 * @return Page of Project objects
+	 * @return Page of Pipeline objects
 	 */
 	RestPageResponse<MLPPipeline> searchPipelines(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest);
