@@ -324,6 +324,11 @@ public class CdsControllerTest {
 			inactiveUser = client.createUser(inactiveUser);
 			Assert.assertNotNull(inactiveUser.getUserId());
 
+			MLPUser visitingUser = new MLPUser("Visitor", "email@read-only.org", true);
+			visitingUser.setLoginHash("othervisitor");
+			visitingUser = client.createUser(visitingUser);
+			Assert.assertNotNull(visitingUser.getUserId());
+
 			RestPageResponse<MLPUser> users = client.getUsers(rp);
 			Assert.assertNotNull(users);
 			Assert.assertNotEquals(0, users.getNumberOfElements());
@@ -905,11 +910,29 @@ public class CdsControllerTest {
 			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
 			// Check this finds solutions by shared-with-user ID
-			logger.info("Querying for user solutions via flexible i/f");
-			RestPageResponse<MLPSolution> userSols = client.findUserSolutions(null, null, true,
-					inactiveUser.getUserId(), null, null, null, new RestPageRequest(0, 5));
+			logger.info("Querying for published user solutions");
+			RestPageResponse<MLPSolution> userSols = client.findUserSolutions(true, true, cu.getUserId(), null, null,
+					null, null, new RestPageRequest(0, 5));
 			Assert.assertNotNull(userSols);
 			Assert.assertNotEquals(0, userSols.getNumberOfElements());
+
+			logger.info("Querying for published visting user solutions");
+			RestPageResponse<MLPSolution> pubVisitorSols = client.findUserSolutions(true, true,
+					visitingUser.getUserId(), null, null, null, null, new RestPageRequest(0, 5));
+			Assert.assertNotNull(pubVisitorSols);
+			Assert.assertEquals(0, pubVisitorSols.getNumberOfElements());
+
+			logger.info("Querying for unpub active user solutions");
+			RestPageResponse<MLPSolution> unpubUserSols = client.findUserSolutions(true, false, cu.getUserId(), null,
+					null, null, null, new RestPageRequest(0, 5));
+			Assert.assertNotNull(unpubUserSols);
+			Assert.assertNotEquals(0, unpubUserSols.getNumberOfElements());
+
+			logger.info("Querying for unpub inactive user solutions");
+			RestPageResponse<MLPSolution> unpubInactUserSols = client.findUserSolutions(true, false,
+					inactiveUser.getUserId(), null, null, null, null, new RestPageRequest(0, 5));
+			Assert.assertNotNull(unpubInactUserSols);
+			Assert.assertEquals(0, unpubInactUserSols.getNumberOfElements());
 
 			// find active solutions
 			String[] nameKw = null;
@@ -1088,6 +1111,7 @@ public class CdsControllerTest {
 				client.deletePeer(pr.getPeerId());
 				client.deleteUserLoginProvider(clp);
 				client.deleteUser(cu.getUserId());
+				client.deleteUser(visitingUser.getUserId());
 				client.deleteUser(inactiveUser.getUserId());
 				Assert.assertNull(client.getSolution(cs.getSolutionId()));
 			} // cleanup

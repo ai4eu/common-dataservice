@@ -420,8 +420,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	}
 
 	@Override
-	public Page<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String userId, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, Pageable pageable) {
+	public Page<MLPSolution> findUserSolutions(boolean active, boolean published, String userId, String[] nameKeywords,
+			String[] descKeywords, String[] modelTypeCodes, String[] tags, Pageable pageable) {
 
 		// build the query using FOM class to access child attributes
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -436,6 +436,12 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		// Active is a required parameter
 		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
 				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
+
+		// Published is a required parameter, but catalogs are optional;
+		// this does not use an explicit join (?).
+		Predicate publishedPred = published ? cb.isNotEmpty(solutionFom.get(MLPSolutionFOM_.catalogs))
+				: cb.isEmpty(solutionFom.get(MLPSolutionFOM_.catalogs));
+		predicates.add(publishedPred);
 
 		// Check for user as OWNER or user as SHARE.
 		// Silly to join on the user table just to check the ID, but given the
@@ -461,27 +467,19 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 					.in((Object[]) modelTypeCodes);
 			predicates.add(mtcInPredicate);
 		}
-		if ((accessTypeCodes != null && accessTypeCodes.length > 0) //
-				|| (descKeywords != null && descKeywords.length > 0)) {
+		if (descKeywords != null && descKeywords.length > 0) {
 			// revisions are not really optional, a solution without them is useless
 			Join<MLPSolutionFOM, MLPSolutionRevisionFOM> revisionFom = solutionFom.join(MLPSolutionFOM_.revisions);
-
-			if (accessTypeCodes != null && accessTypeCodes.length > 0) {
-				Predicate p = revisionFom.<String>get(MLPSolutionRevisionFOM_.accessTypeCode)
-						.in((Object[]) accessTypeCodes);
-				predicates.add(p);
-			}
-			if (descKeywords != null && descKeywords.length > 0) {
-				// Descriptions are optional so use left join
-				Join<MLPSolutionRevisionFOM, MLPRevisionDescription> revDesc = revisionFom
-						.join(MLPSolutionRevisionFOM_.descriptions, JoinType.LEFT);
-				Predicate or = cb.disjunction();
-				for (String s : descKeywords)
-					or.getExpressions()
-							.add(cb.like(revDesc.<String>get(MLPRevisionDescription_.description), '%' + s + '%'));
-				predicates.add(or);
-			}
+			// but descriptions are optional so use left join
+			Join<MLPSolutionRevisionFOM, MLPRevisionDescription> revDesc = revisionFom
+					.join(MLPSolutionRevisionFOM_.descriptions, JoinType.LEFT);
+			Predicate or = cb.disjunction();
+			for (String s : descKeywords)
+				or.getExpressions()
+						.add(cb.like(revDesc.<String>get(MLPRevisionDescription_.description), '%' + s + '%'));
+			predicates.add(or);
 		}
+
 		// This checks for ANY TAG, not all tags.
 		if (tags != null && tags.length > 0) {
 			// Tags are optional so use left join
@@ -551,6 +549,8 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 
 	/*
 	 * Low-rent version of full-text search. Provides flexible treatment of tags.
+	 * 
+	 * TODO: Rewrite to use JPA methods.
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,

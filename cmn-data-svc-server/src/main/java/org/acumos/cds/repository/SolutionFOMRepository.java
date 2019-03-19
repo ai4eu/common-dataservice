@@ -22,9 +22,9 @@ package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPSolutionFOM;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface SolutionFOMRepository
-		extends JpaRepository<MLPSolutionFOM, String>, JpaSpecificationExecutor<MLPSolutionFOM> {
+		extends JpaRepository<MLPSolutionFOM, String>, PagingAndSortingRepository<MLPSolutionFOM, String> {
 
 }

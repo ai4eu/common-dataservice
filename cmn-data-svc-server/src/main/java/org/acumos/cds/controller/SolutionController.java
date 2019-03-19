@@ -334,10 +334,10 @@ public class SolutionController extends AbstractController {
 	public Object findUserSolutions( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
+			@ApiParam(value = "Published Y/N", required = true) //
+			@RequestParam(name = CCDSConstants.SEARCH_PUBLISHED, required = true) boolean published, //
 			@ApiParam(value = "User ID", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_USERS, required = true) String userId, //
-			@ApiParam(value = "Access type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
 			@ApiParam(value = "Model type codes", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_MODEL_TYPES, required = false) String[] modelTypeCodes, //
 			@ApiParam(value = "Name key words", allowMultiple = true) //
@@ -349,8 +349,8 @@ public class SolutionController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findUserSolutions: active {} userId {}", active, userId);
 		try {
-			return solutionSearchService.findUserSolutions(nameKws, descKws, active, userId, modelTypeCodes,
-					accTypeCodes, tags, pageRequest);
+			return solutionSearchService.findUserSolutions(active, published, userId, nameKws, descKws, modelTypeCodes,
+					tags, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findUserSolutions failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

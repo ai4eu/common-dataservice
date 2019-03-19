@@ -128,7 +128,7 @@ Version 2.0.0, 19 Dec 2018
 * Revise restricted-federation query method to use page parameter
 * Requires database schema version 2.0
 
-Versions 2.* require configuration data in an environment variable SPRING_APPLICATION_JSON 
+Versions 2.* require configuration data in an environment variable SPRING_APPLICATION_JSON
 with the following structure.  All values in upper case must be replaced::
 
     SPRING_APPLICATION_JSON: '{
@@ -276,7 +276,7 @@ Version 1.15.3, 27 June 2018
 
 * Add search method to find user's co-owned solutions (`ACUMOS-1257 <https://jira.acumos.org/browse/ACUMOS-1257>`_)
 * Add methods to manage composite solution parent-child membership
-* Update Spring library versions to address vulnerabilities flagged by CLM 
+* Update Spring library versions to address vulnerabilities flagged by CLM
 * Requires database schema version 1.15
 
 Version 1.15.2, 6 June 2018
@@ -615,7 +615,7 @@ Version 1.0.0, 15 June 2017
 
 * Supports solutions, artifacts and users.
 
-Versions 1.* require configuration data in an environment variable SPRING_APPLICATION_JSON 
+Versions 1.* require configuration data in an environment variable SPRING_APPLICATION_JSON
 with the following structure.  All values in upper case must be replaced::
 
     SPRING_APPLICATION_JSON: '{

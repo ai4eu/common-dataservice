@@ -439,7 +439,7 @@ public class MockClientTest {
 		RestPageResponse<MLPSolution> userPrivSols = new RestPageResponse<>();
 		client.setUserSolutions(userPrivSols);
 		Assert.assertTrue(
-				userPrivSols == client.findUserSolutions(null, null, true, null, null, null, null, pageRequest));
+				userPrivSols == client.findUserSolutions(true, true, null, null, null, null, null, pageRequest));
 
 		RestPageResponse<MLPSolution> solutionResponse = new RestPageResponse<>();
 		client.setSearchSolutions(solutionResponse);
