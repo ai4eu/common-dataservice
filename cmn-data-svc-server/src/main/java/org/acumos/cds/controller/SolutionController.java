@@ -21,7 +21,6 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -357,29 +356,6 @@ public class SolutionController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					ex.getCause() != null ? ex.getCause().getMessage() : "findUserSolutions failed", ex);
-		}
-	}
-
-	@ApiOperation(value = "Finds solutions based on specified date, active status and access type query parameters. " //
-			+ "Limits result to solutions modified after the specified time, expressed in milliseconds since the Epoch.", //
-			response = MLPSolution.class, responseContainer = "Page")
-	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.DATE_PATH, method = RequestMethod.GET)
-	public Object findSolutionsByDate( //
-			@ApiParam(value = "Milliseconds since the Epoch", required = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_INSTANT, required = true) long millis, //
-			@ApiParam(value = "Catalog ID", required = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String catalogId, //
-			Pageable pageRequest, HttpServletResponse response) {
-		logger.debug("findSolutionsByDate: date {}", millis);
-		Instant ts = Instant.ofEpochMilli(millis);
-		try {
-			return solutionSearchService.findCatalogSolutionsByModifiedDate(catalogId, ts, pageRequest);
-		} catch (Exception ex) {
-			logger.error("findSolutionsByDate failed", ex);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
-					ex.getCause() != null ? ex.getCause().getMessage() : "findSolutionsByDate failed", ex);
 		}
 	}
 

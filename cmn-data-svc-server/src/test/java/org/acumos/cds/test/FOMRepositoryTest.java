@@ -20,7 +20,6 @@
 package org.acumos.cds.test;
 
 import java.lang.invoke.MethodHandles;
-import java.time.Instant;
 import java.util.List;
 
 import org.acumos.cds.domain.MLPArtifact;
@@ -151,7 +150,7 @@ public class FOMRepositoryTest {
 			catSolMap = new MLPCatSolMap(cc.getCatalogId(), cs.getSolutionId());
 			catSolMap = catSolMapRepository.save(catSolMap);
 			logger.info("Created cat-sol map {}", catSolMap);
-			
+
 			revArtMap = new MLPSolRevArtMap(cr.getRevisionId(), ca.getArtifactId());
 			revArtMap = solRevArtMapRepository.save(revArtMap);
 			logger.info("Created sol-rev-art map {}", revArtMap);
@@ -185,7 +184,6 @@ public class FOMRepositoryTest {
 		String[] empty = new String[0];
 		String[] nameKw = new String[] { name }; // substring of solution name
 		String[] accTypes = new String[] { accCode };
-		Instant modifiedTs = Instant.now().minusSeconds(60);
 
 		// Via Hibernate constraint
 		logger.info("Querying for FOM via search services");
@@ -196,11 +194,6 @@ public class FOMRepositoryTest {
 				accTypes, empty, empty, empty, pageable);
 		Assert.assertTrue(byName != null && byName.getNumberOfElements() > 0);
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());
-
-		Page<MLPSolution> solsByDate = solutionSearchService.findCatalogSolutionsByModifiedDate(cc.getCatalogId(),
-				modifiedTs, pageable);
-		Assert.assertTrue(solsByDate != null && solsByDate.getNumberOfElements() > 0);
-		logger.info("Found sols by date via criteria: size {}", solsByDate.getContent().size());
 
 		// Find by user and Hibernate constraint - user2 owns no solutions but has
 		// access

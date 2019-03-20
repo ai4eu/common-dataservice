@@ -649,31 +649,6 @@ public class CdsRepositoryServiceTest {
 			docs = documentRepository.findByRevisionAccess(cr.getRevisionId(), "PB");
 			Assert.assertFalse(docs.iterator().hasNext());
 
-			// Find by modified date
-			Instant modifiedTs = Instant.now().minusSeconds(60);
-			Page<MLPSolution> catSolsByDate = solutionSearchService
-					.findCatalogSolutionsByModifiedDate(ca1.getCatalogId(), modifiedTs, PageRequest.of(0, 5));
-			Assert.assertNotNull(catSolsByDate);
-			Assert.assertNotEquals(0, catSolsByDate.getNumberOfElements());
-			logger.info("Found cat sols by date {}", catSolsByDate);
-
-			// Touch artifact then search for it by modified date.
-			// Use the created TS, a database time. Using a time of this server sorta
-			// assumes perfect synch with a remote DB server which isn't safe.
-			// So this test allows some slop - needs to find at least one artifact.
-			// When the columns were modeled as Date this required Thread.sleep(1000)
-			// calls, I believe because the driver only passed seconds to Mariadb.
-			Instant beforeUpdateTs = ca.getCreated();
-			ca.setDescription(ca.getDescription() + " a bit more");
-			ca = artifactRepository.save(ca);
-			Assert.assertNotEquals(beforeUpdateTs, ca.getModified());
-			Page<MLPSolution> recentlyUpdated = solutionSearchService
-					.findCatalogSolutionsByModifiedDate(ca1.getCatalogId(), beforeUpdateTs, PageRequest.of(0, 5));
-			Assert.assertNotNull(recentlyUpdated);
-			Assert.assertNotEquals(0, recentlyUpdated.getNumberOfElements());
-			Assert.assertTrue(recentlyUpdated.getContent().contains(cs));
-			logger.info("Found recently updated sols {}", recentlyUpdated);
-
 			// Create Solution download
 			MLPSolutionDownload sd = new MLPSolutionDownload(cs.getSolutionId(), ca.getArtifactId(), cu.getUserId());
 			sd = solutionDownloadRepository.save(sd);

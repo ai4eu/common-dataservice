@@ -925,14 +925,6 @@ public class CdsControllerTest {
 			Assert.assertNotNull(portalActiveMatches);
 			Assert.assertNotEquals(0, portalActiveMatches.getNumberOfElements());
 
-			// Requires revisions and artifacts!
-			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
-			RestPageResponse<MLPSolution> sld = client.findSolutionsByDate(ca1.getCatalogId(), anHourAgo,
-					new RestPageRequest(0, 1));
-			Assert.assertNotNull(sld);
-			Assert.assertNotEquals(0, sld.getNumberOfElements());
-			logger.info("Found solutions by date: " + sld.getContent().size());
-
 			// Create Solution Rating
 			logger.info("Creating solution rating");
 			MLPSolutionRating ur = new MLPSolutionRating();

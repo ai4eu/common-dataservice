@@ -176,7 +176,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<MLPTaskStepResult> stepResults;
 	private RestPageResponse<MLPTaskStepResult> searchStepResults;
 	private MLPUserNotifPref usrNotifPrefById = null;
-	private RestPageResponse<MLPSolution> catSolsByDate;
 	private MLPTaskStepResult stepResultById;
 	private List<MLPCodeNamePair> pairs;
 	private List<String> valueSetNames;
@@ -343,15 +342,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public RestPageResponse<MLPSolution> findSolutionsByTag(String tag, RestPageRequest pageRequest) {
 		return solutionsByTag;
-	}
-
-	public void setSolutionsByDate(RestPageResponse<MLPSolution> solutions) {
-		this.catSolsByDate = solutions;
-	}
-
-	@Override
-	public RestPageResponse<MLPSolution> findSolutionsByDate(String catalogId, Instant i, RestPageRequest pageRequest) {
-		return catSolsByDate;
 	}
 
 	public void setSolutionById(MLPSolution solution) {

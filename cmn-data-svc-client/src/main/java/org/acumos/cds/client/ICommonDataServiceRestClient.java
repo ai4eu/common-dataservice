@@ -20,7 +20,6 @@
 
 package org.acumos.cds.client;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -186,26 +185,6 @@ public interface ICommonDataServiceRestClient {
 	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findSolutionsByTag(String tag, RestPageRequest pageRequest);
-
-	/**
-	 * Gets a page of active solutions in the specified catalog that were modified
-	 * after the specified point in time and match the additional parameter values.
-	 * Checks the modified field on the solution, the revisions for the solution,
-	 * and the artifacts in the revisions. A solution must have revision(s) and
-	 * artifact(s) to match.
-	 * 
-	 * @param catalogId
-	 *                        Solution is in the specified catalog
-	 * @param instant
-	 *                        Point in time. Entities with modification dates prior
-	 *                        to (i.e., smaller than) this point in time are
-	 *                        ignored.
-	 * @param pageRequest
-	 *                        Page index, page size and sort information; defaults
-	 *                        to page 0 of size 20 if null.
-	 * @return Page of solutions, which may be empty
-	 */
-	RestPageResponse<MLPSolution> findSolutionsByDate(String catalogId, Instant instant, RestPageRequest pageRequest);
 
 	/**
 	 * Gets a page of solutions matching all query parameters. Most parameters can

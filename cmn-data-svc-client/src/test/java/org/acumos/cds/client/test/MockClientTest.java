@@ -20,7 +20,6 @@
 
 package org.acumos.cds.client.test;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,9 +112,6 @@ public class MockClientTest {
 		RestPageResponse<MLPSolution> solutions3 = new RestPageResponse<>();
 		client.setSolutionsByTag(solutions3);
 		Assert.assertTrue(solutions3 == client.findSolutionsByTag("string", pageRequest));
-		RestPageResponse<MLPSolution> solutions4 = new RestPageResponse<>();
-		client.setSolutionsByDate(solutions4);
-		Assert.assertTrue(solutions4 == client.findSolutionsByDate("bogus", Instant.now(), pageRequest));
 
 		MLPSolution solution = new MLPSolution();
 		client.setSolutionById(solution);

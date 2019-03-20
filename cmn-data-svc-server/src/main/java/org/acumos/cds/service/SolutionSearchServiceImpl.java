@@ -21,7 +21,6 @@
 package org.acumos.cds.service;
 
 import java.lang.invoke.MethodHandles;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,12 +34,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.acumos.cds.domain.MLPArtifactFOM;
-import org.acumos.cds.domain.MLPArtifactFOM_;
-import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCatalog_;
-import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPDocument_;
 import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRevisionDescription_;
 import org.acumos.cds.domain.MLPSolution;
@@ -194,7 +188,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 * @param pageable
 	 *                     Pageable
 	 */
-	protected void applySortCriteria(Criteria criteria, Pageable pageable) {
+	private void applySortCriteria(Criteria criteria, Pageable pageable) {
 		Iterator<Sort.Order> orderIter = pageable.getSort().iterator();
 		while (orderIter.hasNext()) {
 			Sort.Order sortOrder = orderIter.next();
@@ -505,51 +499,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		if (foms.isEmpty() || foms.size() < pageable.getOffset())
 			return new PageImpl<>(new ArrayList<>(), pageable, 0);
 		logger.info("findUserSolutions: result size {}", foms.size());
-		return buildSolutionPage(foms, pageable);
-	}
-
-	public Page<MLPSolution> findCatalogSolutionsByModifiedDate(String catalogId, Instant modifiedTs,
-			Pageable pageable) {
-		// build the query using FOM class to access child attributes
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<MLPSolutionFOM> rootQueryDef = cb.createQuery(MLPSolutionFOM.class);
-		Root<MLPSolutionFOM> solutionFom = rootQueryDef.from(MLPSolutionFOM.class);
-		rootQueryDef.select(solutionFom);
-		rootQueryDef.distinct(true);
-		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
-			rootQueryDef.orderBy(buildOrderList(cb, solutionFom, pageable.getSort()));
-
-		List<Predicate> predicates = new ArrayList<>();
-		// Only check for Active solutions
-		predicates.add(cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active)));
-
-		// Limit to catalog matches with inner join
-		Join<MLPSolutionFOM, MLPCatalog> catFom = solutionFom.join(MLPSolutionFOM_.catalogs);
-		Predicate catEquals = cb.equal(catFom.<String>get(MLPCatalog_.catalogId), catalogId);
-		catFom.on(catEquals);
-
-		// Revisions and artifacts are mandatory, so use inner join
-		Join<MLPSolutionFOM, MLPSolutionRevisionFOM> revFom = solutionFom.join(MLPSolutionFOM_.revisions);
-		Join<MLPSolutionRevisionFOM, MLPArtifactFOM> revArtFom = revFom.join(MLPSolutionRevisionFOM_.artifacts);
-		// Descriptions and documents are optional, so use left join
-		Join<MLPSolutionRevisionFOM, MLPRevisionDescription> revDesc = revFom.join(MLPSolutionRevisionFOM_.descriptions,
-				JoinType.LEFT);
-		Join<MLPSolutionRevisionFOM, MLPDocument> revDoc = revFom.join(MLPSolutionRevisionFOM_.documents,
-				JoinType.LEFT);
-
-		// Create a disjunction of all the modified-date predicates
-		Predicate solMod = cb.greaterThanOrEqualTo(solutionFom.<Instant>get(MLPSolutionFOM_.modified), modifiedTs);
-		Predicate revMod = cb.greaterThanOrEqualTo(revFom.<Instant>get(MLPSolutionRevisionFOM_.modified), modifiedTs);
-		Predicate artMod = cb.greaterThanOrEqualTo(revArtFom.<Instant>get(MLPArtifactFOM_.modified), modifiedTs);
-		Predicate descMod = cb.greaterThanOrEqualTo(revDesc.<Instant>get(MLPRevisionDescription_.modified), modifiedTs);
-		Predicate docMod = cb.greaterThanOrEqualTo(revDoc.<Instant>get(MLPDocument_.modified), modifiedTs);
-		predicates.add(cb.or(solMod, revMod, artMod, descMod, docMod));
-
-		TypedQuery<MLPSolutionFOM> typedQuery = entityManager.createQuery(rootQueryDef);
-		List<MLPSolutionFOM> foms = typedQuery.getResultList();
-		if (foms.isEmpty() || foms.size() < pageable.getOffset())
-			return new PageImpl<>(new ArrayList<>(), pageable, 0);
-		logger.info("findCatalogSolutionsByModifiedDate: result size {}", foms.size());
 		return buildSolutionPage(foms, pageable);
 	}
 
