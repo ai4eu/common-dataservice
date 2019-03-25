@@ -359,7 +359,7 @@ public class DomainTest extends AbstractModelTest {
 
 	@Test
 	public void testMLPNotebook() {
-		MLPNotebook m = new MLPNotebook(s1, s1, s1, s1, s1);
+		MLPNotebook m = new MLPNotebook(s1, s1, s1, s1);
 		m = new MLPNotebook();
 		m.setCreated(t1);
 		m.setDescription(s1);
@@ -382,7 +382,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPNotebook(null, null, null, null, null);
+			new MLPNotebook(null, null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

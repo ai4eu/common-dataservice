@@ -60,10 +60,9 @@ public class MLPNotebook extends MLPAbstractWorkbenchArtifact implements Seriali
 	@ApiModelProperty(required = true, value = "Two-character notebook type code", example = "AB")
 	private String notebookTypeCode;
 
-	@Column(name = "KERNEL_TYPE_CD", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Kernel type cannot be null")
+	@Column(name = "KERNEL_TYPE_CD", columnDefinition = "CHAR(2)")
 	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Two-character kernel type code", example = "AB")
+	@ApiModelProperty(value = "Two-character kernel type code", example = "AB")
 	private String kernelTypeCode;
 
 	@Column(name = "SERVICE_URL", columnDefinition = "VARCHAR(512)")
@@ -91,15 +90,12 @@ public class MLPNotebook extends MLPAbstractWorkbenchArtifact implements Seriali
 	 *                             Version string
 	 * @param notebookTypeCode
 	 *                             Notebook type code (2 chars)
-	 * @param kernelTypeCode
-	 *                             Kernel type code (2 chars)
 	 * @throws IllegalArgumentException
 	 *                                      if any argument is null
 	 */
-	public MLPNotebook(String name, String userId, String version, String notebookTypeCode, String kernelTypeCode) {
+	public MLPNotebook(String name, String userId, String version, String notebookTypeCode) {
 		super(name, true, userId, version);
 		this.notebookTypeCode = notebookTypeCode;
-		this.kernelTypeCode = kernelTypeCode;
 	}
 
 	/**

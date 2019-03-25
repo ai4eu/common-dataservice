@@ -2269,7 +2269,7 @@ public class CdsControllerTest {
 					new RestPageRequest(0, 5));
 			Assert.assertEquals(1, srchProj.getNumberOfElements());
 
-			cnb = new MLPNotebook("nb name 1", cu.getUserId(), "ver", "JP", "PY");
+			cnb = new MLPNotebook("nb name 1", cu.getUserId(), "ver", "JP");
 			cnb.setServiceStatusCode("AC");
 			cnb.setRepositoryUrl("http://repo.url.io:12345");
 			cnb.setServiceUrl("http://service.url.io:54321");
@@ -2369,8 +2369,7 @@ public class CdsControllerTest {
 			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createNotebook(
-					new MLPNotebook("name", "foo", "extra super long version should blow up", "JP", "PY"));
+			client.createNotebook(new MLPNotebook("name", "foo", "extra super long version should blow up", "JP"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create failed on long ver as expected: {}", ex.getResponseBodyAsString());

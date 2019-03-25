@@ -1470,7 +1470,7 @@ public class CdsRepositoryServiceTest {
 			cpr = projectRepository.save(cpr);
 			Assert.assertNotNull(cpr.getProjectId());
 
-			MLPNotebook cnb = new MLPNotebook("nb name", cu.getUserId(), "v2", "JP", "PY");
+			MLPNotebook cnb = new MLPNotebook("nb name", cu.getUserId(), "v2", "JP");
 			cnb = notebookRepository.save(cnb);
 			Assert.assertNotNull(cnb.getNotebookId());
 

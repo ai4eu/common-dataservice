@@ -316,10 +316,10 @@ public class WorkbenchController extends AbstractController {
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, ENTRY_EXISTS_WITH_ID + id);
 				}
 			}
-			// Mandatory fields
-			super.validateCode(notebook.getKernelTypeCode(), CodeNameType.KERNEL_TYPE);
 			super.validateCode(notebook.getNotebookTypeCode(), CodeNameType.NOTEBOOK_TYPE);
 			// Optional fields
+			if (notebook.getKernelTypeCode() != null)
+				super.validateCode(notebook.getKernelTypeCode(), CodeNameType.KERNEL_TYPE);
 			if (notebook.getServiceStatusCode() != null)
 				super.validateCode(notebook.getServiceStatusCode(), CodeNameType.SERVICE_STATUS);
 			if (notebook.getRepositoryUrl() != null)
@@ -357,10 +357,10 @@ public class WorkbenchController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + notebookId, null);
 		}
 		try {
-			// Mandatory fields
-			super.validateCode(notebook.getKernelTypeCode(), CodeNameType.KERNEL_TYPE);
 			super.validateCode(notebook.getNotebookTypeCode(), CodeNameType.NOTEBOOK_TYPE);
 			// Optional fields
+			if (notebook.getKernelTypeCode() != null)
+				super.validateCode(notebook.getKernelTypeCode(), CodeNameType.KERNEL_TYPE);
 			if (notebook.getServiceStatusCode() != null)
 				super.validateCode(notebook.getServiceStatusCode(), CodeNameType.SERVICE_STATUS);
 			if (notebook.getRepositoryUrl() != null)

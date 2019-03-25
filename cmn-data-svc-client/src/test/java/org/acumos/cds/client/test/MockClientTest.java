@@ -571,7 +571,7 @@ public class MockClientTest {
 		RestPageResponse<MLPNotebook> searchNotebooks = new RestPageResponse<>();
 		client.setSearchNotebooks(searchNotebooks);
 		Assert.assertEquals(searchNotebooks, client.searchNotebooks(queryParameters, isOr, new RestPageRequest()));
-		MLPNotebook notebook = new MLPNotebook("abc", "def", "ghi", "jkl", "mno");
+		MLPNotebook notebook = new MLPNotebook("abc", "def", "ghi", "jkl");
 		client.setNotebookById(notebook);
 		Assert.assertEquals(notebook, client.getNotebook("id"));
 		client.setNotebook(notebook);

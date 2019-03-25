@@ -24,7 +24,7 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.2.0, 20 Mar 2019
+Version 2.2.0, 26 Mar 2019
 --------------------------
 * Add APIs for workbench data access (`ACUMOS-2509 <https://jira.acumos.org/browse/ACUMOS-2509>`_)
 * Add project for workbench (`ACUMOS-2516 <https://jira.acumos.org/browse/ACUMOS-2516>`_)
