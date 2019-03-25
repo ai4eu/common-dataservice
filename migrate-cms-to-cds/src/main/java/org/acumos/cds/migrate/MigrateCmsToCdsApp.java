@@ -301,8 +301,8 @@ public class MigrateCmsToCdsApp {
 
 		final String keyCobrandLogo = "global.coBrandLogo";
 		final String keyContactInfo = "global.footer.contactInfo";
-		final String keyTermsCondition = "global.termsCondition";
-		final String keyOnboardingOverview = "global.onboarding.overview";
+		final String keyTermsCondition = "global.termsConditions";
+		final String carouselPrefix = "carousel";
 
 		byte[] coBrandLogo = cmsClient.getCoBrandLogo();
 		if (coBrandLogo == null || coBrandLogo.length == 0) {
@@ -369,52 +369,34 @@ public class MigrateCmsToCdsApp {
 			}
 		}
 
-		CMSDescription cmsOnbrdOvw = cmsClient.getOnboardingOverview();
-		if (cmsOnbrdOvw == null || cmsOnbrdOvw.getDescription() == null || cmsOnbrdOvw.getDescription().isEmpty()) {
-			logger.info("Source CMS has no onboarding overview, continuing");
-		} else {
-			MLPSiteContent cdsOnbrdOvw = cdsClient.getSiteContent(keyOnboardingOverview);
-			if (cdsOnbrdOvw != null && cdsOnbrdOvw.getContentValue().length > 0) {
-				logger.info("Target CDS already has onboarding overview, continuing");
-			} else {
-				try {
-					logger.info("Creating onboarding overview site content in CDS");
-					cdsOnbrdOvw = new MLPSiteContent(keyOnboardingOverview, cmsOnbrdOvw.getDescription().getBytes(),
-							MediaType.APPLICATION_JSON_VALUE);
-					cdsClient.createSiteContent(cdsOnbrdOvw);
-					++globalContentSucc;
-				} catch (HttpStatusCodeException ex) {
-					logger.error("Failed to create onboarding overview {}; server response {}", cdsOnbrdOvw,
-							ex.getResponseBodyAsString());
-					++globalContentFail;
-				}
-			}
-		}
-
-		MLPSiteConfig topCarouselConfig = cdsClient.getSiteConfig("carousel_config");
-		if (topCarouselConfig == null) {
-			logger.warn("Failed to find top carousel config");
+		// Carousel config was always in CDS; migrate images from CMS
+		MLPSiteConfig cdsTopCarouselConfig = cdsClient.getSiteConfig("carousel_config");
+		if (cdsTopCarouselConfig == null || cdsTopCarouselConfig.getConfigValue().length() == 0) {
+			logger.info("CDS top carousel is null or missing, continuing");
 		} else {
 			try {
-				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeTopBg, typeTopIg, "top",
-						topCarouselConfig.getConfigValue());
-				topCarouselConfig.setConfigValue(revisedConfig);
-				cdsClient.updateSiteConfig(topCarouselConfig);
+				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeTopBg, typeTopIg,
+						carouselPrefix + ".top", cdsTopCarouselConfig.getConfigValue());
+				cdsTopCarouselConfig.setConfigValue(revisedConfig);
+				cdsClient.updateSiteConfig(cdsTopCarouselConfig);
 				++globalContentSucc;
 			} catch (Exception ex) { //
 				logger.error("Failed to migrate top carousel, exception {}", ex.toString());
 				++globalContentFail;
 			}
+
 		}
-		MLPSiteConfig eventCarouselConfig = cdsClient.getSiteConfig("event_carousel");
-		if (eventCarouselConfig == null) {
-			logger.warn("Failed to find event carousel config");
+
+		// Carousel config was always in CDS; migrate images from CMS
+		MLPSiteConfig cdsEventCarouselConfig = cdsClient.getSiteConfig("event_carousel");
+		if (cdsEventCarouselConfig == null || cdsEventCarouselConfig.getConfigValue().length() == 0) {
+			logger.info("CDS event carousel is null or missing, continuing");
 		} else {
 			try {
-				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeEventBg, typeEventIg, "event",
-						eventCarouselConfig.getConfigValue());
-				eventCarouselConfig.setConfigValue(revisedConfig);
-				cdsClient.updateSiteConfig(eventCarouselConfig);
+				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeEventBg, typeEventIg,
+						carouselPrefix + ".event", cdsEventCarouselConfig.getConfigValue());
+				cdsEventCarouselConfig.setConfigValue(revisedConfig);
+				cdsClient.updateSiteConfig(cdsEventCarouselConfig);
 				++globalContentSucc;
 			} catch (Exception ex) { //
 				logger.error("Failed to migrate event carousel, exception {}", ex.toString());
@@ -438,18 +420,23 @@ public class MigrateCmsToCdsApp {
 	private final static String typeEventBg = "event_carousel_bg";
 	private final static String typeEventIg = "event_carousel_ig";
 
-	// Tags for CDS site config
-	// OLD
-	private final static String bgImageUrl = "bgImageUrl";
-	private final static String infoImageUrl = "infoImageUrl";
-	// NEW
-	private final static String uniqueKey = "uniqueKey";
-	private final static String bgImgKey = "bgImgKey";
-	private final static String infoImgKey = "infoImgKey";
-	private final static String hasInfoGraphic = "hasInfoGraphic";
+	// Tag portions in CDS site-config key
+	private final static String bgImgSuffix = "bgImg";
+	private final static String infoImgSuffix = "infoImg";
+
+	// Tags within CDS site-config value
+	private final static String oldBgImageUrl = "bgImageUrl";
+	private final static String oldInfoImageUrl = "infoImageUrl";
+	private final static String newUniqueKey = "uniqueKey";
+	private final static String newBgImgKey = "bgImgKey";
+	private final static String newInfoImgKey = "infoImgKey";
+	private final static String newHasInfoGraphic = "hasInfoGraphic";
+
+	// A guess
+	private final static String imgMimeType = "image/jpg";
 
 	/**
-	 * Migrates carousel images AND rewrites the carousel config accordingly.
+	 * Rewrites the CDS carousel config, and migrates images from CMS to CDS
 	 * 
 	 * A set of carousel slides is represented as a map with values as tags; e.g.,
 	 * tag "0" for the first structure and so on, a highly unfortunate use of data
@@ -467,51 +454,53 @@ public class MigrateCmsToCdsApp {
 				break;
 			logger.info("Processing {} carousel slide {}", keyPrefix, index);
 			// Check if already migrated - presence of unique number
-			if (slide.get(uniqueKey) != null || slide.get(bgImgKey) != null || slide.get(infoImgKey) != null) {
-				logger.info("Already migrated, skipping");
+			if (slide.get(newUniqueKey) != null || slide.get(newBgImgKey) != null || slide.get(newInfoImgKey) != null) {
+				logger.info("Prefix {} index {} already migrated, skipping", keyPrefix, index);
 				continue;
 			}
 			if (!(slide instanceof ObjectNode)) {
-				logger.warn("Unexpected object type");
+				logger.warn("Prefix {} index {}: Unexpected object type", keyPrefix, index);
 				continue;
 			}
 			ObjectNode slideNode = (ObjectNode) slide;
-			slideNode.set(uniqueKey, new IntNode(index));
+			slideNode.set(newUniqueKey, new IntNode(index));
 
-			JsonNode bgNode = slideNode.get(bgImageUrl);
+			JsonNode bgNode = slideNode.get(oldBgImageUrl);
 			if (bgNode != null) {
 				String url = bgNode.asText();
 				logger.info("Migrating background image {}", url);
 				byte[] img = cmsClient.getCarouselImage(bgPath, url);
 				if (img == null || img.length == 0) {
-					logger.warn("Failed to get background image {}/{}", bgPath, url);
+					logger.warn("Prefix {} index {} failed to get background image {}/{}", keyPrefix, index, bgPath,
+							url);
 				} else {
 					// build and add key for image
-					final String imgKey = keyPrefix + "." + Integer.toString(index) + ".bgImg";
-					slideNode.set(bgImgKey, new TextNode(imgKey));
-					MLPSiteContent content = new MLPSiteContent(imgKey, img, "image/jpg");
+					final String imgKey = keyPrefix + "." + Integer.toString(index) + "." + bgImgSuffix;
+					slideNode.set(newBgImgKey, new TextNode(imgKey));
+					MLPSiteContent content = new MLPSiteContent(imgKey, img, imgMimeType);
 					cdsClient.createSiteContent(content);
 					// remove old tag
-					slideNode.remove(bgImageUrl);
+					slideNode.remove(oldBgImageUrl);
 				}
 			}
-			JsonNode igNode = slideNode.get(infoImageUrl);
+			JsonNode igNode = slideNode.get(oldInfoImageUrl);
 			if (igNode != null) {
 				String url = igNode.asText();
 				logger.info("Migrating infographic image {}", url);
 				byte[] img = cmsClient.getCarouselImage(igPath, url);
 				if (img == null || img.length == 0) {
-					logger.warn("Failed to get infographic image {}/{}", igPath, url);
+					logger.warn("Prefix {} index {} failed to get infographic image {}/{}", keyPrefix, index, igPath,
+							url);
 				} else {
 					// build and add key for image
-					final String imgKey = keyPrefix + "." + Integer.toString(index) + ".infoImg";
-					slideNode.set(bgImgKey, new TextNode(imgKey));
-					MLPSiteContent content = new MLPSiteContent(imgKey, img, "image/jpg");
+					final String imgKey = keyPrefix + "." + Integer.toString(index) + "." + infoImgSuffix;
+					slideNode.set(newBgImgKey, new TextNode(imgKey));
+					MLPSiteContent content = new MLPSiteContent(imgKey, img, imgMimeType);
 					cdsClient.createSiteContent(content);
 					// special case among special cases ARGH
-					slideNode.set(hasInfoGraphic, BooleanNode.getTrue());
+					slideNode.set(newHasInfoGraphic, BooleanNode.getTrue());
 					// remove old tag
-					slideNode.remove(infoImageUrl);
+					slideNode.remove(oldInfoImageUrl);
 				}
 			}
 

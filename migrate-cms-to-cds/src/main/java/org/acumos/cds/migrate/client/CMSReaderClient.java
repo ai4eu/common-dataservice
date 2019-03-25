@@ -364,6 +364,8 @@ public class CMSReaderClient {
 	/**
 	 * Gets onboarding instructions
 	 * 
+	 * @deprecated This does NOT need to be migrated. 
+	 * 
 	 * GET
 	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/onboarding-model-screen&amp;name=overview
 	 * Sample:
