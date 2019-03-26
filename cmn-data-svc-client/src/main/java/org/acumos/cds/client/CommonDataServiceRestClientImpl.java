@@ -2578,12 +2578,34 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public List<MLPProject> getNotebookProjects(String notebookId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.NOTEBOOK_PATH, notebookId,
+				CCDSConstants.PROJECT_PATH }, null, null);
+		logger.debug("getNotebookProjects: uri {}", uri);
+		ResponseEntity<List<MLPProject>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPProject>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public List<MLPPipeline> getProjectPipelines(String projectId) {
 		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PROJECT_PATH, projectId,
 				CCDSConstants.PIPELINE_PATH }, null, null);
 		logger.debug("getProjectPipelines: uri {}", uri);
 		ResponseEntity<List<MLPPipeline>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<MLPPipeline>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public List<MLPProject> getPipelineProjects(String pipelineId) {
+		URI uri = buildUri(new String[] { CCDSConstants.WORKBENCH_PATH, CCDSConstants.PIPELINE_PATH, pipelineId,
+				CCDSConstants.PROJECT_PATH }, null, null);
+		logger.debug("getPipelineProjects: uri {}", uri);
+		ResponseEntity<List<MLPProject>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPProject>>() {
 				});
 		return response.getBody();
 	}

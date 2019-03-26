@@ -2844,6 +2844,15 @@ public interface ICommonDataServiceRestClient {
 	List<MLPNotebook> getProjectNotebooks(String projectId);
 
 	/**
+	 * Gets the workbench projects to which the specified notebook is mapped.
+	 * 
+	 * @param notebookId
+	 *                       Notebook ID.
+	 * @return List of Project objects; empty if none are found
+	 */
+	List<MLPProject> getNotebookProjects(String notebookId);
+
+	/**
 	 * Gets the workbench pipelines mapped to the specified project ID.
 	 * 
 	 * @param projectId
@@ -2851,6 +2860,15 @@ public interface ICommonDataServiceRestClient {
 	 * @return List of Pipeline objects; empty if none are found
 	 */
 	List<MLPPipeline> getProjectPipelines(String projectId);
+
+	/**
+	 * Gets the workbench projects to which the specified pipeline is mapped.
+	 * 
+	 * @param pipelineId
+	 *                       Pipeline ID.
+	 * @return List of Project objects; empty if none are found
+	 */
+	List<MLPProject> getPipelineProjects(String pipelineId);
 
 	/**
 	 * Gets a page of workbench notebooks.

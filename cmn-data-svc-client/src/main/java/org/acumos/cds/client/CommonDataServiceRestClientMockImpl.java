@@ -1899,7 +1899,17 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	}
 
 	@Override
+	public List<MLPProject> getNotebookProjects(String notebookId) {
+		return Collections.emptyList();
+	}
+
+	@Override
 	public List<MLPPipeline> getProjectPipelines(String projectId) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<MLPProject> getPipelineProjects(String pipelineId) {
 		return Collections.emptyList();
 	}
 

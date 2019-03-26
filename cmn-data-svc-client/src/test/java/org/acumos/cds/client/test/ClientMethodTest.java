@@ -1175,12 +1175,22 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
+			client.getProjectNotebooks("pid");
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
+			client.getNotebookProjects("pid");
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
 			client.getProjectPipelines("pid");
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.getProjectNotebooks("pid");
+			client.getPipelineProjects("pid");
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}

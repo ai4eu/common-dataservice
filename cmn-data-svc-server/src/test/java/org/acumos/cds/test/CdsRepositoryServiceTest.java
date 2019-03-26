@@ -1486,8 +1486,12 @@ public class CdsRepositoryServiceTest {
 
 			Iterable<MLPNotebook> nbs = projNbMapRepository.findProjectNotebooks(cpr.getProjectId());
 			Assert.assertTrue(nbs.iterator().hasNext());
+			Iterable<MLPProject> nbProjs = projNbMapRepository.findNotebookProjects(cnb.getNotebookId());
+			Assert.assertTrue(nbProjs.iterator().hasNext());
 			Iterable<MLPPipeline> pls = projPlMapRepository.findProjectPipelines(cpr.getProjectId());
 			Assert.assertTrue(pls.iterator().hasNext());
+			Iterable<MLPProject> plProjs = projPlMapRepository.findPipelineProjects(cpl.getPipelineId());
+			Assert.assertTrue(plProjs.iterator().hasNext());
 
 			projPlMapRepository.delete(projPlMap);
 			projNbMapRepository.delete(projNbMap);

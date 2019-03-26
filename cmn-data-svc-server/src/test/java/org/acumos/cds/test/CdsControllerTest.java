@@ -2306,10 +2306,14 @@ public class CdsControllerTest {
 			client.addProjectNotebook(cpr.getProjectId(), cnb.getNotebookId());
 			List<MLPNotebook> nbList = client.getProjectNotebooks(cpr.getProjectId());
 			Assert.assertFalse(nbList.isEmpty());
+			List<MLPProject> nbProjList = client.getNotebookProjects(cnb.getNotebookId());
+			Assert.assertFalse(nbProjList.isEmpty());
 
 			client.addProjectPipeline(cpr.getProjectId(), cpl.getPipelineId());
 			List<MLPPipeline> plList = client.getProjectPipelines(cpr.getProjectId());
 			Assert.assertFalse(plList.isEmpty());
+			List<MLPProject> plProjList = client.getPipelineProjects(cpl.getPipelineId());
+			Assert.assertFalse(plProjList.isEmpty());
 
 		} catch (HttpStatusCodeException ex) {
 			logger.error("testWorkbenchArtifacts failed", ex.getResponseBodyAsString());
