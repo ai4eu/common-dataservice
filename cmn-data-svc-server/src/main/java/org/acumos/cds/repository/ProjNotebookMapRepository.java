@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPProjNotebookMap;
+import org.acumos.cds.domain.MLPProject;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -42,6 +43,18 @@ public interface ProjNotebookMapRepository extends CrudRepository<MLPProjNoteboo
 	@Query(value = "SELECT p FROM MLPNotebook p, MLPProjNotebookMap m " //
 			+ " WHERE p.notebookId =  m.notebookId AND m.projectId = :projectId")
 	Iterable<MLPNotebook> findProjectNotebooks(@Param("projectId") String projectId);
+
+	/**
+	 * Gets all projects to which the specified notebook is mapped. Size is expected
+	 * to be modest, so this does not use page.
+	 * 
+	 * @param notebookId
+	 *                       notebook ID
+	 * @return Iterable of MLPProject
+	 */
+	@Query(value = "SELECT p FROM MLPProject p, MLPProjNotebookMap m " //
+			+ " WHERE p.projectId =  m.projectId AND m.notebookId = :notebookId")
+	Iterable<MLPProject> findNotebookProjects(@Param("notebookId") String notebookId);
 
 	/**
 	 * Deletes all entries for the specified project ID.

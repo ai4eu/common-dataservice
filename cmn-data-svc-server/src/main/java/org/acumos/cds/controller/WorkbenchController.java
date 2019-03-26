@@ -300,6 +300,15 @@ public class WorkbenchController extends AbstractController {
 		return projNbMapRepository.findProjectNotebooks(projectId);
 	}
 
+	@ApiOperation(value = "Gets the projects that contain the specified notebook. Returns empty if none are found.", //
+			response = MLPProject.class, responseContainer = "List")
+	@RequestMapping(value = CCDSConstants.NOTEBOOK_PATH + "/{notebookId}/"
+			+ CCDSConstants.PROJECT_PATH, method = RequestMethod.GET)
+	public Iterable<MLPProject> getNotebookProjects(@PathVariable("notebookId") String notebookId) {
+		logger.debug("getNotebookProjects: projectId {}", notebookId);
+		return projNbMapRepository.findNotebookProjects(notebookId);
+	}
+
 	@ApiOperation(value = "Creates a new notebook and generates an ID if needed. Returns bad request on bad URL, constraint violation etc.", //
 			response = MLPNotebook.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
@@ -485,6 +494,15 @@ public class WorkbenchController extends AbstractController {
 	public Iterable<MLPPipeline> getProjectPipelines(@PathVariable("projectId") String projectId) {
 		logger.debug("getProjectPipelines: projectId {}", projectId);
 		return projPlMapRepository.findProjectPipelines(projectId);
+	}
+
+	@ApiOperation(value = "Gets the projects that contain the specified pipeline. Returns empty if none are found.", //
+			response = MLPProject.class, responseContainer = "List")
+	@RequestMapping(value = CCDSConstants.PIPELINE_PATH + "/{pipelineId}/"
+			+ CCDSConstants.PROJECT_PATH, method = RequestMethod.GET)
+	public Iterable<MLPProject> getPipelineProjects(@PathVariable("pipelineId") String pipelineId) {
+		logger.debug("getPipelineProjects: projectId {}", pipelineId);
+		return projPlMapRepository.findPipelineProjects(pipelineId);
 	}
 
 	@ApiOperation(value = "Creates a new pipeline and generates an ID if needed. Returns bad request on bad URL, constraint violation etc.", //

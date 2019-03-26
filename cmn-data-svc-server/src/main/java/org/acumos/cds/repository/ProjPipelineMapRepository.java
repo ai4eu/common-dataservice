@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProjPipelineMap;
+import org.acumos.cds.domain.MLPProject;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -42,6 +43,18 @@ public interface ProjPipelineMapRepository extends CrudRepository<MLPProjPipelin
 	@Query(value = "SELECT p FROM MLPPipeline p, MLPProjPipelineMap m " //
 			+ " WHERE p.pipelineId =  m.pipelineId AND m.projectId = :projectId")
 	Iterable<MLPPipeline> findProjectPipelines(@Param("projectId") String projectId);
+
+	/**
+	 * Gets all projects to which the specified pipeline is mapped. Size is expected
+	 * to be modest, so this does not use page.
+	 * 
+	 * @param pipelineId
+	 *                       Pipeline ID
+	 * @return Iterable of MLPProject
+	 */
+	@Query(value = "SELECT p FROM MLPProject p, MLPProjPipelineMap m " //
+			+ " WHERE p.projectId =  m.projectId AND m.pipelineId = :pipelineId")
+	Iterable<MLPProject> findPipelineProjects(@Param("pipelineId") String pipelineId);
 
 	/**
 	 * Deletes all entries for the specified project ID.

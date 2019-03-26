@@ -596,7 +596,9 @@ public class MockClientTest {
 		client.addProjectNotebook(project.getProjectId(), notebook.getNotebookId());
 		client.addProjectPipeline(project.getProjectId(), pipeline.getPipelineId());
 		client.getProjectNotebooks("id");
+		client.getNotebookProjects("id");
 		client.getProjectPipelines("id");
+		client.getPipelineProjects("id");
 		client.dropProjectNotebook(project.getProjectId(), notebook.getNotebookId());
 		client.dropProjectPipeline(project.getProjectId(), pipeline.getPipelineId());
 
