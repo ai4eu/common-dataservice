@@ -20,13 +20,11 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPTaskStepResult;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface TaskStepResultRepository
-		extends JpaRepository<MLPTaskStepResult, Long>, JpaSpecificationExecutor<MLPTaskStepResult> {
+public interface TaskStepResultRepository extends PagingAndSortingRepository<MLPTaskStepResult, Long> {
 
 	/**
 	 * Gets all step results with the specified task ID.

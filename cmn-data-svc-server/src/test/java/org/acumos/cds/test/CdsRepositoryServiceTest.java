@@ -492,6 +492,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertEquals(2, cs.getTags().size());
 			logger.info("Created solution " + cs.getSolutionId());
 
+			// Publish the solution to the catalog
 			MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs.getSolutionId());
 			catSolMapRepository.save(csm);
 			Assert.assertEquals(1, catSolMapRepository.countCatalogSolutions(ca1.getCatalogId()));
@@ -587,13 +588,14 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
-			Page<MLPSolution> userSearchResult = solutionSearchService.findUserSolutions(null, null, active,
-					cu.getUserId(), null, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
+			boolean published = true;
+			Page<MLPSolution> userSearchResult = solutionSearchService.findUserSolutions(active, published,
+					cu.getUserId(), null, null, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, userSearchResult.getNumberOfElements());
 			logger.info("Found models by user total " + userSearchResult.getTotalElements());
 
-			Page<MLPSolution> userKwSearchResult = solutionSearchService.findUserSolutions(solKw, descKw, active,
-					cu.getUserId(), modelTypeCodes, accTypeCodes, searchTags,
+			Page<MLPSolution> userKwSearchResult = solutionSearchService.findUserSolutions(active, published,
+					cu.getUserId(), solKw, descKw, modelTypeCodes, searchTags,
 					PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, userKwSearchResult.getNumberOfElements());
 			logger.info("Found models by user total " + userKwSearchResult.getTotalElements());

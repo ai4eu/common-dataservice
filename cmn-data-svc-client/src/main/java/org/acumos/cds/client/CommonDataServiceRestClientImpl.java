@@ -562,20 +562,21 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+	public RestPageResponse<MLPSolution> findUserSolutions(boolean active, boolean published, String userId,
+			String[] nameKeywords, String[] descriptionKeywords, String[] modelTypeCodes, String[] tags,
 			RestPageRequest pageRequest) {
 		if (userId == null || userId.length() == 0)
 			throw new IllegalArgumentException("userId argument is required");
 		HashMap<String, Object> parms = new HashMap<>();
+		// First three are required
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
+		parms.put(CCDSConstants.SEARCH_PUBLISHED, published);
 		parms.put(CCDSConstants.SEARCH_USERS, userId);
+		// Rest are optional
 		if (nameKeywords != null && nameKeywords.length > 0)
 			parms.put(CCDSConstants.SEARCH_NAME, nameKeywords);
 		if (descriptionKeywords != null && descriptionKeywords.length > 0)
 			parms.put(CCDSConstants.SEARCH_DESC, descriptionKeywords);
-		if (accessTypeCodes != null && accessTypeCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
 		if (modelTypeCodes != null && modelTypeCodes.length > 0)
 			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
 		if (tags != null && tags.length > 0)

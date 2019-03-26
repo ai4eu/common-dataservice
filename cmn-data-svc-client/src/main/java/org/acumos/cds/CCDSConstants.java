@@ -100,6 +100,7 @@ public class CCDSConstants {
 	public static final String SEARCH_KW = "kw";
 	public static final String SEARCH_MODEL_TYPES = "mtc";
 	public static final String SEARCH_NAME = "name";
+	public static final String SEARCH_PUBLISHED = "publ";
 	public static final String SEARCH_TAGS = "tag";
 	public static final String SEARCH_ALL_TAGS = "alltag";
 	public static final String SEARCH_ANY_TAGS = "anytag";

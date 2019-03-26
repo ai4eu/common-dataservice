@@ -287,13 +287,22 @@ public interface ICommonDataServiceRestClient {
 	/**
 	 * Gets a page of solutions editable by the specified user and matching all
 	 * query parameters. A user's editable solutions include the specified user's
-	 * private solutions (created by that user) AND solutions created by a different
+	 * own solutions (created by that user) AND solutions created by a different
 	 * user and shared with the specified user. Most parameters can be a set of
 	 * values, and a match is found for that parameter if ANY ONE of the values
 	 * matches. In other words, this is a conjunction of disjunctions. This
-	 * special-purpose method supports a dynamic search page on the portal interface
-	 * ('my models').
+	 * special-purpose method supports the My Models dynamic search page.
 	 * 
+	 * @param active
+	 *                                Solution active status; true for active, false
+	 *                                for inactive; required.
+	 * @param published
+	 *                                Whether solution appears in any catalog; true
+	 *                                for yes (published), false for no (not
+	 *                                published); required.
+	 * @param userId
+	 *                                Limits match to solutions with this user ID OR
+	 *                                shared with this user ID; required.
 	 * @param nameKeywords
 	 *                                Limits match to solutions with names
 	 *                                containing ANY of the keywords; uses
@@ -306,18 +315,6 @@ public interface ICommonDataServiceRestClient {
 	 *                                keywords; uses case-insensitive LIKE after
 	 *                                surrounding each keyword with wildcard '%'
 	 *                                characters; ignored if null or empty
-	 * @param active
-	 *                                Solution active status; true for active, false
-	 *                                for inactive; required.
-	 * @param userId
-	 *                                Limits match to solutions with this user ID OR
-	 *                                shared with this user ID; required.
-	 * @param accessTypeCodes
-	 *                                Limits match to solutions containing revisions
-	 *                                with codes that match ANY of the specified
-	 *                                values including null (which is different from
-	 *                                the special-case 4-character sequence "null");
-	 *                                ignored if null or empty
 	 * @param modelTypeCodes
 	 *                                Limits match to solutions with codes that
 	 *                                match ANY of the specified values including
@@ -332,8 +329,8 @@ public interface ICommonDataServiceRestClient {
 	 *                                defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
-	RestPageResponse<MLPSolution> findUserSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
-			String userId, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
+	RestPageResponse<MLPSolution> findUserSolutions(boolean active, boolean published, String userId,
+			String[] nameKeywords, String[] descriptionKeywords, String[] modelTypeCodes, String[] tags,
 			RestPageRequest pageRequest);
 
 	/**
@@ -2391,8 +2388,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPSolution> getSolutionsInCatalogs(String[] catalogIds, RestPageRequest pageRequest);
 
 	/**
-	 * Gets the catalogs for the specified solution; i.e., all published
-	 * occurrences.
+	 * Gets the catalogs for the specified solution; i.e., all places to which the
+	 * solution is published.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
@@ -2401,7 +2398,7 @@ public interface ICommonDataServiceRestClient {
 	List<MLPCatalog> getSolutionCatalogs(String solutionId);
 
 	/**
-	 * Adds the specified solution as a member of the specified catalog.
+	 * Adds (publishes) the specified solution to the specified catalog.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
@@ -2413,7 +2410,7 @@ public interface ICommonDataServiceRestClient {
 	void addSolutionToCatalog(String solutionId, String catalogId) throws RestClientResponseException;
 
 	/**
-	 * Drops the specified solution as a member of the specified catalog.
+	 * Drops (unpublishes) the specified solution from the specified catalog.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID

@@ -1,12 +1,8 @@
 # Acumos Common Data Service Server
 
-This project has the Spring-Boot application that provides common data services to components in the Acumos machine-learning platform.
+This project has a Spring-Boot application that implements the Common Data Service in the Acumos machine-learning platform.
 
 Please see the documentation in the parent project's "docs" folder.
-
-## Developers
-
-Eclipse IDE users should install the plugin "m2e-apt" from the Marketplace.
 
 ## License
 

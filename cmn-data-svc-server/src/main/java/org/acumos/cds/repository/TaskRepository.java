@@ -22,11 +22,10 @@ package org.acumos.cds.repository;
 import javax.transaction.Transactional;
 
 import org.acumos.cds.domain.MLPTask;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface TaskRepository extends JpaRepository<MLPTask, Long>, JpaSpecificationExecutor<MLPTask> {
+public interface TaskRepository extends PagingAndSortingRepository<MLPTask, Long> {
 
 	/**
 	 * Deletes all tasks for the specified solution ID.
