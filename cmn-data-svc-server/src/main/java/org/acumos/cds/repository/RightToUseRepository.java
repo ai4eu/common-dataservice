@@ -35,7 +35,7 @@ public interface RightToUseRepository extends PagingAndSortingRepository<MLPRigh
 	 *                       Solution ID
 	 * @param userId
 	 *                       User ID
-	 * @return Iterable of role objects
+	 * @return Iterable of MLPRightToUse objects
 	 */
 	@Query(value = "select r from MLPRightToUse r, MLPRtuUserMap m" //
 			+ " WHERE r.solutionId =  :solutionId " //

@@ -1060,6 +1060,11 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
+			client.getRtuUsers(0L);
+		} catch (ResourceAccessException ex) {
+			logger.info("Client failed as expected: {}", ex.toString());
+		}
+		try {
 			client.dropUserFromRtu("userId", 0L);
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());

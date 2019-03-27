@@ -2631,6 +2631,15 @@ public interface ICommonDataServiceRestClient {
 	void dropRefFromRtu(String refId, Long rtuId) throws RestClientResponseException;
 
 	/**
+	 * Gets a list of users mapped to the specified right-to-use record.
+	 * 
+	 * @param rtuId
+	 *                  Right-to-Use ID
+	 * @return List of MLPUser objects, which may be empty
+	 */
+	List<MLPUser> getRtuUsers(long rtuId);
+
+	/**
 	 * Maps the specified user to the specified right-to-use.
 	 * 
 	 * @param userId

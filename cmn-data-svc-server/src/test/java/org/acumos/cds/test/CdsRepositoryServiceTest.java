@@ -1433,9 +1433,6 @@ public class CdsRepositoryServiceTest {
 			MLPRtuReference ref = new MLPRtuReference("some-lum-system-ID");
 			rtuRefRepository.save(ref);
 
-			// cr.getRtuReferences().add(ref);
-			// rtuRepository.save(cr);
-
 			MLPRtuRefMap refMap = new MLPRtuRefMap(cr.getRtuId(), ref.getRef());
 			rtuRefMapRepository.save(refMap);
 
@@ -1444,6 +1441,8 @@ public class CdsRepositoryServiceTest {
 
 			Iterable<MLPRightToUse> rtus = rtuRepository.findBySolutionIdUserId(cs.getSolutionId(), cu.getUserId());
 			Assert.assertTrue(rtus.iterator().hasNext());
+			Iterable<MLPUser> users = rtuUserMapRepository.findUsersByRtuId(cr.getRtuId());
+			Assert.assertTrue(users.iterator().hasNext());
 
 			rtuUserMapRepository.delete(userMap);
 			rtuRefMapRepository.delete(refMap);

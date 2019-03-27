@@ -2166,6 +2166,9 @@ public class CdsControllerTest {
 			List<MLPRightToUse> rtus = client.getRightToUses(cs.getSolutionId(), cu.getUserId());
 			Assert.assertFalse(rtus.isEmpty());
 
+			List<MLPUser> users = client.getRtuUsers(cr.getRtuId());
+			Assert.assertFalse(users.isEmpty());
+
 			client.dropUserFromRtu(cu.getUserId(), cr.getRtuId());
 			rtus = client.getRightToUses(cs.getSolutionId(), cu.getUserId());
 			Assert.assertTrue(rtus.isEmpty());

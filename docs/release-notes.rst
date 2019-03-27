@@ -24,7 +24,7 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.2.0, 26 Mar 2019
+Version 2.2.0, 28 Mar 2019
 --------------------------
 * Add APIs for workbench data access (`ACUMOS-2509 <https://jira.acumos.org/browse/ACUMOS-2509>`_)
 * Add project for workbench (`ACUMOS-2516 <https://jira.acumos.org/browse/ACUMOS-2516>`_)
@@ -37,6 +37,7 @@ Version 2.2.0, 26 Mar 2019
 * Drop peer and solution groups (`ACUMOS-2590 <https://jira.acumos.org/browse/ACUMOS-2590>`_)
 * Query project, notebook and pipeline (`ACUMOS-2595 <https://jira.acumos.org/browse/ACUMOS-2595>`_)
 * Revise access type codes (`ACUMOS-2610 <https://jira.acumos.org/browse/ACUMOS-2610>`_)
+* Add method to get RTU users (`ACUMOS-2666 <https://jira.acumos.org/browse/ACUMOS-2666>`_)
 * Add Swagger library to display size constraints from JPA annotations in generated UI
 * Upgrade to Spring-Boot version 2.1.3.RELEASE
 * Requires database schema version 2.2

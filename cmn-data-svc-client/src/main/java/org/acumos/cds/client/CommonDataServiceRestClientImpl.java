@@ -2454,6 +2454,17 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public List<MLPUser> getRtuUsers(long rtuId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.USER_PATH }, null,
+				null);
+		logger.debug("getRtuUsers: uri {}", uri);
+		ResponseEntity<List<MLPUser>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPUser>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public void addUserToRtu(String userId, Long rtuId) {
 		URI uri = buildUri(
 				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.USER_PATH, userId }, null,

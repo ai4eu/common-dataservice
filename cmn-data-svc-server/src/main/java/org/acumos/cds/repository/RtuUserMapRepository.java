@@ -21,8 +21,24 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPRtuUserMap;
+import org.acumos.cds.domain.MLPUser;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface RtuUserMapRepository extends CrudRepository<MLPRtuUserMap, MLPRtuUserMap.RtuUserMapPK> {
+
+	/**
+	 * Finds all user records that are mapped to the specified RTU ID. Size is
+	 * expected to be modest, so this does not use page.
+	 * 
+	 * @param rtuId
+	 *                  Right-to-use ID
+	 * @return Iterable of MLPUser objects
+	 */
+	@Query(value = "select u from MLPUser u, MLPRtuUserMap m" //
+			+ " WHERE u.userId = m.userId " //
+			+ " AND m.rtuId = :rtuId ")
+	Iterable<MLPUser> findUsersByRtuId(@Param("rtuId") Long rtuId);
 
 }

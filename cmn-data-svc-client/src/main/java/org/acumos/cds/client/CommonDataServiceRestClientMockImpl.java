@@ -1846,6 +1846,11 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		// How to mock?
 	}
 
+	@Override
+	public List<MLPUser> getRtuUsers(long rtuId) {
+		return Collections.emptyList();
+	}
+
 	public void setProjects(RestPageResponse<MLPProject> results) {
 		this.projects = results;
 	}

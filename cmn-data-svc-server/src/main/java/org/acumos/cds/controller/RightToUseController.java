@@ -33,6 +33,7 @@ import org.acumos.cds.domain.MLPRightToUse_;
 import org.acumos.cds.domain.MLPRtuRefMap;
 import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPRtuUserMap;
+import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.RightToUseRepository;
 import org.acumos.cds.repository.RtuRefMapRepository;
 import org.acumos.cds.repository.RtuReferenceRepository;
@@ -306,6 +307,14 @@ public class RightToUseController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropRefFromRtu failed", ex);
 		}
+	}
+
+	@ApiOperation(value = "Gets all users mapped to the specified RTU. Answers empty if none are found.", response = MLPUser.class, responseContainer = "List")
+	@ApiPageable
+	@RequestMapping(value = "/{rtuId}/" + CCDSConstants.USER_PATH, method = RequestMethod.GET)
+	public Iterable<MLPUser> getRtuUsers(@PathVariable("rtuId") Long rtuId) {
+		logger.debug("getRtuUsers: {}", rtuId);
+		return rtuUserMapRepository.findUsersByRtuId(rtuId);
 	}
 
 	@ApiOperation(value = "Adds the specified user to the specified RTU. Answers bad request if an ID is invalid.", //
