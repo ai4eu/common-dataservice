@@ -34,6 +34,7 @@ Version 2.2.0, 2 Apr 2019
 * Define notebook-type values (`ACUMOS-2560 <https://jira.acumos.org/browse/ACUMOS-2560>`_)
 * Define kernel-type values (`ACUMOS-2561 <https://jira.acumos.org/browse/ACUMOS-2561>`_)
 * Extend data and APIs for catalog features (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
+* Remove access type code from solution revision (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Remove access and scope type from peer subscription (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Drop peer and solution groups (`ACUMOS-2590 <https://jira.acumos.org/browse/ACUMOS-2590>`_)
 * Query project, notebook and pipeline (`ACUMOS-2595 <https://jira.acumos.org/browse/ACUMOS-2595>`_)

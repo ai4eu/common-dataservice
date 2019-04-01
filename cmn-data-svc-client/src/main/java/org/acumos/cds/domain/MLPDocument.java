@@ -31,13 +31,12 @@ import javax.validation.constraints.Size;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Model for a user-provided document that supports a model. Stored in Nexus.
- * Can be mapped to multiple revisions, including the same revision with
- * multiple access types. E.g., store a company-visible description and a
- * public-visible description for the same thing without creating separate CDS
- * revisions.
+ * Model for a user-provided document that supports a model. This is metadata
+ * about a user-supplied document stored in Nexus, not document content.
  * 
- * Was originally stored in a different database; this will allow migration.
+ * Can be mapped to multiple revisions, including the same revision with
+ * multiple access types. E.g., store different documents for the same thing
+ * without creating separate CDS revisions.
  * 
  * Inherits all simple field mappings from the abstract superclass.
  * 

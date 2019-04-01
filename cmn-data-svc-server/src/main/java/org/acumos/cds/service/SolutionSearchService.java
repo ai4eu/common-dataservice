@@ -73,8 +73,6 @@ public interface SolutionSearchService {
 	 *                                User IDs
 	 * @param modelTypeCodes
 	 *                                Model type codes
-	 * @param accessTypeCodes
-	 *                                Access type codes
 	 * @param tags
 	 *                                Tags
 	 * @param authorKeywords
@@ -86,10 +84,10 @@ public interface SolutionSearchService {
 	 * @return Page of solutions
 	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPortalSolutions(String[],
 	 *      String[], boolean, String[], String[], String[], String[], String[],
-	 *      String[], org.acumos.cds.transport.RestPageRequest)
+	 *      org.acumos.cds.transport.RestPageRequest)
 	 */
 	Page<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords, boolean active,
-			String[] userIds, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, String[] authorKeywords,
+			String[] userIds, String[] modelTypeCodes, String[] tags, String[] authorKeywords,
 			String[] publisherKeywords, Pageable pageable);
 
 	/**
@@ -104,8 +102,6 @@ public interface SolutionSearchService {
 	 *                            User IDs
 	 * @param modelTypeCodes
 	 *                            Model type codes
-	 * @param accessTypeCodes
-	 *                            Access type codes
 	 * @param allTags
 	 *                            Tags that ALL must match
 	 * @param anyTags
@@ -116,12 +112,11 @@ public interface SolutionSearchService {
 	 *                            Page and sort info
 	 * @return Page of solutions
 	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPortalSolutionsByKwAndTags(String[],
-	 *      boolean, String[], String[], String[], String[], String[], String[],
+	 *      boolean, String[], String[], String[], String[], String[],
 	 *      org.acumos.cds.transport.RestPageRequest)
 	 */
 	Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] modelTypeCodes, String[] accessTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
-			Pageable pageable);
+			String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds, Pageable pageable);
 
 	/**
 	 * Searches for solutions editable by one user to populate the My Models page.

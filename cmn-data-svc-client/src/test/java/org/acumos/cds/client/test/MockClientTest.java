@@ -429,12 +429,12 @@ public class MockClientTest {
 
 		RestPageResponse<MLPSolution> portalSols = new RestPageResponse<>();
 		client.setPortalSolutions(portalSols);
-		Assert.assertTrue(portalSols == client.findPortalSolutions(null, null, true, null, null, null, null, null, null,
+		Assert.assertTrue(
+				portalSols == client.findPortalSolutions(null, null, true, null, null, null, null, null, pageRequest));
+		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
 				pageRequest));
 		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
-				null, pageRequest));
-		Assert.assertTrue(portalSols == client.findPortalSolutionsByKwAndTags(null, true, null, null, null, null, null,
-				null, pageRequest));
+				pageRequest));
 
 		RestPageResponse<MLPSolution> userPrivSols = new RestPageResponse<>();
 		client.setUserSolutions(userPrivSols);

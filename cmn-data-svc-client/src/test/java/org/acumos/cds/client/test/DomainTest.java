@@ -1392,43 +1392,41 @@ public class DomainTest extends AbstractModelTest {
 	private final AuthorTransport author1 = new AuthorTransport("name2", "contact2");
 
 	private void checkMLPSolutionRevision(MLPSolutionRevision m) {
-		Assert.assertEquals(s1, m.getAccessTypeCode());
 		Assert.assertEquals(t1, m.getCreated());
-		Assert.assertEquals(s3, m.getMetadata());
+		Assert.assertEquals(s1, m.getMetadata());
 		Assert.assertEquals(t2, m.getModified());
 		Assert.assertEquals(t3, m.getOnboarded());
-		Assert.assertEquals(s4, m.getOrigin());
-		Assert.assertEquals(s5, m.getPublisher());
-		Assert.assertEquals(s6, m.getRevisionId());
-		Assert.assertEquals(s7, m.getSolutionId());
-		Assert.assertEquals(s8, m.getSourceId());
-		Assert.assertEquals(s9, m.getUserId());
-		Assert.assertEquals(s11, m.getVerifiedLicense());
-		Assert.assertEquals(s12, m.getVerifiedVulnerability());
-		Assert.assertEquals(s13, m.getVersion());
+		Assert.assertEquals(s2, m.getOrigin());
+		Assert.assertEquals(s3, m.getPublisher());
+		Assert.assertEquals(s4, m.getRevisionId());
+		Assert.assertEquals(s5, m.getSolutionId());
+		Assert.assertEquals(s6, m.getSourceId());
+		Assert.assertEquals(s7, m.getUserId());
+		Assert.assertEquals(s8, m.getVerifiedLicense());
+		Assert.assertEquals(s9, m.getVerifiedVulnerability());
+		Assert.assertEquals(s10, m.getVersion());
 		Assert.assertEquals(author1, m.getAuthors()[1]);
 	}
 
 	@Test
 	public void testMLPSolutionRevision() {
-		MLPSolutionRevision m = new MLPSolutionRevision(s1, s1, s1, s1);
+		MLPSolutionRevision m = new MLPSolutionRevision(s1, s1, s1);
 		m = new MLPSolutionRevision();
-		m.setAccessTypeCode(s1);
 		AuthorTransport[] authors = new AuthorTransport[] { author0, author1 };
 		m.setAuthors(authors);
 		m.setCreated(t1);
-		m.setMetadata(s3);
+		m.setMetadata(s1);
 		m.setModified(t2);
 		m.setOnboarded(t3);
-		m.setOrigin(s4);
-		m.setPublisher(s5);
-		m.setRevisionId(s6);
-		m.setSolutionId(s7);
-		m.setSourceId(s8);
-		m.setUserId(s9);
-		m.setVerifiedLicense(s11);
-		m.setVerifiedVulnerability(s12);
-		m.setVersion(s13);
+		m.setOrigin(s2);
+		m.setPublisher(s3);
+		m.setRevisionId(s4);
+		m.setSolutionId(s5);
+		m.setSourceId(s6);
+		m.setUserId(s7);
+		m.setVerifiedLicense(s8);
+		m.setVerifiedVulnerability(s9);
+		m.setVersion(s10);
 		checkMLPSolutionRevision(m);
 		m = new MLPSolutionRevision(m);
 		checkMLPSolutionRevision(m);
@@ -1438,7 +1436,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPSolutionRevision(null, null, null, null);
+			new MLPSolutionRevision(null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

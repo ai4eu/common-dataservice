@@ -519,7 +519,7 @@ public class CdsRepositoryServiceTest {
 			// Ensure both tags were retrieved
 			Assert.assertEquals(2, searchSols.getContent().get(0).getTags().size());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0X", cu.getUserId(), "PR");
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0X", cu.getUserId());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("name1", "contact1"),
 					new AuthorTransport("name2", "contact2") });
 			cr.setPublisher("Big Data Org");
@@ -527,7 +527,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
 			logger.info("Created solution revision " + cr.getRevisionId());
 
-			MLPSolutionRevision rev2 = new MLPSolutionRevision(cs2.getSolutionId(), "1.0X", cu.getUserId(), "PR");
+			MLPSolutionRevision rev2 = new MLPSolutionRevision(cs2.getSolutionId(), "1.0X", cu.getUserId());
 			rev2 = revisionRepository.save(rev2);
 			Assert.assertNotNull("Revision ID", rev2.getRevisionId());
 			logger.info("Created solution revision " + rev2.getRevisionId());
@@ -550,26 +550,24 @@ public class CdsRepositoryServiceTest {
 			boolean active = true;
 			String[] userIds = { cu.getUserId() };
 			String[] modelTypeCodes = { "CL" };
-			String[] accTypeCodes = { "PR", "OR" };
 			String[] searchTags = { solTag1.getTag() };
 			String[] searchAuths = null;
 			String[] searchPubs = { "Data" };
 			Page<MLPSolution> portalSearchResult = solutionSearchService.findPortalSolutions(solKw, descKw, active,
-					userIds, modelTypeCodes, accTypeCodes, searchTags, searchAuths, searchPubs,
+					userIds, modelTypeCodes, searchTags, searchAuths, searchPubs,
 					PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertEquals(1, portalSearchResult.getNumberOfElements());
 			logger.info("Found portal solution total " + portalSearchResult.getTotalElements());
 
 			logger.info("Check that one tag yields multiple matches");
 			Page<MLPSolution> oneTagSearchResult = solutionSearchService.findPortalSolutions(null, null, active, null,
-					null, null, searchTags, null, null, PageRequest.of(0, 5));
+					null, searchTags, null, null, PageRequest.of(0, 5));
 			Assert.assertEquals(2, oneTagSearchResult.getNumberOfElements());
 
 			String[] ids = { cs.getSolutionId() };
 			String[] catIds = { ca1.getCatalogId() };
 			Page<MLPSolution> idSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(ids, active,
-					userIds, modelTypeCodes, accTypeCodes, searchTags, null, catIds,
-					PageRequest.of(0, 2, Direction.ASC, "name"));
+					userIds, modelTypeCodes, searchTags, null, catIds, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertEquals(1, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
 
@@ -577,14 +575,14 @@ public class CdsRepositoryServiceTest {
 			String[] allTags = new String[] { solTag1.getTag() };
 			String[] anyTags = new String[] { solTag2.getTag(), "other" };
 			Page<MLPSolution> allAnyTagsSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(null,
-					active, userIds, modelTypeCodes, accTypeCodes, allTags, anyTags, null, PageRequest.of(0, 5));
+					active, userIds, modelTypeCodes, allTags, anyTags, null, PageRequest.of(0, 5));
 			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
 			Assert.assertTrue(taggedSol.getTags().contains(solTag1) && taggedSol.getTags().contains(solTag2));
 
 			String[] kw = { "Big", "Data" };
 			Page<MLPSolution> kwSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(kw, active, userIds,
-					modelTypeCodes, accTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
+					modelTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
@@ -1001,7 +999,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull("Solution 2 ID", cs2.getSolutionId());
 			logger.info("Created solution 2 " + cs2.getSolutionId());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("other name", "other contact") });
 			cr.setPublisher("Big Data Org");
 			cr = revisionRepository.save(cr);

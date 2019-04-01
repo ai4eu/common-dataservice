@@ -164,7 +164,7 @@ public class CdsControllerTest {
 			Assert.assertNotNull(fetched);
 			Assert.assertNotNull(fetched.getTags());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), "PB");
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId());
 			cr.setPublisher("Big Data Org");
 			cr = client.createSolutionRevision(cr);
 			logger.info("Created solution revision {}", cr);
@@ -734,8 +734,7 @@ public class CdsControllerTest {
 			Assert.assertNotEquals(0, userSolAccList.getNumberOfElements());
 			logger.info("Got solutions accessible by user {}", cu.getUserId());
 
-			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId(), //
-					"PB");
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId());
 			cr.setAuthors(new AuthorTransport[] { new AuthorTransport("my name", "http://github") });
 			cr.setPublisher("publisher 1");
 			cr = client.createSolutionRevision(cr);
@@ -745,7 +744,7 @@ public class CdsControllerTest {
 			cr.setVerifiedVulnerability("FA");
 			client.updateSolutionRevision(cr);
 
-			MLPSolutionRevision crOrg = new MLPSolutionRevision(csOrg.getSolutionId(), "1.0R", cu.getUserId(), "OR");
+			MLPSolutionRevision crOrg = new MLPSolutionRevision(csOrg.getSolutionId(), "1.0R", cu.getUserId());
 			crOrg.setAuthors(new AuthorTransport[] { new AuthorTransport("your name", "email") });
 			crOrg.setPublisher("publisher 2");
 			crOrg = client.createSolutionRevision(crOrg);
@@ -849,21 +848,21 @@ public class CdsControllerTest {
 			// Portal dynamic search
 			logger.info("Querying for any solutions via flexible i/f");
 			RestPageResponse<MLPSolution> portalAnyMatches = client.findPortalSolutions(null, null, true, null, null,
-					null, null, null, null, new RestPageRequest(0, 5));
+					null, null, null, new RestPageRequest(0, 5));
 			Assert.assertNotNull(portalAnyMatches);
 			Assert.assertTrue(portalAnyMatches.getNumberOfElements() > 1);
 
 			logger.info("Querying for valid tag on solutions via flexible i/f");
 			String[] searchTags = new String[] { tagName1 };
 			RestPageResponse<MLPSolution> portalTagMatches = client.findPortalSolutions(null, null, true, null, null,
-					null, searchTags, null, null, new RestPageRequest(0, 5));
+					searchTags, null, null, new RestPageRequest(0, 5));
 			Assert.assertNotNull(portalTagMatches);
 			Assert.assertNotEquals(0, portalTagMatches.getNumberOfElements());
 
 			logger.info("Querying for bogus tag on solutions via flexible i/f");
 			String[] bogusTags = new String[] { "bogus" };
 			RestPageResponse<MLPSolution> portalTagNoMatches = client.findPortalSolutions(null, null, true, null, null,
-					null, bogusTags, null, null, new RestPageRequest(0, 5));
+					bogusTags, null, null, new RestPageRequest(0, 5));
 			Assert.assertNotNull(portalTagNoMatches);
 			Assert.assertEquals(0, portalTagNoMatches.getNumberOfElements());
 
@@ -872,7 +871,7 @@ public class CdsControllerTest {
 			String[] ids = { cs.getSolutionId(), csOrg.getSolutionId() };
 			String[] catalogId = null;
 			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKwAndTags(ids, true, null, null,
-					null, null, null, catalogId, new RestPageRequest(0, 2));
+					null, null, catalogId, new RestPageRequest(0, 2));
 			Assert.assertNotNull(idSearchResult);
 			Assert.assertEquals(2, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
@@ -881,7 +880,7 @@ public class CdsControllerTest {
 			logger.info("Querying for solutions by keyword");
 			String[] kw = { "solution", "organization" };
 			RestPageResponse<MLPSolution> kwSearchResult = client.findPortalSolutionsByKwAndTags(kw, true, null, null,
-					null, null, null, catalogId, new RestPageRequest(0, 2));
+					null, null, catalogId, new RestPageRequest(0, 2));
 			Assert.assertNotNull(kwSearchResult);
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
@@ -890,7 +889,7 @@ public class CdsControllerTest {
 			String[] allTags = new String[] { tagName1 };
 			String[] anyTags = null; // new String[] { tagName2 };
 			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPortalSolutionsByKwAndTags(null, true,
-					null, null, null, allTags, anyTags, catalogId, new RestPageRequest(0, 2));
+					null, null, allTags, anyTags, catalogId, new RestPageRequest(0, 2));
 			logger.info("Found models by tag total " + allAnyTagsSearchResult.getTotalElements());
 			Assert.assertNotNull(allAnyTagsSearchResult);
 			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
@@ -899,13 +898,13 @@ public class CdsControllerTest {
 
 			logger.info("Querying for solutions by catalog");
 			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, null, new String[] { ca1.getCatalogId() }, new RestPageRequest(0, 2));
+					null, null, null, new String[] { ca1.getCatalogId() }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(ctlgSearchResult);
 			Assert.assertNotEquals(0, ctlgSearchResult.getNumberOfElements());
 
 			logger.info("Querying for solutions by bogus catalog");
 			RestPageResponse<MLPSolution> noCtlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, null, new String[] { "bogus" }, new RestPageRequest(0, 2));
+					null, null, null, new String[] { "bogus" }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(noCtlgSearchResult);
 			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
@@ -938,13 +937,12 @@ public class CdsControllerTest {
 			String[] nameKw = null;
 			String[] descKw = null;
 			String[] owners = { cu.getUserId() };
-			String[] accessTypeCodes = { "OR", "PB" };
 			String[] modelTypeCodes = null;
 			String[] authKw = { "github" };
 			String[] pubKw = { "publisher" };
 			searchTags = null;
 			RestPageResponse<MLPSolution> portalActiveMatches = client.findPortalSolutions(nameKw, descKw, true, owners,
-					accessTypeCodes, modelTypeCodes, searchTags, authKw, pubKw, new RestPageRequest(0, 5));
+					modelTypeCodes, searchTags, authKw, pubKw, new RestPageRequest(0, 5));
 			Assert.assertNotNull(portalActiveMatches);
 			Assert.assertNotEquals(0, portalActiveMatches.getNumberOfElements());
 
@@ -1715,7 +1713,7 @@ public class CdsControllerTest {
 		cs = client.createSolution(cs);
 		Assert.assertNotNull(cs.getSolutionId());
 
-		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0", cu.getUserId(), "PR");
+		MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0", cu.getUserId());
 		cr.setVerifiedLicense("FA");
 		cr.setVerifiedVulnerability("FA");
 		cr = client.createSolutionRevision(cr);
@@ -3014,21 +3012,14 @@ public class CdsControllerTest {
 			logger.info("Update solution revision failed on empty as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPSolutionRevision s = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), "bogus");
-			client.createSolutionRevision(s);
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("Create solution rev failed on acc code as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), s64, cu.getUserId(), "PR");
+			csr = new MLPSolutionRevision(cs.getSolutionId(), s64, cu.getUserId());
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create revision failed on constraints as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), "PR");
+			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId());
 			csr.setVerifiedLicense("bogus");
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
@@ -3036,7 +3027,7 @@ public class CdsControllerTest {
 			logger.info("Create revision failed on enum as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId(), "PR");
+			csr = new MLPSolutionRevision(cs.getSolutionId(), "v1", cu.getUserId());
 			csr.setVerifiedVulnerability("bogus");
 			client.createSolutionRevision(csr);
 			throw new Exception("Unexpected success");
@@ -3045,7 +3036,7 @@ public class CdsControllerTest {
 		}
 		// This one is supposed to work
 		final String solRevVersion = "1.0R";
-		csr = new MLPSolutionRevision(cs.getSolutionId(), solRevVersion, cu.getUserId(), "PR");
+		csr = new MLPSolutionRevision(cs.getSolutionId(), solRevVersion, cu.getUserId());
 		csr = client.createSolutionRevision(csr);
 		try {
 			client.createSolutionRevision(csr);
@@ -3081,7 +3072,7 @@ public class CdsControllerTest {
 			logger.info("Update solution revision failed on enum as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPSolutionRevision r = new MLPSolutionRevision(cs.getSolutionId(), "version", "userId", "PB");
+			MLPSolutionRevision r = new MLPSolutionRevision(cs.getSolutionId(), "version", "userId");
 			r.setRevisionId("bogus");
 			client.updateSolutionRevision(r);
 			throw new Exception("Unexpected success");
@@ -3255,8 +3246,7 @@ public class CdsControllerTest {
 		}
 		try {
 			String[] searchTags = new String[] { "%" };
-			client.findPortalSolutions(null, null, true, null, null, null, searchTags, null, null,
-					new RestPageRequest(0, 1));
+			client.findPortalSolutions(null, null, true, null, null, searchTags, null, null, new RestPageRequest(0, 1));
 			// I have not been able to make findPortalSolutions fail.
 			// all arguments are optional; there is no illegal value; etc.
 			// so can't throw new Exception("Unexpected success") here.

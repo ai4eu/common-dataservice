@@ -25,6 +25,10 @@ package org.acumos.cds;
  */
 public class CCDSConstants {
 
+	private CCDSConstants() {
+		// prohibit construction to silence a Sonar warning
+	};
+
 	public static final String JUNCTION_QUERY_PARAM = "_j";
 
 	// Metadata

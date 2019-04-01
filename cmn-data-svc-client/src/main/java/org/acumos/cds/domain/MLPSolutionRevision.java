@@ -74,16 +74,14 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	 * on save. The on-boarded date defaults to the current date and time.
 	 * 
 	 * @param solutionId
-	 *                           Solution ID
+	 *                       Solution ID
 	 * @param version
-	 *                           User-assigned version string
+	 *                       User-assigned version string
 	 * @param userId
-	 *                           User ID
-	 * @param accessTypeCode
-	 *                           Access type code
+	 *                       User ID
 	 */
-	public MLPSolutionRevision(String solutionId, String version, String userId, String accessTypeCode) {
-		super(version, accessTypeCode);
+	public MLPSolutionRevision(String solutionId, String version, String userId) {
+		super(version);
 		if (solutionId == null || userId == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.solutionId = solutionId;
@@ -131,7 +129,6 @@ public class MLPSolutionRevision extends MLPAbstractSolutionRevision implements 
 	public String toString() {
 		return this.getClass().getName() + "[revisionId=" + getRevisionId() + ", solutionId=" + solutionId + ", userId="
 				+ userId + ", meta=" + getMetadata() + ", publisher=" + getPublisher() + ", version=" + getVersion()
-				+ ", accessTypeCode=" + getAccessTypeCode() + ", created=" + getCreated() + ", modified="
-				+ getModified() + "]";
+				+ ", created=" + getCreated() + ", modified=" + getModified() + "]";
 	}
 }

@@ -104,7 +104,7 @@ public class ArtifactController extends AbstractController {
 		return artifactRepository.findAll(pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the artifact with the specified ID. Returns null if the ID is not found.", //
 			response = MLPArtifact.class)
 	@RequestMapping(value = "/{artifactId}", method = RequestMethod.GET)
 	public MLPArtifact getArtifact(@PathVariable("artifactId") String artifactId) {
@@ -113,12 +113,13 @@ public class ArtifactController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Searches for entities with names or descriptions that contain the search term using the like operator; empty if no matches are found.", //
+	@ApiOperation(value = "Searches for artifacts with names or descriptions that contain the search term using the like operator; empty if no matches are found.", //
 			response = MLPArtifact.class, responseContainer = "List")
 	@ApiPageable
 	@RequestMapping(value = "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
-	public Page<MLPArtifact> like(@RequestParam(CCDSConstants.TERM_PATH) String term, Pageable pageRequest) {
-		logger.debug("like pageRequest {}", pageRequest);
+	public Page<MLPArtifact> findArtifactsBySearchTerm(@RequestParam(CCDSConstants.TERM_PATH) String term,
+			Pageable pageRequest) {
+		logger.debug("findArtifactsBySearchTerm pageRequest {}", pageRequest);
 		return artifactRepository.findBySearchTerm(term, pageRequest);
 	}
 
@@ -158,7 +159,7 @@ public class ArtifactController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the solution revisions that use the specified artifact ID.", //
+	@ApiOperation(value = "Gets the solution revisions that use the specified artifact.", //
 			response = MLPSolutionRevision.class, responseContainer = "List")
 	@RequestMapping(value = "/{artifactId}/" + CCDSConstants.REVISION_PATH, method = RequestMethod.GET)
 	public Iterable<MLPSolutionRevision> getRevisionsForArtifact(@PathVariable("artifactId") String artifactId) {
@@ -166,7 +167,7 @@ public class ArtifactController extends AbstractController {
 		return solutionRevisionRepository.findByArtifactId(artifactId);
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
+	@ApiOperation(value = "Creates a new artifact and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
 			response = MLPArtifact.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -200,7 +201,7 @@ public class ArtifactController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing artifact with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{artifactId}", method = RequestMethod.PUT)

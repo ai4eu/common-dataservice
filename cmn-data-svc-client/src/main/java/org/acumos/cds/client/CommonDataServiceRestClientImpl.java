@@ -500,8 +500,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
-			String[] authorKeywords, String[] publisherKeywords, RestPageRequest pageRequest) {
+			boolean active, String[] userIds, String[] modelTypeCodes, String[] tags, String[] authorKeywords,
+			String[] publisherKeywords, RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		// This is required
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
@@ -511,8 +511,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_DESC, descriptionKeywords);
 		if (userIds != null && userIds.length > 0)
 			parms.put(CCDSConstants.SEARCH_USERS, userIds);
-		if (accessTypeCodes != null && accessTypeCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
 		if (modelTypeCodes != null && modelTypeCodes.length > 0)
 			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
 		if (tags != null && tags.length > 0)
@@ -533,8 +531,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active,
-			String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
-			String[] catalogIds, RestPageRequest pageRequest) {
+			String[] userIds, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
+			RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
 		// This is the only required parameter.
 		parms.put(CCDSConstants.SEARCH_ACTIVE, active);
@@ -542,8 +540,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 			parms.put(CCDSConstants.SEARCH_KW, keywords);
 		if (userIds != null && userIds.length > 0)
 			parms.put(CCDSConstants.SEARCH_USERS, userIds);
-		if (accessTypeCodes != null && accessTypeCodes.length > 0)
-			parms.put(CCDSConstants.SEARCH_ACCESS_TYPES, accessTypeCodes);
 		if (modelTypeCodes != null && modelTypeCodes.length > 0)
 			parms.put(CCDSConstants.SEARCH_MODEL_TYPES, modelTypeCodes);
 		if (allTags != null && allTags.length > 0)

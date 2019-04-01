@@ -1347,15 +1347,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
-			String[] authKws, String[] pubKws, RestPageRequest pageRequest) {
+			boolean active, String[] userIds, String[] modelTypeCodes, String[] tags, String[] authKws, String[] pubKws,
+			RestPageRequest pageRequest) {
 		return this.portalSolutions;
 	}
 
 	@Override
 	public RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active,
-			String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags,
-			String[] catalogIds, RestPageRequest pageRequest) {
+			String[] userIds, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
+			RestPageRequest pageRequest) {
 		return this.portalSolutions;
 	}
 

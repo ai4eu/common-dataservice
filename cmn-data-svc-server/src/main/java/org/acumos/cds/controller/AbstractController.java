@@ -73,7 +73,8 @@ public abstract class AbstractController {
 		// Use a new variable to silence Sonar
 		Exception ex = thrown;
 		while (ex != null) {
-			logger.debug("findConstraintViolationException: checking ex {}", ex.toString());
+			if (logger.isDebugEnabled()) // silence Sonar complaint
+				logger.debug("findConstraintViolationException: checking ex {}", ex.toString());
 			// This once searched for database-specific exceptions by name, for example
 			// com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException,
 			// but the project is not using MySql and Sonar flagged the usage of a class
