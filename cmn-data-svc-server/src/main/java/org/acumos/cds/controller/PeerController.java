@@ -268,9 +268,6 @@ public class PeerController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerSub.getPeerId(), null);
 		}
 		try {
-			// Validate enum codes
-			super.validateCode(peerSub.getAccessType(), CodeNameType.ACCESS_TYPE);
-			super.validateCode(peerSub.getScopeType(), CodeNameType.SUBSCRIPTION_SCOPE);
 			// Null out any existing ID to get an auto-generated ID
 			peerSub.setSubId(null);
 			// Create a new row
@@ -302,9 +299,6 @@ public class PeerController extends AbstractController {
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + subId, null);
 		}
 		try {
-			// Validate enum codes
-			super.validateCode(peerSub.getAccessType(), CodeNameType.ACCESS_TYPE);
-			super.validateCode(peerSub.getScopeType(), CodeNameType.SUBSCRIPTION_SCOPE);
 			// Use the path-parameter id; don't trust the one in the object
 			peerSub.setSubId(subId);
 			// Update the existing row

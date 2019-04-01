@@ -69,7 +69,6 @@ public class CodeNameProperties {
 	private Map<String, String> peerStatus;
 	private Map<String, String> publishRequestStatus;
 	private Map<String, String> serviceStatus;
-	private Map<String, String> subscriptionScope;
 	private Map<String, String> taskStepStatus;
 	private Map<String, String> taskType;
 	private Map<String, String> toolkitType;
@@ -146,14 +145,6 @@ public class CodeNameProperties {
 
 	public void setPublishRequestStatus(Map<String, String> publishRequestStatus) {
 		this.publishRequestStatus = publishRequestStatus;
-	}
-
-	public Map<String, String> getSubscriptionScope() {
-		return subscriptionScope;
-	}
-
-	public void setSubscriptionScope(Map<String, String> subscriptionScope) {
-		this.subscriptionScope = subscriptionScope;
 	}
 
 	public Map<String, String> getTaskStepStatus() {

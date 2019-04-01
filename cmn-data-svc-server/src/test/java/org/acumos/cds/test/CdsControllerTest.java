@@ -492,7 +492,7 @@ public class CdsControllerTest {
 
 			Assert.assertEquals(0, client.getPeerSubscriptionCount(pr.getPeerId()));
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId());
 			ps = client.createPeerSubscription(ps);
 			logger.info("Created peer subscription {}", ps);
 
@@ -3562,25 +3562,13 @@ public class CdsControllerTest {
 		Assert.assertTrue(client.getPeerSubscriptions("bogus").isEmpty());
 		Assert.assertNull(client.getPeerSubscription(0L));
 		try {
-			client.createPeerSubscription(new MLPPeerSubscription("peerId", "userId", "scope", "access"));
+			client.createPeerSubscription(new MLPPeerSubscription("peerId", "userId"));
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create peer sub failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.createPeerSubscription(new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "bogus", "PB"));
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("Create peer sub failed on bad scope code as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			client.createPeerSubscription(new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL", "bogus"));
-			throw new Exception("Unexpected success");
-		} catch (HttpStatusCodeException ex) {
-			logger.info("Create peer sub failed on bad access code as expected: {}", ex.getResponseBodyAsString());
-		}
-		try {
-			MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "scope", "access");
+			MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId());
 			ps.setSelector(
 					s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64 + s64);
 			client.createPeerSubscription(ps);
@@ -3589,7 +3577,7 @@ public class CdsControllerTest {
 			logger.info("Create peer sub failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		// Supposed to work
-		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId(), "FL", "PB");
+		MLPPeerSubscription ps = new MLPPeerSubscription(cp.getPeerId(), cu.getUserId());
 		ps = client.createPeerSubscription(ps);
 		try {
 			ps.setSelector(

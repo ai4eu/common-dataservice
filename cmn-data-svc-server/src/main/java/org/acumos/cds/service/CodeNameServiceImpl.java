@@ -71,8 +71,6 @@ public class CodeNameServiceImpl implements CodeNameService {
 			return codeNameProps.getPublishRequestStatus();
 		case SERVICE_STATUS:
 			return codeNameProps.getServiceStatus();
-		case SUBSCRIPTION_SCOPE:
-			return codeNameProps.getSubscriptionScope();
 		case TASK_STEP_STATUS:
 			return codeNameProps.getTaskStepStatus();
 		case TASK_TYPE:

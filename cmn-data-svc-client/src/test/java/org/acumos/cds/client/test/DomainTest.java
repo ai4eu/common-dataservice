@@ -576,35 +576,31 @@ public class DomainTest extends AbstractModelTest {
 	}
 
 	private void checkMLPPeerSubscription(MLPPeerSubscription m) {
-		Assert.assertEquals(s1, m.getAccessType());
 		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(l1, m.getMaxArtifactSize());
 		Assert.assertEquals(t2, m.getModified());
-		Assert.assertEquals(s2, m.getOptions());
-		Assert.assertEquals(s3, m.getUserId());
-		Assert.assertEquals(s4, m.getPeerId());
+		Assert.assertEquals(s1, m.getOptions());
+		Assert.assertEquals(s2, m.getUserId());
+		Assert.assertEquals(s3, m.getPeerId());
 		Assert.assertEquals(t3, m.getProcessed());
 		Assert.assertEquals(l2, m.getRefreshInterval());
-		Assert.assertEquals(s5, m.getScopeType());
-		Assert.assertEquals(s6, m.getSelector());
+		Assert.assertEquals(s4, m.getSelector());
 		Assert.assertEquals(l3, m.getSubId());
 	}
 
 	@Test
 	public void testMLPPeerSubscription() {
-		MLPPeerSubscription m = new MLPPeerSubscription(s1, s2, s3, s4);
+		MLPPeerSubscription m = new MLPPeerSubscription(s1, s2);
 		m = new MLPPeerSubscription();
-		m.setAccessType(s1);
 		m.setCreated(t1);
 		m.setMaxArtifactSize(l1);
 		m.setModified(t2);
-		m.setOptions(s2);
-		m.setUserId(s3);
-		m.setPeerId(s4);
+		m.setOptions(s1);
+		m.setUserId(s2);
+		m.setPeerId(s3);
 		m.setProcessed(t3);
 		m.setRefreshInterval(l2);
-		m.setScopeType(s5);
-		m.setSelector(s6);
+		m.setSelector(s4);
 		m.setSubId(l3);
 		checkMLPPeerSubscription(m);
 		m = new MLPPeerSubscription(m);
@@ -615,7 +611,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPPeerSubscription(null, null, null, null);
+			new MLPPeerSubscription(null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

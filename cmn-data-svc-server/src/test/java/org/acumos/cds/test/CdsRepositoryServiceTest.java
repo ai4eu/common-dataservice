@@ -370,7 +370,7 @@ public class CdsRepositoryServiceTest {
 					null, false, PageRequest.of(0, 5));
 			Assert.assertTrue(emptyPeers.isEmpty());
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId());
 			ps = peerSubscriptionRepository.save(ps);
 			Assert.assertNotNull(ps.getSubId());
 			// Column was defined as timestamp with autoupdate :(
@@ -907,7 +907,7 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull(pr.getPeerId());
 			Assert.assertNotNull(pr.getCreated());
 
-			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId(), "FL", "PB");
+			MLPPeerSubscription ps = new MLPPeerSubscription(pr.getPeerId(), cu.getUserId());
 			ps = peerSubscriptionRepository.save(ps);
 			Assert.assertNotNull(ps.getSubId());
 

@@ -70,18 +70,6 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	@ApiModelProperty(required = true, value = "User ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String userId;
 
-	@Column(name = "SCOPE_TYPE", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Scope type cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Subscription scope type code", example = "RF")
-	private String scopeType;
-
-	@Column(name = "ACCESS_TYPE", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Access type cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Access type code", example = "PB")
-	private String accessType;
-
 	@Column(name = "SELECTOR", columnDefinition = "VARCHAR(1024)")
 	@Size(max = 1024)
 	@ApiModelProperty(value = "Selector as JSON", example = "{ \"modelTypeCode\" : \"CL\" }")
@@ -117,21 +105,15 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	 * generated on save.
 	 * 
 	 * @param peerId
-	 *                       Peer ID
+	 *                   Peer ID
 	 * @param userId
-	 *                       User ID, the operator
-	 * @param scopeType
-	 *                       Peer subscription scope type
-	 * @param accessType
-	 *                       Peer subscription access type
+	 *                   User ID, the operator
 	 */
-	public MLPPeerSubscription(String peerId, String userId, String scopeType, String accessType) {
-		if (peerId == null || userId == null || scopeType == null || accessType == null)
+	public MLPPeerSubscription(String peerId, String userId) {
+		if (peerId == null || userId == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.peerId = peerId;
 		this.userId = userId;
-		this.scopeType = scopeType;
-		this.accessType = accessType;
 	}
 
 	/**
@@ -142,14 +124,12 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 	 */
 	public MLPPeerSubscription(MLPPeerSubscription that) {
 		super(that);
-		this.accessType = that.accessType;
 		this.maxArtifactSize = that.maxArtifactSize;
 		this.options = that.options;
 		this.userId = that.userId;
 		this.peerId = that.peerId;
 		this.processed = that.processed;
 		this.refreshInterval = that.refreshInterval;
-		this.scopeType = that.scopeType;
 		this.selector = that.selector;
 		this.subId = that.subId;
 	}
@@ -224,30 +204,6 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 		this.maxArtifactSize = maxArtifactSize;
 	}
 
-	public String getScopeType() {
-		return scopeType;
-	}
-
-	/**
-	 * @param scopeType
-	 *                      A valid scope-type code
-	 */
-	public void setScopeType(String scopeType) {
-		this.scopeType = scopeType;
-	}
-
-	public String getAccessType() {
-		return accessType;
-	}
-
-	/**
-	 * @param accessType
-	 *                       A valid access-type code
-	 */
-	public void setAccessType(String accessType) {
-		this.accessType = accessType;
-	}
-
 	public Instant getProcessed() {
 		return processed;
 	}
@@ -268,13 +224,13 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(subId, peerId, selector, options);
+		return Objects.hash(subId, peerId, selector, options, userId);
 	}
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[subId=" + subId + ", peerId=" + peerId + ", refreshInterval="
-				+ refreshInterval + ", ...]";
+		return this.getClass().getName() + "[subId=" + subId + ", peerId=" + peerId + ", userId=" + userId
+				+ ", refreshInterval=" + refreshInterval + ", selector=" + selector + ", ...]";
 	}
 
 }
