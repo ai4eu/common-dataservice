@@ -133,7 +133,7 @@ public class PeerController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the peer for the specified ID. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the peer with the specified ID. Returns null if the ID is not found.", //
 			response = MLPPeer.class)
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.GET)
 	public MLPPeer getPeer(@PathVariable("peerId") String peerId) {
@@ -174,7 +174,7 @@ public class PeerController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing peer with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{peerId}", method = RequestMethod.PUT)

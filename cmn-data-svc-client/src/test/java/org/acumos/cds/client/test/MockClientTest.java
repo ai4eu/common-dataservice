@@ -38,7 +38,7 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -478,12 +478,12 @@ public class MockClientTest {
 		client.addCompositeSolutionMember("id1", "id2");
 		client.dropCompositeSolutionMember("id1", "id2");
 
-		MLPRevisionDescription revDesc = new MLPRevisionDescription();
-		client.setRevisionDescription(revDesc);
-		Assert.assertTrue(revDesc == client.getRevisionDescription("", ""));
-		Assert.assertTrue(revDesc == client.createRevisionDescription(revDesc));
-		client.updateRevisionDescription(revDesc);
-		client.deleteRevisionDescription("", "");
+		MLPRevCatDescription revDesc = new MLPRevCatDescription();
+		client.setRevCatDescription(revDesc);
+		Assert.assertTrue(revDesc == client.getRevCatDescription("", ""));
+		Assert.assertTrue(revDesc == client.createRevCatDescription(revDesc));
+		client.updateRevCatDescription(revDesc);
+		client.deleteRevCatDescription("", "");
 
 		MLPDocument document = new MLPDocument();
 		client.setDocumentById(document);
@@ -494,10 +494,10 @@ public class MockClientTest {
 		client.deleteDocument("id");
 
 		List<MLPDocument> docList = new ArrayList<>();
-		client.setSolutionRevisionDocuments(docList);
-		Assert.assertTrue(docList == client.getSolutionRevisionDocuments("id", "id"));
-		client.addSolutionRevisionDocument("id", "id", "id");
-		client.dropSolutionRevisionDocument("id", "id", "id");
+		client.setRevisionCatalogDocuments(docList);
+		Assert.assertTrue(docList == client.getRevisionCatalogDocuments("id", "id"));
+		client.addRevisionCatalogDocument("id", "id", "id");
+		client.dropRevisionCatalogDocument("id", "id", "id");
 
 		RestPageResponse<MLPPublishRequest> publishRequests = new RestPageResponse<>();
 		client.setPublishRequests(publishRequests);

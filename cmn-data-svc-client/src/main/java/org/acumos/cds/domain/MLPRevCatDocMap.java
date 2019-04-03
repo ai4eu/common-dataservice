@@ -32,7 +32,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.acumos.cds.domain.MLPSolRevDocMap.SolRevDocMapPK;
+import org.acumos.cds.domain.MLPRevCatDocMap.RevCatDocMapPK;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -41,28 +41,34 @@ import io.swagger.annotations.ApiModelProperty;
  * lieu of many-to-one annotations.
  */
 @Entity
-@IdClass(SolRevDocMapPK.class)
-@Table(name = MLPSolRevDocMap.TABLE_NAME)
-public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
+@IdClass(RevCatDocMapPK.class)
+@Table(name = MLPRevCatDocMap.TABLE_NAME)
+public class MLPRevCatDocMap implements MLPDomainModel, Serializable {
 
-	private static final long serialVersionUID = -1521666035352658419L;
-	/* package */ static final String TABLE_NAME = "C_SOL_REV_DOC_MAP";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5044016892125329643L;
+	/* package */ static final String TABLE_NAME = "C_REV_CAT_DOC_MAP";
 	/* package */ static final String REVISION_ID_COL_NAME = "REVISION_ID";
-	/* package */ static final String ACCESS_TYPE_CODE_COL_NAME = "ACCESS_TYPE_CD";
+	/* package */ static final String CATALOG_ID_COL_NAME = "CATALOG_ID";
 	/* package */ static final String DOCUMENT_ID_COL_NAME = "DOCUMENT_ID";
 
 	/**
 	 * Embedded key for Hibernate
 	 */
 	@Embeddable
-	public static class SolRevDocMapPK implements Serializable {
+	public static class RevCatDocMapPK implements Serializable {
 
-		private static final long serialVersionUID = 2467981222252697720L;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3991827180200458489L;
 		private String revisionId;
-		private String accessTypeCode;
+		private String catalogId;
 		private String documentId;
 
-		public SolRevDocMapPK() {
+		public RevCatDocMapPK() {
 			// no-arg constructor
 		}
 
@@ -70,15 +76,15 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 		 * Convenience constructor
 		 * 
 		 * @param revisionId
-		 *                           revision ID
-		 * @param accessTypeCode
-		 *                           public, private etc.
+		 *                       revision ID
+		 * @param catalogId
+		 *                       catalog ID
 		 * @param documentId
-		 *                           document ID
+		 *                       document ID
 		 */
-		public SolRevDocMapPK(String revisionId, String accessTypeCode, String documentId) {
+		public RevCatDocMapPK(String revisionId, String catalogId, String documentId) {
 			this.revisionId = revisionId;
-			this.accessTypeCode = accessTypeCode;
+			this.catalogId = catalogId;
 			this.documentId = documentId;
 		}
 
@@ -86,17 +92,16 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 		public boolean equals(Object that) {
 			if (that == null)
 				return false;
-			if (!(that instanceof SolRevDocMapPK))
+			if (!(that instanceof RevCatDocMapPK))
 				return false;
-			SolRevDocMapPK thatPK = (SolRevDocMapPK) that;
-			return Objects.equals(revisionId, thatPK.revisionId)
-					&& Objects.equals(accessTypeCode, thatPK.accessTypeCode)
+			RevCatDocMapPK thatPK = (RevCatDocMapPK) that;
+			return Objects.equals(revisionId, thatPK.revisionId) && Objects.equals(catalogId, thatPK.catalogId)
 					&& Objects.equals(documentId, thatPK.documentId);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(revisionId, accessTypeCode, documentId);
+			return Objects.hash(revisionId, catalogId, documentId);
 		}
 
 	}
@@ -109,11 +114,11 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 	private String revisionId;
 
 	@Id
-	@Column(name = ACCESS_TYPE_CODE_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Access type code cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Access type code", example = "PB")
-	private String accessTypeCode;
+	@Column(name = CATALOG_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Catalog ID cannot be null")
+	@Size(max = 36)
+	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
+	private String catalogId;
 
 	@Id
 	@Column(name = DOCUMENT_ID_COL_NAME, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
@@ -122,7 +127,7 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 	@ApiModelProperty(required = true, value = "UUID", example = "12345678-abcd-90ab-cdef-1234567890ab")
 	private String documentId;
 
-	public MLPSolRevDocMap() {
+	public MLPRevCatDocMap() {
 		// no-arg constructor
 	}
 
@@ -130,17 +135,17 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 	 * Convenience constructor
 	 * 
 	 * @param revisionId
-	 *                           revision ID
-	 * @param accessTypeCode
-	 *                           access type code
+	 *                       revision ID
+	 * @param catalogId
+	 *                       catalog ID
 	 * @param documentId
-	 *                           document ID
+	 *                       document ID
 	 */
-	public MLPSolRevDocMap(String revisionId, String accessTypeCode, String documentId) {
-		if (revisionId == null || accessTypeCode == null || documentId == null)
+	public MLPRevCatDocMap(String revisionId, String catalogId, String documentId) {
+		if (revisionId == null || catalogId == null || documentId == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.revisionId = revisionId;
-		this.accessTypeCode = accessTypeCode;
+		this.catalogId = catalogId;
 		this.documentId = documentId;
 	}
 
@@ -150,9 +155,9 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 	 * @param that
 	 *                 Instance to copy
 	 */
-	public MLPSolRevDocMap(MLPSolRevDocMap that) {
+	public MLPRevCatDocMap(MLPRevCatDocMap that) {
 		this.revisionId = that.revisionId;
-		this.accessTypeCode = that.accessTypeCode;
+		this.catalogId = that.catalogId;
 		this.documentId = that.documentId;
 	}
 
@@ -164,12 +169,12 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 		this.revisionId = revisionId;
 	}
 
-	public String getAccessTypeCode() {
-		return accessTypeCode;
+	public String getCatalogId() {
+		return catalogId;
 	}
 
-	public void setAccessTypeCode(String accessTypeCode) {
-		this.accessTypeCode = accessTypeCode;
+	public void setCatalogId(String catalogId) {
+		this.catalogId = catalogId;
 	}
 
 	public String getDocumentId() {
@@ -184,21 +189,21 @@ public class MLPSolRevDocMap implements MLPDomainModel, Serializable {
 	public boolean equals(Object that) {
 		if (that == null)
 			return false;
-		if (!(that instanceof MLPSolRevDocMap))
+		if (!(that instanceof MLPRevCatDocMap))
 			return false;
-		MLPSolRevDocMap thatObj = (MLPSolRevDocMap) that;
-		return Objects.equals(revisionId, thatObj.revisionId) && Objects.equals(accessTypeCode, thatObj.accessTypeCode)
+		MLPRevCatDocMap thatObj = (MLPRevCatDocMap) that;
+		return Objects.equals(revisionId, thatObj.revisionId) && Objects.equals(catalogId, thatObj.catalogId)
 				&& Objects.equals(documentId, thatObj.documentId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(revisionId, accessTypeCode, documentId);
+		return Objects.hash(revisionId, catalogId, documentId);
 	}
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[revisionId=" + revisionId + ", accessTypeCode=" + accessTypeCode
+		return this.getClass().getName() + "[revisionId=" + revisionId + ", accessTypeCode=" + catalogId
 				+ ", documentId=" + documentId + "]";
 	}
 

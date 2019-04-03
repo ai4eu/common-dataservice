@@ -86,7 +86,7 @@ public class SiteController extends AbstractController {
 		return siteConfigRepository.findAll(pageable);
 	}
 
-	@ApiOperation(value = "Gets the site configuration value for the specified key. Returns null if not found.", response = MLPSiteConfig.class)
+	@ApiOperation(value = "Gets the site configuration for the specified key. Returns null if not found.", response = MLPSiteConfig.class)
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.GET)
 	public MLPSiteConfig getSiteConfig(@PathVariable("configKey") String configKey) {
 		logger.debug("getSiteConfig key {}", configKey);
@@ -94,7 +94,7 @@ public class SiteController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Creates a new site configuration record. Returns bad request on constraint violation etc.", response = MLPSiteConfig.class)
+	@ApiOperation(value = "Creates a new site configuration object. Returns bad request on constraint violation etc.", response = MLPSiteConfig.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH, method = RequestMethod.POST)
 	public Object createSiteConfig(@RequestBody MLPSiteConfig siteConfig, HttpServletResponse response) {
@@ -127,7 +127,7 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing config record with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing site configuration with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.PUT)
@@ -153,7 +153,7 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the config record with the specified key. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the site configuration with the specified key. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONFIG_PATH + "/{configKey}", method = RequestMethod.DELETE)
@@ -171,7 +171,7 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets a page of site contents, optionally sorted on fields. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets a page of site content objects, optionally sorted on fields. Returns empty if none are found.", //
 			response = MLPSiteContent.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH, method = RequestMethod.GET)
@@ -180,7 +180,7 @@ public class SiteController extends AbstractController {
 		return siteContentRepository.findAll(pageable);
 	}
 
-	@ApiOperation(value = "Gets the site content value for the specified key. Answers null if the key is not found.", response = MLPSiteContent.class)
+	@ApiOperation(value = "Gets the site content object for the specified key. Answers null if the key is not found.", response = MLPSiteContent.class)
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.GET)
 	public MLPSiteContent getSiteContent(@PathVariable("contentKey") String contentKey) {
 		logger.debug("getSiteContent key {}", contentKey);
@@ -188,7 +188,7 @@ public class SiteController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Creates a new site content record. Returns bad request on constraint violation etc.", response = MLPSiteContent.class)
+	@ApiOperation(value = "Creates a new site content object. Returns bad request on constraint violation etc.", response = MLPSiteContent.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH, method = RequestMethod.POST)
 	public Object createSiteContent(@RequestBody MLPSiteContent siteContent, HttpServletResponse response) {
@@ -215,7 +215,7 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing content record with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing site content object with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.PUT)
@@ -242,7 +242,7 @@ public class SiteController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the content record with the specified key. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the site content object with the specified key. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.CONTENT_PATH + "/{contentKey}", method = RequestMethod.DELETE)

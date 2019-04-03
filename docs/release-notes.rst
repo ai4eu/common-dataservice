@@ -37,12 +37,13 @@ Version 2.2.0, 5 Apr 2019
 * Remove access type code from solution revision (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Remove access and scope type from peer subscription (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Add self-publish flag to catalog (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
+* Map descriptions and documents to catalogs (`ACUMOS-2569 <https://jira.acumos.org/browse/ACUMOS-2569>`_)
 * Drop peer and solution groups (`ACUMOS-2590 <https://jira.acumos.org/browse/ACUMOS-2590>`_)
 * Query project, notebook and pipeline (`ACUMOS-2595 <https://jira.acumos.org/browse/ACUMOS-2595>`_)
 * Revise access type codes (`ACUMOS-2610 <https://jira.acumos.org/browse/ACUMOS-2610>`_)
 * Add method to get RTU users (`ACUMOS-2666 <https://jira.acumos.org/browse/ACUMOS-2666>`_)
 * Add Swagger library to display size constraints from JPA annotations in generated UI
-* Upgrade to Spring-Boot version 2.1.3.RELEASE
+* Upgrade to Spring-Boot version 2.1.4.RELEASE
 * Requires database schema version 2.2
 
 Version 2.1.2, 4 Mar 2019

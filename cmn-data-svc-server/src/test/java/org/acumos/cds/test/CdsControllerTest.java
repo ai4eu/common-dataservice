@@ -46,7 +46,7 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -174,14 +174,6 @@ public class CdsControllerTest {
 			Assert.assertNotNull(crq);
 			Assert.assertNotNull(crq.getOnboarded());
 
-			MLPRevisionDescription rd = new MLPRevisionDescription(cr.getRevisionId(), "PB",
-					"A public revision description");
-			rd = client.createRevisionDescription(rd);
-
-			// query for the description
-			MLPRevisionDescription qrd = client.getRevisionDescription(cr.getRevisionId(), "PB");
-			Assert.assertEquals(rd, qrd);
-
 			final String version = "1.0A";
 			MLPArtifact ca = new MLPArtifact(version, "DI", "artifact name", "http://nexus/artifact", cu.getUserId(),
 					1);
@@ -270,6 +262,7 @@ public class CdsControllerTest {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void createSolutionWithArtifacts() throws Exception {
 		/** Delete data added in test? */
@@ -598,10 +591,15 @@ public class CdsControllerTest {
 			Assert.assertTrue(taggedUser.getTags().contains(tag1));
 			client.dropUserTag(cu.getUserId(), tagName1);
 
-			MLPCatalog ca1 = client
-					.createCatalog(new MLPCatalog("PB", true, "catalog name", "http://other.acumos.org"));
-			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
-			logger.info("Created catalog {}", ca1);
+			MLPCatalog catPub = client
+					.createCatalog(new MLPCatalog("PB", false, "public catalog name", "http://pub.acumos.org"));
+			Assert.assertNotNull("Catalog ID", catPub.getCatalogId());
+			logger.info("Created catalog {}", catPub);
+
+			MLPCatalog catRes = client
+					.createCatalog(new MLPCatalog("RS", false, "restricted catalog name", "http://private.acumos.org"));
+			Assert.assertNotNull("Catalog ID", catRes.getCatalogId());
+			logger.info("Created catalog {}", catRes);
 
 			MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
 			cs.setModelTypeCode("CL");
@@ -615,8 +613,8 @@ public class CdsControllerTest {
 			Assert.assertTrue(cs.getTags().contains(newTag));
 			logger.info("Created public solution {}", cs);
 
-			client.addSolutionToCatalog(cs.getSolutionId(), ca1.getCatalogId());
-			Assert.assertEquals(1, client.getCatalogSolutionCount(ca1.getCatalogId()));
+			client.addSolutionToCatalog(cs.getSolutionId(), catPub.getCatalogId());
+			Assert.assertEquals(1, client.getCatalogSolutionCount(catPub.getCatalogId()));
 
 			byte[] saved = client.getSolutionPicture(cs.getSolutionId());
 			Assert.assertNull(saved);
@@ -762,20 +760,23 @@ public class CdsControllerTest {
 			List<MLPArtifact> revArgs = client.getSolutionRevisionArtifacts(cs.getSolutionId(), cr.getRevisionId());
 			Assert.assertFalse(revArgs.isEmpty());
 
-			logger.info("Creating description org for revision 1");
-			MLPRevisionDescription revDescOr = new MLPRevisionDescription(cr.getRevisionId(), "OR", "Some text");
-			revDescOr = client.createRevisionDescription(revDescOr);
-			Assert.assertNotNull(revDescOr.getCreated());
+			logger.info("Creating description for revision 1, catalog restr");
+			MLPRevCatDescription revCatDesc1 = new MLPRevCatDescription(cr.getRevisionId(), catRes.getCatalogId(),
+					"Secret text");
+			revCatDesc1 = client.createRevCatDescription(revCatDesc1);
+			Assert.assertNotNull(revCatDesc1.getCreated());
 			final String descFoo = "foo";
-			revDescOr.setDescription(descFoo);
-			client.updateRevisionDescription(revDescOr);
-			revDescOr = client.getRevisionDescription(cr.getRevisionId(), "OR");
-			Assert.assertNotNull(revDescOr);
-			Assert.assertEquals(descFoo, revDescOr.getDescription());
-			logger.info("Creating description PB for revision 1");
-			MLPRevisionDescription revDescPb = new MLPRevisionDescription(cr.getRevisionId(), "PB", "Some text");
-			revDescPb = client.createRevisionDescription(revDescPb);
-			Assert.assertNotNull(revDescPb.getCreated());
+			revCatDesc1.setDescription(descFoo);
+			client.updateRevCatDescription(revCatDesc1);
+			revCatDesc1 = client.getRevCatDescription(cr.getRevisionId(), catRes.getCatalogId());
+			Assert.assertNotNull(revCatDesc1);
+			Assert.assertEquals(descFoo, revCatDesc1.getDescription());
+
+			logger.info("Creating description for revision 1, catalog public");
+			MLPRevCatDescription revCatDesc2 = new MLPRevCatDescription(cr.getRevisionId(), catPub.getCatalogId(),
+					"Public text");
+			revCatDesc2 = client.createRevCatDescription(revCatDesc2);
+			Assert.assertNotNull(revCatDesc2.getCreated());
 
 			logger.info("Creating user document");
 			MLPDocument doc = new MLPDocument();
@@ -798,10 +799,9 @@ public class CdsControllerTest {
 				logger.info("Failed to create new doc with existing ID as expected");
 			}
 
-			final String orgAccessType = "OR";
-			logger.info("Associating document to rev 1 at access type OR");
-			client.addSolutionRevisionDocument(cr.getRevisionId(), orgAccessType, doc.getDocumentId());
-			List<MLPDocument> dl = client.getSolutionRevisionDocuments(cr.getRevisionId(), orgAccessType);
+			logger.info("Associating document to rev 1, catalog 1");
+			client.addRevisionCatalogDocument(cr.getRevisionId(), catPub.getCatalogId(), doc.getDocumentId());
+			List<MLPDocument> dl = client.getRevisionCatalogDocuments(cr.getRevisionId(), catPub.getCatalogId());
 			Assert.assertFalse(dl.isEmpty());
 
 			logger.info("Querying for revisions by solution");
@@ -899,7 +899,7 @@ public class CdsControllerTest {
 
 			logger.info("Querying for solutions by catalog");
 			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, new String[] { ca1.getCatalogId() }, new RestPageRequest(0, 2));
+					null, null, null, new String[] { catPub.getCatalogId() }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(ctlgSearchResult);
 			Assert.assertNotEquals(0, ctlgSearchResult.getNumberOfElements());
 
@@ -1061,7 +1061,7 @@ public class CdsControllerTest {
 			Assert.assertEquals(0, kids.size());
 
 			MLPPublishRequest pubReq = new MLPPublishRequest(cs.getSolutionId(), cr.getRevisionId(), cu.getUserId(),
-					ca1.getCatalogId(), "PE");
+					catPub.getCatalogId(), "PE");
 			pubReq = client.createPublishRequest(pubReq);
 			Assert.assertNotNull(pubReq.getRequestId());
 			pubReq.setComment("foo bar");
@@ -1087,14 +1087,14 @@ public class CdsControllerTest {
 				// Call the many different delete methods here directly to cover the code,
 				// ignore the cascade behavior for solution, revision and artifact entities.
 				logger.info("Deleting newly created instances");
-				client.dropSolutionRevisionDocument(cr.getRevisionId(), "OR", doc.getDocumentId());
+				client.dropRevisionCatalogDocument(cr.getRevisionId(), catPub.getCatalogId(), doc.getDocumentId());
 				client.deleteDocument(doc.getDocumentId());
-				client.deleteRevisionDescription(cr.getRevisionId(), "OR");
-				client.deleteRevisionDescription(cr.getRevisionId(), "PB");
+				client.deleteRevCatDescription(cr.getRevisionId(), catPub.getCatalogId());
+				client.deleteRevCatDescription(cr.getRevisionId(), catRes.getCatalogId());
 				client.dropSolutionTag(cs.getSolutionId(), tagName1);
 				client.deleteTag(tag1);
 				client.deleteTag(tag2);
-				client.dropSolutionFromCatalog(cs.getSolutionId(), ca1.getCatalogId());
+				client.dropSolutionFromCatalog(cs.getSolutionId(), catPub.getCatalogId());
 				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 				client.deleteSolutionRating(ur);
 				client.deleteSolutionDownload(sd);
@@ -1105,7 +1105,8 @@ public class CdsControllerTest {
 				client.deleteSolution(cs.getSolutionId());
 				client.deleteSolution(csOrg.getSolutionId());
 				client.deleteSolution(inactive.getSolutionId());
-				client.deleteCatalog(ca1.getCatalogId());
+				client.deleteCatalog(catPub.getCatalogId());
+				client.deleteCatalog(catRes.getCatalogId());
 				client.deletePeerSubscription(ps.getSubId());
 				client.deletePeer(pr.getPeerId());
 				client.deleteUserLoginProvider(clp);
@@ -2540,6 +2541,7 @@ public class CdsControllerTest {
 		client.deleteUser(cu.getUserId());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testErrorConditions() throws Exception {
 
@@ -3084,35 +3086,37 @@ public class CdsControllerTest {
 		csr.setVersion(solRevVersion);
 
 		try {
-			MLPRevisionDescription rd = new MLPRevisionDescription("bogus", "XX", "bogus");
-			rd = client.createRevisionDescription(rd);
+			MLPRevCatDescription rd = new MLPRevCatDescription("bogus", "XX", "bogus");
+			rd = client.createRevCatDescription(rd);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Create revision description failed on bad ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPRevisionDescription rd = new MLPRevisionDescription(csr.getRevisionId(), "XX", "bogus");
-			rd = client.createRevisionDescription(rd);
+			MLPRevCatDescription rd = new MLPRevCatDescription(csr.getRevisionId(), "XX", "bogus");
+			rd = client.createRevCatDescription(rd);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
-			logger.info("Create revision description failed on bad code as expected: {}", ex.getResponseBodyAsString());
+			logger.info("Create revision description failed on bad cat ID as expected: {}",
+					ex.getResponseBodyAsString());
 		}
 		try {
-			MLPRevisionDescription rd = new MLPRevisionDescription("bogus", "XX", "bogus");
-			client.updateRevisionDescription(rd);
+			MLPRevCatDescription rd = new MLPRevCatDescription("bogus", "XX", "bogus");
+			client.updateRevCatDescription(rd);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Update revision description failed on bad ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPRevisionDescription rd = new MLPRevisionDescription(csr.getRevisionId(), "XX", "bogus");
-			client.updateRevisionDescription(rd);
+			MLPRevCatDescription rd = new MLPRevCatDescription(csr.getRevisionId(), "XX", "bogus");
+			client.updateRevCatDescription(rd);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
-			logger.info("Update revision description failed on bad code as expected: {}", ex.getResponseBodyAsString());
+			logger.info("Update revision description failed on bad cat ID as expected: {}",
+					ex.getResponseBodyAsString());
 		}
 		try {
-			client.deleteRevisionDescription("bogus", "XX");
+			client.deleteRevCatDescription("bogus", "XX");
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("Delete revision description failed as expected: {}", ex.getResponseBodyAsString());

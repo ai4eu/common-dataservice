@@ -41,13 +41,13 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -183,10 +183,10 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<String> solutionMembers;
 	private RestPageResponse<MLPSolution> userSolutions;
 	private long solutionRevisionCommentCount;
-	private MLPRevisionDescription description;
+	private MLPRevCatDescription description;
 	private MLPDocument document;
 	private MLPDocument documentById;
-	private List<MLPDocument> solutionRevisionDocuments;
+	private List<MLPDocument> revisionCatalogDocuments;
 	private MLPPublishRequest publishRequestById;
 	private RestPageResponse<MLPPublishRequest> publishRequests;
 	private RestPageResponse<MLPPublishRequest> searchPublishRequests;
@@ -1485,27 +1485,27 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		// what to mock?
 	}
 
-	public void setRevisionDescription(MLPRevisionDescription description) {
+	public void setRevCatDescription(MLPRevCatDescription description) {
 		this.description = description;
 	}
 
 	@Override
-	public MLPRevisionDescription getRevisionDescription(String revisionId, String accessTypeCode) {
+	public MLPRevCatDescription getRevCatDescription(String revisionId, String catalogId) {
 		return this.description;
 	}
 
 	@Override
-	public MLPRevisionDescription createRevisionDescription(MLPRevisionDescription description) {
+	public MLPRevCatDescription createRevCatDescription(MLPRevCatDescription description) {
 		return this.description;
 	}
 
 	@Override
-	public void updateRevisionDescription(MLPRevisionDescription description) {
+	public void updateRevCatDescription(MLPRevCatDescription description) {
 		this.description = description;
 	}
 
 	@Override
-	public void deleteRevisionDescription(String revisionId, String accessTypeCode) {
+	public void deleteRevCatDescription(String revisionId, String catalogId) {
 		this.description = null;
 	}
 
@@ -1537,22 +1537,22 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		this.document = null;
 	}
 
-	public void setSolutionRevisionDocuments(List<MLPDocument> documents) {
-		this.solutionRevisionDocuments = documents;
+	public void setRevisionCatalogDocuments(List<MLPDocument> documents) {
+		this.revisionCatalogDocuments = documents;
 	}
 
 	@Override
-	public List<MLPDocument> getSolutionRevisionDocuments(String revisionId, String accessTypeCode) {
-		return solutionRevisionDocuments;
+	public List<MLPDocument> getRevisionCatalogDocuments(String revisionId, String accessTypeCode) {
+		return revisionCatalogDocuments;
 	}
 
 	@Override
-	public void addSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId) {
+	public void addRevisionCatalogDocument(String revisionId, String catalogId, String documentId) {
 		// what to mock?
 	}
 
 	@Override
-	public void dropSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId) {
+	public void dropRevisionCatalogDocument(String revisionId, String catalogId, String documentId) {
 		// what to mock?
 	}
 

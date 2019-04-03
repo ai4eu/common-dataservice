@@ -143,7 +143,7 @@ public class TaskController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Creates a new task and generates an ID if needed. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new task with a generated ID. Returns bad request on constraint violation etc.", //
 			response = MLPTask.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -214,22 +214,22 @@ public class TaskController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets a task's associated step results. Answers empty if none are found.", //
-			response = MLPTaskStepResult.class, responseContainer = "List")
-	@ApiPageable
-	@RequestMapping(value = "/{taskId}/" + CCDSConstants.STEP_RESULT_PATH, method = RequestMethod.GET)
-	public Iterable<MLPTaskStepResult> getTaskStepResults(@PathVariable("taskId") Long taskId) {
-		logger.debug("getTaskStepResults {}", taskId);
-		return stepResultRepository.findByTaskId(taskId);
-	}
-
-	@ApiOperation(value = "Gets the specified step result. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the task step result with the specified ID. Returns null if the ID is not found.", //
 			response = MLPTaskStepResult.class)
 	@RequestMapping(value = CCDSConstants.STEP_RESULT_PATH + "/{stepResultId}", method = RequestMethod.GET)
 	public MLPTaskStepResult getTaskStepResult(@PathVariable("stepResultId") Long stepResultId) {
 		logger.debug("getStepResult: stepResultId {}", stepResultId);
 		Optional<MLPTaskStepResult> sr = stepResultRepository.findById(stepResultId);
 		return sr.isPresent() ? sr.get() : null;
+	}
+
+	@ApiOperation(value = "Gets all step results associated with the specified task ID. Answers empty if none are found.", //
+			response = MLPTaskStepResult.class, responseContainer = "List")
+	@ApiPageable
+	@RequestMapping(value = "/{taskId}/" + CCDSConstants.STEP_RESULT_PATH, method = RequestMethod.GET)
+	public Iterable<MLPTaskStepResult> getTaskStepResults(@PathVariable("taskId") Long taskId) {
+		logger.debug("getTaskStepResults {}", taskId);
+		return stepResultRepository.findByTaskId(taskId);
 	}
 
 	/*
@@ -296,7 +296,7 @@ public class TaskController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing step result with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing task step result with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.STEP_RESULT_PATH + "/{stepResultId}", method = RequestMethod.PUT)
@@ -325,7 +325,7 @@ public class TaskController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the step result with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the task step result with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.STEP_RESULT_PATH + "/{stepResultId}", method = RequestMethod.DELETE)

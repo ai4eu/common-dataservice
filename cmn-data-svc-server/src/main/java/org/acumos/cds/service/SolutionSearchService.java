@@ -95,21 +95,21 @@ public interface SolutionSearchService {
 	 * tags
 	 * 
 	 * @param keywords
-	 *                            Keywords
+	 *                           Keywords
 	 * @param active
-	 *                            Active status
+	 *                           Active status
 	 * @param userIds
-	 *                            User IDs
+	 *                           User IDs
 	 * @param modelTypeCodes
-	 *                            Model type codes
+	 *                           Model type codes
 	 * @param allTags
-	 *                            Tags that ALL must match
+	 *                           Tags that ALL must match
 	 * @param anyTags
-	 *                            Tags that ANY must match
+	 *                           Tags that ANY must match
 	 * @param catalogIds
-	 *                            Catalog IDs
+	 *                           Catalog IDs
 	 * @param pageable
-	 *                            Page and sort info
+	 *                           Page and sort info
 	 * @return Page of solutions
 	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPortalSolutionsByKwAndTags(String[],
 	 *      boolean, String[], String[], String[], String[], String[],

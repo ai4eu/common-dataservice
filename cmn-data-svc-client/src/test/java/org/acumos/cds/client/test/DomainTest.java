@@ -43,7 +43,8 @@ import org.acumos.cds.domain.MLPProjNotebookMap;
 import org.acumos.cds.domain.MLPProjPipelineMap;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
+import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -51,7 +52,6 @@ import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolRevArtMap;
-import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -817,8 +817,8 @@ public class DomainTest extends AbstractModelTest {
 		}
 	}
 
-	private void checkMLPRevisionDescription(MLPRevisionDescription m) {
-		Assert.assertEquals(s1, m.getAccessTypeCode());
+	private void checkMLPRevCatDescription(MLPRevCatDescription m) {
+		Assert.assertEquals(s1, m.getCatalogId());
 		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(s2, m.getDescription());
 		Assert.assertEquals(t2, m.getModified());
@@ -826,24 +826,24 @@ public class DomainTest extends AbstractModelTest {
 	}
 
 	@Test
-	public void testMLPRevisionDescription() {
-		MLPRevisionDescription m = new MLPRevisionDescription(s1, s1, s1);
-		m = new MLPRevisionDescription();
-		m.setAccessTypeCode(s1);
+	public void testMLPRevCatDescription() {
+		MLPRevCatDescription m = new MLPRevCatDescription(s1, s1, s1);
+		m = new MLPRevCatDescription();
+		m.setCatalogId(s1);
 		m.setCreated(t1);
 		m.setDescription(s2);
 		m.setModified(t2);
 		m.setRevisionId(s3);
-		checkMLPRevisionDescription(m);
-		m = new MLPRevisionDescription(m);
-		checkMLPRevisionDescription(m);
+		checkMLPRevCatDescription(m);
+		m = new MLPRevCatDescription(m);
+		checkMLPRevCatDescription(m);
 		Assert.assertFalse(m.equals(null));
 		Assert.assertFalse(m.equals(new Object()));
 		Assert.assertTrue(m.equals(m));
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPRevisionDescription(null, null, null);
+			new MLPRevCatDescription(null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
@@ -1076,21 +1076,21 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
-	private void checkMLPSolRevDocMap(MLPSolRevDocMap m) {
-		Assert.assertEquals(s1, m.getAccessTypeCode());
+	private void checkMLPSolRevDocMap(MLPRevCatDocMap m) {
+		Assert.assertEquals(s1, m.getCatalogId());
 		Assert.assertEquals(s2, m.getDocumentId());
 		Assert.assertEquals(s3, m.getRevisionId());
 	}
 
 	@Test
 	public void testMLPSolRevDocMap() {
-		MLPSolRevDocMap m = new MLPSolRevDocMap(s1, s1, s1);
-		m = new MLPSolRevDocMap();
-		m.setAccessTypeCode(s1);
+		MLPRevCatDocMap m = new MLPRevCatDocMap(s1, s1, s1);
+		m = new MLPRevCatDocMap();
+		m.setCatalogId(s1);
 		m.setDocumentId(s2);
 		m.setRevisionId(s3);
 		checkMLPSolRevDocMap(m);
-		m = new MLPSolRevDocMap(m);
+		m = new MLPRevCatDocMap(m);
 		checkMLPSolRevDocMap(m);
 		Assert.assertFalse(m.equals(null));
 		Assert.assertFalse(m.equals(new Object()));
@@ -1098,13 +1098,13 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertNotNull(m.hashCode());
 		logger.info(m.toString());
 		try {
-			new MLPSolRevDocMap(null, null, null);
+			new MLPRevCatDocMap(null, null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
 		}
-		MLPSolRevDocMap.SolRevDocMapPK pk = new MLPSolRevDocMap.SolRevDocMapPK();
-		pk = new MLPSolRevDocMap.SolRevDocMapPK(s1, s2, s3);
+		MLPRevCatDocMap.RevCatDocMapPK pk = new MLPRevCatDocMap.RevCatDocMapPK();
+		pk = new MLPRevCatDocMap.RevCatDocMapPK(s1, s2, s3);
 		Assert.assertFalse(pk.equals(null));
 		Assert.assertFalse(pk.equals(new Object()));
 		Assert.assertTrue(pk.equals(pk));

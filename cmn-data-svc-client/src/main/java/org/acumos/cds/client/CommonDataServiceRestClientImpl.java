@@ -52,7 +52,6 @@ import org.acumos.cds.domain.MLPProjNotebookMap;
 import org.acumos.cds.domain.MLPProjPipelineMap;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -60,6 +59,7 @@ import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPRtuUserMap;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
@@ -1985,39 +1985,37 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public MLPRevisionDescription getRevisionDescription(String revisionId, String accessTypeCode) {
-		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.ACCESS_PATH,
-				accessTypeCode, CCDSConstants.DESCRIPTION_PATH }, null, null);
-		logger.debug("getRevisionDescription: uri {}", uri);
-		ResponseEntity<MLPRevisionDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<MLPRevisionDescription>() {
+	public MLPRevCatDescription getRevCatDescription(String revisionId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.CATALOG_PATH,
+				catalogId, CCDSConstants.DESCRIPTION_PATH }, null, null);
+		logger.debug("getRevCatDescription: uri {}", uri);
+		ResponseEntity<MLPRevCatDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPRevCatDescription>() {
 				});
 		return response.getBody();
 	}
 
 	@Override
-	public MLPRevisionDescription createRevisionDescription(MLPRevisionDescription description) {
+	public MLPRevCatDescription createRevCatDescription(MLPRevCatDescription description) {
 		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, description.getRevisionId(),
-				CCDSConstants.ACCESS_PATH, description.getAccessTypeCode(), CCDSConstants.DESCRIPTION_PATH }, null,
-				null);
-		logger.debug("createRevisionDescription: uri {}", uri);
-		return restTemplate.postForObject(uri, description, MLPRevisionDescription.class);
+				CCDSConstants.CATALOG_PATH, description.getCatalogId(), CCDSConstants.DESCRIPTION_PATH }, null, null);
+		logger.debug("createRevCatDescription: uri {}", uri);
+		return restTemplate.postForObject(uri, description, MLPRevCatDescription.class);
 	}
 
 	@Override
-	public void updateRevisionDescription(MLPRevisionDescription description) {
+	public void updateRevCatDescription(MLPRevCatDescription description) {
 		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, description.getRevisionId(),
-				CCDSConstants.ACCESS_PATH, description.getAccessTypeCode(), CCDSConstants.DESCRIPTION_PATH }, null,
-				null);
+				CCDSConstants.CATALOG_PATH, description.getCatalogId(), CCDSConstants.DESCRIPTION_PATH }, null, null);
 		logger.debug("updateRevisionDescription: uri {}", uri);
 		restTemplate.put(uri, description);
 	}
 
 	@Override
-	public void deleteRevisionDescription(String revisionId, String accessTypeCode) {
-		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.ACCESS_PATH,
-				accessTypeCode, CCDSConstants.DESCRIPTION_PATH }, null, null);
-		logger.debug("deleteRevisionDescription: uri {}", uri);
+	public void deleteRevCatDescription(String revisionId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.CATALOG_PATH,
+				catalogId, CCDSConstants.DESCRIPTION_PATH }, null, null);
+		logger.debug("deleteRevCatDescription: uri {}", uri);
 		restTemplate.delete(uri);
 	}
 
@@ -2053,10 +2051,10 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public List<MLPDocument> getSolutionRevisionDocuments(String revisionId, String accessTypeCode) {
-		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.ACCESS_PATH,
-				accessTypeCode, CCDSConstants.DOCUMENT_PATH }, null, null);
-		logger.debug("getSolutionRevisionDocuments: uri {}", uri);
+	public List<MLPDocument> getRevisionCatalogDocuments(String revisionId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.CATALOG_PATH,
+				catalogId, CCDSConstants.DOCUMENT_PATH }, null, null);
+		logger.debug("getRevisionCatalogDocuments: uri {}", uri);
 		ResponseEntity<List<MLPDocument>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<MLPDocument>>() {
 				});
@@ -2064,18 +2062,18 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public void addSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId) {
-		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.ACCESS_PATH,
-				accessTypeCode, CCDSConstants.DOCUMENT_PATH, documentId }, null, null);
-		logger.debug("addSolutionRevisionDocument: url {}", uri);
+	public void addRevisionCatalogDocument(String revisionId, String catalogId, String documentId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.CATALOG_PATH,
+				catalogId, CCDSConstants.DOCUMENT_PATH, documentId }, null, null);
+		logger.debug("addRevisionCatalogDocument: url {}", uri);
 		restTemplate.postForLocation(uri, null);
 	}
 
 	@Override
-	public void dropSolutionRevisionDocument(String revisionId, String accessTypeCode, String documentId) {
-		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.ACCESS_PATH,
-				accessTypeCode, CCDSConstants.DOCUMENT_PATH, documentId }, null, null);
-		logger.debug("dropSolutionRevisionDocument: url {}", uri);
+	public void dropRevisionCatalogDocument(String revisionId, String catalogId, String documentId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.CATALOG_PATH,
+				catalogId, CCDSConstants.DOCUMENT_PATH, documentId }, null, null);
+		logger.debug("dropRevisionCatalogDocument: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

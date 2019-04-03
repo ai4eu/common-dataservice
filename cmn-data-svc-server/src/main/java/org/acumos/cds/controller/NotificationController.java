@@ -197,7 +197,7 @@ public class NotificationController extends AbstractController {
 		return notificationRepository.findActiveByUser(userId, pageable);
 	}
 
-	@ApiOperation(value = "Adds a user as a recipient of the notification. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Adds the specified user as a recipient of the notification. Returns bad request if an ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{notificationId}/" + CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.POST)
@@ -221,7 +221,7 @@ public class NotificationController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Records the date when the user viewed the notification in the notification-user mapping table. "
+	@ApiOperation(value = "Records that the user viewed the notification by storing the current date and time. "
 			+ "Returns bad request if an ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
@@ -255,7 +255,7 @@ public class NotificationController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Drops a user as a recipient of the notification.", response = SuccessTransport.class)
+	@ApiOperation(value = "Drops the specified user as a recipient of the notification.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{notificationId}/" + CCDSConstants.USER_PATH + "/{userId}", method = RequestMethod.DELETE)
 	public SuccessTransport dropUserRecipient(@PathVariable("userId") String userId,
@@ -311,7 +311,7 @@ public class NotificationController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing user notification preference with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.NOTIFICATION_PREF_PATH + "/{userNotifPrefId}", method = RequestMethod.PUT)
@@ -343,7 +343,7 @@ public class NotificationController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the user notification preference with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.NOTIFICATION_PREF_PATH + "/{userNotifPrefId}", method = RequestMethod.DELETE)

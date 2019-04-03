@@ -47,7 +47,8 @@ import org.acumos.cds.domain.MLPProjNotebookMap;
 import org.acumos.cds.domain.MLPProjPipelineMap;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
+import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -56,7 +57,6 @@ import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPRtuUserMap;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSolRevArtMap;
-import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -91,7 +91,8 @@ import org.acumos.cds.repository.ProjNotebookMapRepository;
 import org.acumos.cds.repository.ProjPipelineMapRepository;
 import org.acumos.cds.repository.ProjectRepository;
 import org.acumos.cds.repository.PublishRequestRepository;
-import org.acumos.cds.repository.RevisionDescriptionRepository;
+import org.acumos.cds.repository.RevCatDescriptionRepository;
+import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.RightToUseRepository;
 import org.acumos.cds.repository.RoleFunctionRepository;
 import org.acumos.cds.repository.RoleRepository;
@@ -100,7 +101,6 @@ import org.acumos.cds.repository.RtuReferenceRepository;
 import org.acumos.cds.repository.RtuUserMapRepository;
 import org.acumos.cds.repository.SiteConfigRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
-import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionDownloadRepository;
@@ -221,11 +221,11 @@ public class CdsRepositoryServiceTest {
 	@Autowired
 	private CodeNameService codeNameService;
 	@Autowired
-	private RevisionDescriptionRepository revisionDescRepository;
+	private RevCatDescriptionRepository revCatDescRepository;
 	@Autowired
 	private DocumentRepository documentRepository;
 	@Autowired
-	private SolRevDocMapRepository solRevDocMapRepository;
+	private RevCatDocMapRepository revCatDocMapRepository;
 	@Autowired
 	private PublishRequestRepository publishRequestRepository;
 	@Autowired
@@ -539,9 +539,9 @@ public class CdsRepositoryServiceTest {
 			solRevArtMapRepository.save(new MLPSolRevArtMap(rev2.getRevisionId(), ca2.getArtifactId()));
 			logger.info("Added" + rev2.getRevisionId() + " and " + ca2.getArtifactId());
 
-			MLPRevisionDescription revDesc = new MLPRevisionDescription(cr.getRevisionId(), "PB",
+			MLPRevCatDescription revDesc = new MLPRevCatDescription(cr.getRevisionId(), ca1.getCatalogId(),
 					"Some silly description");
-			revDesc = revisionDescRepository.save(revDesc);
+			revDesc = revCatDescRepository.save(revDesc);
 			Assert.assertNotNull(revDesc.getCreated());
 
 			logger.info("Finding portal solutions");
@@ -633,20 +633,22 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotNull(doc.getDocumentId());
 			Assert.assertNotNull(doc.getCreated());
 
-			logger.info("Adding document to revision");
-			MLPSolRevDocMap docMap = solRevDocMapRepository
-					.save(new MLPSolRevDocMap(cr.getRevisionId(), "PB", doc.getDocumentId()));
+			logger.info("Adding document to revision and catalog");
+			MLPRevCatDocMap docMap = revCatDocMapRepository
+					.save(new MLPRevCatDocMap(cr.getRevisionId(), ca1.getCatalogId(), doc.getDocumentId()));
 			Assert.assertNotNull(docMap);
 
-			Iterable<MLPDocument> docs = documentRepository.findByRevisionAccess(cr.getRevisionId(), "PB");
+			Iterable<MLPDocument> docs = revCatDocMapRepository.findByRevisionCatalog(cr.getRevisionId(),
+					ca1.getCatalogId());
 			Assert.assertTrue(docs.iterator().hasNext());
 
 			logger.info("Cleaning up revision");
-			revisionDescRepository.deleteById(new MLPRevisionDescription.RevDescPK(cr.getRevisionId(), "PB"));
-			solRevDocMapRepository.delete(docMap);
+			revCatDescRepository
+					.deleteById(new MLPRevCatDescription.RevCatDescriptionPK(cr.getRevisionId(), ca1.getCatalogId()));
+			revCatDocMapRepository.delete(docMap);
 			documentRepository.deleteById(doc.getDocumentId());
 
-			docs = documentRepository.findByRevisionAccess(cr.getRevisionId(), "PB");
+			docs = revCatDocMapRepository.findByRevisionCatalog(cr.getRevisionId(), ca1.getCatalogId());
 			Assert.assertFalse(docs.iterator().hasNext());
 
 			// Create Solution download

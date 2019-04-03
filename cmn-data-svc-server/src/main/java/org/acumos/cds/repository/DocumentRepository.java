@@ -21,30 +21,8 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPDocument;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 public interface DocumentRepository extends CrudRepository<MLPDocument, String> {
-
-	/**
-	 * Gets all documents associated with the specified solution revision and access
-	 * type
-	 * 
-	 * This does not accept a pageable parameter because the number of artifacts for
-	 * a single revision and access type is expected to be modest.
-	 *
-	 * @param revisionId
-	 *                           solution revision ID
-	 * @param accessTypeCode
-	 *                           access type code
-	 * @return Iterable of MLPDocument
-	 */
-	@Query(value = "select d from MLPDocument d, MLPSolRevDocMap m " //
-			+ " where d.documentId =  m.documentId " //
-			+ " and m.revisionId = :revisionId" //
-			+ " and m.accessTypeCode = :accessTypeCode")
-	Iterable<MLPDocument> findByRevisionAccess(@Param("revisionId") String revisionId,
-			@Param("accessTypeCode") String accessTypeCode);
 
 }

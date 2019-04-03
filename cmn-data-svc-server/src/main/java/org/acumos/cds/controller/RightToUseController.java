@@ -94,7 +94,7 @@ public class RightToUseController extends AbstractController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@ApiOperation(value = "Gets the right-to-use record for the specified ID. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the right-to-use object for the specified ID. Returns null if the ID is not found.", //
 			response = MLPRightToUse.class)
 	@RequestMapping(value = "/{rtuId}", method = RequestMethod.GET)
 	public MLPRightToUse getRightToUse(@PathVariable("rtuId") Long rtuId) {
@@ -103,7 +103,7 @@ public class RightToUseController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Gets a page of right-to-use records, optionally sorted on fields. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets a page of right-to-use objects, optionally sorted on fields. Returns empty if none are found.", //
 			response = MLPRightToUse.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
@@ -112,7 +112,7 @@ public class RightToUseController extends AbstractController {
 		return rtuRepository.findAll(pageable);
 	}
 
-	@ApiOperation(value = "Gets a list of right-to-use records for the specified solution and user. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets a list of right-to-use objects for the specified solution and user. Returns empty if none are found.", //
 			response = MLPRightToUse.class, responseContainer = "List")
 	@RequestMapping(value = "/" + CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.USER_PATH
 			+ "/{userId}", method = RequestMethod.GET)
@@ -127,7 +127,7 @@ public class RightToUseController extends AbstractController {
 	 * written with a generic map request parameter to avoid binding field names,
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	@ApiOperation(value = "Searches for right-to-use records with attributes matching the values specified as query parameters. " //
+	@ApiOperation(value = "Searches for right-to-use objects with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPRightToUse.class, responseContainer = "Page")
 	@ApiPageable
@@ -157,14 +157,14 @@ public class RightToUseController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Creates a new RTU record and generates an ID. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new RTU object and generates an ID. Returns bad request on constraint violation etc.", //
 			response = MLPRightToUse.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
 	public MLPResponse createRightToUse(@RequestBody MLPRightToUse rtu, HttpServletResponse response) {
 		logger.debug("createRightToUse rtu {}", rtu);
 		try {
-			// Cascade manually - create user-supplied tags as needed
+			// Cascade manually - create references as needed
 			createMissingRefs(rtu.getRtuReferences());
 			// Create a new row
 			rtu.setRtuId(null);
@@ -181,7 +181,7 @@ public class RightToUseController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing RTU record with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing RTU object with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{rtuId}", method = RequestMethod.PUT)
@@ -210,7 +210,7 @@ public class RightToUseController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the RTU record with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the RTU object with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{rtuId}", method = RequestMethod.DELETE)
@@ -371,7 +371,7 @@ public class RightToUseController extends AbstractController {
 				throw new IllegalArgumentException("Unexpected null ref");
 			if (!rtuRefRepository.findById(ref.getRef()).isPresent()) {
 				rtuRefRepository.save(ref);
-				logger.debug("createMissingRefs: ref {}", ref);
+				logger.debug("createMissingRefs: creating ref {}", ref);
 			}
 		}
 	}

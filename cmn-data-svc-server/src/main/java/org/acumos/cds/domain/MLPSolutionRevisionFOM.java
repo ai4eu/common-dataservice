@@ -104,8 +104,8 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 	 * serialized as JSON).
 	 */
 	@OneToMany
-	@JoinColumn(name = REVISION_ID_COL_NAME, referencedColumnName = MLPRevisionDescription.REVISION_ID_COL_NAME)
-	private Set<MLPRevisionDescription> descriptions = new HashSet<>(0);
+	@JoinColumn(name = REVISION_ID_COL_NAME, referencedColumnName = MLPRevCatDescription.REVISION_ID_COL_NAME)
+	private Set<MLPRevCatDescription> descriptions = new HashSet<>(0);
 
 	/**
 	 * A revision may have many documents. A two-column mapping table connects them.
@@ -115,9 +115,9 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 	 * serialized as JSON).
 	 */
 	@ManyToMany
-	@JoinTable(name = MLPSolRevDocMap.TABLE_NAME, //
-			joinColumns = { @JoinColumn(name = MLPSolRevDocMap.REVISION_ID_COL_NAME) }, //
-			inverseJoinColumns = { @JoinColumn(name = MLPSolRevDocMap.DOCUMENT_ID_COL_NAME) } //
+	@JoinTable(name = MLPRevCatDocMap.TABLE_NAME, //
+			joinColumns = { @JoinColumn(name = MLPRevCatDocMap.REVISION_ID_COL_NAME) }, //
+			inverseJoinColumns = { @JoinColumn(name = MLPRevCatDocMap.DOCUMENT_ID_COL_NAME) } //
 	)
 	private Set<MLPDocument> documents = new HashSet<>(0);
 
@@ -153,11 +153,11 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 		this.artifacts = artifacts;
 	}
 
-	public Set<MLPRevisionDescription> getDescriptions() {
+	public Set<MLPRevCatDescription> getDescriptions() {
 		return descriptions;
 	}
 
-	public void setDescriptions(Set<MLPRevisionDescription> descriptions) {
+	public void setDescriptions(Set<MLPRevCatDescription> descriptions) {
 		this.descriptions = descriptions;
 	}
 

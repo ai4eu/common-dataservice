@@ -29,7 +29,7 @@ import java.util.Set;
 import org.acumos.cds.domain.MLPArtifactFOM;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPPeer;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolutionFOM;
 import org.acumos.cds.domain.MLPSolutionPicture;
 import org.acumos.cds.domain.MLPSolutionRevisionFOM;
@@ -81,7 +81,7 @@ public class FOMDomainTest {
 	final MLPSolutionFOM sol1 = new MLPSolutionFOM();
 	final MLPUser user1 = new MLPUser();
 	final Set<MLPSolutionRevisionFOM> revs = new HashSet<>();
-	final Set<MLPRevisionDescription> descs = new HashSet<>();
+	final Set<MLPRevCatDescription> descs = new HashSet<>();
 	final Set<MLPUser> accessUsers = new HashSet<>();
 	final Set<MLPCatalog> catalogs = new HashSet<>();
 

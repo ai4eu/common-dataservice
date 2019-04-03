@@ -64,7 +64,7 @@ public class TagController extends AbstractController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	@ApiOperation(value = "Gets a page of tags, optionally sorted. Answers empty if none are found.", response = MLPTag.class, responseContainer = "Page")
+	@ApiOperation(value = "Gets a page of solution tags, optionally sorted. Answers empty if none are found.", response = MLPTag.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(method = RequestMethod.GET)
 	public Page<MLPTag> getTags(Pageable pageable) {
@@ -72,7 +72,7 @@ public class TagController extends AbstractController {
 		return tagRepository.findAll(pageable);
 	}
 
-	@ApiOperation(value = "Creates a new tag. Returns bad request on constraint violation etc.", response = MLPTag.class)
+	@ApiOperation(value = "Creates a new solution tag. Returns bad request on constraint violation etc.", response = MLPTag.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
 	public MLPResponse createTag(@RequestBody MLPTag tag, HttpServletResponse response) {
@@ -92,7 +92,7 @@ public class TagController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the tag with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the specified solution tag. Returns bad request if not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{tag}", method = RequestMethod.DELETE)

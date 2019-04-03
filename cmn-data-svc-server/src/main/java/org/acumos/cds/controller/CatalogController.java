@@ -41,6 +41,8 @@ import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.PeerCatAccMapRepository;
 import org.acumos.cds.repository.PeerRepository;
+import org.acumos.cds.repository.RevCatDescriptionRepository;
+import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.UserCatFavMapRepository;
 import org.acumos.cds.repository.UserRepository;
@@ -92,15 +94,19 @@ public class CatalogController extends AbstractController {
 	@Autowired
 	private CatalogSearchService catalogSearchService;
 	@Autowired
+	private CatSolMapRepository catSolMapRepository;
+	@Autowired
 	private PeerRepository peerRepository;
 	@Autowired
 	private SolutionRepository solutionRepository;
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private CatSolMapRepository catSolMapRepository;
-	@Autowired
 	private PeerCatAccMapRepository peerCatAccMapRepository;
+	@Autowired
+	private RevCatDescriptionRepository revCatDescRepository;
+	@Autowired
+	private RevCatDocMapRepository revCatDocMapRepository;
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private UserCatFavMapRepository userCatFavMapRepository;
 
@@ -230,13 +236,15 @@ public class CatalogController extends AbstractController {
 		return new CountTransport(catSolMapRepository.countCatalogSolutions(catalogId));
 	}
 
-	@ApiOperation(value = "Deletes the catalog with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the catalog with the specified ID. Cascades delete to related tables. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{catalogId}", method = RequestMethod.DELETE)
 	public MLPTransportModel deleteCatalog(@PathVariable("catalogId") String catalogId, HttpServletResponse response) {
 		logger.debug("deleteCatalog ID {}", catalogId);
 		try {
+			revCatDescRepository.deleteByCatalogId(catalogId);
+			revCatDocMapRepository.deleteByCatalogId(catalogId);
 			catalogRepository.deleteById(catalogId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {

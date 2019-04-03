@@ -69,6 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -102,6 +103,7 @@ import io.swagger.annotations.ApiResponses;
  * </LI>
  * </OL>
  */
+@Configuration
 @RestController
 @RequestMapping(value = "/" + CCDSConstants.USER_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController extends AbstractController {
@@ -361,7 +363,8 @@ public class UserController extends AbstractController {
 		return page;
 	}
 
-	@ApiOperation(value = "Returns a page of users with names that contain the search term matched using a like operator. Answers empty if none are found.", //
+	@ApiOperation(value = "Returns a page of users with names that contain the search term matched using "
+			+ " a like operator on the first, middle, last and login-name fields. Answers empty if none are found.", //
 			response = MLPUser.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
@@ -593,7 +596,7 @@ public class UserController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the count of users in a role.", response = CountTransport.class)
+	@ApiOperation(value = "Gets the count of users with the specified role.", response = CountTransport.class)
 	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}/"
 			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getRoleUsersCount(@PathVariable("roleId") String roleId) {
@@ -604,12 +607,12 @@ public class UserController extends AbstractController {
 
 	@ApiOperation(value = "Gets all roles assigned to the specified user ID. Answers empty if noe are found.", response = MLPRole.class, responseContainer = "List")
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.ROLE_PATH, method = RequestMethod.GET)
-	public Iterable<MLPRole> getRolesForUser(@PathVariable("userId") String userId) {
+	public Iterable<MLPRole> getUserRoles(@PathVariable("userId") String userId) {
 		logger.debug("getRolesForUser: userId {}", userId);
 		return roleRepository.findByUser(userId);
 	}
 
-	@ApiOperation(value = "Adds a role to the user. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Adds the specified role to the specified user's roles. Returns bad request if an ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.POST)
@@ -629,7 +632,7 @@ public class UserController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Assigns the specified roles to the user after dropping any existing assignments. Returns bad request if an Id is not found", //
+	@ApiOperation(value = "Assigns the specified roles to the specified user after dropping any existing assignments. Returns bad request if an Id is not found", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.ROLE_PATH, method = RequestMethod.PUT)
@@ -658,7 +661,7 @@ public class UserController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Drops a role from the user.", response = SuccessTransport.class)
+	@ApiOperation(value = "Removes the specified role from the specified user's roles.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.DELETE)
 	public MLPTransportModel dropUserRole(@PathVariable("userId") String userId,
@@ -668,7 +671,7 @@ public class UserController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Adds or removes the specified role for multiple users. Returns bad request if an ID is not found.", //
+	@ApiOperation(value = "Adds or removes the specified role for every specified user. Returns bad request if an ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.PUT)
@@ -740,7 +743,7 @@ public class UserController extends AbstractController {
 		return userLoginProviderRepository.findByUserId(userId);
 	}
 
-	@ApiOperation(value = "Creates a new login provider. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new user login provider. Returns bad request on constraint violation etc.", //
 			response = MLPUserLoginProvider.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.LOGIN_PROVIDER_PATH + "/{providerCode}/"
@@ -778,7 +781,7 @@ public class UserController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing login provider with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing user login provider with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.LOGIN_PROVIDER_PATH + "/{providerCode}/"
@@ -819,15 +822,15 @@ public class UserController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the login provider with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the specified user login provider. Returns bad request if not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.LOGIN_PROVIDER_PATH + "/{providerCode}/"
 			+ CCDSConstants.LOGIN_PATH + "/{providerUserId}", method = RequestMethod.DELETE)
-	public MLPTransportModel deleteLoginProvider(@PathVariable("userId") String userId,
+	public MLPTransportModel deleteUserLoginProvider(@PathVariable("userId") String userId,
 			@PathVariable("providerCode") String providerCode, @PathVariable("providerUserId") String providerUserId,
 			HttpServletResponse response) {
-		logger.debug("deleteLoginProvider: userId {} providerCode {} providerUserId {}", userId, providerCode,
+		logger.debug("deleteUserLoginProvider: userId {} providerCode {} providerUserId {}", userId, providerCode,
 				providerUserId);
 		try {
 			// Build a key for fetch
@@ -836,13 +839,13 @@ public class UserController extends AbstractController {
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteLoginProvider took exception {} on data {}", ex.toString(), userId);
+			logger.warn("deleteUserLoginProvider took exception {} on data {}", ex.toString(), userId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteLoginProvider failed", ex);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteUserLoginProvider failed", ex);
 		}
 	}
 
-	@ApiOperation(value = "Gets a page of solutions which are favorites for the specified user ID. Answers empty if none are found.", //
+	@ApiOperation(value = "Gets a page of solutions that the specified user has marked as favorite. Answers empty if none are found.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
@@ -912,7 +915,7 @@ public class UserController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the deployments for the specified user ID. Answers empty if none are found.", //
+	@ApiOperation(value = "Gets a page of solution deployments for the specified user ID. Answers empty if none are found.", //
 			response = MLPSolutionDeployment.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = "/{userId}/" + CCDSConstants.DEPLOY_PATH, method = RequestMethod.GET)

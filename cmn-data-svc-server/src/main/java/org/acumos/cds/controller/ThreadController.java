@@ -203,7 +203,7 @@ public class ThreadController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the number of comments in the thread.", response = CountTransport.class)
+	@ApiOperation(value = "Gets the count of comments in the specified thread.", response = CountTransport.class)
 	@RequestMapping(value = "{threadId}/" + CCDSConstants.COMMENT_PATH + "/"
 			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
 	public CountTransport getCommentCount(@PathVariable("threadId") String threadId) {
@@ -220,7 +220,7 @@ public class ThreadController extends AbstractController {
 		return commentRepository.findByThreadId(threadId, pageable);
 	}
 
-	@ApiOperation(value = "Gets comment count for the solution revision.", response = CountTransport.class)
+	@ApiOperation(value = "Gets the count of comments in all threads for the specified solution and revision IDs.", response = CountTransport.class)
 	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.REVISION_PATH
 			+ "/{revisionId}/" + CCDSConstants.COMMENT_PATH + "/"
 			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
@@ -231,7 +231,7 @@ public class ThreadController extends AbstractController {
 		return new CountTransport(result);
 	}
 
-	@ApiOperation(value = "Gets a page of comments for the solution revision, optionally sorted. Answers empty if none are found.", //
+	@ApiOperation(value = "Gets a page of comments for the specified solution and revision IDs, optionally sorted. Answers empty if none are found.", //
 			response = MLPThread.class, responseContainer = "Page")
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.REVISION_PATH

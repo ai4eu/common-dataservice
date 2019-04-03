@@ -86,7 +86,7 @@ public class PublishRequestController extends AbstractController {
 		return publishRequestRepository.findAll(pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the request for the specified ID. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the publish request for the specified ID. Returns null if the ID is not found.", //
 			response = MLPPublishRequest.class)
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.GET)
 	public MLPResponse getPublishRequest(@PathVariable("requestId") long requestId) {
@@ -100,7 +100,7 @@ public class PublishRequestController extends AbstractController {
 	 * written with a generic map request parameter to avoid binding field names,
 	 * but that is not supported by Swagger web UI. Now allows use from that web UI.
 	 */
-	@ApiOperation(value = "Searches for requests with attributes matching the values specified as query parameters. " //
+	@ApiOperation(value = "Searches for publish requests with attributes matching the values specified as query parameters. " //
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPPublishRequest.class, responseContainer = "Page")
 	@ApiPageable
@@ -133,7 +133,7 @@ public class PublishRequestController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Creates a new request with a generated ID. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Creates a new publish request with a generated ID. Returns bad request on constraint violation etc.", //
 			response = MLPPublishRequest.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -157,7 +157,7 @@ public class PublishRequestController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing request with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing publish request with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.PUT)
@@ -186,7 +186,7 @@ public class PublishRequestController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the request with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the publish request with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{requestId}", method = RequestMethod.DELETE)

@@ -33,40 +33,36 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.acumos.cds.domain.MLPRevisionDescription.RevDescPK;
+import org.acumos.cds.domain.MLPRevCatDescription.RevCatDescriptionPK;
 
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * This revision description entity supports the Portal feature of storing
- * different descriptions for a given access type and a single model (revision).
- * E.g., store a company-visible description and a public-visible description
- * for the same thing without creating separate CDS revisions. Expected to
- * contain HTML (not plain text, not a binary stream).
- * 
- * Was originally stored in a different database; this will allow migration.
+ * This entity supports the feature of catalog-specific descriptions for every
+ * solution revision. E.g., store a cat-1 description that is different from
+ * cat-2 description for the same revision without creating separate CDS
+ * revisions. Expected to contain HTML (not plain text, not a binary stream).
  */
 @Entity
-@IdClass(RevDescPK.class)
-@Table(name = "C_REVISION_DESC")
-public class MLPRevisionDescription extends MLPTimestampedEntity implements Serializable {
+@IdClass(RevCatDescriptionPK.class)
+@Table(name = "C_REV_CAT_DESC")
+public class MLPRevCatDescription extends MLPTimestampedEntity implements Serializable {
 
-	private static final long serialVersionUID = 6949987343881297064L;
-
+	private static final long serialVersionUID = 1506072750532903976L;
 	/* package */ static final String REVISION_ID_COL_NAME = "REVISION_ID";
-	/* package */ static final String ACCESS_TYPE_CODE_COL_NAME = "ACCESS_TYPE_CD";
+	/* package */ static final String CATALOG_ID_COL_NAME = "CATALOG_ID";
 
 	/**
 	 * Embedded key for Hibernate
 	 */
 	@Embeddable
-	public static class RevDescPK implements Serializable {
+	public static class RevCatDescriptionPK implements Serializable {
 
-		private static final long serialVersionUID = -5574867760483934826L;
+		private static final long serialVersionUID = -1127705264162077675L;
 		private String revisionId;
-		private String accessTypeCode;
+		private String catalogId;
 
-		public RevDescPK() {
+		public RevCatDescriptionPK() {
 			// no-arg constructor
 		}
 
@@ -74,34 +70,33 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 		 * Convenience constructor
 		 * 
 		 * @param revisionId
-		 *                           revision ID
-		 * @param accessTypeCode
-		 *                           access type code
+		 *                       revision ID
+		 * @param catalogId
+		 *                       catalog ID
 		 */
-		public RevDescPK(String revisionId, String accessTypeCode) {
+		public RevCatDescriptionPK(String revisionId, String catalogId) {
 			this.revisionId = revisionId;
-			this.accessTypeCode = accessTypeCode;
+			this.catalogId = catalogId;
 		}
 
 		@Override
 		public boolean equals(Object that) {
 			if (that == null)
 				return false;
-			if (!(that instanceof RevDescPK))
+			if (!(that instanceof RevCatDescriptionPK))
 				return false;
-			RevDescPK thatPK = (RevDescPK) that;
-			return Objects.equals(revisionId, thatPK.revisionId)
-					&& Objects.equals(accessTypeCode, thatPK.accessTypeCode);
+			RevCatDescriptionPK thatPK = (RevCatDescriptionPK) that;
+			return Objects.equals(revisionId, thatPK.revisionId) && Objects.equals(catalogId, thatPK.catalogId);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(revisionId, accessTypeCode);
+			return Objects.hash(catalogId, revisionId);
 		}
 
 		@Override
 		public String toString() {
-			return this.getClass().getName() + "[revisionId=" + revisionId + ", accessTypeCode=" + accessTypeCode + "]";
+			return this.getClass().getName() + "[revisionId=" + revisionId + ", catalogId=" + catalogId + "]";
 		}
 
 	}
@@ -117,14 +112,14 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	private String revisionId;
 
 	/**
-	 * The Access Type Code value set is defined by server-side configuration.
+	 * Must be an entry in the catalog table
 	 */
 	@Id
-	@Column(name = ACCESS_TYPE_CODE_COL_NAME, nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Access type code cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
-	private String accessTypeCode;
+	@Column(name = CATALOG_ID_COL_NAME, nullable = false, columnDefinition = "CHAR(36)")
+	@NotNull(message = "Catalog ID cannot be null")
+	@Size(max = 36)
+	@ApiModelProperty(required = true, value = "Catalog ID", example = "12345678-abcd-90ab-cdef-1234567890ab")
+	private String catalogId;
 
 	/**
 	 * Description text. Use a generous limit to allow encoded in-line images.
@@ -144,7 +139,7 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	/**
 	 * No-arg constructor
 	 */
-	public MLPRevisionDescription() {
+	public MLPRevCatDescription() {
 		// no-arg constructor
 	}
 
@@ -153,17 +148,17 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 * must supply to create a valid instance.
 	 * 
 	 * @param revisionId
-	 *                           Revision ID
-	 * @param accessTypeCode
-	 *                           Access type code appropriate for the site
+	 *                        Revision ID
+	 * @param catalogId
+	 *                        Catalog ID
 	 * @param description
-	 *                           Description text
+	 *                        Description text
 	 */
-	public MLPRevisionDescription(String revisionId, String accessTypeCode, String description) {
-		if (revisionId == null || accessTypeCode == null || description == null)
+	public MLPRevCatDescription(String revisionId, String catalogId, String description) {
+		if (revisionId == null || catalogId == null || description == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.revisionId = revisionId;
-		this.accessTypeCode = accessTypeCode;
+		this.catalogId = catalogId;
 		this.description = description;
 	}
 
@@ -173,10 +168,10 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 	 * @param that
 	 *                 Instance to copy
 	 */
-	public MLPRevisionDescription(MLPRevisionDescription that) {
+	public MLPRevCatDescription(MLPRevCatDescription that) {
 		super(that);
 		this.revisionId = that.revisionId;
-		this.accessTypeCode = that.accessTypeCode;
+		this.catalogId = that.catalogId;
 		this.description = that.description;
 	}
 
@@ -188,12 +183,12 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 		this.revisionId = revisionId;
 	}
 
-	public String getAccessTypeCode() {
-		return accessTypeCode;
+	public String getCatalogId() {
+		return catalogId;
 	}
 
-	public void setAccessTypeCode(String accessTypeCode) {
-		this.accessTypeCode = accessTypeCode;
+	public void setCatalogId(String catalogId) {
+		this.catalogId = catalogId;
 	}
 
 	public String getDescription() {
@@ -206,24 +201,24 @@ public class MLPRevisionDescription extends MLPTimestampedEntity implements Seri
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[revisionId=" + getRevisionId() + ", accessTypeCode=" + getAccessTypeCode()
+		return this.getClass().getName() + "[revisionId=" + getRevisionId() + ", catalogId=" + getCatalogId()
 				+ ", description=" + getDescription() + ", created=" + getCreated() + ", modified=" + getModified()
 				+ "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(revisionId, accessTypeCode);
+		return Objects.hash(revisionId, catalogId);
 	}
 
 	@Override
 	public boolean equals(Object that) {
 		if (that == null)
 			return false;
-		if (!(that instanceof MLPRevisionDescription))
+		if (!(that instanceof MLPRevCatDescription))
 			return false;
-		MLPRevisionDescription thatObj = (MLPRevisionDescription) that;
-		return Objects.equals(revisionId, thatObj.revisionId) && Objects.equals(accessTypeCode, thatObj.accessTypeCode)
+		MLPRevCatDescription thatObj = (MLPRevCatDescription) that;
+		return Objects.equals(revisionId, thatObj.revisionId) && Objects.equals(catalogId, thatObj.catalogId)
 				&& Objects.equals(description, thatObj.description);
 	}
 

@@ -26,18 +26,17 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 
 import org.acumos.cds.CCDSConstants;
-import org.acumos.cds.CodeNameType;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
+import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
-import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.repository.ArtifactRepository;
-import org.acumos.cds.repository.DocumentRepository;
-import org.acumos.cds.repository.RevisionDescriptionRepository;
+import org.acumos.cds.repository.CatalogRepository;
+import org.acumos.cds.repository.RevCatDescriptionRepository;
+import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
-import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -79,37 +78,37 @@ public class RevisionController extends AbstractController {
 	@Autowired
 	private ArtifactRepository artifactRepository;
 	@Autowired
-	private DocumentRepository documentRepository;
+	private CatalogRepository catalogRepository;
 	@Autowired
 	private SolutionRevisionRepository revisionRepository;
 	@Autowired
-	private RevisionDescriptionRepository revisionDescRepository;
+	private RevCatDescriptionRepository revCatDescRepository;
+	@Autowired
+	private RevCatDocMapRepository revCatDocMapRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
-	@Autowired
-	private SolRevDocMapRepository solRevDocMapRepository;
 
-	@ApiOperation(value = "Gets the artifacts for the revision. Answers empty if none are found.", response = MLPArtifact.class, responseContainer = "List")
+	@ApiOperation(value = "Gets the artifacts for the specified solution revision. Answers empty if none are found.", response = MLPArtifact.class, responseContainer = "List")
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH, method = RequestMethod.GET)
-	public Iterable<MLPArtifact> getRevisionArtifacts(@PathVariable("revisionId") String revisionId) {
-		logger.debug("getSolRevArtifacts: revisionId {}", revisionId);
+	public Iterable<MLPArtifact> getSolutionRevisionArtifacts(@PathVariable("revisionId") String revisionId) {
+		logger.debug("getSolutionRevisionArtifacts: revisionId {}", revisionId);
 		return artifactRepository.findByRevision(revisionId);
 	}
 
-	@ApiOperation(value = "Adds an artifact to the revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
+	@ApiOperation(value = "Adds the specified artifact to the specified solution revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}", method = RequestMethod.POST)
-	public MLPTransportModel addRevisionArtifact(@PathVariable("revisionId") String revisionId,
+	public MLPTransportModel addSolutionRevisionArtifact(@PathVariable("revisionId") String revisionId,
 			@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
-		logger.debug("addRevArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		logger.debug("addSolutionRevisionArtifact: revisionId {} artifactId {}", revisionId, artifactId);
 		if (!revisionRepository.findById(revisionId).isPresent()) {
-			logger.warn("addRevArtifact failed on rev ID {}", revisionId);
+			logger.warn("addSolutionRevisionArtifact failed on rev ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
 		}
 		if (!artifactRepository.findById(artifactId).isPresent()) {
-			logger.warn("addRevArtifact failed on art ID {}", artifactId);
+			logger.warn("addSolutionRevisionArtifact failed on art ID {}", artifactId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + artifactId, null);
 		}
@@ -118,155 +117,156 @@ public class RevisionController extends AbstractController {
 			solRevArtMapRepository.save(map);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			logger.warn("addRevisionArtifact failed: {}", ex.toString());
+			logger.warn("addSolutionRevisionArtifact failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "addRevisionArtifact failed", ex);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "addSolutionRevisionArtifact failed", ex);
 		}
 	}
 
-	@ApiOperation(value = "Removes an artifact from the revision.", response = SuccessTransport.class)
+	@ApiOperation(value = "Removes the specified artifact from the specified solution revision.", response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH
 			+ "/{artifactId}", method = RequestMethod.DELETE)
-	public MLPTransportModel dropRevisionArtifact(@PathVariable("revisionId") String revisionId,
+	public MLPTransportModel dropSolutionRevisionArtifact(@PathVariable("revisionId") String revisionId,
 			@PathVariable("artifactId") String artifactId, HttpServletResponse response) {
-		logger.debug("dropRevisionArtifact: revisionId {} artifactId {}", revisionId, artifactId);
+		logger.debug("dropSolutionRevisionArtifact: revisionId {} artifactId {}", revisionId, artifactId);
 		try {
 			solRevArtMapRepository.deleteById(new MLPSolRevArtMap.SolRevArtMapPK(revisionId, artifactId));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
-			logger.warn("dropRevisionArtifact failed: {}", ex.toString());
+			logger.warn("dropSolutionRevisionArtifact failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropRevisionArtifact failed", ex);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropSolutionRevisionArtifact failed", ex);
 		}
 	}
 
-	@ApiOperation(value = "Gets the revision description for the specified access type. Returns null if not found.", //
-			response = MLPRevisionDescription.class)
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@ApiOperation(value = "Gets the description for the specified revision and catalog. Returns null if not found.", //
+			response = MLPRevCatDescription.class)
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.GET)
-	public MLPResponse getRevisionDescription(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode) {
-		logger.debug("getRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
-		Optional<MLPRevisionDescription> da = revisionDescRepository
-				.findById(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
+	public MLPResponse getRevCatDescription(@PathVariable("revisionId") String revisionId,
+			@PathVariable("catalogId") String catalogId) {
+		logger.debug("getRevCatDescription: revisionId {} catalogId {}", revisionId, catalogId);
+		Optional<MLPRevCatDescription> da = revCatDescRepository
+				.findById(new MLPRevCatDescription.RevCatDescriptionPK(revisionId, catalogId));
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Creates a new description for the specified revision and access type. Returns bad request if an ID is not found.", //
-			response = MLPRevisionDescription.class)
+	@ApiOperation(value = "Creates a new description for the specified revision and catalog. Returns bad request if an ID is not found.", //
+			response = MLPRevCatDescription.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.POST)
-	public MLPResponse createRevisionDescription(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, @RequestBody MLPRevisionDescription description,
+	public MLPResponse createRevCatDescription(@PathVariable("revisionId") String revisionId,
+			@PathVariable("catalogId") String catalogId, @RequestBody MLPRevCatDescription description,
 			HttpServletResponse response) {
-		logger.debug("createRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("createRevCatDescription: revisionId {} catalogId {}", revisionId, catalogId);
 		if (!revisionRepository.findById(revisionId).isPresent()) {
 			logger.warn("createRevisionDescription failed on ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
 		}
+		if (!catalogRepository.findById(catalogId).isPresent()) {
+			logger.warn("createRevisionDescription failed on ID {}", catalogId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
+		}
 		try {
-			// Validate enum codes
-			super.validateCode(description.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
 			// Use the validated values
 			description.setRevisionId(revisionId);
-			description.setAccessTypeCode(accessTypeCode);
+			description.setCatalogId(catalogId);
 			// Create a new row
-			return revisionDescRepository.save(description);
+			return revCatDescRepository.save(description);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("createRevisionDescription took exception {} on data {}", cve.toString(),
-					description.toString());
+			logger.warn("createRevCatDescription took exception {} on data {}", cve.toString(), description.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRevisionDescription failed", cve);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "createRevCatDescription failed", cve);
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing description with the supplied data. Returns bad request on constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.PUT)
-	public MLPTransportModel updateRevisionDescription(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, @RequestBody MLPRevisionDescription description,
+	public MLPTransportModel updateRevCatDescription(@PathVariable("revisionId") String revisionId,
+			@PathVariable("catalogId") String catalogId, @RequestBody MLPRevCatDescription description,
 			HttpServletResponse response) {
-		logger.debug("updateRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+		logger.debug("updateRevCatDescription: revisionId {} catalogId {}", revisionId, catalogId);
 		// Check the existing one
-		if (!revisionDescRepository.findById(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode))
+		if (!revCatDescRepository.findById(new MLPRevCatDescription.RevCatDescriptionPK(revisionId, catalogId))
 				.isPresent()) {
 			logger.warn("updateRevisionDescription failed on ID {}", revisionId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
-					NO_ENTRY_WITH_ID + revisionId + "/" + accessTypeCode, null);
+					NO_ENTRY_WITH_ID + revisionId + "/" + catalogId, null);
 		}
 		try {
-			super.validateCode(description.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
 			// Use the validated values
 			description.setRevisionId(revisionId);
-			description.setAccessTypeCode(accessTypeCode);
-			revisionDescRepository.save(description);
+			description.setCatalogId(catalogId);
+			revCatDescRepository.save(description);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			Exception cve = findConstraintViolationException(ex);
-			logger.warn("updateRevisionDescription took exception {} on data {}", cve.toString(),
-					description.toString());
+			logger.warn("updateRevCatDescription took exception {} on data {}", cve.toString(), description.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "updateRevisionDescription failed", cve);
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the description with the specified IDs. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DESCRIPTION_PATH, method = RequestMethod.DELETE)
-	public MLPTransportModel deleteRevisionDescription(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, HttpServletResponse response) {
-		logger.debug("deleteRevisionDescription: revisionId {} accessTypeCode {}", revisionId, accessTypeCode);
+	public MLPTransportModel deleteRevCatDescription(@PathVariable("revisionId") String revisionId,
+			@PathVariable("catalogId") String catalogId, HttpServletResponse response) {
+		logger.debug("deleteRevCatDescription: revisionId {} catalogId {}", revisionId, catalogId);
 		try {
-			revisionDescRepository.deleteById(new MLPRevisionDescription.RevDescPK(revisionId, accessTypeCode));
+			revCatDescRepository.deleteById(new MLPRevCatDescription.RevCatDescriptionPK(revisionId, catalogId));
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("deleteRevisionDescription failed: {}", ex.toString());
+			logger.warn("deleteRevCatDescription failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteRevisionDescription failed", ex);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteRevCatDescription failed", ex);
 		}
 	}
 
-	@ApiOperation(value = "Gets the documents for the specified revision and access type.", //
+	@ApiOperation(value = "Gets the documents for the specified revision and catalog.", //
 			response = MLPDocument.class, responseContainer = "List")
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DOCUMENT_PATH, method = RequestMethod.GET)
-	public Iterable<MLPDocument> getSolRevDocuments(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode) {
-		logger.debug("getSolRevDocuments: revisionId {} accessType {}", revisionId, accessTypeCode);
-		return documentRepository.findByRevisionAccess(revisionId, accessTypeCode);
+	public Iterable<MLPDocument> getRevCatDocuments(@PathVariable("revisionId") String revisionId,
+			@PathVariable("catalogId") String catalogId) {
+		logger.debug("getRevCatDocuments: revisionId {} catalogId {}", revisionId, catalogId);
+		return revCatDocMapRepository.findByRevisionCatalog(revisionId, catalogId);
 	}
 
-	@ApiOperation(value = "Adds a user document to the specified revision and access type.", //
+	@ApiOperation(value = "Adds a user document to the specified revision and catalog.", //
 			response = SuccessTransport.class)
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DOCUMENT_PATH + "/{documentId}", method = RequestMethod.POST)
 	public SuccessTransport addRevisionDocument(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, @PathVariable("documentId") String documentId) {
-		logger.debug("addRevisionDocument: revisionId {} accessType {} documentId {}", revisionId, accessTypeCode,
+			@PathVariable("catalogId") String catalogId, @PathVariable("documentId") String documentId) {
+		logger.debug("addRevisionDocument: revisionId {} catalogId {} documentId {}", revisionId, catalogId,
 				documentId);
-		MLPSolRevDocMap map = new MLPSolRevDocMap(revisionId, accessTypeCode, documentId);
-		solRevDocMapRepository.save(map);
+		MLPRevCatDocMap map = new MLPRevCatDocMap(revisionId, catalogId, documentId);
+		revCatDocMapRepository.save(map);
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Removes a user document from the specified revision and access type.", //
+	@ApiOperation(value = "Removes a document from the specified revision and catalog.", //
 			response = SuccessTransport.class)
-	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ACCESS_PATH + "/{accessTypeCode}/"
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.CATALOG_PATH + "/{catalogId}/"
 			+ CCDSConstants.DOCUMENT_PATH + "/{documentId}", method = RequestMethod.DELETE)
 	public SuccessTransport dropRevisionDocument(@PathVariable("revisionId") String revisionId,
-			@PathVariable("accessTypeCode") String accessTypeCode, @PathVariable("documentId") String documentId) {
-		logger.debug("dropRevisionDocument: revisionId {} documentId {}", revisionId, documentId);
-		solRevDocMapRepository.deleteById(new MLPSolRevDocMap.SolRevDocMapPK(revisionId, accessTypeCode, documentId));
+			@PathVariable("catalogId") String catalogId, @PathVariable("documentId") String documentId) {
+		logger.debug("dropRevisionDocument: revisionId {} catalogId {} documentId {}", revisionId, catalogId,
+				documentId);
+		revCatDocMapRepository.deleteById(new MLPRevCatDocMap.RevCatDocMapPK(revisionId, catalogId, documentId));
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 }

@@ -26,9 +26,9 @@ import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPDocument;
-import org.acumos.cds.domain.MLPRevisionDescription;
+import org.acumos.cds.domain.MLPRevCatDescription;
+import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
-import org.acumos.cds.domain.MLPSolRevDocMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionFOM;
@@ -38,9 +38,9 @@ import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.DocumentRepository;
-import org.acumos.cds.repository.RevisionDescriptionRepository;
+import org.acumos.cds.repository.RevCatDescriptionRepository;
+import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
-import org.acumos.cds.repository.SolRevDocMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionFOMRepository;
 import org.acumos.cds.repository.SolutionRepository;
@@ -73,9 +73,13 @@ public class FOMRepositoryTest {
 	@Autowired
 	private CatalogRepository catalogRepository;
 	@Autowired
+	private CatSolMapRepository catSolMapRepository;
+	@Autowired
 	private DocumentRepository documentRepository;
 	@Autowired
-	private RevisionDescriptionRepository descriptionRepository;
+	private RevCatDescriptionRepository revCatDescRepository;
+	@Autowired
+	private RevCatDocMapRepository revCatDocMapRepository;
 	@Autowired
 	private SolutionRevisionRepository revisionRepository;
 	@Autowired
@@ -83,17 +87,13 @@ public class FOMRepositoryTest {
 	@Autowired
 	private SolutionFOMRepository solutionFOMRepository;
 	@Autowired
-	private CatSolMapRepository catSolMapRepository;
-	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
-	@Autowired
-	private SolRevDocMapRepository solRevDocMapRepository;
 	@Autowired
 	private SolUserAccMapRepository solUserAccMapRepository;
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
 	private SolutionSearchService solutionSearchService;
+	@Autowired
+	private UserRepository userRepository;
 
 	@Test
 	public void testEntities() throws Exception {
@@ -107,11 +107,11 @@ public class FOMRepositoryTest {
 		MLPSolution cs = null;
 		MLPSolutionRevision cr = null;
 		MLPArtifact ca = null;
-		MLPRevisionDescription rd = null;
+		MLPRevCatDescription rd = null;
 		MLPDocument cd = null;
 		MLPCatSolMap catSolMap = null;
 		MLPSolRevArtMap revArtMap = null;
-		MLPSolRevDocMap revDocMap = null;
+		MLPRevCatDocMap revDocMap = null;
 		MLPSolUserAccMap accMap = null;
 		final String name = "name";
 
@@ -154,8 +154,8 @@ public class FOMRepositoryTest {
 			revArtMap = solRevArtMapRepository.save(revArtMap);
 			logger.info("Created sol-rev-art map {}", revArtMap);
 
-			rd = new MLPRevisionDescription(cr.getRevisionId(), "PB", "Some description");
-			rd = descriptionRepository.save(rd);
+			rd = new MLPRevCatDescription(cr.getRevisionId(), cc.getCatalogId(), "Some description");
+			rd = revCatDescRepository.save(rd);
 			Assert.assertNotNull(rd.getCreated());
 			logger.info("Created description {}", rd);
 
@@ -164,8 +164,8 @@ public class FOMRepositoryTest {
 			Assert.assertNotNull(cd.getDocumentId());
 			logger.info("Created document {}", cd);
 
-			revDocMap = new MLPSolRevDocMap(cr.getRevisionId(), "PB", cd.getDocumentId());
-			revDocMap = solRevDocMapRepository.save(revDocMap);
+			revDocMap = new MLPRevCatDocMap(cr.getRevisionId(), cc.getCatalogId(), cd.getDocumentId());
+			revDocMap = revCatDocMapRepository.save(revDocMap);
 			logger.info("Created sol-rev-doc map {}", revDocMap);
 
 			accMap = new MLPSolUserAccMap(cs.getSolutionId(), cu2.getUserId());
@@ -206,11 +206,11 @@ public class FOMRepositoryTest {
 		if (setupTeardown) {
 			// Clean up
 			solUserAccMapRepository.delete(accMap);
-			solRevDocMapRepository.delete(revDocMap);
+			revCatDocMapRepository.delete(revDocMap);
 			solRevArtMapRepository.delete(revArtMap);
 			catSolMapRepository.delete(catSolMap);
 			documentRepository.delete(cd);
-			descriptionRepository.delete(rd);
+			revCatDescRepository.delete(rd);
 			artifactRepository.delete(ca);
 			revisionRepository.delete(cr);
 			solutionRepository.delete(cs);

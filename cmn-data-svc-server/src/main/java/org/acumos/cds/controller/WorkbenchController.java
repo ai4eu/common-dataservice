@@ -291,7 +291,7 @@ public class WorkbenchController extends AbstractController {
 				repositoryUrl, serviceUrl, pageRequest, response);
 	}
 
-	@ApiOperation(value = "Gets the notebooks within the specified project. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets the workbench notebooks mapped to the specified project ID. Returns empty if none are found.", //
 			response = MLPNotebook.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.PROJECT_PATH + "/{projectId}/"
 			+ CCDSConstants.NOTEBOOK_PATH, method = RequestMethod.GET)
@@ -300,7 +300,7 @@ public class WorkbenchController extends AbstractController {
 		return projNbMapRepository.findProjectNotebooks(projectId);
 	}
 
-	@ApiOperation(value = "Gets the projects that contain the specified notebook. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets the workbench projects to which the specified notebook is mapped. Returns empty if none are found.", //
 			response = MLPProject.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.NOTEBOOK_PATH + "/{notebookId}/"
 			+ CCDSConstants.PROJECT_PATH, method = RequestMethod.GET)
@@ -487,7 +487,7 @@ public class WorkbenchController extends AbstractController {
 				repositoryUrl, serviceUrl, pageRequest, response);
 	}
 
-	@ApiOperation(value = "Gets the pipelines within the specified project. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets the workbench pipelines mapped to the specified project ID. Returns empty if none are found.", //
 			response = MLPPipeline.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.PROJECT_PATH + "/{projectId}/"
 			+ CCDSConstants.PIPELINE_PATH, method = RequestMethod.GET)
@@ -496,7 +496,7 @@ public class WorkbenchController extends AbstractController {
 		return projPlMapRepository.findProjectPipelines(projectId);
 	}
 
-	@ApiOperation(value = "Gets the projects that contain the specified pipeline. Returns empty if none are found.", //
+	@ApiOperation(value = "Gets the workbench projects to which the specified pipeline is mapped. Returns empty if none are found.", //
 			response = MLPProject.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.PIPELINE_PATH + "/{pipelineId}/"
 			+ CCDSConstants.PROJECT_PATH, method = RequestMethod.GET)
