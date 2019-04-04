@@ -260,8 +260,6 @@ public class SolutionController extends AbstractController {
 	public Object findPortalSolutions( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
-			@ApiParam(value = "Access type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
 			@ApiParam(value = "Model type codes", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_MODEL_TYPES, required = false) String[] modelTypeCodes, //
 			@ApiParam(value = "User IDs", allowMultiple = true) //
@@ -279,8 +277,8 @@ public class SolutionController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findPortalSolutions: active {} nameKws {}", active, nameKws);
 		try {
-			return solutionSearchService.findPortalSolutions(nameKws, descKws, active, userIds, modelTypeCodes,
-					accTypeCodes, tags, authKws, pubKws, pageRequest);
+			return solutionSearchService.findPortalSolutions(nameKws, descKws, active, userIds, modelTypeCodes, tags,
+					authKws, pubKws, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findPortalSolutions failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -299,8 +297,6 @@ public class SolutionController extends AbstractController {
 	public Object findPortalSolutionsByKwAndTags( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
-			@ApiParam(value = "Access type codes", allowMultiple = true) //
-			@RequestParam(name = CCDSConstants.SEARCH_ACCESS_TYPES, required = false) String[] accTypeCodes, //
 			@ApiParam(value = "Model type codes", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_MODEL_TYPES, required = false) String[] modelTypeCodes, //
 			@ApiParam(value = "Key words", allowMultiple = true) //
@@ -316,8 +312,8 @@ public class SolutionController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findPortalSolutionsByKwAndTags: active {} kw {}", active, kws);
 		try {
-			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes,
-					accTypeCodes, allTags, anyTags, catalogIds, pageRequest);
+			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes, allTags,
+					anyTags, catalogIds, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findPortalSolutionsByKwAndTags failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -326,7 +322,7 @@ public class SolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Finds user-accessible solutions matching the specified attribute values. "
+	@ApiOperation(value = "Gets a page of solutions editable by the specified user and matching all query parameters. "
 			+ "Keywords are processed using LIKE-operator search.  Does not search any child entities.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
@@ -503,7 +499,8 @@ public class SolutionController extends AbstractController {
 			response = MLPSolutionRevision.class, responseContainer = "List")
 	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.REVISION_PATH, method = RequestMethod.GET)
 	public Iterable<MLPSolutionRevision> getListOfRevisions(@PathVariable("solutionId") String[] solutionIds) {
-		logger.debug("getListOfRevisions: solution IDs {}", Arrays.toString(solutionIds));
+		if (logger.isDebugEnabled()) // silence Sonar complaint
+			logger.debug("getListOfRevisions: solution IDs {}", Arrays.toString(solutionIds));
 		return solutionRevisionRepository.findBySolutionIdIn(solutionIds);
 	}
 
@@ -532,8 +529,6 @@ public class SolutionController extends AbstractController {
 		}
 		try {
 			// Validate enum codes
-			if (revision.getAccessTypeCode() != null)
-				super.validateCode(revision.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
 			if (revision.getVerifiedLicense() != null)
 				super.validateCode(revision.getVerifiedLicense(), CodeNameType.VERIFIED_LICENSE);
 			if (revision.getVerifiedVulnerability() != null)
@@ -580,8 +575,6 @@ public class SolutionController extends AbstractController {
 		}
 		try {
 			// Validate enum codes
-			if (revision.getAccessTypeCode() != null)
-				super.validateCode(revision.getAccessTypeCode(), CodeNameType.ACCESS_TYPE);
 			if (revision.getVerifiedLicense() != null)
 				super.validateCode(revision.getVerifiedLicense(), CodeNameType.VERIFIED_LICENSE);
 			if (revision.getVerifiedVulnerability() != null)

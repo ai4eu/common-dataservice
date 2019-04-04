@@ -80,15 +80,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	private String origin;
 
 	/**
-	 * The Access Type Code value set is defined by server-side configuration.
-	 */
-	@Column(name = "ACCESS_TYPE_CD", nullable = false, columnDefinition = "CHAR(2)")
-	@NotNull(message = "Access type code cannot be null")
-	@Size(max = 2)
-	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
-	private String accessTypeCode;
-
-	/**
 	 * Domain class method formats the text.
 	 */
 	@Column(name = "AUTHORS", columnDefinition = "VARCHAR(1024)")
@@ -139,15 +130,12 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 * on save. Sets the onboarded value to the current date and time.
 	 * 
 	 * @param version
-	 *                           User-assigned version string
-	 * @param accessTypeCode
-	 *                           Access type code
+	 *                    User-assigned version string
 	 */
-	public MLPAbstractSolutionRevision(String version, String accessTypeCode) {
-		if (version == null || accessTypeCode == null)
+	public MLPAbstractSolutionRevision(String version) {
+		if (version == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.version = version;
-		this.accessTypeCode = accessTypeCode;
 		this.onboarded = Instant.now();
 	}
 
@@ -159,7 +147,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 	 */
 	public MLPAbstractSolutionRevision(MLPAbstractSolutionRevision that) {
 		super(that);
-		this.accessTypeCode = that.accessTypeCode;
 		this.authors = that.authors;
 		this.metadata = that.metadata;
 		this.onboarded = that.onboarded;
@@ -201,14 +188,6 @@ public abstract class MLPAbstractSolutionRevision extends MLPTimestampedEntity {
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
-	}
-
-	public String getAccessTypeCode() {
-		return accessTypeCode;
-	}
-
-	public void setAccessTypeCode(String accessTypeCode) {
-		this.accessTypeCode = accessTypeCode;
 	}
 
 	public String getPublisher() {

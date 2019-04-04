@@ -253,7 +253,8 @@ public class CatalogController extends AbstractController {
 	public Object getSolutionsInCatalogs(@ApiParam(value = "Catalog IDs", allowMultiple = true) //
 	@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = true) String[] catalogIds, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.debug("getSolutionsInCatalogs catalogIds {}", Arrays.toString(catalogIds));
+		if (logger.isDebugEnabled()) // silence Sonar complaint
+			logger.debug("getSolutionsInCatalogs catalogIds {}", Arrays.toString(catalogIds));
 		if (catalogIds == null || catalogIds.length == 0) {
 			logger.warn("getSolutionsInCatalogs missing catalogIds");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -263,7 +264,7 @@ public class CatalogController extends AbstractController {
 		return catSolMapRepository.findSolutionsByCatalogIds(catalogIds, pageRequest);
 	}
 
-	@ApiOperation(value = "Gets the catalogs where the specified solution appears; empty if none are found.", //
+	@ApiOperation(value = "Gets the catalogs where the specified solution is published; empty if none are found.", //
 			response = MLPCatalog.class, responseContainer = "List")
 	@RequestMapping(value = CCDSConstants.SOLUTION_PATH + "/{solutionId}", method = RequestMethod.GET)
 	public Object getSolutionCatalogs(@PathVariable("solutionId") String solutionId) {
@@ -271,7 +272,7 @@ public class CatalogController extends AbstractController {
 		return catSolMapRepository.findCatalogsBySolutionId(solutionId);
 	}
 
-	@ApiOperation(value = "Adds the specified solution to the specified catalog. Answers bad request if an ID is invalid.", //
+	@ApiOperation(value = "Publishes the specified solution to the specified catalog. Answers bad request if an ID is invalid.", //
 			response = SuccessTransport.class)
 	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.SOLUTION_PATH
 			+ "/{solutionId}", method = RequestMethod.POST)
@@ -325,7 +326,7 @@ public class CatalogController extends AbstractController {
 		return peerCatAccMapRepository.findCatalogIdsByPeerId(peerId);
 	}
 
-	@ApiOperation(value = "Add special access to the specified catalog for the specified peer. Answers bad request if an ID is invalid.", //
+	@ApiOperation(value = "Add read access to the specified restricted catalog for the specified peer. Answers bad request if an ID is invalid.", //
 			response = SuccessTransport.class)
 	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.PEER_PATH + "/{peerId}", method = RequestMethod.POST)
 	public MLPResponse addPeerAccessCatalog(@PathVariable("catalogId") String catalogId,
@@ -336,6 +337,7 @@ public class CatalogController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
 		}
+		// TODO: check if catalog access type is restricted?
 		if (!peerRepository.findById(peerId).isPresent()) {
 			logger.warn("addPeerAccessCatalog: failed on peer ID {}", peerId);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -345,7 +347,7 @@ public class CatalogController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Removes special access to the specified catalog for the specified peer.", //
+	@ApiOperation(value = "Removes read access to the specified restricted catalog for the specified peer.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.PEER_PATH + "/{peerId}", method = RequestMethod.DELETE)
@@ -393,7 +395,7 @@ public class CatalogController extends AbstractController {
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
 	}
 
-	@ApiOperation(value = "Unmarks the specified catalog as a favorite of the specified user.", //
+	@ApiOperation(value = "Removes the specified catalog as a favorite of the specified user.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.USER_PATH + "/{userId}/"

@@ -215,7 +215,7 @@ public class UserController extends AbstractController {
 				long blockedTimeSec = this.loginFailureBlockTimeSec - elapsedTimeSec;
 				if (blockedTimeSec > 0) {
 					logger.warn("checkUserCredentials: user {} blocked for {} sec", user.getLoginName(),
-							Long.toString(blockedTimeSec));
+							blockedTimeSec);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					// This reveals that the username exists
 					return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
@@ -238,8 +238,7 @@ public class UserController extends AbstractController {
 
 		if (!match) {
 			// Record the failure
-			logger.warn("checkUserCredentials: user {} failed auth type {}", user.getLoginName(),
-					credentialType.name());
+			logger.warn("checkUserCredentials: user {} failed auth type {}", user.getLoginName(), credentialType);
 			user.setLoginFailCount((short) (user.getLoginFailCount() == null ? 1 : user.getLoginFailCount() + 1));
 			user.setLoginFailDate(Instant.now());
 			userRepository.save(user);
@@ -478,7 +477,8 @@ public class UserController extends AbstractController {
 	@RequestMapping(method = RequestMethod.POST)
 	public MLPResponse createUser(@RequestBody MLPUser user, HttpServletResponse response) {
 		// the toString() method reveals no security hashes or tokens
-		logger.debug("createUser: user {}", user.toString());
+		if (logger.isDebugEnabled()) // silence Sonar complaint
+			logger.debug("createUser: user {}", user.toString());
 		try {
 			String id = user.getUserId();
 			if (id != null) {
@@ -526,7 +526,8 @@ public class UserController extends AbstractController {
 	public MLPTransportModel updateUser(@PathVariable("userId") String userId, @RequestBody MLPUser user,
 			HttpServletResponse response) {
 		// the toString() method reveals no security hashes or tokens
-		logger.debug("updateUser: user {}", user.toString());
+		if (logger.isDebugEnabled()) // silence Sonar complaint
+			logger.debug("updateUser: user {}", user.toString());
 		// Get the existing one
 		Optional<MLPUser> opt = userRepository.findById(userId);
 		if (!opt.isPresent()) {
@@ -673,8 +674,9 @@ public class UserController extends AbstractController {
 	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.PUT)
 	public MLPTransportModel addOrDropUsersInRole(@PathVariable("roleId") String roleId,
 			@RequestBody UsersRoleRequest usersRoleRequest, HttpServletResponse response) {
-		logger.debug("addOrDropUsersInRole: role {} users {}", roleId,
-				String.join(", ", usersRoleRequest.getUserIds()));
+		if (logger.isDebugEnabled())
+			logger.debug("addOrDropUsersInRole: role {} users {}", roleId,
+					String.join(", ", usersRoleRequest.getUserIds()));
 		// Validate entire request before making any change
 		if (!roleRepository.findById(roleId).isPresent()) {
 			logger.warn("addOrDropUsersInRole unknown role ID {}", roleId);

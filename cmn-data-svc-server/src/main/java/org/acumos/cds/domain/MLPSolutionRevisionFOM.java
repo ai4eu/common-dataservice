@@ -171,8 +171,7 @@ public class MLPSolutionRevisionFOM extends MLPAbstractSolutionRevision implemen
 	 * @return MLPSolutionRevision with the information from this entity
 	 */
 	public MLPSolutionRevision toMLPSolutionRevision() {
-		MLPSolutionRevision rev = new MLPSolutionRevision(solution.getSolutionId(), getVersion(), user.getUserId(),
-				getAccessTypeCode());
+		MLPSolutionRevision rev = new MLPSolutionRevision(solution.getSolutionId(), getVersion(), user.getUserId());
 		rev.setCreated(getCreated());
 		rev.setMetadata(getMetadata());
 		rev.setModified(getModified());

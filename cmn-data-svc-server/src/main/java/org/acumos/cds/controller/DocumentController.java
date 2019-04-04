@@ -70,7 +70,7 @@ public class DocumentController extends AbstractController {
 	@Autowired
 	private DocumentRepository documentRepository;
 
-	@ApiOperation(value = "Gets the entity for the specified ID. Returns null if the ID is not found.", //
+	@ApiOperation(value = "Gets the document object for the specified ID. Returns null if the ID is not found.", //
 			response = MLPDocument.class)
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.GET)
 	public MLPResponse getDocument(@PathVariable("documentId") String documentId) {
@@ -79,7 +79,7 @@ public class DocumentController extends AbstractController {
 		return da.isPresent() ? da.get() : null;
 	}
 
-	@ApiOperation(value = "Creates a new entity and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
+	@ApiOperation(value = "Creates a new document object and generates an ID if needed. Returns bad request on bad URI, constraint violation etc.", //
 			response = MLPDocument.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(method = RequestMethod.POST)
@@ -112,7 +112,7 @@ public class DocumentController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Updates an existing entity with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
+	@ApiOperation(value = "Updates an existing document with the supplied data. Returns bad request on bad URI, constraint violation etc.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.PUT)
@@ -143,7 +143,7 @@ public class DocumentController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Deletes the entity with the specified ID. Returns bad request if the ID is not found.", //
+	@ApiOperation(value = "Deletes the document with the specified ID. Returns bad request if the ID is not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
 	@RequestMapping(value = "/{documentId}", method = RequestMethod.DELETE)

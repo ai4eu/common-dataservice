@@ -89,21 +89,21 @@ public interface ICommonDataServiceRestClient {
 	void setRequestId(String requestId);
 
 	/**
-	 * Checks the health of the server.
+	 * Checks the health of the server by querying the database.
 	 * 
 	 * @return Object with health string
 	 */
 	SuccessTransport getHealth();
 
 	/**
-	 * Gets the version of the server.
+	 * Gets the server version string.
 	 * 
 	 * @return Object with version string
 	 */
 	SuccessTransport getVersion();
 
 	/**
-	 * Gets the list of code-name value-set names.
+	 * Gets the list of value set names that can be used to fetch code-name pairs.
 	 * 
 	 * @return List of names
 	 */
@@ -115,6 +115,8 @@ public interface ICommonDataServiceRestClient {
 	 * @param valueSetName
 	 *                         Value set name
 	 * @return List of code-name pairs
+	 * @throws RestClientResponseException
+	 *                                         If the value-set name is not known
 	 */
 	List<MLPCodeNamePair> getCodeNamePairs(CodeNameType valueSetName);
 
@@ -217,12 +219,6 @@ public interface ICommonDataServiceRestClient {
 	 *                                specified values including null (which is
 	 *                                different from the special-case 4-character
 	 *                                sequence "null"); ignored if null or empty
-	 * @param accessTypeCodes
-	 *                                Limits match to solutions containing revisions
-	 *                                with ANY of the specified values including
-	 *                                null (which is different from the special-case
-	 *                                4-character sequence "null"); ignored if null
-	 *                                or empty
 	 * @param tags
 	 *                                Limits match to solutions with ANY of the
 	 *                                specified tags; ignored if null or empty
@@ -234,15 +230,14 @@ public interface ICommonDataServiceRestClient {
 	 *                                '%' characters; ignored if null or empty
 	 * @param publisherKeywords
 	 *                                Same as author, but on the publisher field.
-	 * 
 	 * @param pageRequest
 	 *                                Page index, page size and sort information;
 	 *                                defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
-			boolean active, String[] userIds, String[] accessTypeCodes, String[] modelTypeCodes, String[] tags,
-			String[] authorKeywords, String[] publisherKeywords, RestPageRequest pageRequest);
+			boolean active, String[] userIds, String[] modelTypeCodes, String[] tags, String[] authorKeywords,
+			String[] publisherKeywords, RestPageRequest pageRequest);
 
 	/**
 	 * Gets a page of solutions that match every condition, with the caveat that any
@@ -251,37 +246,34 @@ public interface ICommonDataServiceRestClient {
 	 * slow because it requires table scans.
 	 * 
 	 * @param keywords
-	 *                            Keywords to find in the name, revision
-	 *                            description, author, publisher and other field;
-	 *                            ignored if null or empty
+	 *                           Keywords to find in the name, revision description,
+	 *                           author, publisher and other field; ignored if null
+	 *                           or empty
 	 * @param active
-	 *                            Solution active status; true for active, false for
-	 *                            inactive
+	 *                           Solution active status; true for active, false for
+	 *                           inactive
 	 * @param userIds
-	 *                            User IDs who created the solution; ignored if null
-	 *                            or empty
-	 * @param accessTypeCodes
-	 *                            Access type codes; use four-letter sequence "null"
-	 *                            to match a null value; ignored if null or empty
+	 *                           User IDs who created the solution; ignored if null
+	 *                           or empty
 	 * @param modelTypeCodes
-	 *                            Model type codes; use four-letter sequence "null"
-	 *                            to match a null value; ignored if null or empty
+	 *                           Model type codes; use four-letter sequence "null"
+	 *                           to match a null value; ignored if null or empty
 	 * @param allTags
-	 *                            Solutions must have ALL tags in the supplied set;
-	 *                            ignored if null or empty
+	 *                           Solutions must have ALL tags in the supplied set;
+	 *                           ignored if null or empty
 	 * @param anyTags
-	 *                            Solutions must have ANY tag in the supplied set
-	 *                            (one or more); ignored if null or empty.
+	 *                           Solutions must have ANY tag in the supplied set
+	 *                           (one or more); ignored if null or empty.
 	 * @param catalogIds
-	 *                            Solutions must be mapped to one of the specified
-	 *                            catalogs; ignored if null or empty
+	 *                           Solutions must be mapped to one of the specified
+	 *                           catalogs; ignored if null or empty
 	 * @param pageRequest
-	 *                            Page index, page size and sort information;
-	 *                            defaults to page 0 of size 20 if null.
+	 *                           Page index, page size and sort information;
+	 *                           defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
 	RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] accessTypeCodes, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
+			String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			RestPageRequest pageRequest);
 
 	/**
@@ -592,7 +584,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPArtifact> getArtifacts(RestPageRequest pageRequest);
 
 	/**
-	 * Returns artifacts with a name or description that contains the search term.
+	 * Searches for artifacts with names or descriptions that contain the search
+	 * term using the like operator; empty if no matches are found.
 	 * 
 	 * @param searchTerm
 	 *                        String to find
@@ -604,7 +597,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPArtifact> findArtifactsBySearchTerm(String searchTerm, RestPageRequest pageRequest);
 
 	/**
-	 * Searches artifacts for exact matches.
+	 * Searches for artifacts with attributes matching the values specified as query
+	 * parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -633,7 +627,7 @@ public interface ICommonDataServiceRestClient {
 	MLPArtifact getArtifact(String artifactId);
 
 	/**
-	 * Creates a artifact.
+	 * Creates a new artifact and generates an ID if needed.
 	 * 
 	 * @param artifact
 	 *                     Artifact data. If the ID field is null a new value is
@@ -646,7 +640,7 @@ public interface ICommonDataServiceRestClient {
 	MLPArtifact createArtifact(MLPArtifact artifact) throws RestClientResponseException;
 
 	/**
-	 * Updates an artifact.
+	 * Updates an existing artifact with the supplied data.
 	 * 
 	 * @param artifact
 	 *                     Artifact data
@@ -656,9 +650,9 @@ public interface ICommonDataServiceRestClient {
 	void updateArtifact(MLPArtifact artifact) throws RestClientResponseException;
 
 	/**
-	 * Deletes an artifact. Cascades the delete; e.g., removes the association with
-	 * any solution revisions and other records. Answers bad request if the ID is
-	 * not known.
+	 * Deletes an artifact with the specified ID. Cascades the delete; e.g., removes
+	 * the association with any solution revisions and other records. Answers bad
+	 * request if the ID is not known.
 	 * 
 	 * @param artifactId
 	 *                       artifact ID
@@ -1472,7 +1466,8 @@ public interface ICommonDataServiceRestClient {
 	List<MLPUser> getSolutionAccessUsers(String solutionId);
 
 	/**
-	 * Gets a page of solutions accessible to the specified user.
+	 * Gets a page of solutions for which the user has write permission but is not
+	 * the owner; i.e., extra access has been granted by the solution owner.
 	 * 
 	 * @param userId
 	 *                        User ID
@@ -1484,7 +1479,7 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest);
 
 	/**
-	 * Grants access to the specified solution for the specified user.
+	 * Grants write permission to the specified solution for the specified user.
 	 * 
 	 * @param solutionId
 	 *                       solution ID
@@ -1496,7 +1491,7 @@ public interface ICommonDataServiceRestClient {
 	void addSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
 
 	/**
-	 * Removes access to the specified solution for the specified user.
+	 * Removes write permission from the specified solution for the specified user.
 	 * 
 	 * @param solutionId
 	 *                       solution ID
@@ -2076,18 +2071,16 @@ public interface ICommonDataServiceRestClient {
 	void deleteRevisionDescription(String revisionId, String accessTypeCode) throws RestClientResponseException;
 
 	/**
-	 * Gets the document with the specified ID. This is usually metadata about a
-	 * user-supplied document stored in Nexus.
+	 * Gets the document object with the specified ID.
 	 * 
 	 * @param documentId
-	 *                       document ID
+	 *                       Document ID
 	 * @return Document object
 	 */
 	MLPDocument getDocument(String documentId);
 
 	/**
-	 * Creates a document. This is usually metadata about a user-supplied document
-	 * stored in Nexus.
+	 * Creates a new document object and generates an ID if needed.
 	 * 
 	 * @param document
 	 *                     Document data. If the ID field is null a new value is
@@ -2100,8 +2093,7 @@ public interface ICommonDataServiceRestClient {
 	MLPDocument createDocument(MLPDocument document) throws RestClientResponseException;
 
 	/**
-	 * Updates a document. This is usually metadata about a user-supplied document
-	 * stored in Nexus.
+	 * Updates an existing document object with the supplied data.
 	 * 
 	 * 
 	 * @param document
@@ -2112,11 +2104,11 @@ public interface ICommonDataServiceRestClient {
 	void updateDocument(MLPDocument document) throws RestClientResponseException;
 
 	/**
-	 * Deletes a document. An document can be deleted if is not associated with any
-	 * solution revisions; if associations remain the delete will fail.
+	 * Deletes a document object. A document can be deleted if is not associated
+	 * with any solution revisions; if associations remain the delete will fail.
 	 * 
 	 * @param documentId
-	 *                       document ID
+	 *                       Document ID
 	 * @throws RestClientResponseException
 	 *                                         Error message is in the response body
 	 */
@@ -2295,17 +2287,18 @@ public interface ICommonDataServiceRestClient {
 	void saveSolutionPicture(String solutionId, byte[] picture) throws RestClientResponseException;
 
 	/**
-	 * Gets a page of catalogs.
+	 * Gets a page of catalogs, optionally sorted.
 	 * 
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
-	 * @return Page of objects.
+	 * @return Page of catalogs, empty if none are found.
 	 */
 	RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest);
 
 	/**
-	 * Searches catalog records for exact matches.
+	 * Searches for catalogs with attributes matching the values specified as query
+	 * parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -2326,7 +2319,7 @@ public interface ICommonDataServiceRestClient {
 			RestPageRequest pageRequest);
 
 	/**
-	 * Gets a catalog
+	 * Gets the catalog for the specified ID.
 	 * 
 	 * @param catalogId
 	 *                      Catalog ID
@@ -2335,10 +2328,12 @@ public interface ICommonDataServiceRestClient {
 	MLPCatalog getCatalog(String catalogId);
 
 	/**
-	 * Creates a catalog.
+	 * Creates a new catalog and generates an ID if needed.
 	 * 
 	 * @param catalog
-	 *                    Catalog
+	 *                    Catalog data. If the ID field is null a new value is
+	 *                    generated; otherwise the ID value is used if valid and not
+	 *                    already known.
 	 * @return Complete object, with generated information such as ID
 	 * @throws RestClientResponseException
 	 *                                         Error message is in the response body
@@ -2346,10 +2341,10 @@ public interface ICommonDataServiceRestClient {
 	MLPCatalog createCatalog(MLPCatalog catalog) throws RestClientResponseException;
 
 	/**
-	 * Updates a catalog.
+	 * Updates an existing catalog with the supplied data.
 	 * 
 	 * @param catalog
-	 *                    Instance to update
+	 *                    Catalog data
 	 * @throws RestClientResponseException
 	 *                                         Error message is in the response body
 	 */
@@ -2383,22 +2378,21 @@ public interface ICommonDataServiceRestClient {
 	 * @param pageRequest
 	 *                        Page index, page size and sort information; defaults
 	 *                        to page 0 of size 20 if null.
-	 * @return Page of objects; empty if none are found
+	 * @return Page of solutions; empty if none are found
 	 */
 	RestPageResponse<MLPSolution> getSolutionsInCatalogs(String[] catalogIds, RestPageRequest pageRequest);
 
 	/**
-	 * Gets the catalogs for the specified solution; i.e., all places to which the
-	 * solution is published.
+	 * Gets the catalogs where the specified solution is published.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
-	 * @return List of objects; empty if none are found
+	 * @return List of catalogs; empty if none are found
 	 */
 	List<MLPCatalog> getSolutionCatalogs(String solutionId);
 
 	/**
-	 * Adds (publishes) the specified solution to the specified catalog.
+	 * Publishes the specified solution to the specified catalog.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
@@ -2410,7 +2404,7 @@ public interface ICommonDataServiceRestClient {
 	void addSolutionToCatalog(String solutionId, String catalogId) throws RestClientResponseException;
 
 	/**
-	 * Drops (unpublishes) the specified solution from the specified catalog.
+	 * Removes the specified solution from the specified catalog.
 	 * 
 	 * @param solutionId
 	 *                       Solution ID
@@ -2664,7 +2658,8 @@ public interface ICommonDataServiceRestClient {
 	void dropUserFromRtu(String userId, Long rtuId) throws RestClientResponseException;
 
 	/**
-	 * Gets the IDs of all the peer's special-access catalogs.
+	 * Gets the list of catalog IDs readable by the specified peer. The catalogs
+	 * must have restricted access-type codes.
 	 * 
 	 * @param peerId
 	 *                   Peer ID
@@ -2673,8 +2668,8 @@ public interface ICommonDataServiceRestClient {
 	List<String> getPeerAccessCatalogIds(String peerId);
 
 	/**
-	 * Marks the specified catalog as accessible to the specified peer. The catalog
-	 * must be restricted.
+	 * Add read access to the specified catalog for the specified peer. The catalog
+	 * must have a restricted access-type code.
 	 * 
 	 * @param peerId
 	 *                      peer ID
@@ -2686,8 +2681,8 @@ public interface ICommonDataServiceRestClient {
 	void addPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
 
 	/**
-	 * Removes the marking that the specified catalog is accessible to the specified
-	 * peer.
+	 * Removes read access to the specified catalog for the specified peer. The
+	 * catalog must have a restricted access-type code.
 	 * 
 	 * @param peerId
 	 *                      peer ID
@@ -2699,7 +2694,7 @@ public interface ICommonDataServiceRestClient {
 	void dropPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
 
 	/**
-	 * Gets the IDs of ALL the user's favorite catalogs.
+	 * Gets the list of catalog IDs that are favorites of the specified user.
 	 * 
 	 * @param userId
 	 *                   User ID

@@ -57,7 +57,7 @@ public class HealthcheckController extends AbstractController {
 		return new SuccessTransport(200, "database reports solution count is " + count);
 	}
 
-	@ApiOperation(value = "Gets the value of the MANIFEST.MF property Implementation-Version as written by maven.", response = SuccessTransport.class)
+	@ApiOperation(value = "Gets the server version, which is the value of the MANIFEST.MF property Implementation-Version as written by maven.", response = SuccessTransport.class)
 	@RequestMapping(value = CCDSConstants.VERSION_PATH, method = RequestMethod.GET)
 	public MLPTransportModel getVersion() {
 		logger.debug("getVersion enter");

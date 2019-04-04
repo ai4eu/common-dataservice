@@ -114,7 +114,6 @@ public class FOMRepositoryTest {
 		MLPSolRevDocMap revDocMap = null;
 		MLPSolUserAccMap accMap = null;
 		final String name = "name";
-		final String accCode = "PB";
 
 		if (setupTeardown) {
 			// Create entities for query
@@ -137,7 +136,7 @@ public class FOMRepositoryTest {
 			cs = solutionRepository.save(cs);
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 
-			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId(), accCode);
+			cr = new MLPSolutionRevision(cs.getSolutionId(), "version", cu.getUserId());
 			cr = revisionRepository.save(cr);
 			Assert.assertNotNull("Revision ID", cr.getRevisionId());
 			logger.info("Created solution revision {}", cr.getRevisionId());
@@ -184,15 +183,14 @@ public class FOMRepositoryTest {
 		// Find by modified date
 		String[] empty = new String[0];
 		String[] nameKw = new String[] { name }; // substring of solution name
-		String[] accTypes = new String[] { accCode };
 
 		// Via Hibernate constraint
 		logger.info("Querying for FOM via search services");
 		Pageable pageable = PageRequest.of(0, 6);
 
 		logger.info("Querying for FOM via findPortalSolutions method");
-		Page<MLPSolution> byName = solutionSearchService.findPortalSolutions(nameKw, empty, true, empty, empty,
-				accTypes, empty, empty, empty, pageable);
+		Page<MLPSolution> byName = solutionSearchService.findPortalSolutions(nameKw, empty, true, empty, empty, empty,
+				empty, empty, pageable);
 		Assert.assertNotNull(byName);
 		Assert.assertNotEquals(0, byName.getNumberOfElements());
 		logger.info("Found sols by name via criteria: size {}", byName.getContent().size());

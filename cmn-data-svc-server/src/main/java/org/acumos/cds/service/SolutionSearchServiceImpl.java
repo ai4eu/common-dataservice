@@ -324,7 +324,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descKeywords, boolean active,
-			String[] userIds, String[] modelTypeCodes, String[] accessTypeCodes, String[] tags, String[] authorKeywords,
+			String[] userIds, String[] modelTypeCodes, String[] tags, String[] authorKeywords,
 			String[] publisherKeywords, Pageable pageable) {
 
 		// build the query using FOM class to access child attributes
@@ -354,16 +354,12 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			predicates.add(mtcInPredicate);
 		}
 
-		if ((accessTypeCodes != null && accessTypeCodes.length > 0) //
-				|| (descKeywords != null && descKeywords.length > 0)) {
+		if ((authorKeywords != null && authorKeywords.length > 0) || (descKeywords != null && descKeywords.length > 0)
+				|| (publisherKeywords != null && publisherKeywords.length > 0)) {
+
 			// revisions are optional, even tho a solution without them is useless
 			Join<MLPSolutionFOM, MLPSolutionRevisionFOM> revisionFom = solutionFom.join(MLPSolutionFOM_.revisions);
 
-			if (accessTypeCodes != null && accessTypeCodes.length > 0) {
-				Predicate p = revisionFom.<String>get(MLPSolutionRevisionFOM_.accessTypeCode)
-						.in((Object[]) accessTypeCodes);
-				predicates.add(p);
-			}
 			if (authorKeywords != null && authorKeywords.length > 0) {
 				Predicate or = cb.disjunction();
 				for (String s : authorKeywords)
@@ -437,14 +433,14 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 		predicates.add(active ? cb.isTrue(solutionFom.<Boolean>get(MLPSolution_.active))
 				: cb.isFalse(solutionFom.<Boolean>get(MLPSolution_.active)));
 
-		// Published is a required parameter, but catalogs are optional;
-		// this does not use an explicit join (?).
+		// Published is a required parameter but catalogs are optional.
+		// This does not use an explicit join.
 		Predicate publishedPred = published ? cb.isNotEmpty(solutionFom.get(MLPSolutionFOM_.catalogs))
 				: cb.isEmpty(solutionFom.get(MLPSolutionFOM_.catalogs));
 		predicates.add(publishedPred);
 
-		// Check for user as OWNER or user as SHARE.
-		// Silly to join on the user table just to check the ID, but given the
+		// Check for user as OWNER or user as SHARE.  It's silly to
+		// join on the user table just to check the ID, but given the
 		// annotation on MLPSolutionFOM I don't know another way.
 		// Every solution has a creating user, so use inner join
 		Join<MLPSolutionFOM, MLPUser> userAsCreator = solutionFom.join(MLPSolutionFOM_.user);
@@ -554,8 +550,7 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 	 */
 	@Override
 	public Page<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
-			String[] modelTypeCode, String[] accessTypeCode, String[] allTags, String[] anyTags, String[] catalogIds,
-			Pageable pageable) {
+			String[] modelTypeCode, String[] allTags, String[] anyTags, String[] catalogIds, Pageable pageable) {
 
 		try (Session session = getSessionFactory().openSession()) {
 			// build the query using FOM to access child attributes
@@ -582,9 +577,6 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 			}
 			if (modelTypeCode != null && modelTypeCode.length > 0)
 				criteria.add(buildEqualsListCriterion(MLPSolutionFOM_.MODEL_TYPE_CODE, modelTypeCode));
-			if (accessTypeCode != null && accessTypeCode.length > 0)
-				criteria.add(buildEqualsListCriterion(revAlias + "." + MLPSolutionRevisionFOM_.ACCESS_TYPE_CODE,
-						accessTypeCode));
 			if (userIds != null && userIds.length > 0) {
 				criteria.createAlias("user", userAlias);
 				criteria.add(Restrictions.in(userAlias + "." + MLPUser_.USER_ID, (Object[]) userIds));
