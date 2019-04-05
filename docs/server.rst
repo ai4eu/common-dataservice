@@ -184,22 +184,20 @@ Defining Code-Name Value Sets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The application properties file defines all restricted value sets, which are code-name pairs.
-For example, the access type for a solution may take on the value "PB" (public).
+For example, the access type for a catalog may take on the value "PB" (public).
 
 These value sets can be changed by modifying the properties file.  Each entry has a code and
 an associated name.  Continuing with the same example, the complete access type value set
 is defined by the following configuration entries::
 
-    codeName.accessType.OR=Organization
-    codeName.accessType.PB=Public
-    codeName.accessType.PR=Private
-    codeName.accessType.RS=Restricted
+    code-name.access-type.PB=Public
+    code-name.access-type.RS=Restricted
 
 Perform these steps to define a new value set:
 
     1. Extend the Java class CodeNameType in the client project
     2. Extend the Java class CodeNameProperties in the server project
-    3. Add appropriate entries to the properties file.
+    3. Add appropriate entries to the default properties file.
 
 Generating Encrypted Passwords
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

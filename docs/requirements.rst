@@ -68,9 +68,8 @@ These may be configured differently in a specific installation. The value sets c
 Access Type
 ^^^^^^^^^^^
 
-| OR "Organization"
 | PB "Public"
-| PR "Private"
+| RS "Restricted"
 
 Artifact Type
 ^^^^^^^^^^^^^
@@ -141,14 +140,8 @@ Notebook Type
 
 Applies to workbench notebooks.
 
-| JB "jupyter/base-notebook"
-| JM "jupyter/minimal-notebook"
-| JR "jupyter/r-notebook"
-| JS "jupyter/scipy-notebook"
-| JT "jupyter/tensorflow-notebook"
-| JD "jupyter/datascience-notebook"
-| JP "jupyter/pyspark-notebook"
-| JA "jupyter/all-spark-notebook"
+| JP "Jupyter"
+| ZP "Zeppelin"
 
 Peer Status
 ^^^^^^^^^^^
@@ -243,7 +236,7 @@ A catalog is a collection of solutions to assist with federation.
 Attributes:
 
 * Catalog ID
-* Access type code
+* Access type code (see list above)
 * Self publish flag
 * Name (intended to be globally unique)
 * Description
@@ -311,6 +304,7 @@ Attributes:
 
 Notebooks are mapped to several other entities in many:many relationships, as documented below.
 
+
 Notification
 ^^^^^^^^^^^^
 
@@ -354,18 +348,6 @@ Attributes:
 * Contacts (a pair, one as primary and another as backup)
 * Created timestamp
 * Modified timestamp
-
-
-Peer Group
-^^^^^^^^^^^
-
-Defines a group that may be assigned to peers to facilitate access control. Only seen locally, not federated.
-
-Attributes:
-
-* Group ID
-* Name (must be unique among all peer groups)
-* Description (additional textual information about this group)
 
 
 Pipeline
@@ -584,18 +566,6 @@ Attributes:
 * Deployment status. This uses the Deployment Status Code defined above.
 
 
-Solution Group
-^^^^^^^^^^^^^^
-
-Defines a group that gathers solutions to facilitate access control. Only seen locally, not federated.
-
-Attributes:
-
-* Group ID
-* Name (unique among all solution groups)
-* Description (additional textual information about this group)
-
-
 Solution Revision
 ^^^^^^^^^^^^^^^^^
 
@@ -614,10 +584,6 @@ Attributes:
 * Solution ID
 
      -   Represents the solution, allows multiple revisions per solution
-
-* Access type code
-
-     - This refers to the visibility of the revision. It uses values defined by Access Type Code (above).
 
 * Validation status code
 
@@ -642,6 +608,7 @@ Attributes:
 * Creator
 
      -   The person who created the revision of the solution (reference to the user table)
+
 
 Task
 ^^^^
@@ -711,18 +678,6 @@ Attributes:
      -   Date/time when a step ends
 
 
-User Notification Preference
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This stores the delivery mechanism and message priority preferences by the user for receiving notifications
-
-Attributes:
-
-* User ID (notification recipient)
-* Notification type (email/text/web)
-* Message Severity code. This uses the Message Severity Code value set defined above.
-
-
 Tag for Solution
 ^^^^^^^^^^^^^^^^
 
@@ -736,7 +691,7 @@ Mapped many:many to solutions.
 Thread
 ^^^^^^
 
-This stores the general topic of discussion to which a comment is associated
+This stores the general topic of discussion to which a comment is associated.
 
 Attributes:
 
@@ -774,6 +729,18 @@ Attributes:
      -   As one possible implementation, the EP-SDK represents privileges using roles and role functions.  A user is assigned one or more roles.  Each role is associated with one or more functions.  A function is a specific feature in the system. Still TBD if an external authentication system will deliver privileges like roles, or if all must be stored locally.
 
 Users are related to user roles in a 1:many relationship; in other words, multiple roles may be assigned to a single user.
+
+
+User Notification Preference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This stores the delivery mechanism and message priority preferences by the user for receiving notifications
+
+Attributes:
+
+* User ID (notification recipient)
+* Notification type (email/text/web)
+* Message Severity code. This uses the Message Severity Code value set defined above.
 
 
 User Social Login Provider Account
@@ -1018,55 +985,6 @@ Attributes:
 * Notification ID
 * User ID
 * Viewed date and time
-
-
-Relationship Peer - Peer Group for Membership
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Represents the membership of peers in a peer access group.
-
-Attributes:
-
-* Peer Group ID
-* Peer ID
-* Create timestamp
-
-
-Relationship Solution - Solution Group for Membership
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Represents the membership of solutions in a solution access group.
-
-Attributes:
-
-* Solution Group ID
-* Solution ID
-* Create timestamp
-
-
-Relationship Solution Group - Peer Group for Access
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Represents granting of access to all solutions in the solution group by peers in the peer group.
-
-Attributes:
-
-* Solution Group ID
-* Peer Group ID
-* Active flag (yes/no)
-* Create timestamp
-
-
-Relationship Peer Group - Peer Group for Access
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Represents granting of access to resource peers for principal peers.
-
-Attributes:
-
-* Principal peer group ID
-* Resource peer group ID
-* Create timestamp
 
 
 Relationship Project - Notebook
