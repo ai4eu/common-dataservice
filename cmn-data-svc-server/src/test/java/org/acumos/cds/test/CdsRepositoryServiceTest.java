@@ -472,7 +472,7 @@ public class CdsRepositoryServiceTest {
 			MLPTag solTag2 = new MLPTag("soltag2");
 			solTag2 = tagRepository.save(solTag2);
 
-			MLPCatalog ca1 = new MLPCatalog("PB", "name", "http://pub.org");
+			MLPCatalog ca1 = new MLPCatalog("PB", true, "name", "http://pub.org");
 			ca1 = catalogRepository.save(ca1);
 			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 			logger.info("Created catalog {}", ca1);
@@ -1371,13 +1371,13 @@ public class CdsRepositoryServiceTest {
 		Assert.assertNotNull("Solution ID", cs1.getSolutionId());
 		logger.info("Created solution {}", cs1);
 
-		MLPCatalog ca1 = new MLPCatalog("PB", "name", "http://pub.org");
+		MLPCatalog ca1 = new MLPCatalog("PB", true, "name", "http://pub.org");
 		ca1 = catalogRepository.save(ca1);
 		Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 		logger.info("Created catalog {}", ca1);
 
-		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", null, "name", null, null, null, false,
-				PageRequest.of(0, 5));
+		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", true, null, "name", null, null, null,
+				false, PageRequest.of(0, 5));
 		Assert.assertEquals(1, searchCats.getNumberOfElements());
 
 		MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs1.getSolutionId());

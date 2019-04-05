@@ -598,7 +598,8 @@ public class CdsControllerTest {
 			Assert.assertTrue(taggedUser.getTags().contains(tag1));
 			client.dropUserTag(cu.getUserId(), tagName1);
 
-			MLPCatalog ca1 = client.createCatalog(new MLPCatalog("PB", "catalog name", "http://other.acumos.org"));
+			MLPCatalog ca1 = client
+					.createCatalog(new MLPCatalog("PB", true, "catalog name", "http://other.acumos.org"));
 			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 			logger.info("Created catalog {}", ca1);
 
@@ -1952,7 +1953,7 @@ public class CdsControllerTest {
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 			logger.info("Created solution {}", cs);
 
-			ca = client.createCatalog(new MLPCatalog("PB", "unicorn", "http://pub.org"));
+			ca = client.createCatalog(new MLPCatalog("PB", true, "unicorn", "http://pub.org"));
 			Assert.assertNotNull("Catalog ID", ca.getCatalogId());
 			logger.info("Created catalog {}", ca);
 
@@ -1997,7 +1998,7 @@ public class CdsControllerTest {
 		}
 
 		try {
-			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
 			c.setCatalogId("bogus");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
@@ -2005,7 +2006,7 @@ public class CdsControllerTest {
 			logger.info("create catalog failed on bad ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
 			c.setCatalogId(ca.getCatalogId());
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
@@ -2013,21 +2014,21 @@ public class CdsControllerTest {
 			logger.info("create catalog failed on existing ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("xx", "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("xx", false, "name", "http://pub.org");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create catalog failed on bad access code as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", "name", "/inval:d@-*url");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "/inval:d@-*url");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create catalog failed on bad URL as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
 			c.setCatalogId("bogus");
 			client.updateCatalog(c);
 			throw new Exception("Unexpected success");

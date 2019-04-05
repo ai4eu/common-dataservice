@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -68,6 +69,12 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	@Size(max = 2)
 	@ApiModelProperty(required = true, value = "Access type code that is valid for this site", example = "PB")
 	private String accessTypeCode;
+
+	@Column(name = "SELF_PUBLISH_YN", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
+	@NotNull(message = "Self publish flag cannot be null")
+	@Type(type = "yes_no")
+	@ApiModelProperty(required = true, value = "Boolean indicator")
+	private boolean selfPublish;
 
 	@Column(name = "NAME", nullable = false, unique = true, columnDefinition = "VARCHAR(50)")
 	@NotNull(message = "Name cannot be null")
@@ -110,15 +117,19 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	 * 
 	 * @param accessTypeCode
 	 *                           Access type code
+	 * @param selfPublish
+	 *                           If users can publish solutions to the catlog
+	 *                           without an approval process
 	 * @param name
 	 *                           Catalog name
 	 * @param publisherUrl
 	 *                           Publisher URL
 	 */
-	public MLPCatalog(String accessTypeCode, String name, String publisherUrl) {
+	public MLPCatalog(String accessTypeCode, boolean selfPublish, String name, String publisherUrl) {
 		if (accessTypeCode == null || name == null || publisherUrl == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.accessTypeCode = accessTypeCode;
+		this.selfPublish = selfPublish;
 		this.name = name;
 		this.url = publisherUrl;
 	}
@@ -137,6 +148,7 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 		this.description = that.description;
 		this.origin = that.origin;
 		this.publisher = that.publisher;
+		this.selfPublish = that.selfPublish;
 		this.url = that.url;
 	}
 
@@ -146,6 +158,14 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 
 	public void setAccessTypeCode(String accessTypeCode) {
 		this.accessTypeCode = accessTypeCode;
+	}
+
+	public boolean isSelfPublish() {
+		return selfPublish;
+	}
+
+	public void setSelfPublish(boolean selfPublish) {
+		this.selfPublish = selfPublish;
 	}
 
 	public String getCatalogId() {

@@ -131,6 +131,7 @@ public class CatalogController extends AbstractController {
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
 			@RequestParam(name = MLPCatalog_.ACCESS_TYPE_CODE, required = false) String accessTypeCode, //
+			@RequestParam(name = MLPCatalog_.SELF_PUBLISH, required = false) Boolean selfPublish, //
 			@RequestParam(name = MLPCatalog_.DESCRIPTION, required = false) String description, //
 			@RequestParam(name = MLPCatalog_.NAME, required = false) String name, //
 			@RequestParam(name = MLPCatalog_.ORIGIN, required = false) String origin, //
@@ -139,13 +140,13 @@ public class CatalogController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchCatalogs enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		if (accessTypeCode == null && description == null && name == null && origin == null && publisher == null
+		if (accessTypeCode == null && selfPublish == null && description == null && name == null && origin == null && publisher == null
 				&& url == null) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return catalogSearchService.findCatalogs(accessTypeCode, description, name, origin, publisher, url, isOr,
+			return catalogSearchService.findCatalogs(accessTypeCode, selfPublish, description, name, origin, publisher, url, isOr,
 					pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchCatalogs failed: {}", ex.toString());

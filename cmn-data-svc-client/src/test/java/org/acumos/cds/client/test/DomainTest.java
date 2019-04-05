@@ -142,12 +142,13 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(t2, m.getModified());
 		Assert.assertEquals(s4, m.getName());
 		Assert.assertEquals(s5, m.getOrigin());
+		Assert.assertEquals(b2, m.isSelfPublish());
 		Assert.assertEquals(u1, m.getUrl());
 	}
 
 	@Test
 	public void testMLPCatalog() throws MalformedURLException {
-		MLPCatalog m = new MLPCatalog(s1, s1, s1);
+		MLPCatalog m = new MLPCatalog(s1, b1, s1, s1);
 		m = new MLPCatalog();
 		m.setAccessTypeCode(s1);
 		m.setCreated(t1);
@@ -156,6 +157,7 @@ public class DomainTest extends AbstractModelTest {
 		m.setModified(t2);
 		m.setName(s4);
 		m.setOrigin(s5);
+		m.setSelfPublish(b2);
 		m.setUrl(u1);
 		checkMLPCatalog(m);
 		m = new MLPCatalog(m);
@@ -167,7 +169,7 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(m.toString());
 		try {
 			String n = null;
-			new MLPCatalog(n, n, n);
+			new MLPCatalog(n, false, n, n);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected

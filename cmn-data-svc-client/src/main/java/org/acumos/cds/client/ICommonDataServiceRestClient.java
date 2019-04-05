@@ -2303,8 +2303,8 @@ public interface ICommonDataServiceRestClient {
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
 	 *                            query criteria. Accepts these field names:
-	 *                            accessTypeCode, description, name, origin,
-	 *                            publisher, url
+	 *                            accessTypeCode, selfPublish, description, name,
+	 *                            origin, publisher, url
 	 * @param isOr
 	 *                            If true, finds matches on any field-value pair
 	 *                            (conditions are OR-ed together); otherwise finds

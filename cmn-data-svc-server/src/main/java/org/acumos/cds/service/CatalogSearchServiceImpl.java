@@ -51,13 +51,18 @@ public class CatalogSearchServiceImpl extends AbstractSearchServiceImpl implemen
 	 * 
 	 * @return Predicate
 	 */
-	private Predicate createCatalogPredicate(Root<MLPCatalog> from, String accessTypeCode, String description,
-			String name, String origin, String publisher, String url, boolean isOr) {
+	private Predicate createCatalogPredicate(Root<MLPCatalog> from, String accessTypeCode, Boolean selfPublish,
+			String description, String name, String origin, String publisher, String url, boolean isOr) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<>();
 		if (accessTypeCode != null && !accessTypeCode.isEmpty())
 			predicates.add(
 					cb.equal(cb.lower(from.<String>get(MLPCatalog_.accessTypeCode)), accessTypeCode.toLowerCase()));
+		if (selfPublish != null) {
+			Predicate selfPublishPredicate = selfPublish ? cb.isTrue(from.<Boolean>get(MLPCatalog_.SELF_PUBLISH))
+					: cb.isFalse(from.<Boolean>get(MLPCatalog_.SELF_PUBLISH));
+			predicates.add(selfPublishPredicate);
+		}
 		if (description != null && !description.isEmpty())
 			predicates.add(cb.equal(cb.lower(from.<String>get(MLPCatalog_.description)), description.toLowerCase()));
 		if (name != null && !name.isEmpty())
@@ -79,8 +84,8 @@ public class CatalogSearchServiceImpl extends AbstractSearchServiceImpl implemen
 	 * Use JPA in Spring-Boot version 2.1
 	 */
 	@Override
-	public Page<MLPCatalog> findCatalogs(String accessTypeCode, String description, String name, String origin,
-			String publisher, String url, boolean isOr, Pageable pageable) {
+	public Page<MLPCatalog> findCatalogs(String accessTypeCode, Boolean selfPublish, String description, String name,
+			String origin, String publisher, String url, boolean isOr, Pageable pageable) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
@@ -89,8 +94,8 @@ public class CatalogSearchServiceImpl extends AbstractSearchServiceImpl implemen
 		countQueryDef.distinct(true);
 		Root<MLPCatalog> countFrom = countQueryDef.from(MLPCatalog.class);
 		countQueryDef.select(cb.count(countFrom));
-		countQueryDef.where(
-				createCatalogPredicate(countFrom, accessTypeCode, description, name, origin, publisher, url, isOr));
+		countQueryDef.where(createCatalogPredicate(countFrom, accessTypeCode, selfPublish, description, name, origin,
+				publisher, url, isOr));
 		TypedQuery<Long> countQuery = entityManager.createQuery(countQueryDef);
 		Long count = countQuery.getSingleResult();
 		logger.debug("findCatalogs: count {}", count);
@@ -103,8 +108,8 @@ public class CatalogSearchServiceImpl extends AbstractSearchServiceImpl implemen
 		rootQueryDef.distinct(true);
 		Root<MLPCatalog> fromRoot = rootQueryDef.from(MLPCatalog.class);
 		rootQueryDef.select(fromRoot);
-		rootQueryDef.where(
-				createCatalogPredicate(fromRoot, accessTypeCode, description, name, origin, publisher, url, isOr));
+		rootQueryDef.where(createCatalogPredicate(fromRoot, accessTypeCode, selfPublish, description, name, origin,
+				publisher, url, isOr));
 		if (pageable.getSort() != null && !pageable.getSort().isEmpty())
 			rootQueryDef.orderBy(buildOrderList(cb, fromRoot, pageable.getSort()));
 		TypedQuery<MLPCatalog> itemQuery = entityManager.createQuery(rootQueryDef);

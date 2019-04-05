@@ -244,6 +244,7 @@ Attributes:
 
 * Catalog ID
 * Access type code
+* Self publish flag
 * Name (intended to be globally unique)
 * Description
 * Origin (the peer that provided it, in case of a mirror)
@@ -817,6 +818,27 @@ Attributes:
 * Catalog ID
 * Solution ID
 
+Relationship Catalog - Revision - Description
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This captures the description published for a revision in a catalog.
+
+Attributes:
+
+* Catalog ID
+* Revision ID
+* Description text
+
+Relationship Catalog - Revision - Document
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This captures the document IDs published for a revision in a catalog.
+
+Attributes:
+
+* Catalog ID
+* Revision ID
+* Document ID
 
 Relationship Revision - Artifact
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

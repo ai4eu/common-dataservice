@@ -32,6 +32,8 @@ public interface CatalogSearchService {
 	 * 
 	 * @param accessTypeCode
 	 *                           Access type code; ignored if null
+	 * @param selfPublish
+	 *                           Self publish flag; ignored if null
 	 * @param description
 	 *                           Description; ignored if null
 	 * @param name
@@ -49,7 +51,7 @@ public interface CatalogSearchService {
 	 *                           Page and sort criteria
 	 * @return Page of instances, which may be empty.
 	 */
-	Page<MLPCatalog> findCatalogs(String accessTypeCode, String description, String name, String origin,
-			String publisher, String url, boolean isOr, Pageable pageable);
+	Page<MLPCatalog> findCatalogs(String accessTypeCode, Boolean selfPublish, String description, String name,
+			String origin, String publisher, String url, boolean isOr, Pageable pageable);
 
 }
