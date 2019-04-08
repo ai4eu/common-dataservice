@@ -2541,7 +2541,7 @@ public interface ICommonDataServiceRestClient {
 	void deleteRtuReference(MLPRtuReference rtuRef) throws RestClientResponseException;
 
 	/**
-	 * Gets the right to use object with the specified ID.
+	 * Gets the right-to-use object with the specified ID.
 	 * 
 	 * @param rtuId
 	 *                  Right to use ID
@@ -2647,6 +2647,15 @@ public interface ICommonDataServiceRestClient {
 	 *                                         Error message is in the response body
 	 */
 	void dropRefFromRtu(String refId, Long rtuId) throws RestClientResponseException;
+
+	/**
+	 * Gets the right-to-use objects to which the specified reference is mapped.
+	 * 
+	 * @param referenceId
+	 *                        Reference ID (GUID)
+	 * @return List of RTUs, which may be empty
+	 */
+	List<MLPRightToUse> getRtusByReference(String referenceId);
 
 	/**
 	 * Gets all users mapped to the specified right-to-use object.

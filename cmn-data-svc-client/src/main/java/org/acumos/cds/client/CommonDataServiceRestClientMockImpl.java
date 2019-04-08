@@ -224,6 +224,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPPipeline> searchPipelines;
 	private List<String> peerAccessCatalogIds;
 	private List<String> userFavoriteCatalogIds;
+	private List<MLPRightToUse> rtusByReference;
 
 	/**
 	 * No-argument constructor.
@@ -1844,6 +1845,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void dropUserFromRtu(String userId, Long rtuId) {
 		// How to mock?
+	}
+
+	public void setRtusByReference(List<MLPRightToUse> list) {
+		this.rtusByReference = list;
+	}
+
+	@Override
+	public List<MLPRightToUse> getRtusByReference(String referenceId) {
+		return this.rtusByReference;
 	}
 
 	@Override

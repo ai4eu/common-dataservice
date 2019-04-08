@@ -551,6 +551,8 @@ public class MockClientTest {
 		client.addUserToRtu("userId", 0L);
 		client.getRtuUsers(0L);
 		client.dropUserFromRtu("userId", 0L);
+		client.setRtusByReference(new ArrayList<>());
+		client.getRtusByReference("ref");
 
 		RestPageResponse<MLPProject> projects = new RestPageResponse<>();
 		client.setProjects(projects);

@@ -27,7 +27,7 @@ public class CCDSConstants {
 
 	private CCDSConstants() {
 		// prohibit construction to silence a Sonar warning
-	};
+	}
 
 	public static final String JUNCTION_QUERY_PARAM = "_j";
 
@@ -63,7 +63,7 @@ public class CCDSConstants {
 	public static final String PROJECT_PATH = "proj";
 	public static final String PUBLISH_REQUEST_PATH = "pubreq";
 	public static final String RATING_PATH = "rating";
-	public static final String REF_PATH = "ref";
+	public static final String REFERENCE_PATH = "ref";
 	public static final String REVISION_PATH = "revision";
 	public static final String ROLE_PATH = "role";
 	public static final String RTU_PATH = "rtu";

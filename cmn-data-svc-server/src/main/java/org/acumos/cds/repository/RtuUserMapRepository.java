@@ -20,6 +20,7 @@
 
 package org.acumos.cds.repository;
 
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRtuUserMap;
 import org.acumos.cds.domain.MLPUser;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +30,25 @@ import org.springframework.data.repository.query.Param;
 public interface RtuUserMapRepository extends CrudRepository<MLPRtuUserMap, MLPRtuUserMap.RtuUserMapPK> {
 
 	/**
-	 * Finds all user records that are mapped to the specified RTU ID. Size is
+	 * Finds all right-to-use objects for the specified solution that are also
+	 * mapped to the specified user ID. Size is expected to be modest, so this does
+	 * not use page.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @param userId
+	 *                       User ID
+	 * @return Iterable of MLPRightToUse objects
+	 */
+	@Query(value = "select r from MLPRightToUse r, MLPRtuUserMap m" //
+			+ " WHERE r.solutionId =  :solutionId " //
+			+ " AND r.rtuId =  m.rtuId " //
+			+ " AND m.userId = :userId")
+	Iterable<MLPRightToUse> findBySolutionIdUserId(@Param("solutionId") String solutionId,
+			@Param("userId") String userId);
+
+	/**
+	 * Finds all user objects that are mapped to the specified RTU ID. Size is
 	 * expected to be modest, so this does not use page.
 	 * 
 	 * @param rtuId

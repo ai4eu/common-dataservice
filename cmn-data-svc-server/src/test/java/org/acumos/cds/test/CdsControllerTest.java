@@ -2158,6 +2158,9 @@ public class CdsControllerTest {
 			cr = client.getRightToUse(cr.getRtuId());
 			Assert.assertTrue(cr.getRtuReferences().contains(ref));
 
+			List<MLPRightToUse> rtusByRef = client.getRtusByReference(ref.getRef());
+			Assert.assertFalse(rtusByRef.isEmpty());
+
 			client.dropRefFromRtu(ref.getRef(), cr.getRtuId());
 			cr = client.getRightToUse(cr.getRtuId());
 			Assert.assertTrue(cr.getRtuReferences().isEmpty());
