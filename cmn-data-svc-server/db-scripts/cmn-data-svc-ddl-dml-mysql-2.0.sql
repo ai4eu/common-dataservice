@@ -538,15 +538,10 @@ INSERT INTO C_USER_ROLE_MAP (USER_ID, ROLE_ID) VALUES ('12345678-abcd-90ab-cdef-
 
 # Default configuration of Portal/Marketplace features.
 # Unfortunately JSON does not allow embedded newlines.
-INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES (
-  'site_config',
-  '{"fields":[{"type":"text","name":"siteInstanceName","label":"Site Instance Name","required":"true","data":"Acumos"}, {"type":"file","name":"headerLogo","label":"Header Logo","data":{"lastModified":1510831880727,"lastModifiedDate":"2017-11-16T11:31:20.727Z","name":"acumos_logo_white.png","size":3657,"type":"image/png"}},{"type":"file","name":"footerLogo","label":"Footer Logo","data":{"lastModified":1510831874776,"lastModifiedDate":"2017-11-16T11:31:14.776Z","name":"footer_logo.png","size":3127,"type":"image/png"}},{"type":"heading","name":"ConnectionConfig","label":"Connection Configuration","required":"true","subFields":[{"type":"text","name":"socketTimeout","label":"Socket Timeout","required":"true","data":"300"},{"type":"text","name":"connectionTimeout","label":"Connection Timeout","required":"true","data":"10"}]},{"type":"select","name":"enableOnBoarding","label":"Enable On-Boarding","options":[{"name":"Enabled"},{"name":"Disabled"}],"required":true,"data":{"name":"Enabled"}},{"type":"textarea","name":"validationText","label":"Model Validation Keyword Scan Entries (CSV)","required":"false","data":"test"},{"type":"select","name":"EnableDCAE","label":"Enable DCAE","options":[{"name":"Enabled"},{"name":"Disabled"}],"required":true,"data":{"name":"Disabled"}}]}'
-);
-INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES (
-  'public_validation_workflow',
-  '{"ignore_list":["Text Check"]}'
-);
-INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES (
-  'local_validation_workflow',
-  '{"ignore_list":[]}'
-);
+INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES
+  ('site_config', '{"fields":[{"type":"text","name":"siteInstanceName","label":"Site Instance Name","required":"true","data":"Acumos"}, {"type":"file","name":"headerLogo","label":"Header Logo","data":{"lastModified":1510831880727,"lastModifiedDate":"2017-11-16T11:31:20.727Z","name":"acumos_logo_white.png","size":3657,"type":"image/png"}},{"type":"file","name":"footerLogo","label":"Footer Logo","data":{"lastModified":1510831874776,"lastModifiedDate":"2017-11-16T11:31:14.776Z","name":"footer_logo.png","size":3127,"type":"image/png"}},{"type":"heading","name":"ConnectionConfig","label":"Connection Configuration","required":"true","subFields":[{"type":"text","name":"socketTimeout","label":"Socket Timeout","required":"true","data":"300"},{"type":"text","name":"connectionTimeout","label":"Connection Timeout","required":"true","data":"10"}]},{"type":"select","name":"enableOnBoarding","label":"Enable On-Boarding","options":[{"name":"Enabled"},{"name":"Disabled"}],"required":true,"data":{"name":"Enabled"}},{"type":"textarea","name":"validationText","label":"Model Validation Keyword Scan Entries (CSV)","required":"false","data":"test"},{"type":"select","name":"EnableDCAE","label":"Enable DCAE","options":[{"name":"Enabled"},{"name":"Disabled"}],"required":true,"data":{"name":"Disabled"}}]}'),
+  ('public_validation_workflow', '{"ignore_list":["Text Check"]}'),
+  ('local_validation_workflow', '{"ignore_list":[]}');
+INSERT INTO C_SITE_CONTENT (CONTENT_KEY, CONTENT_VAL, MIME_TYPE, CREATED_DATE, MODIFIED_DATE) VALUES
+  ('global.footer.contactInfo','<p>Please enter your team\'s contact details using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56'),
+  ('global.termsConditions','<p>Please enter your organization\'s terms and conditions using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56');
