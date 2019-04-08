@@ -2592,7 +2592,8 @@ public interface ICommonDataServiceRestClient {
 	List<MLPRightToUse> getRightToUses(String solutionId, String userId);
 
 	/**
-	 * Creates a new RTU object and generates an ID.
+	 * Creates a new RTU object and generates an ID. Any RTU references in the entry
+	 * will be created if needed.
 	 * 
 	 * @param rightToUse
 	 *                       Right to use data
@@ -2603,7 +2604,8 @@ public interface ICommonDataServiceRestClient {
 	MLPRightToUse createRightToUse(MLPRightToUse rightToUse) throws RestClientResponseException;
 
 	/**
-	 * Updates an existing RTU object with the supplied data.
+	 * Updates an existing RTU object with the supplied data. Any RTU references in
+	 * the entry will be created if needed.
 	 * 
 	 * @param rightToUse
 	 *                       Right to use data
