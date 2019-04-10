@@ -146,14 +146,14 @@ public class CatalogController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("searchCatalogs enter");
 		boolean isOr = junction != null && "o".equals(junction);
-		if (accessTypeCode == null && selfPublish == null && description == null && name == null && origin == null && publisher == null
-				&& url == null) {
+		if (accessTypeCode == null && selfPublish == null && description == null && name == null && origin == null
+				&& publisher == null && url == null) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Missing query", null);
 		}
 		try {
-			return catalogSearchService.findCatalogs(accessTypeCode, selfPublish, description, name, origin, publisher, url, isOr,
-					pageRequest);
+			return catalogSearchService.findCatalogs(accessTypeCode, selfPublish, description, name, origin, publisher,
+					url, isOr, pageRequest);
 		} catch (Exception ex) {
 			logger.error("searchCatalogs failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

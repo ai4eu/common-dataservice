@@ -112,6 +112,14 @@ public class RightToUseController extends AbstractController {
 		return rtuRepository.findAll(pageable);
 	}
 
+	@ApiOperation(value = "Gets the right-to-use objects to which the specified reference is mapped. Returns empty if none are found.", //
+			response = MLPRightToUse.class, responseContainer = "List")
+	@RequestMapping(value = CCDSConstants.REFERENCE_PATH + "/{referenceId}", method = RequestMethod.GET)
+	public Iterable<MLPRightToUse> getRtusByReference(@PathVariable("referenceId") String referenceId) {
+		logger.debug("getRtusByReference: referenceId {}", referenceId);
+		return rtuRefMapRepository.findRtuByReferenceId(referenceId);
+	}
+
 	@ApiOperation(value = "Gets a list of right-to-use objects for the specified solution and user. Returns empty if none are found.", //
 			response = MLPRightToUse.class, responseContainer = "List")
 	@RequestMapping(value = "/" + CCDSConstants.SOLUTION_PATH + "/{solutionId}/" + CCDSConstants.USER_PATH
@@ -119,7 +127,7 @@ public class RightToUseController extends AbstractController {
 	public Iterable<MLPRightToUse> getRightToUsesForSolAndUser(@PathVariable("solutionId") String solutionId,
 			@PathVariable("userId") String userId) {
 		logger.debug("getRightToUsesForSolAndUser solutionId {} userId {}", solutionId, userId);
-		return rtuRepository.findBySolutionIdUserId(solutionId, userId);
+		return rtuUserMapRepository.findBySolutionIdUserId(solutionId, userId);
 	}
 
 	/*
@@ -229,7 +237,7 @@ public class RightToUseController extends AbstractController {
 
 	@ApiOperation(value = "Gets a page of RTU references, optionally sorted. Answers empty if none are found.", response = MLPRtuReference.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.REF_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = "/" + CCDSConstants.REFERENCE_PATH, method = RequestMethod.GET)
 	public Page<MLPRtuReference> getRtuRefs(Pageable pageable) {
 		logger.debug("getRtuRefs: {}", pageable);
 		return rtuRefRepository.findAll(pageable);
@@ -237,7 +245,7 @@ public class RightToUseController extends AbstractController {
 
 	@ApiOperation(value = "Creates a new RTU reference. Returns bad request on constraint violation etc.", response = MLPRtuReference.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/" + CCDSConstants.REF_PATH, method = RequestMethod.POST)
+	@RequestMapping(value = "/" + CCDSConstants.REFERENCE_PATH, method = RequestMethod.POST)
 	public MLPResponse createRtuRef(@RequestBody MLPRtuReference ref, HttpServletResponse response) {
 		logger.debug("createRtuRef: ref {}", ref);
 		if (rtuRefRepository.findById(ref.getRef()).isPresent()) {
@@ -258,7 +266,7 @@ public class RightToUseController extends AbstractController {
 	@ApiOperation(value = "Deletes the specified RTU reference. Returns bad request if not found.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/" + CCDSConstants.REF_PATH + "/{ref}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/" + CCDSConstants.REFERENCE_PATH + "/{ref}", method = RequestMethod.DELETE)
 	public MLPTransportModel deleteRtuRef(@PathVariable("ref") String ref, HttpServletResponse response) {
 		logger.debug("deleteRtuRef: ref {}", ref);
 		try {
@@ -274,7 +282,7 @@ public class RightToUseController extends AbstractController {
 
 	@ApiOperation(value = "Adds the specified reference to the specified RTU. Answers bad request if the RTU ID is invalid.", //
 			response = SuccessTransport.class)
-	@RequestMapping(value = "/{rtuId}/" + CCDSConstants.REF_PATH + "/{refId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/{rtuId}/" + CCDSConstants.REFERENCE_PATH + "/{refId}", method = RequestMethod.POST)
 	public MLPResponse addRefToRtu(@PathVariable("rtuId") Long rtuId, @PathVariable("refId") String refId,
 			@RequestBody MLPRtuRefMap map, HttpServletResponse response) {
 		logger.debug("addRefToRtu rtuId {} refId {}", rtuId, refId);
@@ -293,7 +301,7 @@ public class RightToUseController extends AbstractController {
 	@ApiOperation(value = "Removes the specified reference from the specified RTU.", //
 			response = SuccessTransport.class)
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{rtuId}/" + CCDSConstants.REF_PATH + "/{refId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{rtuId}/" + CCDSConstants.REFERENCE_PATH + "/{refId}", method = RequestMethod.DELETE)
 	public MLPTransportModel dropRefFromRtu(@PathVariable("rtuId") Long rtuId, @PathVariable("refId") String refId,
 			HttpServletResponse response) {
 		logger.debug("dropRefFromRtu rtuId {} refId {}", rtuId, refId);

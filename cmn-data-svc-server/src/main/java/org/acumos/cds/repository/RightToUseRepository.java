@@ -21,27 +21,8 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPRightToUse;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 
 public interface RightToUseRepository extends PagingAndSortingRepository<MLPRightToUse, Long> {
-
-	/**
-	 * Finds all RTU records for the specified solution that are also mapped to the
-	 * specified user ID
-	 * 
-	 * @param solutionId
-	 *                       Solution ID
-	 * @param userId
-	 *                       User ID
-	 * @return Iterable of MLPRightToUse objects
-	 */
-	@Query(value = "select r from MLPRightToUse r, MLPRtuUserMap m" //
-			+ " WHERE r.solutionId =  :solutionId " //
-			+ " AND r.rtuId =  m.rtuId " //
-			+ " AND m.userId = :userId")
-	Iterable<MLPRightToUse> findBySolutionIdUserId(@Param("solutionId") String solutionId,
-			@Param("userId") String userId);
 
 }

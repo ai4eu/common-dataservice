@@ -1439,8 +1439,11 @@ public class CdsRepositoryServiceTest {
 			MLPRtuUserMap userMap = new MLPRtuUserMap(cr.getRtuId(), cu.getUserId());
 			rtuUserMapRepository.save(userMap);
 
-			Iterable<MLPRightToUse> rtus = rtuRepository.findBySolutionIdUserId(cs.getSolutionId(), cu.getUserId());
+			Iterable<MLPRightToUse> rtus = rtuUserMapRepository.findBySolutionIdUserId(cs.getSolutionId(),
+					cu.getUserId());
 			Assert.assertTrue(rtus.iterator().hasNext());
+			Iterable<MLPRightToUse> rtusByRef = rtuRefMapRepository.findRtuByReferenceId(ref.getRef());
+			Assert.assertTrue(rtusByRef.iterator().hasNext());
 			Iterable<MLPUser> users = rtuUserMapRepository.findUsersByRtuId(cr.getRtuId());
 			Assert.assertTrue(users.iterator().hasNext());
 

@@ -20,9 +20,24 @@
 
 package org.acumos.cds.repository;
 
+import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRtuRefMap;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface RtuRefMapRepository extends CrudRepository<MLPRtuRefMap, MLPRtuRefMap.RtuRefMapPK> {
+
+	/**
+	 * Gets all Right-to-use objects to which the specified reference is mapped.
+	 * Size is expected to be modest, so this does not use page.
+	 * 
+	 * @param referenceId
+	 *                        Reference ID
+	 * @return Iterable of MLPRightToUse
+	 */
+	@Query(value = "SELECT r FROM MLPRightToUse r, MLPRtuRefMap m " //
+			+ " WHERE r.rtuId =  m.rtuId AND m.refId = :referenceId")
+	Iterable<MLPRightToUse> findRtuByReferenceId(@Param("referenceId") String referenceId);
 
 }

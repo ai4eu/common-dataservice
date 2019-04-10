@@ -52,6 +52,7 @@ import org.acumos.cds.domain.MLPProjNotebookMap;
 import org.acumos.cds.domain.MLPProjPipelineMap;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
@@ -59,7 +60,6 @@ import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPRtuUserMap;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
-import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
@@ -2343,7 +2343,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public RestPageResponse<MLPRtuReference> getRtuReferences(RestPageRequest pageRequest) {
-		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH }, null, pageRequest);
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REFERENCE_PATH }, null, pageRequest);
 		logger.debug("getRtuReferences: uri {}", uri);
 		ResponseEntity<RestPageResponse<MLPRtuReference>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
 				new ParameterizedTypeReference<RestPageResponse<MLPRtuReference>>() {
@@ -2353,14 +2353,15 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public MLPRtuReference createRtuReference(MLPRtuReference ref) {
-		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REFERENCE_PATH }, null, null);
 		logger.debug("createRtuReference: uri {}", uri);
 		return restTemplate.postForObject(uri, ref, MLPRtuReference.class);
 	}
 
 	@Override
 	public void deleteRtuReference(MLPRtuReference ref) {
-		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REF_PATH, ref.getRef() }, null, null);
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REFERENCE_PATH, ref.getRef() }, null,
+				null);
 		logger.debug("deleteRtuReference: uri {}", uri);
 		restTemplate.delete(uri);
 	}
@@ -2432,7 +2433,8 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public void addRefToRtu(String refId, Long rtuId) {
-		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REF_PATH, refId },
+		URI uri = buildUri(
+				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REFERENCE_PATH, refId },
 				null, null);
 		logger.debug("addRefToRtu: url {}", uri);
 		MLPRtuUserMap map = new MLPRtuUserMap(rtuId, refId);
@@ -2441,10 +2443,22 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	@Override
 	public void dropRefFromRtu(String refId, Long rtuId) {
-		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REF_PATH, refId },
+		URI uri = buildUri(
+				new String[] { CCDSConstants.RTU_PATH, Long.toString(rtuId), CCDSConstants.REFERENCE_PATH, refId },
 				null, null);
 		logger.debug("dropRefFromRtu: url {}", uri);
 		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<MLPRightToUse> getRtusByReference(String referenceId) {
+		URI uri = buildUri(new String[] { CCDSConstants.RTU_PATH, CCDSConstants.REFERENCE_PATH, referenceId }, null,
+				null);
+		logger.debug("getRtusByReference: uri {}", uri);
+		ResponseEntity<List<MLPRightToUse>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPRightToUse>>() {
+				});
+		return response.getBody();
 	}
 
 	@Override

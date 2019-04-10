@@ -24,6 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.acumos.common-dataservice</groupId>
 	<artifactId>cmn-data-svc-parent</artifactId>
+	<!-- this version is not used -->
 	<version>0</version>
 	<packaging>pom</packaging>
 	<name>Acumos Common Data Service Project</name>
