@@ -632,20 +632,27 @@ public class CdsControllerTest {
 			cs = client.getSolution(cs.getSolutionId());
 			Assert.assertFalse(cs.getTags().contains(newTag));
 
-			// no tags
-			MLPSolution csOrg = new MLPSolution("solution organization", cu.getUserId(), true);
-			csOrg.setModelTypeCode("DS");
-			csOrg.setToolkitTypeCode("SK");
-			csOrg = client.createSolution(csOrg);
-			Assert.assertNotNull(csOrg.getSolutionId());
-			logger.info("Created org solution {}", cs);
+			// no tags, published to restr cat, and the name is searched below
+			MLPSolution csRes = new MLPSolution("solution restricted", cu.getUserId(), true);
+			csRes.setModelTypeCode("DS");
+			csRes.setToolkitTypeCode("SK");
+			csRes = client.createSolution(csRes);
+			Assert.assertNotNull(csRes.getSolutionId());
+			logger.info("Created solution {}", csRes);
 
-			MLPSolution inactive = new MLPSolution();
-			inactive.setName("inactive solution name");
-			inactive.setUserId(cu.getUserId());
+			client.addSolutionToCatalog(csRes.getSolutionId(), catRes.getCatalogId());
+			Assert.assertEquals(1, client.getCatalogSolutionCount(catRes.getCatalogId()));
+
+			MLPSolution csActPriv = new MLPSolution("solution active private", cu.getUserId(), true);
+			csActPriv.setModelTypeCode("DS");
+			csActPriv.setToolkitTypeCode("SK");
+			csActPriv = client.createSolution(csActPriv);
+			Assert.assertNotNull(csActPriv.getSolutionId());
+			logger.info("Created solution {}", csActPriv);
+
+			MLPSolution inactive = new MLPSolution("inactive solution name", cu.getUserId(), false);
 			inactive.setModelTypeCode("DS");
 			inactive.setToolkitTypeCode("SK");
-			inactive.setActive(false);
 			inactive = client.createSolution(inactive);
 			Assert.assertNotNull(inactive.getSolutionId());
 			logger.info("Created inactive solution {}", inactive);
@@ -743,7 +750,7 @@ public class CdsControllerTest {
 			cr.setVerifiedVulnerability("FA");
 			client.updateSolutionRevision(cr);
 
-			MLPSolutionRevision crOrg = new MLPSolutionRevision(csOrg.getSolutionId(), "1.0R", cu.getUserId());
+			MLPSolutionRevision crOrg = new MLPSolutionRevision(csRes.getSolutionId(), "1.0R", cu.getUserId());
 			crOrg.setAuthors(new AuthorTransport[] { new AuthorTransport("your name", "email") });
 			crOrg.setPublisher("publisher 2");
 			crOrg = client.createSolutionRevision(crOrg);
@@ -754,7 +761,7 @@ public class CdsControllerTest {
 			client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
 
 			logger.info("Adding artifact to revision 2");
-			client.addSolutionRevisionArtifact(csOrg.getSolutionId(), crOrg.getRevisionId(), ca.getArtifactId());
+			client.addSolutionRevisionArtifact(csRes.getSolutionId(), crOrg.getRevisionId(), ca.getArtifactId());
 
 			logger.info("Querying revision artifacts");
 			List<MLPArtifact> revArgs = client.getSolutionRevisionArtifacts(cs.getSolutionId(), cr.getRevisionId());
@@ -867,21 +874,21 @@ public class CdsControllerTest {
 			Assert.assertNotNull(portalTagNoMatches);
 			Assert.assertEquals(0, portalTagNoMatches.getNumberOfElements());
 
-			// Check fetch by ID to ensure both are found
+			// Check fetch by ID to find both
 			logger.info("Querying for solutions by id");
-			String[] ids = { cs.getSolutionId(), csOrg.getSolutionId() };
-			String[] catalogId = null;
-			RestPageResponse<MLPSolution> idSearchResult = client.findPortalSolutionsByKwAndTags(ids, true, null, null,
-					null, null, catalogId, new RestPageRequest(0, 2));
+			String[] ids = { cs.getSolutionId(), csRes.getSolutionId() };
+			String[] catalogIds = { catPub.getCatalogId() };
+			RestPageResponse<MLPSolution> idSearchResult = client.findPublishedSolutionsByKwAndTags(ids, true, null,
+					null, null, null, catalogIds, new RestPageRequest(0, 2));
 			Assert.assertNotNull(idSearchResult);
-			Assert.assertEquals(2, idSearchResult.getNumberOfElements());
+			Assert.assertEquals(1, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
 
 			// Both keywords must occur in the same field for a match
 			logger.info("Querying for solutions by keyword");
-			String[] kw = { "solution", "organization" };
-			RestPageResponse<MLPSolution> kwSearchResult = client.findPortalSolutionsByKwAndTags(kw, true, null, null,
-					null, null, catalogId, new RestPageRequest(0, 2));
+			String[] kw = { "solution", "restricted" };
+			RestPageResponse<MLPSolution> kwSearchResult = client.findPublishedSolutionsByKwAndTags(kw, true, null,
+					null, null, null, null, new RestPageRequest(0, 2));
 			Assert.assertNotNull(kwSearchResult);
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
@@ -889,8 +896,8 @@ public class CdsControllerTest {
 			logger.info("Querying for solutions by tags");
 			String[] allTags = new String[] { tagName1 };
 			String[] anyTags = null; // new String[] { tagName2 };
-			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPortalSolutionsByKwAndTags(null, true,
-					null, null, allTags, anyTags, catalogId, new RestPageRequest(0, 2));
+			RestPageResponse<MLPSolution> allAnyTagsSearchResult = client.findPublishedSolutionsByKwAndTags(null, true,
+					null, null, allTags, anyTags, null, new RestPageRequest(0, 2));
 			logger.info("Found models by tag total " + allAnyTagsSearchResult.getTotalElements());
 			Assert.assertNotNull(allAnyTagsSearchResult);
 			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
@@ -898,14 +905,14 @@ public class CdsControllerTest {
 			Assert.assertTrue(taggedSol.getTags().contains(new MLPTag(tagName1)));
 
 			logger.info("Querying for solutions by catalog");
-			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
+			RestPageResponse<MLPSolution> ctlgSearchResult = client.findPublishedSolutionsByKwAndTags(null, true, null,
 					null, null, null, new String[] { catPub.getCatalogId() }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(ctlgSearchResult);
 			Assert.assertNotEquals(0, ctlgSearchResult.getNumberOfElements());
 
 			logger.info("Querying for solutions by bogus catalog");
-			RestPageResponse<MLPSolution> noCtlgSearchResult = client.findPortalSolutionsByKwAndTags(null, true, null,
-					null, null, null, new String[] { "bogus" }, new RestPageRequest(0, 2));
+			RestPageResponse<MLPSolution> noCtlgSearchResult = client.findPublishedSolutionsByKwAndTags(null, true,
+					null, null, null, null, new String[] { "bogus" }, new RestPageRequest(0, 2));
 			Assert.assertNotNull(noCtlgSearchResult);
 			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
@@ -1051,11 +1058,11 @@ public class CdsControllerTest {
 				logger.info("\tRevision: {}", r);
 
 			// Composite solution support was added very late
-			client.addCompositeSolutionMember(cs.getSolutionId(), csOrg.getSolutionId());
+			client.addCompositeSolutionMember(cs.getSolutionId(), csRes.getSolutionId());
 			List<String> kids = client.getCompositeSolutionMembers(cs.getSolutionId());
 			Assert.assertNotNull(kids);
 			Assert.assertEquals(1, kids.size());
-			client.dropCompositeSolutionMember(cs.getSolutionId(), csOrg.getSolutionId());
+			client.dropCompositeSolutionMember(cs.getSolutionId(), csRes.getSolutionId());
 			kids = client.getCompositeSolutionMembers(cs.getSolutionId());
 			Assert.assertNotNull(kids);
 			Assert.assertEquals(0, kids.size());
@@ -1094,6 +1101,7 @@ public class CdsControllerTest {
 				client.dropSolutionTag(cs.getSolutionId(), tagName1);
 				client.deleteTag(tag1);
 				client.deleteTag(tag2);
+				client.dropSolutionFromCatalog(csRes.getSolutionId(), catRes.getCatalogId());
 				client.dropSolutionFromCatalog(cs.getSolutionId(), catPub.getCatalogId());
 				client.dropSolutionUserAccess(cs.getSolutionId(), inactiveUser.getUserId());
 				client.deleteSolutionRating(ur);
@@ -1103,8 +1111,9 @@ public class CdsControllerTest {
 				client.deleteArtifact(ca.getArtifactId());
 				client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
 				client.deleteSolution(cs.getSolutionId());
-				client.deleteSolution(csOrg.getSolutionId());
+				client.deleteSolution(csRes.getSolutionId());
 				client.deleteSolution(inactive.getSolutionId());
+				client.deleteSolution(csActPriv.getSolutionId());
 				client.deleteCatalog(catPub.getCatalogId());
 				client.deleteCatalog(catRes.getCatalogId());
 				client.deletePeerSubscription(ps.getSubId());

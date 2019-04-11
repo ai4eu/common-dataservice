@@ -191,8 +191,10 @@ public interface ICommonDataServiceRestClient {
 	 * Gets a page of solutions matching all query parameters. Most parameters can
 	 * be a set of values, and for those a match is found if ANY ONE of the values
 	 * matches. In other words, this is a conjunction of disjunctions. This may be
-	 * slow because it requires table scans. Special-purpose method to support the
-	 * dynamic search page on the portal marketplace.
+	 * slow because it requires table scans.
+	 * 
+	 * @deprecated Use
+	 *             {@link #findPublishedSolutionsByKwAndTags(String[], boolean, String[], String[], String[], String[], String[], RestPageRequest)}
 	 * 
 	 * @param nameKeywords
 	 *                                Limits match to solutions with names
@@ -234,15 +236,15 @@ public interface ICommonDataServiceRestClient {
 	 *                                defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
+	@Deprecated
 	RestPageResponse<MLPSolution> findPortalSolutions(String[] nameKeywords, String[] descriptionKeywords,
 			boolean active, String[] userIds, String[] modelTypeCodes, String[] tags, String[] authorKeywords,
 			String[] publisherKeywords, RestPageRequest pageRequest);
 
 	/**
-	 * Gets a page of solutions that match every condition, with the caveat that any
-	 * one of the keywords can match, and multiple free-text fields are searched.
-	 * Other facets such as userId, model type code, etc. must match. This will be
-	 * slow because it requires table scans.
+	 * Gets a page of published solutions that match every condition, with the
+	 * caveat that any one of the keywords can match, and multiple free-text fields
+	 * are searched. Other facets such as userId, model type code, etc. must match.
 	 * 
 	 * @param keywords
 	 *                           Keywords to find in the name, revision description,
@@ -265,13 +267,15 @@ public interface ICommonDataServiceRestClient {
 	 *                           (one or more); ignored if null or empty.
 	 * @param catalogIds
 	 *                           Solutions must be mapped to one of the specified
-	 *                           catalogs; ignored if null or empty
+	 *                           catalogs. Matches all catalogs if null or empty;
+	 *                           i.e., limits matches to solutions published to a
+	 *                           catalog.
 	 * @param pageRequest
 	 *                           Page index, page size and sort information;
 	 *                           defaults to page 0 of size 20 if null.
 	 * @return Page of solutions, which may be empty
 	 */
-	RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
+	RestPageResponse<MLPSolution> findPublishedSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
 			String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			RestPageRequest pageRequest);
 

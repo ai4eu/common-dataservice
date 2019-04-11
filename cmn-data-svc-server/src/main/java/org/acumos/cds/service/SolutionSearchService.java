@@ -111,7 +111,7 @@ public interface SolutionSearchService {
 	 * @param pageable
 	 *                           Page and sort info
 	 * @return Page of solutions
-	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPortalSolutionsByKwAndTags(String[],
+	 * @see org.acumos.cds.client.ICommonDataServiceRestClient#findPublishedSolutionsByKwAndTags(String[],
 	 *      boolean, String[], String[], String[], String[], String[],
 	 *      org.acumos.cds.transport.RestPageRequest)
 	 */

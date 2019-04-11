@@ -600,12 +600,14 @@ public class SolutionSearchServiceImpl extends AbstractSearchServiceImpl impleme
 						.setProjection(Projections.count(tag2ValueField));
 				criteria.add(Subqueries.lt(0L, anyTagsQuery));
 			}
-			if (catalogIds != null && catalogIds.length > 0) {
-				final String catAlias = "ctlg";
-				// Use inner join here
-				criteria.createAlias(MLPSolutionFOM_.CATALOGS, catAlias);
+			final String catAlias = "ctlg";
+			// Use inner join here
+			criteria.createAlias(MLPSolutionFOM_.CATALOGS, catAlias);
+			if (catalogIds != null && catalogIds.length > 0)
 				criteria.add(Restrictions.in(catAlias + "." + MLPCatalog_.CATALOG_ID, (Object[]) catalogIds));
-			}
+			else
+				criteria.add(Restrictions.isNotEmpty(MLPSolutionFOM_.CATALOGS));
+
 			Page<MLPSolution> result = runSolutionFomQuery(criteria, pageable);
 			logger.debug("findPortalSolutionsByKwAndTags: result size={}", result.getNumberOfElements());
 			return result;

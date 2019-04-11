@@ -530,7 +530,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public RestPageResponse<MLPSolution> findPortalSolutionsByKwAndTags(String[] keywords, boolean active,
+	public RestPageResponse<MLPSolution> findPublishedSolutionsByKwAndTags(String[] keywords, boolean active,
 			String[] userIds, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			RestPageRequest pageRequest) {
 		HashMap<String, Object> parms = new HashMap<>();
