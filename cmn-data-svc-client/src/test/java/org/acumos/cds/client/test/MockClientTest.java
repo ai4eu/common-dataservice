@@ -357,6 +357,7 @@ public class MockClientTest {
 		client.setUserAccessSolutions(userAccSol);
 		Assert.assertTrue(userAccSol == client.getUserAccessSolutions("id", pageRequest));
 		client.addSolutionUserAccess("id", "id");
+		client.isUserAccessToSolution("id", "id");
 		client.dropSolutionUserAccess("id", "id");
 
 		client.updatePassword(user, new MLPPasswordChangeRequest());
@@ -609,6 +610,8 @@ public class MockClientTest {
 		client.setPeerAccessCatalogIds(catalogIds);
 		Assert.assertEquals(catalogIds, client.getPeerAccessCatalogIds("peerId"));
 		client.addPeerAccessCatalog("peer", "catalog");
+		client.isPeerAccessToCatalog("peerId", "catalog");
+		client.isPeerAccessToSolution("peerId", "solutionId");
 		client.dropPeerAccessCatalog("peer", "catalog");
 
 		client.setUserFavoriteCatalogIds(catalogIds);

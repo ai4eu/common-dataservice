@@ -34,13 +34,10 @@ import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCatalog_;
-import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPUserCatFavMap;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CatalogRepository;
-import org.acumos.cds.repository.PeerCatAccMapRepository;
-import org.acumos.cds.repository.PeerRepository;
 import org.acumos.cds.repository.RevCatDescriptionRepository;
 import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolutionRepository;
@@ -96,11 +93,7 @@ public class CatalogController extends AbstractController {
 	@Autowired
 	private CatSolMapRepository catSolMapRepository;
 	@Autowired
-	private PeerRepository peerRepository;
-	@Autowired
 	private SolutionRepository solutionRepository;
-	@Autowired
-	private PeerCatAccMapRepository peerCatAccMapRepository;
 	@Autowired
 	private RevCatDescriptionRepository revCatDescRepository;
 	@Autowired
@@ -132,7 +125,7 @@ public class CatalogController extends AbstractController {
 			response = MLPCatalog.class, responseContainer = "Page")
 	@ApiPageable
 	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
 	public Object searchCatalogs(//
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
@@ -323,54 +316,6 @@ public class CatalogController extends AbstractController {
 			logger.warn("dropSolutionFromCatalog failed: {}", ex.toString());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropSolutionFromCatalog failed", ex);
-		}
-	}
-
-	@ApiOperation(value = "Gets the list of catalog IDs accessible to the specified peer; empty if none are found.", //
-			response = String.class, responseContainer = "List")
-	@RequestMapping(value = CCDSConstants.PEER_PATH + "/{peerId}/"
-			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
-	public Iterable<String> getPeerAccessCatalogIds(@PathVariable("peerId") String peerId) {
-		logger.debug("getPeerAccessCatalogIds peerId {}", peerId);
-		return peerCatAccMapRepository.findCatalogIdsByPeerId(peerId);
-	}
-
-	@ApiOperation(value = "Add read access to the specified restricted catalog for the specified peer. Answers bad request if an ID is invalid.", //
-			response = SuccessTransport.class)
-	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.PEER_PATH + "/{peerId}", method = RequestMethod.POST)
-	public MLPResponse addPeerAccessCatalog(@PathVariable("catalogId") String catalogId,
-			@PathVariable("peerId") String peerId, HttpServletResponse response) {
-		logger.debug("addPeerAccessCatalog catalogId {} peerId {}", catalogId, peerId);
-		if (!catalogRepository.findById(catalogId).isPresent()) {
-			logger.warn("addPeerAccessCatalog: failed on cat ID {}", catalogId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
-		}
-		// TODO: check if catalog access type is restricted?
-		if (!peerRepository.findById(peerId).isPresent()) {
-			logger.warn("addPeerAccessCatalog: failed on peer ID {}", peerId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + peerId, null);
-		}
-		peerCatAccMapRepository.save(new MLPPeerCatAccMap(peerId, catalogId));
-		return new SuccessTransport(HttpServletResponse.SC_OK, null);
-	}
-
-	@ApiOperation(value = "Removes read access to the specified restricted catalog for the specified peer.", //
-			response = SuccessTransport.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.PEER_PATH + "/{peerId}", method = RequestMethod.DELETE)
-	public MLPTransportModel dropPeerAccessCatalog(@PathVariable("catalogId") String catalogId,
-			@PathVariable("peerId") String peerId, HttpServletResponse response) {
-		logger.debug("dropPeerAccessCatalog catalogId {} peerId {}", catalogId, peerId);
-		try {
-			peerCatAccMapRepository.deleteById(new MLPPeerCatAccMap.PeerCatAccMapPK(peerId, catalogId));
-			return new SuccessTransport(HttpServletResponse.SC_OK, null);
-		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("dropPeerAccessCatalog failed: {}", ex.toString());
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropPeerAccessCatalog failed", ex);
 		}
 	}
 

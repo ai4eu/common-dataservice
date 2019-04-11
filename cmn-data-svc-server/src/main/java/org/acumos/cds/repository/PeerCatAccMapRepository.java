@@ -39,4 +39,21 @@ public interface PeerCatAccMapRepository extends CrudRepository<MLPPeerCatAccMap
 			+ " WHERE m.peerId = :peerId")
 	Iterable<String> findCatalogIdsByPeerId(@Param("peerId") String peerId);
 
+	/**
+	 * Gets the count of catalogs to which the peer has been granted access and
+	 * contain the specified solution. The access-type code on the catalog is
+	 * SUPPOSED to be restricted ('RS') but that's not checked here.
+	 * 
+	 * @param peerId
+	 *                       Peer ID
+	 * @param solutionId
+	 *                       Solution ID
+	 * @return Count of catalogs
+	 */
+	@Query(value = " SELECT COUNT(csm.catalogId) FROM MLPCatSolMap csm, MLPPeerCatAccMap pcm "
+			+ "  WHERE csm.solutionId = :solutionId " //
+			+ "    AND pcm.peerId = :peerId" //
+			+ "    AND csm.catalogId = pcm.catalogId ")
+	long countCatalogsByPeerAccessAndSolution(@Param("peerId") String peerId, @Param("solutionId") String solutionId);
+
 }

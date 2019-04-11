@@ -38,7 +38,6 @@ import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
 import org.acumos.cds.domain.MLPSolTagMap;
-import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -48,7 +47,6 @@ import org.acumos.cds.domain.MLPSolutionRating.SolutionRatingPK;
 import org.acumos.cds.domain.MLPSolutionRevision;
 import org.acumos.cds.domain.MLPSolution_;
 import org.acumos.cds.domain.MLPTag;
-import org.acumos.cds.domain.MLPUser;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
@@ -196,7 +194,7 @@ public class SolutionController extends AbstractController {
 
 	@ApiOperation(value = "Searches for solutions with names or descriptions that contain the search term using the like operator. Answers empty if none are found.", //
 			response = MLPSolution.class, responseContainer = "Page")
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.LIKE_PATH, method = RequestMethod.GET)
 	public Page<MLPSolution> findSolutionsBySearchTerm(@RequestParam(CCDSConstants.TERM_PATH) String term,
 			Pageable pageRequest) {
 		logger.debug("findSolutionsBySearchTerm {}", term);
@@ -205,7 +203,7 @@ public class SolutionController extends AbstractController {
 
 	@ApiOperation(value = "Gets a page of solutions tagged with the specified tag. Answers empty if none are found.", response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.TAG_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.TAG_PATH, method = RequestMethod.GET)
 	public Object findSolutionsByTag(@RequestParam("tag") String tag, Pageable pageRequest) {
 		logger.debug("findSolutionsByTag {}", tag);
 		return solutionRepository.findByTag(tag, pageRequest);
@@ -220,7 +218,7 @@ public class SolutionController extends AbstractController {
 			+ "Defaults to match all (conjunction); send junction query parameter '_j=o' to match any (disjunction).", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH, method = RequestMethod.GET)
 	public Object searchSolutions( //
 			@ApiParam(value = "Junction", allowableValues = "a,o") //
 			@RequestParam(name = CCDSConstants.JUNCTION_QUERY_PARAM, required = false) String junction, //
@@ -255,8 +253,7 @@ public class SolutionController extends AbstractController {
 			+ "Supports faceted search; i.e., check for kw1 in name, kw2 in description and so on.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/"
-			+ CCDSConstants.PORTAL_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.PORTAL_PATH, method = RequestMethod.GET)
 	public Object findPortalSolutions( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
@@ -287,12 +284,12 @@ public class SolutionController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Finds solutions matching the specified attribute values and/or child attribute values " //
-			+ " with flexible handling of tags to allow all/any matches. "
+	@ApiOperation(value = "Finds published solutions matching the specified attribute values and/or  " //
+			+ " child attribute values with flexible handling of tags to allow all/any matches. "
 			+ " Checks multiple fields for the supplied keywords, including ID, name, description etc.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.PORTAL_PATH + "/"
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.PORTAL_PATH + "/"
 			+ CCDSConstants.KW_TAG_PATH, method = RequestMethod.GET)
 	public Object findPortalSolutionsByKwAndTags( //
 			@ApiParam(value = "Active Y/N", required = true) //
@@ -310,15 +307,16 @@ public class SolutionController extends AbstractController {
 			@ApiParam(value = "Catalog IDs", allowMultiple = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String[] catalogIds, //
 			Pageable pageRequest, HttpServletResponse response) {
-		logger.debug("findPortalSolutionsByKwAndTags: active {} kw {}", active, kws);
+		logger.debug("findPublishedSolutionsByKwAndTags: active {} kw {}", active, kws);
 		try {
 			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes, allTags,
 					anyTags, catalogIds, pageRequest);
 		} catch (Exception ex) {
-			logger.error("findPortalSolutionsByKwAndTags failed", ex);
+			logger.error("findPublishedSolutionsByKwAndTags failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
-					ex.getCause() != null ? ex.getCause().getMessage() : "findPortalSolutionsByKwAndTags failed", ex);
+					ex.getCause() != null ? ex.getCause().getMessage() : "findPublishedSolutionsByKwAndTags failed",
+					ex);
 		}
 	}
 
@@ -326,7 +324,7 @@ public class SolutionController extends AbstractController {
 			+ "Keywords are processed using LIKE-operator search.  Does not search any child entities.", //
 			response = MLPSolution.class, responseContainer = "Page")
 	@ApiPageable
-	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.USER_PATH, method = RequestMethod.GET)
+	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.USER_PATH, method = RequestMethod.GET)
 	public Object findUserSolutions( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
@@ -860,65 +858,6 @@ public class SolutionController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "deleteSolutionRating failed", ex);
 		}
-	}
-
-	@ApiOperation(value = "Gets the list of users who were granted write access to the specified solution.", response = MLPUser.class, responseContainer = "List")
-	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.USER_PATH + "/"
-			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
-	public Iterable<MLPUser> getSolutionAccessUsers(@PathVariable("solutionId") String solutionId) {
-		logger.debug("getSolutionAccessUsers: solutionId {}", solutionId);
-		return solUserAccMapRepository.getUsersForSolution(solutionId);
-	}
-
-	@ApiOperation(value = "Grants write permission to the specified solution for the specified user. Returns bad request if an ID is not found", //
-			response = SuccessTransport.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.USER_PATH + "/{userId}/"
-			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.POST)
-	public Object addUserToSolutionACL(@PathVariable("solutionId") String solutionId,
-			@PathVariable("userId") String userId, HttpServletResponse response) {
-		logger.debug("addUserToSolutionACL: solution {}, user {}", solutionId, userId);
-		if (!solutionRepository.findById(solutionId).isPresent()) {
-			logger.warn("addUserToSolutionACL failed on sol ID {}", solutionId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + solutionId, null);
-		}
-		if (!userRepository.findById(userId).isPresent()) {
-			logger.warn("addUserToSolutionACL failed on user ID {}", userId);
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + userId, null);
-		}
-		solUserAccMapRepository.save(new MLPSolUserAccMap(solutionId, userId));
-		return new SuccessTransport(HttpServletResponse.SC_OK, null);
-	}
-
-	@ApiOperation(value = "Removes write permission from the specified solution for the specified user. Returns bad request if an ID is not found", //
-			response = SuccessTransport.class)
-	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
-	@RequestMapping(value = "/{solutionId}/" + CCDSConstants.USER_PATH + "/{userId}/"
-			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.DELETE)
-	public Object dropUserFromSolutionACL(@PathVariable("solutionId") String solutionId,
-			@PathVariable("userId") String userId, HttpServletResponse response) {
-		logger.debug("dropUserFromSolutionACL: solution {}, user {}", solutionId, userId);
-		try {
-			solUserAccMapRepository.deleteById(new MLPSolUserAccMap.SolUserAccessMapPK(solutionId, userId));
-			return new SuccessTransport(HttpServletResponse.SC_OK, null);
-		} catch (Exception ex) {
-			// e.g., EmptyResultDataAccessException is NOT an internal server error
-			logger.warn("dropUserFromSolutionACL failed: {}", ex.toString());
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropUserFromSolutionACL failed", ex);
-		}
-	}
-
-	@ApiOperation(value = "Gets a page of solutions for which the user has write permission but is not the owner, optionally sorted on fields. Answers empty if none are found.", //
-			response = MLPSolution.class, responseContainer = "Page")
-	@ApiPageable
-	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/"
-			+ CCDSConstants.ACCESS_PATH, method = RequestMethod.GET)
-	public Page<MLPSolution> getUserAccessSolutions(@PathVariable("userId") String userId, Pageable pageable) {
-		logger.debug("getUserAccessSolutions: user {}", userId);
-		return solUserAccMapRepository.getSolutionsForUser(userId, pageable);
 	}
 
 	@ApiOperation(value = "Gets a page of deployments for the specified solution and revision IDs. Returns empty if none are found.", //

@@ -1470,53 +1470,6 @@ public interface ICommonDataServiceRestClient {
 	void setUserViewedNotification(String notificationId, String userId) throws RestClientResponseException;
 
 	/**
-	 * Gets the users who were granted write access to the specified solution by
-	 * sharing; this does not include the creator of the solution.
-	 * 
-	 * @param solutionId
-	 *                       Solution ID
-	 * @return List of users, which may be empty
-	 */
-	List<MLPUser> getSolutionAccessUsers(String solutionId);
-
-	/**
-	 * Gets a page of solutions for which the user has write permission but is not
-	 * the owner; i.e., extra access has been granted by the solution owner.
-	 * 
-	 * @param userId
-	 *                        User ID
-	 * @param pageRequest
-	 *                        Page index, page size and sort information; defaults
-	 *                        to page 0 of size 20 if null.
-	 * @return Page of solutions, which may be empty
-	 */
-	RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest);
-
-	/**
-	 * Grants write permission to the specified solution for the specified user.
-	 * 
-	 * @param solutionId
-	 *                       solution ID
-	 * @param userId
-	 *                       user ID
-	 * @throws RestClientResponseException
-	 *                                         Error message is in the response body
-	 */
-	void addSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
-
-	/**
-	 * Removes write permission from the specified solution for the specified user.
-	 * 
-	 * @param solutionId
-	 *                       solution ID
-	 * @param userId
-	 *                       user ID
-	 * @throws RestClientResponseException
-	 *                                         Error message is in the response body
-	 */
-	void dropSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
-
-	/**
 	 * Changes the user's password to the new value if the user exists, is active,
 	 * and the old password matches.
 	 * 
@@ -2695,42 +2648,6 @@ public interface ICommonDataServiceRestClient {
 	void dropUserFromRtu(String userId, Long rtuId) throws RestClientResponseException;
 
 	/**
-	 * Gets the list of catalog IDs readable by the specified peer. The catalogs
-	 * must have restricted access-type codes.
-	 * 
-	 * @param peerId
-	 *                   Peer ID
-	 * @return List of catalog IDs, which may be empty
-	 */
-	List<String> getPeerAccessCatalogIds(String peerId);
-
-	/**
-	 * Add read access to the specified catalog for the specified peer. The catalog
-	 * must have a restricted access-type code.
-	 * 
-	 * @param peerId
-	 *                      peer ID
-	 * @param catalogId
-	 *                      catalog ID
-	 * @throws RestClientResponseException
-	 *                                         Error message is in the response body
-	 */
-	void addPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
-
-	/**
-	 * Removes read access to the specified catalog for the specified peer. The
-	 * catalog must have a restricted access-type code.
-	 * 
-	 * @param peerId
-	 *                      peer ID
-	 * @param catalogId
-	 *                      catalog ID
-	 * @throws RestClientResponseException
-	 *                                         Error message is in the response body
-	 */
-	void dropPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
-
-	/**
 	 * Gets the list of catalog IDs that are favorites of the specified user.
 	 * 
 	 * @param userId
@@ -3048,5 +2965,143 @@ public interface ICommonDataServiceRestClient {
 	 *                       pipeline ID
 	 */
 	void deletePipeline(String pipelineId);
+
+	/**
+	 * Gets the list of catalog IDs readable by the specified peer. The catalogs
+	 * must have restricted access-type codes.
+	 * 
+	 * @param peerId
+	 *                   Peer ID
+	 * @return List of catalog IDs, which may be empty
+	 */
+	List<String> getPeerAccessCatalogIds(String peerId);
+
+	/**
+	 * Add read access to the specified catalog for the specified peer. The catalog
+	 * must have a restricted access-type code.
+	 * 
+	 * @param peerId
+	 *                      peer ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Removes read access to the specified catalog for the specified peer. The
+	 * catalog must have a restricted access-type code.
+	 * 
+	 * @param peerId
+	 *                      peer ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropPeerAccessCatalog(String peerId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Checks if the specified peer can read the specified catalog. Any of the
+	 * following conditions grant read permission:
+	 * <OL>
+	 * <LI>Catalog has access-type code public</LI>
+	 * <LI>The peer has been granted access to the catalog</LI>
+	 * </OL>
+	 * 
+	 * @param peerId
+	 *                      peer ID
+	 * @param catalogId
+	 *                      catalog ID
+	 * @return true if the peer can access the catalog, otherwise false
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	boolean isPeerAccessToCatalog(String peerId, String catalogId) throws RestClientResponseException;
+
+	/**
+	 * Checks if the specified peer can read the specified solution. Any of the
+	 * following conditions grant read permission:
+	 * <OL>
+	 * <LI>Solution is in a public catalog</LI>
+	 * <LI>Solution is in a catalog to which the peer has been granted access</LI>
+	 * </OL>
+	 * 
+	 * @param peerId
+	 *                       peer ID
+	 * @param solutionId
+	 *                       solution ID
+	 * @return true if the peer can read the solution, otherwise false
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	boolean isPeerAccessToSolution(String peerId, String solutionId) throws RestClientResponseException;
+
+	/**
+	 * Gets the users who were granted write access to the specified solution by
+	 * sharing; this does not include the creator of the solution.
+	 * 
+	 * @param solutionId
+	 *                       Solution ID
+	 * @return List of users, which may be empty
+	 */
+	List<MLPUser> getSolutionAccessUsers(String solutionId);
+
+	/**
+	 * Gets a page of solutions for which the user has write permission but is not
+	 * the owner; i.e., extra access has been granted by the solution owner.
+	 * 
+	 * @param userId
+	 *                        User ID
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of solutions, which may be empty
+	 */
+	RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest);
+
+	/**
+	 * Checks if the specified user can read the specified solution. Any of the
+	 * following conditions grant read permission:
+	 * <OL>
+	 * <LI>Solution is in a catalog</LI>
+	 * <LI>User is the creator</LI>
+	 * <LI>User has been granted access</LI>
+	 * </OL>
+	 * 
+	 * @param userId
+	 *                       User ID
+	 * @param solutionId
+	 *                       Solution ID
+	 * @return true if the user can read the solution, otherwise false
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	boolean isUserAccessToSolution(String userId, String solutionId) throws RestClientResponseException;
+
+	/**
+	 * Grants write permission to the specified solution for the specified user.
+	 * 
+	 * @param solutionId
+	 *                       solution ID
+	 * @param userId
+	 *                       user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
+
+	/**
+	 * Removes write permission from the specified solution for the specified user.
+	 * 
+	 * @param solutionId
+	 *                       solution ID
+	 * @param userId
+	 *                       user ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
 
 }

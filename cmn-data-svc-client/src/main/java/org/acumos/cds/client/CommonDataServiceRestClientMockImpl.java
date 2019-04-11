@@ -225,6 +225,9 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<String> peerAccessCatalogIds;
 	private List<String> userFavoriteCatalogIds;
 	private List<MLPRightToUse> rtusByReference;
+	private boolean peerAccessToSolution;
+	private boolean userAccessToSolution;
+	private boolean peerAccessToCatalog;
 
 	/**
 	 * No-argument constructor.
@@ -1111,6 +1114,16 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest) {
 		return userAccessSolutions;
+	}
+
+	@SuppressWarnings("unused")
+	public void setUserAccessToSolution(String userId, String solutionId, boolean access) {
+		this.userAccessToSolution = access;
+	}
+
+	@Override
+	public boolean isUserAccessToSolution(String userId, String solutionId) {
+		return this.userAccessToSolution;
 	}
 
 	@Override
@@ -2059,6 +2072,26 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void dropPeerAccessCatalog(String peerId, String catalogId) {
 		// How to mock?
+	}
+
+	@SuppressWarnings("unused")
+	public void setPeerAccessToCatalog(String peerId, String catalogId, boolean access) {
+		this.peerAccessToCatalog = access;
+	}
+
+	@Override
+	public boolean isPeerAccessToCatalog(String peerId, String catalogId) {
+		return this.peerAccessToCatalog;
+	}
+
+	@SuppressWarnings("unused")
+	public void setPeerAccessToSolution(String peerId, String solutionId, boolean access) {
+		this.peerAccessToSolution = access;
+	}
+
+	@Override
+	public boolean isPeerAccessToSolution(String peerId, String solutionId) {
+		return this.peerAccessToSolution;
 	}
 
 	public void setUserFavoriteCatalogIds(List<String> ids) {

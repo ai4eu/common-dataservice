@@ -1502,45 +1502,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public List<MLPUser> getSolutionAccessUsers(String solutionId) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.USER_PATH,
-				CCDSConstants.ACCESS_PATH }, null, null);
-		logger.debug("getSolutionAccessUsers: url {}", uri);
-		ResponseEntity<List<MLPUser>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<MLPUser>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.USER_PATH, userId,
-				CCDSConstants.ACCESS_PATH }, null, pageRequest);
-		logger.debug("getUserAccessSolutions: url {}", uri);
-		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public void addSolutionUserAccess(String solutionId, String userId) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.USER_PATH, userId,
-				CCDSConstants.ACCESS_PATH }, null, null);
-		logger.debug("addSolutionUserAccess: url {}", uri);
-		MLPSolUserAccMap map = new MLPSolUserAccMap(solutionId, userId);
-		restTemplate.postForObject(uri, map, SuccessTransport.class);
-	}
-
-	@Override
-	public void dropSolutionUserAccess(String solutionId, String userId) {
-		URI uri = buildUri(new String[] { CCDSConstants.SOLUTION_PATH, solutionId, CCDSConstants.USER_PATH, userId,
-				CCDSConstants.ACCESS_PATH }, null, null);
-		logger.debug("dropSolutionUserAccess: url {}", uri);
-		restTemplate.delete(uri);
-	}
-
-	@Override
 	public RestPageResponse<MLPSolutionDeployment> getUserDeployments(String userId, RestPageRequest pageRequest) {
 		URI uri = buildUri(new String[] { CCDSConstants.USER_PATH, userId, CCDSConstants.DEPLOY_PATH }, null,
 				pageRequest);
@@ -2753,35 +2714,6 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public List<String> getPeerAccessCatalogIds(String peerId) {
-		URI uri = buildUri(
-				new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.PEER_PATH, peerId, CCDSConstants.ACCESS_PATH },
-				null, null);
-		logger.debug("getPeerAccessCatalogIds: uri {}", uri);
-		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<String>>() {
-				});
-		return response.getBody();
-	}
-
-	@Override
-	public void addPeerAccessCatalog(String peerId, String catalogId) {
-		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.PEER_PATH, peerId },
-				null, null);
-		logger.debug("addPeerAccessCatalog: url {}", uri);
-		MLPPeerCatAccMap map = new MLPPeerCatAccMap(peerId, catalogId);
-		restTemplate.postForObject(uri, map, SuccessTransport.class);
-	}
-
-	@Override
-	public void dropPeerAccessCatalog(String peerId, String catalogId) {
-		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.PEER_PATH, peerId },
-				null, null);
-		logger.debug("dropPeerAccessCatalog: url {}", uri);
-		restTemplate.delete(uri);
-	}
-
-	@Override
 	public List<String> getUserFavoriteCatalogIds(String userId) {
 		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.USER_PATH, userId,
 				CCDSConstants.FAVORITE_PATH }, null, null);
@@ -2806,6 +2738,107 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.USER_PATH, userId,
 				CCDSConstants.FAVORITE_PATH }, null, null);
 		logger.debug("dropUserFavoriteCatalog: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<String> getPeerAccessCatalogIds(String peerId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId, CCDSConstants.CATALOG_PATH },
+				null, null);
+		logger.debug("getPeerAccessCatalogIds: uri {}", uri);
+		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addPeerAccessCatalog(String peerId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId,
+				CCDSConstants.CATALOG_PATH, catalogId }, null, null);
+		logger.debug("addPeerAccessCatalog: url {}", uri);
+		MLPPeerCatAccMap map = new MLPPeerCatAccMap(peerId, catalogId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropPeerAccessCatalog(String peerId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId,
+				CCDSConstants.CATALOG_PATH, catalogId }, null, null);
+		logger.debug("dropPeerAccessCatalog: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public boolean isPeerAccessToCatalog(String peerId, String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId,
+				CCDSConstants.CATALOG_PATH, catalogId }, null, null);
+		logger.debug("isPeerAccessToCatalog: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount() != 0;
+	}
+
+	@Override
+	public boolean isPeerAccessToSolution(String peerId, String solutionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId,
+				CCDSConstants.SOLUTION_PATH, solutionId }, null, null);
+		logger.debug("isPeerAccessToSolution: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount() != 0;
+	}
+
+	@Override
+	public List<MLPUser> getSolutionAccessUsers(String solutionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.SOLUTION_PATH, solutionId,
+				CCDSConstants.USER_PATH }, null, null);
+		logger.debug("getSolutionAccessUsers: url {}", uri);
+		ResponseEntity<List<MLPUser>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPUser>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public boolean isUserAccessToSolution(String userId, String solutionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.SOLUTION_PATH, solutionId }, null, null);
+		logger.debug("isUserAccessToSolution: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount() != 0;
+	}
+
+	@Override
+	public RestPageResponse<MLPSolution> getUserAccessSolutions(String userId, RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.USER_PATH, userId,
+				CCDSConstants.SOLUTION_PATH }, null, pageRequest);
+		logger.debug("getUserAccessSolutions: url {}", uri);
+		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addSolutionUserAccess(String solutionId, String userId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.SOLUTION_PATH, solutionId,
+				CCDSConstants.USER_PATH, userId, }, null, null);
+		logger.debug("addSolutionUserAccess: url {}", uri);
+		MLPSolUserAccMap map = new MLPSolUserAccMap(solutionId, userId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void dropSolutionUserAccess(String solutionId, String userId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.SOLUTION_PATH, solutionId,
+				CCDSConstants.USER_PATH, userId, }, null, null);
+		logger.debug("dropSolutionUserAccess: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

@@ -1362,7 +1362,7 @@ public class CdsRepositoryServiceTest {
 		Assert.assertNotNull("User ID", cu.getUserId());
 		logger.info("Created user {}", cu);
 
-		final String peerName = "Peer-Name-Restr-Cat";
+		final String peerName = "Peer-Name-Test-Cat";
 		MLPPeer pr = new MLPPeer(peerName, "cat.fqdn.subject.name.a.b.c", "http://peer-api", true, false, "contact",
 				"AC");
 		pr = peerRepository.save(pr);
@@ -1373,18 +1373,39 @@ public class CdsRepositoryServiceTest {
 		Assert.assertNotNull("Solution ID", cs1.getSolutionId());
 		logger.info("Created solution {}", cs1);
 
-		MLPCatalog ca1 = new MLPCatalog("PB", true, "name", "http://pub.org");
-		ca1 = catalogRepository.save(ca1);
-		Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
-		logger.info("Created catalog {}", ca1);
+		MLPSolution cs2 = new MLPSolution("solutionName 2 for cat", cu.getUserId(), true);
+		cs2 = solutionRepository.save(cs2);
+		Assert.assertNotNull("Solution ID", cs2.getSolutionId());
+		logger.info("Created solution {}", cs2);
 
-		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", true, null, "name", null, null, null,
+		final String catName = "pub catalog name goes here";
+
+		MLPCatalog caPub = new MLPCatalog("PB", true, catName, "http://pub.org");
+		caPub = catalogRepository.save(caPub);
+		Assert.assertNotNull("Catalog ID", caPub.getCatalogId());
+		logger.info("Created public catalog {}", caPub);
+
+		MLPCatalog caRst = new MLPCatalog("RS", true, "restr cat name", "http://restricted.org");
+		caRst = catalogRepository.save(caRst);
+		Assert.assertNotNull("Catalog ID", caRst.getCatalogId());
+		logger.info("Created restricted catalog {}", caRst);
+
+		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", true, null, catName, null, null, null,
 				false, PageRequest.of(0, 5));
 		Assert.assertEquals(1, searchCats.getNumberOfElements());
 
-		MLPCatSolMap csm = new MLPCatSolMap(ca1.getCatalogId(), cs1.getSolutionId());
-		catSolMapRepository.save(csm);
-		Page<MLPSolution> sols = catSolMapRepository.findSolutionsByCatalogIds(new String[] { ca1.getCatalogId() },
+		long accPub = catSolMapRepository.countCatalogsByAccessAndSolution("PB", cs1.getSolutionId());
+		Assert.assertEquals(0L, accPub);
+
+		MLPCatSolMap csmPub = new MLPCatSolMap(caPub.getCatalogId(), cs1.getSolutionId());
+		catSolMapRepository.save(csmPub);
+		MLPCatSolMap csmRst = new MLPCatSolMap(caRst.getCatalogId(), cs2.getSolutionId());
+		catSolMapRepository.save(csmRst);
+
+		accPub = catSolMapRepository.countCatalogsByAccessAndSolution("PB", cs1.getSolutionId());
+		Assert.assertNotEquals(0L, accPub);
+
+		Page<MLPSolution> sols = catSolMapRepository.findSolutionsByCatalogIds(new String[] { caPub.getCatalogId() },
 				PageRequest.of(0, 3));
 		Assert.assertNotNull(sols);
 		Assert.assertEquals(1, sols.getNumberOfElements());
@@ -1392,20 +1413,31 @@ public class CdsRepositoryServiceTest {
 		Assert.assertNotNull(cats);
 		Assert.assertTrue(cats.iterator().hasNext());
 
-		MLPPeerCatAccMap pcm = new MLPPeerCatAccMap(pr.getPeerId(), ca1.getCatalogId());
-		peerCatAccMapRepository.save(pcm);
 		Iterable<String> peerCatIds = peerCatAccMapRepository.findCatalogIdsByPeerId(pr.getPeerId());
+		Assert.assertFalse(peerCatIds.iterator().hasNext());
+
+		long accRst = peerCatAccMapRepository.countCatalogsByPeerAccessAndSolution(pr.getPeerId(), cs2.getSolutionId());
+		Assert.assertEquals(0L, accRst);
+		MLPPeerCatAccMap pcmRst = new MLPPeerCatAccMap(pr.getPeerId(), caRst.getCatalogId());
+		peerCatAccMapRepository.save(pcmRst);
+		accRst = peerCatAccMapRepository.countCatalogsByPeerAccessAndSolution(pr.getPeerId(), cs2.getSolutionId());
+		Assert.assertEquals(1L, accRst);
+
+		peerCatIds = peerCatAccMapRepository.findCatalogIdsByPeerId(pr.getPeerId());
 		Assert.assertTrue(peerCatIds.iterator().hasNext());
 
-		MLPUserCatFavMap ucfm = new MLPUserCatFavMap(cu.getUserId(), ca1.getCatalogId());
+		MLPUserCatFavMap ucfm = new MLPUserCatFavMap(cu.getUserId(), caPub.getCatalogId());
 		userCatFavMapRepository.save(ucfm);
 		Iterable<String> userCatIds = userCatFavMapRepository.findCatalogIdsByUserId(cu.getUserId());
 		Assert.assertTrue(userCatIds.iterator().hasNext());
 
 		userCatFavMapRepository.delete(ucfm);
-		peerCatAccMapRepository.delete(pcm);
-		catSolMapRepository.delete(csm);
-		catalogRepository.delete(ca1);
+		peerCatAccMapRepository.delete(pcmRst);
+		catSolMapRepository.delete(csmRst);
+		catSolMapRepository.delete(csmPub);
+		catalogRepository.delete(caRst);
+		catalogRepository.delete(caPub);
+		solutionRepository.delete(cs2);
 		solutionRepository.delete(cs1);
 		peerRepository.delete(pr);
 		userRepository.delete(cu);
