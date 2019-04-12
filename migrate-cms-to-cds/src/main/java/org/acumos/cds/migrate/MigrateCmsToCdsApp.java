@@ -98,10 +98,12 @@ public class MigrateCmsToCdsApp {
 			logger.error("Failed to read properties, stopping.");
 		}
 
+		final String dataType = props.getProperty(MigrateProperties.MIGRATE_DATA_TYPE);
 		final String cdsUrl = props.getProperty(MigrateProperties.CDS_URL);
 		final String cmsUrl = props.getProperty(MigrateProperties.CMS_URL);
 		final String nexusUrl = props.getProperty(MigrateProperties.NEXUS_URL);
 		final String nexusPrefix = props.getProperty(MigrateProperties.NEXUS_PREFIX);
+		logger.info("Migrate data TYPE {}", dataType);
 		logger.info("Migrate data FROM CMS {}", cmsUrl);
 		logger.info("Migrate data TO CDS {}", cdsUrl);
 		logger.info("Migrate data TO Nexus {} using prefix {}", nexusUrl, nexusPrefix);
@@ -124,283 +126,289 @@ public class MigrateCmsToCdsApp {
 			return;
 		}
 
-		// PHASE 1: DOCUMENTS, PICTURES ETC.
+		// DATA TYPE USER: DOCUMENTS, PICTURES ETC.
 
-		final int pageSize = 100;
-		for (int page = 0;; ++page) {
-			RestPageRequest request = new RestPageRequest(page, pageSize);
-			RestPageResponse<MLPSolution> sols = cdsClient.getSolutions(request);
-			logger.info("Processing solution page {} with {} elements", page, sols.getNumberOfElements());
+		if ("user".equalsIgnoreCase(dataType)) {
+			final int pageSize = 100;
+			for (int page = 0;; ++page) {
+				RestPageRequest request = new RestPageRequest(page, pageSize);
+				RestPageResponse<MLPSolution> sols = cdsClient.getSolutions(request);
+				logger.info("Processing solution page {} with {} elements", page, sols.getNumberOfElements());
 
-			for (MLPSolution s : sols.getContent()) {
-				logger.debug("Checking solution ID {} name {}", s.getSolutionId(), s.getName());
+				for (MLPSolution s : sols.getContent()) {
+					logger.debug("Checking solution ID {} name {}", s.getSolutionId(), s.getName());
 
-				// Item 1: solution image
-				CMSNameList solNames = cmsClient.getSolutionImageName(s.getSolutionId());
-				if (solNames.getResponse_body().isEmpty()) {
-					logger.info("Solution {} has no CMS image", s.getSolutionId());
-				} else {
-					String imgName = solNames.getResponse_body().get(0);
-					if (cdsClient.getSolutionPicture(s.getSolutionId()) != null) {
-						// CDS already has it
-						logger.info("Solution {} image {} already migrated", s.getSolutionId(), imgName);
+					// Item 1: solution image
+					CMSNameList solNames = cmsClient.getSolutionImageName(s.getSolutionId());
+					if (solNames.getResponse_body().isEmpty()) {
+						logger.info("Solution {} has no CMS image", s.getSolutionId());
 					} else {
-						logger.info("Migrating solution {} image: {}", s.getSolutionId(), imgName);
-						byte[] cmsImage = cmsClient.getSolutionImage(s.getSolutionId(), imgName);
-						cdsClient.saveSolutionPicture(s.getSolutionId(), cmsImage);
-						try {
-							cdsClient.updateSolution(s);
-							++migrPicSucc;
-						} catch (HttpStatusCodeException ex) {
-							++migrPicFail;
-							logger.error("Failed to update solution {} with image: {}", s.getSolutionId(),
-									ex.getResponseBodyAsString());
-						}
-					}
-				}
-
-				List<MLPSolutionRevision> revs = cdsClient.getSolutionRevisions(s.getSolutionId());
-				for (MLPSolutionRevision r : revs) {
-					++revCount;
-					for (CMSWorkspace ws : CMSWorkspace.values()) {
-						logger.debug("Checking revision {} CMS workspace {}", r.getRevisionId(), ws.getCmsKey());
-
-						// Item 2: revision descriptions, 0..1 per workspace value
-						CMSRevisionDescription cmsRevDesc = null;
-						try {
-							cmsRevDesc = cmsClient.getRevisionDescription(s.getSolutionId(), r.getRevisionId(),
-									ws.getCmsKey());
-						} catch (Exception ex) {
-							// Should never happen; CMS answers 200 even when it has no data
-							logger.error("Failed to get description for revision {} access {}", r.getRevisionId(),
-									ws.getCmsKey());
-						}
-						if (cmsRevDesc == null || cmsRevDesc.getDescription() == null
-								|| cmsRevDesc.getDescription().isEmpty()) {
-							logger.info("Revision {} access {} has no description", r.getRevisionId(), ws.getCmsKey());
+						String imgName = solNames.getResponse_body().get(0);
+						if (cdsClient.getSolutionPicture(s.getSolutionId()) != null) {
+							// CDS already has it
+							logger.info("Solution {} image {} already migrated", s.getSolutionId(), imgName);
 						} else {
-							MLPRevisionDescription cdsRevDesc = null;
+							logger.info("Migrating solution {} image: {}", s.getSolutionId(), imgName);
+							byte[] cmsImage = cmsClient.getSolutionImage(s.getSolutionId(), imgName);
+							cdsClient.saveSolutionPicture(s.getSolutionId(), cmsImage);
 							try {
-								cdsRevDesc = cdsClient.getRevisionDescription(r.getRevisionId(), ws.getCdsKey());
-								logger.info("Revision {} access {} description already migrated", r.getRevisionId(),
-										ws.getCmsKey());
+								cdsClient.updateSolution(s);
+								++migrPicSucc;
 							} catch (HttpStatusCodeException ex) {
-								// CDS returned an error which means it does not exist
-								logger.info("Creating revision {} access {} description", r.getRevisionId(),
-										ws.getCmsKey());
-								cdsRevDesc = new MLPRevisionDescription(r.getRevisionId(), ws.getCdsKey(),
-										cmsRevDesc.getDescription());
-								try {
-									cdsClient.createRevisionDescription(cdsRevDesc);
-									++migrDescSucc;
-								} catch (HttpStatusCodeException ex2) {
-									// Should never happen
-									logger.error("Failed to create revision description at CDS", ex2);
-									++migrDescFail;
-								}
+								++migrPicFail;
+								logger.error("Failed to update solution {} with image: {}", s.getSolutionId(),
+										ex.getResponseBodyAsString());
 							}
 						}
+					}
 
-						// Item 3: revision documents, 0..many per workspace value
-						CMSNameList cmsRevDocs = cmsClient.getRevisionDocumentNames(s.getSolutionId(),
-								r.getRevisionId(), ws.getCmsKey());
-						if (cmsRevDocs.getResponse_body().isEmpty()) {
-							logger.info("Revision {} access {} has no documents", r.getRevisionId(), ws.getCmsKey());
-						} else {
-							List<MLPDocument> cdsRevDocs = cdsClient.getSolutionRevisionDocuments(r.getRevisionId(),
-									ws.getCdsKey());
-							for (String cmsDocName : cmsRevDocs.getResponse_body()) {
-								final String[] cmsDocParts = splitFileBaseExt(cmsDocName);
-								// Give up if no suffix; don't want to guess
-								if (cmsDocParts.length != 2) {
-									logger.error(
-											"No suffix available for packaging; skipping revision {} access {} document {}",
-											r.getRevisionId(), ws.getCmsKey(), cmsDocName);
-									++migrDocFail;
-								} else {
-									// Produce a clean basename for Nexus by replacing special characters
-									final String nexusDocBase = cmsDocParts[0].replaceAll(specialCharRegex, "-");
-									final String nexusDocSuffix = cmsDocParts[1];
-									final String nexusDocName = nexusDocBase + "." + nexusDocSuffix;
-									if (findDocNameInCdsList(nexusDocName, cdsRevDocs)) {
-										// CDS has already
-										logger.info("Revision {} access {} document {} already migrated",
-												r.getAccessTypeCode(), ws.getCmsKey(), nexusDocName);
+					List<MLPSolutionRevision> revs = cdsClient.getSolutionRevisions(s.getSolutionId());
+					for (MLPSolutionRevision r : revs) {
+						++revCount;
+						for (CMSWorkspace ws : CMSWorkspace.values()) {
+							logger.debug("Checking revision {} CMS workspace {}", r.getRevisionId(), ws.getCmsKey());
+
+							// Item 2: revision descriptions, 0..1 per workspace value
+							CMSRevisionDescription cmsRevDesc = null;
+							try {
+								cmsRevDesc = cmsClient.getRevisionDescription(s.getSolutionId(), r.getRevisionId(),
+										ws.getCmsKey());
+							} catch (Exception ex) {
+								// Should never happen; CMS answers 200 even when it has no data
+								logger.error("Failed to get description for revision {} access {}", r.getRevisionId(),
+										ws.getCmsKey());
+							}
+							if (cmsRevDesc == null || cmsRevDesc.getDescription() == null
+									|| cmsRevDesc.getDescription().isEmpty()) {
+								logger.info("Revision {} access {} has no description", r.getRevisionId(),
+										ws.getCmsKey());
+							} else {
+								MLPRevisionDescription cdsRevDesc = null;
+								try {
+									cdsRevDesc = cdsClient.getRevisionDescription(r.getRevisionId(), ws.getCdsKey());
+									logger.info("Revision {} access {} description already migrated", r.getRevisionId(),
+											ws.getCmsKey());
+								} catch (HttpStatusCodeException ex) {
+									// CDS returned an error which means it does not exist
+									logger.info("Creating revision {} access {} description", r.getRevisionId(),
+											ws.getCmsKey());
+									cdsRevDesc = new MLPRevisionDescription(r.getRevisionId(), ws.getCdsKey(),
+											cmsRevDesc.getDescription());
+									try {
+										cdsClient.createRevisionDescription(cdsRevDesc);
+										++migrDescSucc;
+									} catch (HttpStatusCodeException ex2) {
+										// Should never happen
+										logger.error("Failed to create revision description at CDS", ex2);
+										++migrDescFail;
+									}
+								}
+							}
+
+							// Item 3: revision documents, 0..many per workspace value
+							CMSNameList cmsRevDocs = cmsClient.getRevisionDocumentNames(s.getSolutionId(),
+									r.getRevisionId(), ws.getCmsKey());
+							if (cmsRevDocs.getResponse_body().isEmpty()) {
+								logger.info("Revision {} access {} has no documents", r.getRevisionId(),
+										ws.getCmsKey());
+							} else {
+								List<MLPDocument> cdsRevDocs = cdsClient.getSolutionRevisionDocuments(r.getRevisionId(),
+										ws.getCdsKey());
+								for (String cmsDocName : cmsRevDocs.getResponse_body()) {
+									final String[] cmsDocParts = splitFileBaseExt(cmsDocName);
+									// Give up if no suffix; don't want to guess
+									if (cmsDocParts.length != 2) {
+										logger.error(
+												"No suffix available for packaging; skipping revision {} access {} document {}",
+												r.getRevisionId(), ws.getCmsKey(), cmsDocName);
+										++migrDocFail;
 									} else {
-										final String groupId = createNexusGroupId(nexusPrefix, s.getSolutionId(),
-												r.getRevisionId());
-										byte[] cmsDoc = null;
-										try {
-											cmsDoc = cmsClient.getRevisionDocument(s.getSolutionId(), r.getRevisionId(),
-													ws.getCmsKey(), cmsDocName);
-										} catch (Exception ex) {
-											logger.error("Failed to get CMS revision {} document {}; exception follows",
-													r.getRevisionId(), cmsDocName);
-											logger.error("Exception in fetch", ex);
-											++migrDocFail;
-										}
-										if (cmsDoc != null) {
-											InputStream inputStream = new ByteArrayInputStream(cmsDoc);
-											UploadArtifactInfo uploadInfo = null;
-											logger.info(
-													"Uploading revision {} access {} document {}.{} to Nexus group {}",
-													r.getRevisionId(), ws.getCmsKey(), nexusDocBase, nexusDocSuffix,
-													groupId);
+										// Produce a clean basename for Nexus by replacing special characters
+										final String nexusDocBase = cmsDocParts[0].replaceAll(specialCharRegex, "-");
+										final String nexusDocSuffix = cmsDocParts[1];
+										final String nexusDocName = nexusDocBase + "." + nexusDocSuffix;
+										if (findDocNameInCdsList(nexusDocName, cdsRevDocs)) {
+											// CDS has already
+											logger.info("Revision {} access {} document {} already migrated",
+													r.getAccessTypeCode(), ws.getCmsKey(), nexusDocName);
+										} else {
+											final String groupId = createNexusGroupId(nexusPrefix, s.getSolutionId(),
+													r.getRevisionId());
+											byte[] cmsDoc = null;
 											try {
-												uploadInfo = nexusClient.uploadArtifact(groupId, nexusDocBase,
-														ws.getCdsKey(), nexusDocSuffix, cmsDoc.length, inputStream);
+												cmsDoc = cmsClient.getRevisionDocument(s.getSolutionId(),
+														r.getRevisionId(), ws.getCmsKey(), cmsDocName);
 											} catch (Exception ex) {
 												logger.error(
-														"Failed to upload revision {} doc base {} doc suffix as nexus artifact; exception follows",
-														r.getRevisionId(), nexusDocBase, nexusDocSuffix);
-												logger.error("Exception in upload", ex);
+														"Failed to get CMS revision {} document {}; exception follows",
+														r.getRevisionId(), cmsDocName);
+												logger.error("Exception in fetch", ex);
 												++migrDocFail;
 											}
-											if (uploadInfo != null) {
-												MLPDocument cdsDoc = new MLPDocument();
-												cdsDoc.setName(nexusDocName);
-												cdsDoc.setUri(uploadInfo.getArtifactMvnPath());
-												cdsDoc.setSize(cmsDoc.length);
-												cdsDoc.setUserId(r.getUserId());
-												logger.info("Creating revision {} access {} document {} metadata",
-														r.getRevisionId(), ws.getCmsKey(), nexusDocName);
+											if (cmsDoc != null) {
+												InputStream inputStream = new ByteArrayInputStream(cmsDoc);
+												UploadArtifactInfo uploadInfo = null;
+												logger.info(
+														"Uploading revision {} access {} document {}.{} to Nexus group {}",
+														r.getRevisionId(), ws.getCmsKey(), nexusDocBase, nexusDocSuffix,
+														groupId);
 												try {
-													cdsDoc = cdsClient.createDocument(cdsDoc);
-													cdsClient.addSolutionRevisionDocument(r.getRevisionId(),
-															ws.getCdsKey(), cdsDoc.getDocumentId());
-													++migrDocSucc;
-												} catch (HttpStatusCodeException ex) {
+													uploadInfo = nexusClient.uploadArtifact(groupId, nexusDocBase,
+															ws.getCdsKey(), nexusDocSuffix, cmsDoc.length, inputStream);
+												} catch (Exception ex) {
 													logger.error(
-															"Failed to create revision {} document {}; server response {}",
-															r.getRevisionId(), nexusDocName,
-															ex.getResponseBodyAsString());
+															"Failed to upload revision {} doc base {} doc suffix as nexus artifact; exception follows",
+															r.getRevisionId(), nexusDocBase, nexusDocSuffix);
+													logger.error("Exception in upload", ex);
 													++migrDocFail;
+												}
+												if (uploadInfo != null) {
+													MLPDocument cdsDoc = new MLPDocument();
+													cdsDoc.setName(nexusDocName);
+													cdsDoc.setUri(uploadInfo.getArtifactMvnPath());
+													cdsDoc.setSize(cmsDoc.length);
+													cdsDoc.setUserId(r.getUserId());
+													logger.info("Creating revision {} access {} document {} metadata",
+															r.getRevisionId(), ws.getCmsKey(), nexusDocName);
+													try {
+														cdsDoc = cdsClient.createDocument(cdsDoc);
+														cdsClient.addSolutionRevisionDocument(r.getRevisionId(),
+																ws.getCdsKey(), cdsDoc.getDocumentId());
+														++migrDocSucc;
+													} catch (HttpStatusCodeException ex) {
+														logger.error(
+																"Failed to create revision {} document {}; server response {}",
+																r.getRevisionId(), nexusDocName,
+																ex.getResponseBodyAsString());
+														++migrDocFail;
+													}
 												}
 											}
 										}
 									}
-								}
 
-							} // for doc
+								} // for doc
 
-						} // list not empty
+							} // list not empty
 
-					} // for workspace
+						} // for workspace
 
-				} // for revision
+					} // for revision
 
-			} // for solution in page
+				} // for solution in page
 
-			// Stop after the last page
-			if (sols.getNumberOfElements() < pageSize)
-				break;
+				// Stop after the last page
+				if (sols.getNumberOfElements() < pageSize)
+					break;
 
-		} // for page
-
-		// PHASE 2: GLOBAL SITE CONTENT
-
-		final String keyCobrandLogo = "global.coBrandLogo";
-		final String keyContactInfo = "global.footer.contactInfo";
-		final String keyTermsCondition = "global.termsConditions";
-		final String carouselPrefix = "carousel";
-
-		byte[] coBrandLogo = cmsClient.getCoBrandLogo();
-		if (coBrandLogo == null || coBrandLogo.length == 0) {
-			logger.error("Source CMS has no co-brand logo, continuing");
-			++globalContentFail;
-		} else {
-			MLPSiteContent cdsCoBrandLogo = cdsClient.getSiteContent(keyCobrandLogo);
-			if (cdsCoBrandLogo != null && cdsCoBrandLogo.getContentValue().length > 0) {
-				logger.info("Target CDS already has co-brand logo, continuing");
-			} else {
-				try {
-					logger.info("Creating co-brand logo in CDS");
-					cdsCoBrandLogo = new MLPSiteContent(keyCobrandLogo, coBrandLogo, "image/jpg");
-					cdsClient.createSiteContent(cdsCoBrandLogo);
-					++globalContentSucc;
-				} catch (HttpStatusCodeException ex) {
-					logger.error("Failed to create co-brand logo {}; server response {}", cdsCoBrandLogo,
-							ex.getResponseBodyAsString());
-					++globalContentFail;
-				}
-			}
+			} // for page
 		}
 
-		CMSDescription cmsFootCi = cmsClient.getFooterContactInfo();
-		if (cmsFootCi == null || cmsFootCi.getDescription() == null || cmsFootCi.getDescription().isEmpty()) {
-			logger.info("Source CMS has no footer contact info, continuing");
-		} else {
-			MLPSiteContent cdsFootCi = cdsClient.getSiteContent(keyContactInfo);
-			if (cdsFootCi != null && cdsFootCi.getContentValue().length > 0) {
-				logger.info("Target CDS already has footer contact, continuing");
-			} else {
-				try {
-					logger.info("Creating footer contact site content in CDS");
-					cdsFootCi = new MLPSiteContent(keyContactInfo, cmsFootCi.getDescription().getBytes(),
-							MediaType.APPLICATION_JSON_VALUE);
-					cdsClient.createSiteContent(cdsFootCi);
-					++globalContentSucc;
-				} catch (HttpStatusCodeException ex) {
-					logger.error("Failed to create footer contact {}; server response {}", cdsFootCi,
-							ex.getResponseBodyAsString());
-					++globalContentFail;
-				}
-			}
-		}
-		CMSDescription cmsFootTc = cmsClient.getFooterTermsConditions();
-		if (cmsFootTc == null || cmsFootTc.getDescription() == null || cmsFootTc.getDescription().isEmpty()) {
-			logger.info("Source CMS has no footer t&c, continuing");
-		} else {
-			MLPSiteContent cdsFootTc = cdsClient.getSiteContent(keyTermsCondition);
-			if (cdsFootTc != null && cdsFootTc.getContentValue().length > 0) {
-				logger.info("Target CDS already has footer T&C, continuing");
-			} else {
-				try {
-					logger.info("Creating footer T&C site content in CDS");
-					cdsFootTc = new MLPSiteContent(keyTermsCondition, cmsFootTc.getDescription().getBytes(),
-							MediaType.APPLICATION_JSON_VALUE);
-					cdsClient.createSiteContent(cdsFootTc);
-					++globalContentSucc;
-				} catch (HttpStatusCodeException ex) {
-					logger.error("Failed to create footer T&C {}; server response {}", cdsFootTc,
-							ex.getResponseBodyAsString());
-					++globalContentFail;
-				}
-			}
-		}
+		if ("admin".equalsIgnoreCase(dataType)) {
 
-		// Carousel config was always in CDS; migrate images from CMS
-		MLPSiteConfig cdsTopCarouselConfig = cdsClient.getSiteConfig("carousel_config");
-		if (cdsTopCarouselConfig == null || cdsTopCarouselConfig.getConfigValue().length() == 0) {
-			logger.info("CDS top carousel is null or missing, continuing");
-		} else {
-			try {
-				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeTopBg, typeTopIg,
-						carouselPrefix + ".top", cdsTopCarouselConfig.getConfigValue());
-				cdsTopCarouselConfig.setConfigValue(revisedConfig);
-				cdsClient.updateSiteConfig(cdsTopCarouselConfig);
-				++globalContentSucc;
-			} catch (Exception ex) { //
-				logger.error("Failed to migrate top carousel, exception {}", ex.toString());
+			final String keyCobrandLogo = "global.coBrandLogo";
+			final String keyContactInfo = "global.footer.contactInfo";
+			final String keyTermsCondition = "global.termsConditions";
+			final String carouselPrefix = "carousel";
+
+			byte[] coBrandLogo = cmsClient.getCoBrandLogo();
+			if (coBrandLogo == null || coBrandLogo.length == 0) {
+				logger.error("Source CMS has no co-brand logo, continuing");
 				++globalContentFail;
+			} else {
+				MLPSiteContent cdsCoBrandLogo = cdsClient.getSiteContent(keyCobrandLogo);
+				if (cdsCoBrandLogo != null && cdsCoBrandLogo.getContentValue().length > 0) {
+					logger.info("Target CDS already has co-brand logo, continuing");
+				} else {
+					try {
+						logger.info("Creating co-brand logo in CDS");
+						cdsCoBrandLogo = new MLPSiteContent(keyCobrandLogo, coBrandLogo, "image/jpg");
+						cdsClient.createSiteContent(cdsCoBrandLogo);
+						++globalContentSucc;
+					} catch (HttpStatusCodeException ex) {
+						logger.error("Failed to create co-brand logo {}; server response {}", cdsCoBrandLogo,
+								ex.getResponseBodyAsString());
+						++globalContentFail;
+					}
+				}
 			}
 
-		}
+			CMSDescription cmsFootCi = cmsClient.getFooterContactInfo();
+			if (cmsFootCi == null || cmsFootCi.getDescription() == null || cmsFootCi.getDescription().isEmpty()) {
+				logger.info("Source CMS has no footer contact info, continuing");
+			} else {
+				MLPSiteContent cdsFootCi = cdsClient.getSiteContent(keyContactInfo);
+				if (cdsFootCi != null && cdsFootCi.getContentValue().length > 0) {
+					logger.info("Target CDS already has footer contact, continuing");
+				} else {
+					try {
+						logger.info("Creating footer contact site content in CDS");
+						cdsFootCi = new MLPSiteContent(keyContactInfo, cmsFootCi.getDescription().getBytes(),
+								MediaType.APPLICATION_JSON_VALUE);
+						cdsClient.createSiteContent(cdsFootCi);
+						++globalContentSucc;
+					} catch (HttpStatusCodeException ex) {
+						logger.error("Failed to create footer contact {}; server response {}", cdsFootCi,
+								ex.getResponseBodyAsString());
+						++globalContentFail;
+					}
+				}
+			}
+			CMSDescription cmsFootTc = cmsClient.getFooterTermsConditions();
+			if (cmsFootTc == null || cmsFootTc.getDescription() == null || cmsFootTc.getDescription().isEmpty()) {
+				logger.info("Source CMS has no footer t&c, continuing");
+			} else {
+				MLPSiteContent cdsFootTc = cdsClient.getSiteContent(keyTermsCondition);
+				if (cdsFootTc != null && cdsFootTc.getContentValue().length > 0) {
+					logger.info("Target CDS already has footer T&C, continuing");
+				} else {
+					try {
+						logger.info("Creating footer T&C site content in CDS");
+						cdsFootTc = new MLPSiteContent(keyTermsCondition, cmsFootTc.getDescription().getBytes(),
+								MediaType.APPLICATION_JSON_VALUE);
+						cdsClient.createSiteContent(cdsFootTc);
+						++globalContentSucc;
+					} catch (HttpStatusCodeException ex) {
+						logger.error("Failed to create footer T&C {}; server response {}", cdsFootTc,
+								ex.getResponseBodyAsString());
+						++globalContentFail;
+					}
+				}
+			}
 
-		// Carousel config was always in CDS; migrate images from CMS
-		MLPSiteConfig cdsEventCarouselConfig = cdsClient.getSiteConfig("event_carousel");
-		if (cdsEventCarouselConfig == null || cdsEventCarouselConfig.getConfigValue().length() == 0) {
-			logger.info("CDS event carousel is null or missing, continuing");
-		} else {
-			try {
-				String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeEventBg, typeEventIg,
-						carouselPrefix + ".event", cdsEventCarouselConfig.getConfigValue());
-				cdsEventCarouselConfig.setConfigValue(revisedConfig);
-				cdsClient.updateSiteConfig(cdsEventCarouselConfig);
-				++globalContentSucc;
-			} catch (Exception ex) { //
-				logger.error("Failed to migrate event carousel, exception {}", ex.toString());
-				++globalContentFail;
+			// Top carousel config was always in CDS, but need to migrate images from CMS
+			MLPSiteConfig cdsTopCarouselConfig = cdsClient.getSiteConfig("carousel_config");
+			if (cdsTopCarouselConfig == null || cdsTopCarouselConfig.getConfigValue().length() == 0) {
+				logger.info("CDS top carousel is null or missing, continuing");
+			} else {
+				try {
+					String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeTopBg, typeTopIg,
+							carouselPrefix + ".top", cdsTopCarouselConfig.getConfigValue());
+					cdsTopCarouselConfig.setConfigValue(revisedConfig);
+					cdsClient.updateSiteConfig(cdsTopCarouselConfig);
+					++globalContentSucc;
+				} catch (Exception ex) { //
+					logger.error("Failed to migrate top carousel, exception {}", ex.toString());
+					++globalContentFail;
+				}
+
+			}
+
+			// Event carousel was always in CDS, but need to migrate images from CMS
+			MLPSiteConfig cdsEventCarouselConfig = cdsClient.getSiteConfig("event_carousel");
+			if (cdsEventCarouselConfig == null || cdsEventCarouselConfig.getConfigValue().length() == 0) {
+				logger.info("CDS event carousel is null or missing, continuing");
+			} else {
+				try {
+					String revisedConfig = migrateCarouselConfig(cmsClient, cdsClient, typeEventBg, typeEventIg,
+							carouselPrefix + ".event", cdsEventCarouselConfig.getConfigValue());
+					cdsEventCarouselConfig.setConfigValue(revisedConfig);
+					cdsClient.updateSiteConfig(cdsEventCarouselConfig);
+					++globalContentSucc;
+				} catch (Exception ex) { //
+					logger.error("Failed to migrate event carousel, exception {}", ex.toString());
+					++globalContentFail;
+				}
 			}
 		}
 

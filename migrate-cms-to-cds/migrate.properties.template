@@ -20,6 +20,9 @@
 
 # properties for the CMS-to-CDS/Nexus migration tool
 
+# user, admin
+migrate.data.type = admin
+
 # must include host, port and base context path
 cds.url = http://cdshost.myproject.org:8001/ccds
 cds.user = 

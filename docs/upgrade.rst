@@ -119,6 +119,8 @@ Configuration
 After obtaining valid URLs and appropriate user names and passwords for all three systems,
 enter them in a file named "migrate.properties" using the following structure::
 
+    migrate.data.type = admin
+
     cds.url = http://cdshost.myproject.org:8001/ccds
     cds.user =
     cds.pass =

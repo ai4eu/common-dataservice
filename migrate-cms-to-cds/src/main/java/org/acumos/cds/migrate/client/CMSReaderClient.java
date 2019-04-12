@@ -364,15 +364,15 @@ public class CMSReaderClient {
 	/**
 	 * Gets onboarding instructions
 	 * 
-	 * @deprecated This does NOT need to be migrated. 
+	 * @deprecated This does NOT need to be migrated.
 	 * 
-	 * GET
-	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/onboarding-model-screen&amp;name=overview
-	 * Sample:
+	 *             GET
+	 *             http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/onboarding-model-screen&amp;name=overview
+	 *             Sample:
 	 * 
-	 * <pre>
+	 *             <pre>
 	 * {"description":"&lt;p&gt;Onboarding overview here&lt;/p&gt;"}
-	 * </pre>
+	 *             </pre>
 	 * 
 	 * @return CMSDescription
 	 */
@@ -386,6 +386,35 @@ public class CMSReaderClient {
 				new ParameterizedTypeReference<CMSDescription>() {
 				});
 		return response.getBody();
+	}
+
+	/**
+	 * Gets text used to decorate the image on the home screen.
+	 * 
+	 * GET
+	 * http://acumos.org:8085/site/api-manual/Solution/solDescription?path=global/home-screen/discover-acumos&amp;name=marketplace
+	 * 
+	 * @param name
+	 *                 Valid values: marketplace, design-studio, sdn--onap, team-up,
+	 *                 onboarding-with-toolkit
+	 * 
+	 *                 <pre>
+	 * {"description":"&lt;h5&gt;Marketplace&lt;/h5&gt;\n\n&lt;p&gt;Acumos is the go-to site for ....&lt;/p&gt;","solutionId":"marketplace","revisionId":null}
+	 *                 </pre>
+	 * 
+	 * @return CMSDescription
+	 */
+	public CMSDescription getDiscoverText(String name) {
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put("path", "global/home-screen/discover-acumos");
+		queryParams.put("name", name);
+		URI uri = buildUri(new String[] { API_MANUAL_PATH, SOLUTION_UC_PATH, SOL_DESCRIPTION_PATH }, queryParams);
+		logger.debug("getOnboardingOverview: uri {}", uri);
+		ResponseEntity<CMSDescription> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CMSDescription>() {
+				});
+		return response.getBody();
+
 	}
 
 }
