@@ -33,6 +33,7 @@ public class MigrateProperties extends Properties {
 
 	private static final long serialVersionUID = 8247904389301104301L;
 
+	public static final String MIGRATE_DATA_TYPE = "migrate.data.type";
 	public static final String CDS_URL = "cds.url";
 	public static final String CDS_USER = "cds.user";
 	public static final String CDS_PASS = "cds.pass";
@@ -44,8 +45,8 @@ public class MigrateProperties extends Properties {
 	public static final String NEXUS_PASS = "nexus.pass";
 	public static final String NEXUS_PREFIX = "nexus.prefix";
 
-	private String[] requiredProps = { CDS_URL, CDS_USER, CDS_PASS, CMS_URL, CMS_USER, CMS_PASS, NEXUS_URL, NEXUS_USER,
-			NEXUS_PASS, NEXUS_PREFIX };
+	private String[] requiredProps = { MIGRATE_DATA_TYPE, CDS_URL, CDS_USER, CDS_PASS, CMS_URL, CMS_USER, CMS_PASS,
+			NEXUS_URL, NEXUS_USER, NEXUS_PASS, NEXUS_PREFIX };
 
 	public MigrateProperties() throws IOException {
 		this("migrate.properties");

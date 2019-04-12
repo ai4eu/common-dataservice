@@ -22,6 +22,7 @@ package org.acumos.cds.migrate;
 
 import java.lang.invoke.MethodHandles;
 
+import org.acumos.cds.migrate.client.CMSDiscoverAcumos;
 import org.acumos.cds.migrate.client.CMSReaderClient;
 import org.acumos.cds.migrate.client.CMSWorkspace;
 import org.acumos.cds.migrate.domain.CMSDescription;
@@ -54,33 +55,39 @@ public class CmsDocClientTest {
 					props.getProperty(MigrateProperties.CMS_USER), props.getProperty(MigrateProperties.CMS_PASS));
 
 			CMSNameList solImageList = client.getSolutionImageName(solutionId);
-			logger.debug("solution image name: {}", solImageList);
+			logger.info("solution image name: {}", solImageList);
 
 			for (String imageName : solImageList.getResponse_body()) {
 				byte[] image = client.getSolutionImage(solutionId, imageName);
-				logger.debug("solution image length: {}", image.length);
+				logger.info("solution image length: {}", image.length);
 			}
 
 			CMSRevisionDescription revDesc = client.getRevisionDescription(solutionId, revisionId, workspace);
-			logger.debug("revision description: {}", revDesc);
+			logger.info("revision description: {}", revDesc);
 
 			CMSNameList revDocList = client.getRevisionDocumentNames(solutionId, revisionId, workspace);
-			logger.debug("document name: {}", revDocList);
+			logger.info("document name: {}", revDocList);
 
 			for (String docName : revDocList.getResponse_body()) {
 				byte[] doc = client.getRevisionDocument(solutionId, revisionId, workspace, docName);
-				logger.debug("doc length: {}", doc.length);
+				logger.info("doc length: {}", doc.length);
 			}
 
 			byte[] coBrandLogo = client.getCoBrandLogo();
-			logger.debug("Co-brand logo length {}", coBrandLogo == null ? 0 : coBrandLogo.length);
+			logger.info("Co-brand logo length {}", coBrandLogo == null ? 0 : coBrandLogo.length);
 
 			CMSDescription footerContact = client.getFooterContactInfo();
-			logger.debug("Footer contact length {}",
+			logger.info("Footer contact length {}",
 					footerContact == null ? 0 : footerContact.getDescription().length());
 
 			CMSDescription footerTc = client.getFooterTermsConditions();
-			logger.debug("Footer T&C length {}", footerTc == null ? 0 : footerTc.getDescription().length());
+			logger.info("Footer T&C length {}", footerTc == null ? 0 : footerTc.getDescription().length());
+
+			for (CMSDiscoverAcumos discoverKey : CMSDiscoverAcumos.values()) {
+				CMSDescription desc = client.getDiscoverText(discoverKey.getCmsKey());
+				logger.info("Discover text for key {} has length {}", discoverKey.getCmsKey(),
+						desc.getDescription().length());
+			}
 
 		} catch (HttpStatusCodeException ex) {
 			// Helpful to see what the server replies when things go south
