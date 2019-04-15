@@ -111,6 +111,14 @@ public class CatalogController extends AbstractController {
 		return catalogRepository.findAll(pageable);
 	}
 
+	@ApiOperation(value = "Gets the set of distinct catalog publishers. Answers empty if none are found.", response = String.class, responseContainer = "List")
+	@ApiPageable
+	@RequestMapping(value = CCDSConstants.PUBLISHERS_PATH, method = RequestMethod.GET)
+	public Iterable<String> getCatalogPublishers() {
+		logger.debug("getCatalogPublishers");
+		return catalogRepository.findDistinctPublishers();
+	}
+
 	@ApiOperation(value = "Gets the catalog for the specified ID. Returns null if the ID is not found.", //
 			response = MLPCatalog.class)
 	@RequestMapping(value = "/{catalogId}", method = RequestMethod.GET)

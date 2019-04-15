@@ -592,12 +592,12 @@ public class CdsControllerTest {
 			client.dropUserTag(cu.getUserId(), tagName1);
 
 			MLPCatalog catPub = client
-					.createCatalog(new MLPCatalog("PB", false, "public catalog name", "http://pub.acumos.org"));
+					.createCatalog(new MLPCatalog("PB", false, "public catalog name", "me", "http://pub.acumos.org"));
 			Assert.assertNotNull("Catalog ID", catPub.getCatalogId());
 			logger.info("Created catalog {}", catPub);
 
-			MLPCatalog catRes = client
-					.createCatalog(new MLPCatalog("RS", false, "restricted catalog name", "http://private.acumos.org"));
+			MLPCatalog catRes = client.createCatalog(
+					new MLPCatalog("RS", false, "restricted catalog name", "them", "http://private.acumos.org"));
 			Assert.assertNotNull("Catalog ID", catRes.getCatalogId());
 			logger.info("Created catalog {}", catRes);
 
@@ -1966,7 +1966,7 @@ public class CdsControllerTest {
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 			logger.info("Created solution {}", cs);
 
-			ca = client.createCatalog(new MLPCatalog("PB", true, "unicorn", "http://pub.org"));
+			ca = client.createCatalog(new MLPCatalog("PB", true, "unicorn", "publ", "http://pub.org"));
 			Assert.assertNotNull("Catalog ID", ca.getCatalogId());
 			logger.info("Created catalog {}", ca);
 			ca.setDescription("Catalog description");
@@ -1975,6 +1975,9 @@ public class CdsControllerTest {
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
 			Assert.assertNotEquals(0, catalogs.getNumberOfElements());
+
+			List<String> catPubs = client.getCatalogPublishers();
+			Assert.assertFalse(catPubs.isEmpty());
 
 			HashMap<String, Object> queryParameters = new HashMap<>();
 			queryParameters.put("name", ca.getName());
@@ -2013,7 +2016,7 @@ public class CdsControllerTest {
 		}
 
 		try {
-			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "someone", "http://pub.org");
 			c.setCatalogId("bogus");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
@@ -2021,7 +2024,7 @@ public class CdsControllerTest {
 			logger.info("create catalog failed on bad ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "IDK", "http://pub.org");
 			c.setCatalogId(ca.getCatalogId());
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
@@ -2029,21 +2032,21 @@ public class CdsControllerTest {
 			logger.info("create catalog failed on existing ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("xx", false, "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("xx", false, "name", "who's on first", "http://pub.org");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create catalog failed on bad access code as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", false, "name", "/inval:d@-*url");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "other", "/inval:d@-*url");
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("create catalog failed on bad URL as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog("PB", false, "name", "http://pub.org");
+			MLPCatalog c = new MLPCatalog("PB", false, "name", "bogus", "http://pub.org");
 			c.setCatalogId("bogus");
 			client.updateCatalog(c);
 			throw new Exception("Unexpected success");

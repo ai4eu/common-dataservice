@@ -41,13 +41,13 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
-import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -228,6 +228,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private boolean peerAccessToSolution;
 	private boolean userAccessToSolution;
 	private boolean peerAccessToCatalog;
+	private List<String> catalogPublishers;
 
 	/**
 	 * No-argument constructor.
@@ -1655,6 +1656,20 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		this.catalogs = catalogs;
 	}
 
+	@Override
+	public RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest) {
+		return this.catalogs;
+	}
+
+	public void setCatalogPublishers(List<String> pubs) {
+		this.catalogPublishers = pubs;
+	}
+
+	@Override
+	public List<String> getCatalogPublishers() {
+		return this.catalogPublishers;
+	}
+
 	public void setSearchCatalogs(RestPageResponse<MLPCatalog> catalogs) {
 		this.searchCatalogs = catalogs;
 	}
@@ -1663,11 +1678,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	public RestPageResponse<MLPCatalog> searchCatalogs(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest) {
 		return searchCatalogs;
-	}
-
-	@Override
-	public RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest) {
-		return this.catalogs;
 	}
 
 	@Override

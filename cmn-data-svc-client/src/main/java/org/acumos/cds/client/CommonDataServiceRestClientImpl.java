@@ -2151,6 +2151,16 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public List<String> getCatalogPublishers() {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.PUBLISHERS_PATH }, null, null);
+		logger.debug("getCatalogPublishers: uri {}", uri);
+		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public RestPageResponse<MLPCatalog> searchCatalogs(Map<String, Object> queryParameters, boolean isOr,
 			RestPageRequest pageRequest) {
 		Map<String, Object> copy = new HashMap<>(queryParameters);

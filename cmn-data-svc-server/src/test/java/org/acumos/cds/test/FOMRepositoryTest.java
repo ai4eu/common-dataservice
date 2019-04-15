@@ -128,7 +128,7 @@ public class FOMRepositoryTest {
 			Assert.assertNotNull(cu2.getUserId());
 			logger.info("Created user {}", cu2);
 
-			cc = new MLPCatalog("PB", true, "catalog name", "publisher");
+			cc = new MLPCatalog("PB", true, "catalog name", "publisher", "http://pub.io");
 			cc = catalogRepository.save(cc);
 			Assert.assertNotNull("Catalog ID", cc.getCatalogId());
 

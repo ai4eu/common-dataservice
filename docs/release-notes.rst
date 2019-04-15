@@ -24,11 +24,17 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 2.2.2, 15 Apr 2019
+--------------------------
+* Add method to fetch unique catalog publisher names (`ACUMOS-2758 <https://jira.acumos.org/browse/ACUMOS-2758>`_)
+* Requires database schema version 2.2
+
 Version 2.2.1, 12 Apr 2019
 --------------------------
 * Add method to fetch right-to-use objects by ref ID (`ACUMOS-2722 <https://jira.acumos.org/browse/ACUMOS-2722>`_)
 * Add methods to check peer and user solution access (`ACUMOS-2735 <https://jira.acumos.org/browse/ACUMOS-2735>`_)
 * Rename and repair findPublishedSolutions method (`ACUMOS-2736 <https://jira.acumos.org/browse/ACUMOS-2736>`_)
+* Requires database schema version 2.2
 
 Version 2.2.0, 5 Apr 2019
 -------------------------

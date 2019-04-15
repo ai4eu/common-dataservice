@@ -2274,6 +2274,13 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPCatalog> getCatalogs(RestPageRequest pageRequest);
 
 	/**
+	 * Gets the distinct set of publisher names from all catalogs.
+	 * 
+	 * @return List of names, which may be empty
+	 */
+	List<String> getCatalogPublishers();
+
+	/**
 	 * Searches for catalogs with attributes matching the values specified as query
 	 * parameters.
 	 * 

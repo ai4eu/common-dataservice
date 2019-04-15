@@ -61,6 +61,7 @@ public class CCDSConstants {
 	public static final String PIPELINE_PATH = "ppl";
 	public static final String PICTURE_PATH = "pic";
 	public static final String PROJECT_PATH = "proj";
+	public static final String PUBLISHERS_PATH = "pubs";
 	public static final String PUBLISH_REQUEST_PATH = "pubreq";
 	public static final String RATING_PATH = "rating";
 	public static final String REFERENCE_PATH = "ref";

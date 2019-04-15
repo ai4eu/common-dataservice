@@ -21,8 +21,12 @@
 package org.acumos.cds.repository;
 
 import org.acumos.cds.domain.MLPCatalog;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface CatalogRepository extends PagingAndSortingRepository<MLPCatalog, String> {
+
+	@Query(value = "SELECT DISTINCT c.publisher FROM MLPCatalog c")
+	Iterable<String> findDistinctPublishers();
 
 }

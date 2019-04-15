@@ -82,7 +82,8 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	@ApiModelProperty(required = true, value = "Fully qualified catalog name", example = "att.entertainment.videos")
 	private String name;
 
-	@Column(name = "PUBLISHER", columnDefinition = "VARCHAR(64)")
+	@Column(name = "PUBLISHER", nullable = false, columnDefinition = "VARCHAR(64)")
+	@NotNull(message = "Publisher cannot be null")
 	@Size(max = 64)
 	@ApiModelProperty(value = "Company or organization name that is the publisher", example = "My company")
 	private String publisher;
@@ -122,15 +123,18 @@ public class MLPCatalog extends MLPTimestampedEntity implements Serializable {
 	 *                           without an approval process
 	 * @param name
 	 *                           Catalog name
+	 * @param publisher
+	 *                           Publisher name
 	 * @param publisherUrl
 	 *                           Publisher URL
 	 */
-	public MLPCatalog(String accessTypeCode, boolean selfPublish, String name, String publisherUrl) {
-		if (accessTypeCode == null || name == null || publisherUrl == null)
+	public MLPCatalog(String accessTypeCode, boolean selfPublish, String name, String publisher, String publisherUrl) {
+		if (accessTypeCode == null || name == null || publisher == null || publisherUrl == null)
 			throw new IllegalArgumentException("Null not permitted");
 		this.accessTypeCode = accessTypeCode;
 		this.selfPublish = selfPublish;
 		this.name = name;
+		this.publisher = publisher;
 		this.url = publisherUrl;
 	}
 

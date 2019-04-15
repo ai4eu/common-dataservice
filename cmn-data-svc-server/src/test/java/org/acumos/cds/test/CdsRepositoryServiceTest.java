@@ -472,7 +472,7 @@ public class CdsRepositoryServiceTest {
 			MLPTag solTag2 = new MLPTag("soltag2");
 			solTag2 = tagRepository.save(solTag2);
 
-			MLPCatalog ca1 = new MLPCatalog("PB", true, "name", "http://pub.org");
+			MLPCatalog ca1 = new MLPCatalog("PB", true, "name", "pname", "http://pub.org");
 			ca1 = catalogRepository.save(ca1);
 			Assert.assertNotNull("Catalog ID", ca1.getCatalogId());
 			logger.info("Created catalog {}", ca1);
@@ -1380,15 +1380,18 @@ public class CdsRepositoryServiceTest {
 
 		final String catName = "pub catalog name goes here";
 
-		MLPCatalog caPub = new MLPCatalog("PB", true, catName, "http://pub.org");
+		MLPCatalog caPub = new MLPCatalog("PB", true, catName, "pubName", "http://pub.org");
 		caPub = catalogRepository.save(caPub);
 		Assert.assertNotNull("Catalog ID", caPub.getCatalogId());
 		logger.info("Created public catalog {}", caPub);
 
-		MLPCatalog caRst = new MLPCatalog("RS", true, "restr cat name", "http://restricted.org");
+		MLPCatalog caRst = new MLPCatalog("RS", true, "restr cat name", "restr pub name", "http://restricted.org");
 		caRst = catalogRepository.save(caRst);
 		Assert.assertNotNull("Catalog ID", caRst.getCatalogId());
 		logger.info("Created restricted catalog {}", caRst);
+
+		Iterable<String> pubs = catalogRepository.findDistinctPublishers();
+		Assert.assertTrue(pubs.iterator().hasNext());
 
 		Page<MLPCatalog> searchCats = catalogSearchService.findCatalogs("PB", true, null, catName, null, null, null,
 				false, PageRequest.of(0, 5));
