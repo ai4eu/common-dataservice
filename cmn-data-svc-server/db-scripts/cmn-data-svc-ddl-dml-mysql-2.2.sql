@@ -601,7 +601,12 @@ INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES
   ('public_validation_workflow', '{"ignore_list":["Text Check"]}'),
   ('local_validation_workflow', '{"ignore_list":[]}');
 INSERT INTO C_SITE_CONTENT (CONTENT_KEY, CONTENT_VAL, MIME_TYPE, CREATED_DATE, MODIFIED_DATE) VALUES
-  ('global.footer.contactInfo','<p>Please enter your team\'s contact details using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56'),
-  ('global.termsConditions','<p>Please enter your organization\'s terms and conditions using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56');
+  ('global.discoverAcumos.marketPlace','Acumos is the go-to site for data-powered decision making. With an intuitive easy-to-use Marketplace and Design Studio, Acumos brings Al into the mainstream.','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.designStudio','Because Acumos converts models to microservices, you can apply them to different problems and data sources.','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.sdnOnap','Many Marketplace solutions originated in the ONAP SDN community and are configured to be directly deployed to SDC.','text/plain', NOW(),NOW()),
+  ('global.discoverAcumos.preferredToolkit','With a focus on interoperability, Acumos supports diverse Al toolkits. Onboarding tools are available for TensorFlow, SciKitLearn, RCloud,  H2O and generic Java.','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.teamUp','Share, experiment and collaborate in an open source ecosystem of people, solutions and ideas.','text/plain', NOW(), NOW()),
+  ('global.footer.contactInfo','<p>Please enter your team\'s contact details using the Site Admin, Site Content feature of Portal.</p>','text/html', NOW(), NOW()),
+  ('global.termsConditions','<p>Please enter your organization\'s terms and conditions using the Site Admin, Site Content feature of Portal.</p>','text/html', NOW(), NOW());
 
 -- TODO: Create COMPANY and PUBLIC catalogs

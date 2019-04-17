@@ -25,11 +25,11 @@ package org.acumos.cds.migrate.client;
  */
 public enum CMSDiscoverAcumos {
 
-	MP("marketplace", "TBD"), //
-	DS("design-studio", "TBD"), //
-	SO("sdn--onap", "TBD"), //
-	TU("team-up", "TBD"), //
-	OT("onboarding-with-toolkit", "TBD");
+	MP("marketplace", "global.discoverAcumos.marketPlace"), //
+	DS("design-studio", "global.discoverAcumos.designStudio"), //
+	SO("sdn--onap", "global.discoverAcumos.sdnOnap"), //
+	TU("team-up", "global.discoverAcumos.teamUp"), //
+	OT("onboarding-with-toolkit", "global.discoverAcumos.preferredToolkit");
 
 	private String cmsKey;
 	private String cdsKey;

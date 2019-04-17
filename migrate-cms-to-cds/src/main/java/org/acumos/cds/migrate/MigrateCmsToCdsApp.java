@@ -33,6 +33,7 @@ import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionRevision;
+import org.acumos.cds.migrate.client.CMSDiscoverAcumos;
 import org.acumos.cds.migrate.client.CMSReaderClient;
 import org.acumos.cds.migrate.client.CMSWorkspace;
 import org.acumos.cds.migrate.domain.CMSDescription;
@@ -311,6 +312,7 @@ public class MigrateCmsToCdsApp {
 			final String keyTermsCondition = "global.termsConditions";
 			final String carouselPrefix = "carousel";
 
+			logger.info("Migrating co-brand logo");
 			byte[] coBrandLogo = cmsClient.getCoBrandLogo();
 			if (coBrandLogo == null || coBrandLogo.length == 0) {
 				logger.error("Source CMS has no co-brand logo, continuing");
@@ -333,6 +335,7 @@ public class MigrateCmsToCdsApp {
 				}
 			}
 
+			logger.info("Migrating footer contact info");
 			CMSDescription cmsFootCi = cmsClient.getFooterContactInfo();
 			if (cmsFootCi == null || cmsFootCi.getDescription() == null || cmsFootCi.getDescription().isEmpty()) {
 				logger.info("Source CMS has no footer contact info, continuing");
@@ -354,6 +357,7 @@ public class MigrateCmsToCdsApp {
 					}
 				}
 			}
+			logger.info("Migrating terms and conditions");
 			CMSDescription cmsFootTc = cmsClient.getFooterTermsConditions();
 			if (cmsFootTc == null || cmsFootTc.getDescription() == null || cmsFootTc.getDescription().isEmpty()) {
 				logger.info("Source CMS has no footer t&c, continuing");
@@ -377,6 +381,7 @@ public class MigrateCmsToCdsApp {
 			}
 
 			// Top carousel config was always in CDS, but need to migrate images from CMS
+			logger.info("Migrating top carousel images");
 			MLPSiteConfig cdsTopCarouselConfig = cdsClient.getSiteConfig("carousel_config");
 			if (cdsTopCarouselConfig == null || cdsTopCarouselConfig.getConfigValue().length() == 0) {
 				logger.info("CDS top carousel is null or missing, continuing");
@@ -395,6 +400,7 @@ public class MigrateCmsToCdsApp {
 			}
 
 			// Event carousel was always in CDS, but need to migrate images from CMS
+			logger.info("Migrating event carousel images");
 			MLPSiteConfig cdsEventCarouselConfig = cdsClient.getSiteConfig("event_carousel");
 			if (cdsEventCarouselConfig == null || cdsEventCarouselConfig.getConfigValue().length() == 0) {
 				logger.info("CDS event carousel is null or missing, continuing");
@@ -408,6 +414,30 @@ public class MigrateCmsToCdsApp {
 				} catch (Exception ex) { //
 					logger.error("Failed to migrate event carousel, exception {}", ex.toString());
 					++globalContentFail;
+				}
+			}
+
+			logger.info("Migrating discover-acumos texts");
+			for (CMSDiscoverAcumos disc : CMSDiscoverAcumos.values()) {
+				CMSDescription cmsDesc = cmsClient.getDiscoverText(disc.getCmsKey());
+				if (cmsDesc == null || cmsDesc.getDescription().length() == 0) {
+					logger.info("CMS discover text {} is null or missing, continuing", disc);
+				} else {
+					MLPSiteContent content = cdsClient.getSiteContent(disc.getCdsKey());
+					if (content != null && content.getContentValue().length > 0) {
+						logger.info("Target CDS already has key {}, continuing", disc.getCdsKey());
+					} else {
+						logger.info("Creating discover text in CDS for key {}", disc.getCdsKey());
+						try {
+							content = new MLPSiteContent(disc.getCdsKey(), cmsDesc.getDescription().getBytes(),
+									"text/html");
+							cdsClient.createSiteContent(content);
+							++globalContentSucc;
+						} catch (Exception ex) { //
+							logger.error("Failed to migrate discover text, exception {}", ex.toString());
+							++globalContentFail;
+						}
+					}
 				}
 			}
 		}

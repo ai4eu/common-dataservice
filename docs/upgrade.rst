@@ -60,11 +60,10 @@ database using any appropriate administration tool.
 CMS Admin and User Data Migration
 ---------------------------------
 
-This utility migrates all data from the Hippo-CMS system
-to the Common Data Service (version 2.0.x or later) and a Nexus
-repository.  An early feature of Acumos stored admin and user
-data in CMS, but later versions use CDS.  The following data items
-are affected:
+This utility migrates all administrator and user data from the Hippo-CMS
+system to the Common Data Service (version 2.0.x or later) and a Nexus
+repository.  An early feature of Acumos stored admin and user data in CMS,
+but later versions use CDS.  The following data items are affected:
 
 #. Solution picture: a user can add a picture to a solution.
 #. Revision descriptions: a user can add a description appropriate for
@@ -76,12 +75,16 @@ are affected:
    level and another set of documents visible at the PUBLIC access
    level. In other words, every revision can have an arbitrary number
    of supporting documents, divided into two sets.
+#. Co-brand logo: a small image at the top left of the main landing page,
+   which is chosen by the administrator.
 #. Carousel images and infographics: the rotating pictures at the top
-   of the main landing page.
-#. Co-brand logo: a small image at the top left of the main landing page.
-#. Footer contact details: contact details shown at the bottom right.
-#. Footer terms and conditions: shown in the page footer.
-
+   of the main landing page, which are configured by the administrator.
+#. Text that decorates the "Discover Acumos" graphic on the Marketplace,
+   which can be changed by an administrator.
+#. Footer contact details: contact details shown at the bottom right,
+   which can be changed by an administrator.
+#. Footer terms and conditions: shown in the page footer,
+   which can be changed by an administrator.
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -113,12 +116,21 @@ Clone the Git repository and build the tool as follows::
     mvn clean package
 
 
+Migration Type
+~~~~~~~~~~~~~~
+
+Choose whether to migrate user data or admin data.  The user data migration is required
+when upgrading from CDS version 1.17 to 1.18.  The admin data is required when upgrading
+from CDS version 2.0 to 2.1.  Set type type in the configuration file as described next.
+
 Configuration
 ~~~~~~~~~~~~~
+
 
 After obtaining valid URLs and appropriate user names and passwords for all three systems,
 enter them in a file named "migrate.properties" using the following structure::
 
+    # one of: admin, user
     migrate.data.type = admin
 
     cds.url = http://cdshost.myproject.org:8001/ccds
