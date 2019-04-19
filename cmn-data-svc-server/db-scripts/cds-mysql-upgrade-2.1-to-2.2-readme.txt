@@ -1,0 +1,85 @@
+-- ===============LICENSE_START=======================================================
+-- Acumos Apache-2.0
+-- ===================================================================================
+-- Copyright (C) 2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+-- ===================================================================================
+-- This Acumos software file is distributed by AT&T and Tech Mahindra
+-- under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+-- This file is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- ===============LICENSE_END=========================================================
+
+=========================================================
+ACUMOS CDS UPGRADE OF DATABASE VERSION 2.1 TO VERSION 2.2
+=========================================================
+
+This document explains how to upgrade an Acumos Common Data Service
+version 2.1 database to a version 2.2 database.
+
+Overview and Limitations
+------------------------
+
+The accompanying upgrade script defines new catalogs and migrates data
+into those catalogs:
+
+a) Solutions with revisions all at COMPANY visibility are published to
+a new RESTRICTED catalog.
+
+b) Solutions with revisions all at PUBLIC visibility are published to
+a new PUBLIC catalog.
+
+c) However, to avoid inadvertent disclosure of information, solutions
+   with mixed visibility are NOT migrated.  In other words, solutions
+   with some revisions at COMPANY visibility and some revisions at
+   PUBLIC visibilty are left alone. Users will need to follow the new
+   workflow to publish such solutions to an appropriate catalog.
+
+Instructions
+------------
+
+The script cds-mysql-upgrade-2.1-to-2.2.sql cannot be used as
+provided; it must first be edited as follows:
+
+1. Change the configuration for the new PUBLIC catalog.  You must
+   choose a new ID, which is a UUID.  Generate an ID by typing the
+   command "uuidgen" at the Ubuntu command line, or visit
+   https://www.uuidgenerator.net/.
+
+   Find this line:
+    ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
+
+   Perform a GLOBAL SEARCH AND REPLACE on all 4 occurrences of
+   pppppppp-pppp-pppp-pppp-pppppppppppp with the new ID that you
+   generated.
+
+2. Change the configuration for the new RESTRICTED catalog.  Generate
+a second UUID with 'uuidgen' etc.
+
+   Find this line:
+    ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
+
+   Perform a GLOBAL SEARCH AND REPLACE on all 5 occurrences of
+   rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr with the new ID that you
+   generated, which must be different than the previous one.
+
+3. Replicate the existing data to a new database.  For example using
+the command line:
+
+    % mysql
+    > create database cds22m
+    > exit
+    % mysqldump cds21u | sudo mysql cds22m
+
+4. Apply the newly edited upgrade script to the newly replicated
+   database.  For example using the command line:
+
+    % mysql
+    > use cds22m;
+    > source cds-mysql-upgrade-2.1-to-2.2.sql;

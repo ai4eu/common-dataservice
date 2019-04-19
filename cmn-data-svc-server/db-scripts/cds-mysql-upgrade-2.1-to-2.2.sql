@@ -98,15 +98,19 @@ CREATE TABLE C_USER_CAT_FAV_MAP (
   CONSTRAINT C_USER_CAT_FAV_MAP_C_CATALOG FOREIGN KEY (CATALOG_ID) REFERENCES C_CATALOG (CATALOG_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+DELETE FROM C_CAT_SOL_MAP;
+DELETE from C_CATALOG;
+
 ALTER TABLE C_CATALOG ADD COLUMN SELF_PUBLISH_YN CHAR(1) NOT NULL DEFAULT 'N';
 ALTER TABLE C_CATALOG MODIFY COLUMN PUBLISHER VARCHAR(64) NOT NULL;
 
--- TODO: Create COMPANY and PUBLIC catalogs
--- Create dummy catalog to satisfy foreign key constraint
-INSERT INTO C_CATALOG (CATALOG_ID, ACCESS_TYPE_CD, NAME, PUBLISHER, URL, CREATED_DATE, MODIFIED_DATE) 
-  VALUES ('12345678-abcd-90ab-cdef-1234567890ab', 'PB', 'Upgrade default catalog', 'Default publisher', 'http://localhost', NOW(), NOW());
+-- Create RESTRICTED and PUBLIC catalogs
+INSERT INTO C_CATALOG (CATALOG_ID, ACCESS_TYPE_CD, NAME, PUBLISHER, URL, CREATED_DATE, MODIFIED_DATE) VALUES
+  ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
+  ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
 
-ALTER TABLE C_PUBLISH_REQUEST ADD COLUMN CATALOG_ID CHAR(36) NOT NULL DEFAULT '12345678-abcd-90ab-cdef-1234567890ab';
+ALTER TABLE C_PUBLISH_REQUEST ADD COLUMN CATALOG_ID CHAR(36) NOT NULL DEFAULT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr';
 ALTER TABLE C_PUBLISH_REQUEST ADD CONSTRAINT C_PUB_REQ_C_CATALOG FOREIGN KEY (CATALOG_ID) REFERENCES C_CATALOG (CATALOG_ID);
 ALTER TABLE C_PEER_SUB DROP COLUMN ACCESS_TYPE;
 ALTER TABLE C_PEER_SUB DROP COLUMN SCOPE_TYPE;
@@ -141,9 +145,38 @@ CREATE TABLE C_REV_CAT_DOC_MAP (
   CONSTRAINT C_REV_CAT_DOC_MAP_C_REV_DOC FOREIGN KEY (DOCUMENT_ID) REFERENCES C_DOCUMENT (DOCUMENT_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- TODO: Migrate revision descriptions and revision document maps
--- TODO: After all migration is complete, drop the revision access-type code,
--- TODO: the description table and the document-map table.
+-- Migrate the RESTRICTED solutions
+
+INSERT INTO c_rev_cat_desc (CATALOG_ID, REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE)
+SELECT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE
+FROM c_revision_desc WHERE ACCESS_TYPE_CD = 'OR';
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', c_solution_rev.solution_id, NOW() FROM c_solution_rev, c_solution 
+WHERE c_solution_rev.solution_id = c_solution.solution_id AND c_solution.ACTIVE_YN = 'Y' AND 
+c_solution_rev.solution_id NOT IN (SELECT solution_id FROM c_solution_rev WHERE access_type_cd IN ('PB','PR'));
+
+INSERT INTO C_REV_CAT_DOC_MAP (CATALOG_ID, REVISION_ID, DOCUMENT_ID)
+SELECT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', REVISION_ID, DOCUMENT_ID
+FROM C_SOL_REV_DOC_MAP WHERE ACCESS_TYPE_CD = 'OR';
+
+-- Migrate the PUBLIC solutions
+
+INSERT INTO c_rev_cat_desc (CATALOG_ID, REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE)
+SELECT 'pppppppp-pppp-pppp-pppp-pppppppppppp', REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE
+FROM c_revision_desc WHERE ACCESS_TYPE_CD = 'PB';
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct 'pppppppp-pppp-pppp-pppp-pppppppppppp', c_solution_rev.solution_id, NOW() FROM c_solution_rev, c_solution  
+WHERE c_solution_rev.solution_id = c_solution.solution_id AND c_solution.ACTIVE_YN = 'Y' AND 
+c_solution_rev.solution_id NOT IN (SELECT solution_id FROM c_solution_rev WHERE access_type_cd  IN ('PR','OR'));
+
+INSERT INTO C_REV_CAT_DOC_MAP (CATALOG_ID, REVISION_ID, DOCUMENT_ID)
+SELECT 'pppppppp-pppp-pppp-pppp-pppppppppppp', REVISION_ID, DOCUMENT_ID
+FROM C_SOL_REV_DOC_MAP WHERE ACCESS_TYPE_CD = 'PB';
+
+-- Remove the version 2.1 descriptions and revision document maps
+
 ALTER TABLE C_SOLUTION_REV DROP COLUMN ACCESS_TYPE_CD;
--- TODO: DROP TABLE C_SOL_REV_DOC_MAP;
--- TODO: DROP TABLE C_REVISION_DESC
+DROP TABLE C_SOL_REV_DOC_MAP;
+DROP TABLE C_REVISION_DESC
