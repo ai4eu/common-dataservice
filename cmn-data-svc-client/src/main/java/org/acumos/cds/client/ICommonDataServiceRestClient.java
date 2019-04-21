@@ -20,6 +20,7 @@
 
 package org.acumos.cds.client;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +38,13 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
+import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
-import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
 import org.acumos.cds.domain.MLPSolutionDownload;
@@ -277,6 +278,32 @@ public interface ICommonDataServiceRestClient {
 	 */
 	RestPageResponse<MLPSolution> findPublishedSolutionsByKwAndTags(String[] keywords, boolean active, String[] userIds,
 			String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
+			RestPageRequest pageRequest);
+
+	/**
+	 * Gets a page of published solutions that were modified after the specified
+	 * point in time and match the additional parameter values. Checks the modified
+	 * field on the solution, the revisions for the solution, the artifacts in the
+	 * revisions, the descriptions for the revisions and the documents for the
+	 * revisions. A solution must have revision(s) and artifact(s) to match.
+	 * 
+	 * Caveat: finds solutions with any description or document modification in any
+	 * catalog, not just the catalog IDs specified.
+	 * 
+	 * @param catalogIds
+	 *                        Solutions must be mapped to one of the specified
+	 *                        catalogs. Matches all catalogs if null or empty; i.e.,
+	 *                        limits matches to solutions published to a catalog.
+	 * @param instant
+	 *                        Point in time. Entities with modification dates prior
+	 *                        to (i.e., smaller than) this point in time are
+	 *                        ignored.
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of solutions, which may be empty
+	 */
+	RestPageResponse<MLPSolution> findPublishedSolutionsByDate(String[] catalogIds, Instant instant,
 			RestPageRequest pageRequest);
 
 	/**

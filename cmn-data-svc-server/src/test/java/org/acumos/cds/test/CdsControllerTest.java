@@ -919,6 +919,19 @@ public class CdsControllerTest {
 			Assert.assertNotNull(noCtlgSearchResult);
 			Assert.assertEquals(0, noCtlgSearchResult.getNumberOfElements());
 
+			// Requires revisions and artifacts!
+			Instant anHourAgo = Instant.now().minusSeconds(60 * 60);
+			RestPageResponse<MLPSolution> modWithCat = client.findPublishedSolutionsByDate(
+					new String[] { catPub.getCatalogId() }, anHourAgo, new RestPageRequest(0, 1));
+			Assert.assertNotNull(modWithCat);
+			Assert.assertNotEquals(0, modWithCat.getNumberOfElements());
+			logger.info("Found published solutions by cat and date: " + modWithCat.getContent().size());
+			RestPageResponse<MLPSolution> modNoCat = client.findPublishedSolutionsByDate(
+					null, anHourAgo, new RestPageRequest(0, 1));
+			Assert.assertNotNull(modNoCat);
+			Assert.assertNotEquals(0, modNoCat.getNumberOfElements());
+			logger.info("Found published solutions by modified date only: " + modNoCat.getContent().size());
+
 			// Check this finds solutions by shared-with-user ID
 			logger.info("Querying for published user solutions");
 			RestPageResponse<MLPSolution> userSols = client.findUserSolutions(true, true, cu.getUserId(), null, null,

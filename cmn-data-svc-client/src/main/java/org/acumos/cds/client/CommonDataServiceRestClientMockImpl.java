@@ -229,6 +229,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private boolean userAccessToSolution;
 	private boolean peerAccessToCatalog;
 	private List<String> catalogPublishers;
+	private RestPageResponse<MLPSolution> publishedSolutionsByDate;
 
 	/**
 	 * No-argument constructor.
@@ -1372,6 +1373,16 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 			String[] userIds, String[] modelTypeCodes, String[] allTags, String[] anyTags, String[] catalogIds,
 			RestPageRequest pageRequest) {
 		return this.portalSolutions;
+	}
+
+	public void setPublishedSolutionsByDate(RestPageResponse<MLPSolution> solutions) {
+		this.publishedSolutionsByDate = solutions;
+	}
+
+	@Override
+	public RestPageResponse<MLPSolution> findPublishedSolutionsByDate(String[] catalogIds, Instant i,
+			RestPageRequest pageRequest) {
+		return publishedSolutionsByDate;
 	}
 
 	public void setUserSolutions(RestPageResponse<MLPSolution> solutions) {

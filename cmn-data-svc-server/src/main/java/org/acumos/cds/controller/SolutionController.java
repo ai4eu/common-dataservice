@@ -21,6 +21,7 @@
 package org.acumos.cds.controller;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -291,7 +292,7 @@ public class SolutionController extends AbstractController {
 	@ApiPageable
 	@RequestMapping(value = CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.PORTAL_PATH + "/"
 			+ CCDSConstants.KW_TAG_PATH, method = RequestMethod.GET)
-	public Object findPortalSolutionsByKwAndTags( //
+	public Object findPublishedSolutionsByKwAndTags( //
 			@ApiParam(value = "Active Y/N", required = true) //
 			@RequestParam(name = CCDSConstants.SEARCH_ACTIVE, required = true) boolean active, //
 			@ApiParam(value = "Model type codes", allowMultiple = true) //
@@ -309,13 +310,37 @@ public class SolutionController extends AbstractController {
 			Pageable pageRequest, HttpServletResponse response) {
 		logger.debug("findPublishedSolutionsByKwAndTags: active {} kw {}", active, kws);
 		try {
-			return solutionSearchService.findPortalSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes, allTags,
-					anyTags, catalogIds, pageRequest);
+			return solutionSearchService.findPublishedSolutionsByKwAndTags(kws, active, userIds, modelTypeCodes,
+					allTags, anyTags, catalogIds, pageRequest);
 		} catch (Exception ex) {
 			logger.error("findPublishedSolutionsByKwAndTags failed", ex);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
 					ex.getCause() != null ? ex.getCause().getMessage() : "findPublishedSolutionsByKwAndTags failed",
+					ex);
+		}
+	}
+
+	@ApiOperation(value = "Finds published solutions based on specified catalog and date query parameters. " //
+			+ "Limits result to solutions, revisions, artifacts etc. modified after the specified time, expressed in milliseconds since the Epoch.", //
+			response = MLPSolution.class, responseContainer = "Page")
+	@ApiPageable
+	@RequestMapping(value = "/" + CCDSConstants.SEARCH_PATH + "/" + CCDSConstants.DATE_PATH, method = RequestMethod.GET)
+	public Object findPublishedSolutionsByModifiedDate( //
+			@ApiParam(value = "Milliseconds since the Epoch", required = true) //
+			@RequestParam(name = CCDSConstants.SEARCH_INSTANT, required = true) long millis, //
+			@ApiParam(value = "Catalog IDs", allowMultiple = true) //
+			@RequestParam(name = CCDSConstants.SEARCH_CATALOG, required = false) String[] catalogIds, //
+			Pageable pageRequest, HttpServletResponse response) {
+		logger.debug("findPublishedSolutionsByModifiedDate: date {}", millis);
+		Instant ts = Instant.ofEpochMilli(millis);
+		try {
+			return solutionSearchService.findPublishedSolutionsByModifiedDate(catalogIds, ts, pageRequest);
+		} catch (Exception ex) {
+			logger.error("findPublishedSolutionsByModifiedDate failed", ex);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST,
+					ex.getCause() != null ? ex.getCause().getMessage() : "findPublishedSolutionsByModifiedDate failed",
 					ex);
 		}
 	}

@@ -566,7 +566,7 @@ public class CdsRepositoryServiceTest {
 
 			String[] ids = { cs.getSolutionId() };
 			String[] catIds = { ca1.getCatalogId() };
-			Page<MLPSolution> idSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(ids, active,
+			Page<MLPSolution> idSearchResult = solutionSearchService.findPublishedSolutionsByKwAndTags(ids, active,
 					userIds, modelTypeCodes, searchTags, null, catIds, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertEquals(1, idSearchResult.getNumberOfElements());
 			logger.info("Found models by id total " + idSearchResult.getTotalElements());
@@ -574,14 +574,14 @@ public class CdsRepositoryServiceTest {
 			logger.info("Check all vs any tags single match");
 			String[] allTags = new String[] { solTag1.getTag() };
 			String[] anyTags = new String[] { solTag2.getTag(), "other" };
-			Page<MLPSolution> allAnyTagsSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(null,
+			Page<MLPSolution> allAnyTagsSearchResult = solutionSearchService.findPublishedSolutionsByKwAndTags(null,
 					active, userIds, modelTypeCodes, allTags, anyTags, null, PageRequest.of(0, 5));
 			Assert.assertNotEquals(0, allAnyTagsSearchResult.getNumberOfElements());
 			MLPSolution taggedSol = allAnyTagsSearchResult.getContent().get(0);
 			Assert.assertTrue(taggedSol.getTags().contains(solTag1) && taggedSol.getTags().contains(solTag2));
 
 			String[] kw = { "Big", "Data" };
-			Page<MLPSolution> kwSearchResult = solutionSearchService.findPortalSolutionsByKwAndTags(kw, active, userIds,
+			Page<MLPSolution> kwSearchResult = solutionSearchService.findPublishedSolutionsByKwAndTags(kw, active, userIds,
 					modelTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());

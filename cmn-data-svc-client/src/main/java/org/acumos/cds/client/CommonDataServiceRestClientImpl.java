@@ -558,6 +558,23 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public RestPageResponse<MLPSolution> findPublishedSolutionsByDate(String[] catalogIds, Instant instant,
+			RestPageRequest pageRequest) {
+		HashMap<String, Object> parms = new HashMap<>();
+		if (catalogIds != null && catalogIds.length > 0)
+			parms.put(CCDSConstants.SEARCH_CATALOG, catalogIds);
+		parms.put(CCDSConstants.SEARCH_INSTANT, instant);
+		URI uri = buildUri(
+				new String[] { CCDSConstants.SOLUTION_PATH, CCDSConstants.SEARCH_PATH, CCDSConstants.DATE_PATH }, parms,
+				pageRequest);
+		logger.debug("findPublishedSolutionsByDate: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPSolution>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPSolution>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public RestPageResponse<MLPSolution> findUserSolutions(boolean active, boolean published, String userId,
 			String[] nameKeywords, String[] descriptionKeywords, String[] modelTypeCodes, String[] tags,
 			RestPageRequest pageRequest) {
