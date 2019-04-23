@@ -30,13 +30,9 @@ at a URL like the following, but check the server configuration for the exact po
 CDS APIs in Boreas Release
 --------------------------
 
-This section lists the methods in version 2.1.x, which is the second version in the Boreas release.
+This section lists the methods in version 2.2.2, which is the third and last version in the Boreas release.
 
-.. swaggerv2doc:: api/cds-api-docs-2.1.0.json
-
-This section lists the methods in version 2.0.x, which is the first version in the Boreas release.
-
-.. swaggerv2doc:: api/cds-api-docs-2.0.7.json
+.. swaggerv2doc:: api/cds-api-docs-2.2.2.json
 
 CDS API in Athena Release
 -------------------------
