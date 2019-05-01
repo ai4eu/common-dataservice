@@ -29,6 +29,7 @@ Version 2.2.2, 22 Apr 2019
 * Add site content to database creation scripts (`ACUMOS-2420 <https://jira.acumos.org/browse/ACUMOS-2420>`_)
 * Add portal home page discover-marketplace content (`ACUMOS-2738 <https://jira.acumos.org/browse/ACUMOS-2738>`_)
 * Add method to fetch unique catalog publisher names (`ACUMOS-2758 <https://jira.acumos.org/browse/ACUMOS-2758>`_)
+* Remove validation box from database creation script (`ACUMOS-2764 <https://jira.acumos.org/browse/ACUMOS-2764>`_)
 * Restore method to get solutions by modified date (`ACUMOS-2783 <https://jira.acumos.org/browse/ACUMOS-2783>`_)
 * Requires database schema version 2.2
 
