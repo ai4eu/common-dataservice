@@ -545,3 +545,6 @@ INSERT INTO C_SITE_CONFIG (CONFIG_KEY, CONFIG_VAL) VALUES
 INSERT INTO C_SITE_CONTENT (CONTENT_KEY, CONTENT_VAL, MIME_TYPE, CREATED_DATE, MODIFIED_DATE) VALUES
   ('global.footer.contactInfo','<p>Please enter your team\'s contact details using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56'),
   ('global.termsConditions','<p>Please enter your organization\'s terms and conditions using the Site Admin, Site Content feature of Portal.</p>','application/json','2019-04-01 12:34:56','2019-04-01 12:34:56');
+
+-- Record this action in the history
+INSERT INTO C_HISTORY (COMMENT, CREATED_DATE) VALUES ('cmn-data-svc-ddl-dml-mysql-2.0', NOW());

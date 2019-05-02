@@ -31,6 +31,7 @@ Version 2.2.2, 22 Apr 2019
 * Add method to fetch unique catalog publisher names (`ACUMOS-2758 <https://jira.acumos.org/browse/ACUMOS-2758>`_)
 * Remove validation box from database creation script (`ACUMOS-2764 <https://jira.acumos.org/browse/ACUMOS-2764>`_)
 * Restore method to get solutions by modified date (`ACUMOS-2783 <https://jira.acumos.org/browse/ACUMOS-2783>`_)
+* Record DDL/DML script history (`ACUMOS-2843 <https://jira.acumos.org/browse/ACUMOS-2843>`_)
 * Requires database schema version 2.2
 
 Version 2.2.1, 12 Apr 2019
