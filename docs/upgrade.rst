@@ -20,8 +20,8 @@
 CDS Data Migrations and Upgrades
 ================================
 
-This section explains data-migration and data-upgrade tools and
-scripts that apply to the Common Data Service (CDS).
+This section explains the data upgrade SQL scripts and the data-migration tool
+for the Common Data Service (CDS).
 
 
 User and Author Data Upgrade for CDS 1.18.x
@@ -41,14 +41,9 @@ version 1.18.x.
 Script Source
 ~~~~~~~~~~~~~
 
-The text of the SQL script is available from the CDS gerrit
-repository::
+The text of the SQL script is available from the CDS gerrit repository at this URL::
 
-    git clone https://gerrit.acumos.org/r/common-dataservice
-
-In this file::
-
-    cmn-data-svc-server/db-scripts/cds-mysql-copy-user-author-1.18.sql
+    https://gerrit.acumos.org/r/gitweb?p=common-dataservice.git;a=blob;f=cmn-data-svc-server/db-scripts/cds-mysql-copy-user-author-1.18.sql
 
 Run Instructions
 ~~~~~~~~~~~~~~~~
@@ -57,8 +52,8 @@ A database administrator should run this script in any affected
 database using any appropriate administration tool.
 
 
-CMS Admin and User Data Migration
----------------------------------
+CMS Admin and User Data Migration for CDS 2.0.x
+-----------------------------------------------
 
 This utility migrates all administrator and user data from the Hippo-CMS
 system to the Common Data Service (version 2.0.x or later) and a Nexus
@@ -89,46 +84,26 @@ but later versions use CDS.  The following data items are affected:
 Prerequisites
 ~~~~~~~~~~~~~
 
-This migration tool requires Acumos Common Data Service at version 1.17.0 or later,
-credentials to read from the CMS instance, credentials to write to the CDS instance,
-and also credentials to write to the Nexus instance (3 sets of username/password pairs).
+Using this migration tool requires the following prerequisites:
+#. A running docker daemon
+#. Network connectivity to the Acumos docker registry
+#. Network access to the local Acumos Common Data Service instance, version 1.17.0 or later
+#. Network access to the local Acumos Hippo-CMS instance
+#. Network access to the local Acumos Nexus repository
+#. Credentials to read from the local CMS instance
+#. Credentials to write to the local CDS instance
+#. Credentials to write to the local Nexus repository.
 
-
-Tool Source
-~~~~~~~~~~~
-
-The migration tool is available from the CDS gerrit repository::
-
-    git clone https://gerrit.acumos.org/r/common-dataservice
-
-In the following subdirectory::
-
-    migrate-cms-to-cds/
-
-
-Build Instructions
-~~~~~~~~~~~~~~~~~~
-
-Clone the Git repository and build the tool as follows::
-
-    git clone https://gerrit.acumos.org/r/common-dataservice
-    cd common-dataservice/migrate-cms-to-cds
-    mvn clean package
-
-
-Migration Type
-~~~~~~~~~~~~~~
+Migration Preparation
+~~~~~~~~~~~~~~~~~~~~~
 
 Choose whether to migrate user data or admin data.  The user data migration is required
-when upgrading from CDS version 1.17 to 1.18.  The admin data is required when upgrading
-from CDS version 2.0 to 2.1.  Set type type in the configuration file as described next.
+when upgrading from CDS version 1.17 to 1.18.  The admin data migration is required when
+upgrading from CDS version 2.0 to 2.1.  Set the type in the configuration file as described
+next.
 
-Configuration
-~~~~~~~~~~~~~
-
-
-After obtaining valid URLs and appropriate user names and passwords for all three systems,
-enter them in a file named "migrate.properties" using the following structure::
+After obtaining valid URLs, user names and passwords for all three systems, enter them
+in a file named "migrate.properties" using the following structure::
 
     # one of: admin, user
     migrate.data.type = admin
@@ -147,36 +122,45 @@ enter them in a file named "migrate.properties" using the following structure::
     # this is the group prefix; a UUID compnent will be added
     nexus.prefix = org.acumos
 
+Migration Instructions
+~~~~~~~~~~~~~~~~~~~~~~
 
-Run Instructions
-~~~~~~~~~~~~~~~~
+For user data, the migration tool discovers the list of solutions by querying CDS, checks
+the content of each solution by querying CMS, and migrates content to CDS and Nexus as needed.
+For admin data, the migration tool discovers the data by querying CMS, and migrates content
+to CDS as needed.
 
-Run the migration tool as below, after replacing "x" with the current version number::
+The tool expects to be invoked with a properties file in the current directory. The tool logs
+details of actions and results on the standard output.
 
-    java -jar target/migrate-cms-to-cds-2.0.x-SNAPSHOT-spring-boot.jar
+Run the migration tool using the released Docker image as shown below::
 
-The tool expects to find file "migrate.properties" in the current directory.
-It will write a log file to the current directory.
+    docker run --rm -v ${PWD}/migrate.properties:/maven/migrate.properties \
+           nexus3.acumos.org:10002/migrate-cms-to-cds:2.0.0
 
-The migration tool discovers the list of solutions by querying CDS, checks the content
-of each solution by querying CMS, and migrates content to CDS and Nexus as needed.
+Note that port 10002 in the registry URL refers to the docker "releases" registry. If the 
+migration-tool image is not found there, it may be necessary to pull a staged-for-release 
+Docker image from the staging registry by using the following URL instead::
 
-In case of error, the tool can be run repeatedly on the same source and target.
-It will not re-migrate data to CDS nor Nexus for any item.
+    nexus3.acumos.org:10004
 
 When the tool is finished it reports statistics in this format::
 
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Migration statistics:
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Solutions checked: 1485
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Revisions checked: 2578
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Pictures migrated: 2 success, 0 fail
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Descriptions migrated: 0 success, 0 fail
-    2018-09-13T11:03:00.986Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Documents migrated: 0 success, 4 fail
-
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Migration statistics:
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Solutions checked: 474
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Revisions checked: 0
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Pictures migrated: 0 success, 0 fail
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Descriptions migrated: 0 success, 0 fail
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Documents migrated: 0 success, 0 fail
+    2019-05-02T18:49:26.101Z [main] INFO  o.a.cds.migrate.MigrateCmsToCdsApp - Global items migrated: 2 success, 0 fail
 
 Troubleshooting
 ~~~~~~~~~~~~~~~
 
-The migration tool requires every document to have a file suffix that indicates the type of document;
-e.g., ".doc" or ".xlsx".  A document without any suffix cannot be migrated.  Add a suffix to the document
-name to fix this problem, then re-run the migration process.
+In case of error, the tool can be run repeatedly on the same source and target.
+It will not re-migrate data to CDS nor Nexus for any item.
+
+The migration tool requires every document to have a file suffix that indicates the
+type of document; e.g., ".doc" or ".xlsx".  A document without any suffix cannot be
+migrated.  Add a suffix to the document name to fix this problem, then re-run the
+migration process.

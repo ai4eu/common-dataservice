@@ -28,7 +28,6 @@ import org.acumos.cds.migrate.client.CMSWorkspace;
 import org.acumos.cds.migrate.domain.CMSDescription;
 import org.acumos.cds.migrate.domain.CMSNameList;
 import org.acumos.cds.migrate.domain.CMSRevisionDescription;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -46,7 +45,6 @@ public class CmsDocClientTest {
 	String workspace = CMSWorkspace.ORG.getCmsKey();
 
 	// This only works in our development enviroment
-	@Test
 	public void testGetDocumentNames() throws Exception {
 		try {
 			MigrateProperties props = new MigrateProperties();

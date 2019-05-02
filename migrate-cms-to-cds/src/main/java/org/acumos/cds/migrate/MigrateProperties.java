@@ -20,16 +20,23 @@
 
 package org.acumos.cds.migrate;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Property utility class to publish properties. Ensures required keys are
  * present.
  */
 public class MigrateProperties extends Properties {
+
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final long serialVersionUID = 8247904389301104301L;
 
@@ -48,12 +55,29 @@ public class MigrateProperties extends Properties {
 	private String[] requiredProps = { MIGRATE_DATA_TYPE, CDS_URL, CDS_USER, CDS_PASS, CMS_URL, CMS_USER, CMS_PASS,
 			NEXUS_URL, NEXUS_USER, NEXUS_PASS, NEXUS_PREFIX };
 
+	/**
+	 * Loads properties from file "migrate.properties" in the current directory.
+	 * 
+	 * @throws IOException
+	 *                         If file cannot be read.
+	 */
 	public MigrateProperties() throws IOException {
 		this("migrate.properties");
 	}
 
+	/**
+	 * Loads properties from the specified file.
+	 * 
+	 * @param fileName
+	 *                     Name of file with properties
+	 * 
+	 * @throws IOException
+	 *                         If file cannot be read.
+	 */
 	public MigrateProperties(final String fileName) throws IOException {
-		InputStream propertiesStream = new FileInputStream(fileName);
+		File propertiesFile = new File(fileName);
+		logger.info("Reading properties from file {}", propertiesFile.getAbsolutePath());
+		InputStream propertiesStream = new FileInputStream(propertiesFile);
 		load(propertiesStream);
 		propertiesStream.close();
 		for (String r : requiredProps)
