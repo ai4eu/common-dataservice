@@ -16,49 +16,58 @@
 .. limitations under the License.
 .. ===============LICENSE_END=========================================================
 
-================================
-CDS Data Migrations and Upgrades
-================================
+================================================
+CDS Database Upgrade Scripts and Migration Tools
+================================================
 
-This section explains the data upgrade SQL scripts and the data-migration tool
-for the Common Data Service (CDS).
+This section explains upgrade scripts and a data-migration tool for
+managing databases used by the Common Data Service (CDS).
 
 
-User and Author Data Upgrade for CDS 1.18.x
--------------------------------------------
+Database Upgrade Scripts
+------------------------
 
-This database script populates authorship details in models so that
-they appear as expected in Portal-Markeplace verison 1.16.5 and later.
-The script copies user first name, last name and email from the user
-table to any solution revision that has no author details.
+Upgrade scripts are provided for every CDS version that requires a
+schema change. The database schema changes at major and minor version
+changes but not at patch version changes. For example, the schema
+changed when moving from version 1.18 to 2.0 and also when moving from
+version 2.0 to 2.1, but the schema did not change when moving from
+version 2.1.0 to 2.1.1. All SQL scripts are published in the CDS
+gerrit repository at this URL::
 
-Prerequisites
-~~~~~~~~~~~~~
-
-This migration tool requires a Acumos Common Data Service database at
-version 1.18.x.
-
-Script Source
-~~~~~~~~~~~~~
-
-The text of the SQL script is available from the CDS gerrit repository at this URL::
-
-    https://gerrit.acumos.org/r/gitweb?p=common-dataservice.git;a=blob;f=cmn-data-svc-server/db-scripts/cds-mysql-copy-user-author-1.18.sql
+    https://gerrit.acumos.org/r/gitweb?p=common-dataservice.git;a=tree;f=cmn-data-svc-server/db-scripts
 
 Run Instructions
 ~~~~~~~~~~~~~~~~
 
-A database administrator should run this script in any affected
-database using any appropriate administration tool.
+A database administrator can run an upgrade script on any affected
+database using any appropriate administration tool, including the
+command line. The DBA is strongly advised to check the header of the
+upgrade script for instructions specific to that script.
+
+User and Author Data Adjustment for CDS 1.18.x
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Unlike the upgrade scripts mentioned above, this script is used to
+modify an existing database to improve system behavior. This script
+populates authorship details in models so that they appear as expected
+in Portal-Markeplace verison 1.16.5 and later.  The script copies user
+first name, last name and email from the user table to any solution
+revision that has no author details. This script requires a Acumos
+Common Data Service database at version 1.18.x. The SQL script is
+available from the CDS gerrit repository at this URL::
+
+    https://gerrit.acumos.org/r/gitweb?p=common-dataservice.git;a=blob;f=cmn-data-svc-server/db-scripts/cds-mysql-copy-user-author-1.18.sql
 
 
-CMS Admin and User Data Migration for CDS 2.0.x
------------------------------------------------
+CMS Admin and User Data Migration Tool for CDS 2.0.x
+----------------------------------------------------
 
-This utility migrates all administrator and user data from the Hippo-CMS
+This tool migrates all administrator and user data from the Hippo-CMS
 system to the Common Data Service (version 2.0.x or later) and a Nexus
-repository.  An early feature of Acumos stored admin and user data in CMS,
-but later versions use CDS.  The following data items are affected:
+repository.  An early feature of Acumos stored admin and user data in
+CMS, but later versions use CDS.  The following data items are
+affected:
 
 #. Solution picture: a user can add a picture to a solution.
 #. Revision descriptions: a user can add a description appropriate for
@@ -85,8 +94,9 @@ Prerequisites
 ~~~~~~~~~~~~~
 
 Using this migration tool requires the following prerequisites:
+
 #. A running docker daemon
-#. Network connectivity to the Acumos docker registry
+#. Network connectivity to the public Acumos docker registry, nexus3.acumos.org
 #. Network access to the local Acumos Common Data Service instance, version 1.17.0 or later
 #. Network access to the local Acumos Hippo-CMS instance
 #. Network access to the local Acumos Nexus repository
@@ -97,13 +107,14 @@ Using this migration tool requires the following prerequisites:
 Migration Preparation
 ~~~~~~~~~~~~~~~~~~~~~
 
-Choose whether to migrate user data or admin data.  The user data migration is required
-when upgrading from CDS version 1.17 to 1.18.  The admin data migration is required when
-upgrading from CDS version 2.0 to 2.1.  Set the type in the configuration file as described
-next.
+Choose whether to migrate user data or admin data.  The user data
+migration is required when upgrading from CDS version 1.17 to 1.18.
+The admin data migration is required when upgrading from CDS version
+2.0 to 2.1.  Set the type in the configuration file as described next.
 
-After obtaining valid URLs, user names and passwords for all three systems, enter them
-in a file named "migrate.properties" using the following structure::
+After obtaining valid URLs, user names and passwords for all three
+systems, enter them in a file named "migrate.properties" using the
+following structure::
 
     # one of: admin, user
     migrate.data.type = admin
@@ -125,22 +136,25 @@ in a file named "migrate.properties" using the following structure::
 Migration Instructions
 ~~~~~~~~~~~~~~~~~~~~~~
 
-For user data, the migration tool discovers the list of solutions by querying CDS, checks
-the content of each solution by querying CMS, and migrates content to CDS and Nexus as needed.
-For admin data, the migration tool discovers the data by querying CMS, and migrates content
-to CDS as needed.
+For user data, the migration tool discovers the list of solutions by
+querying CDS, checks the content of each solution by querying CMS, and
+migrates content to CDS and Nexus as needed.  For admin data, the
+migration tool discovers the data by querying CMS, and migrates
+content to CDS as needed.
 
-The tool expects to be invoked with a properties file in the current directory. The tool logs
-details of actions and results on the standard output.
+The tool expects to be invoked with a file named "migration.properties"
+in the current working directory. The tool logs details of actions and
+results on the standard output.
 
 Run the migration tool using the released Docker image as shown below::
 
     docker run --rm -v ${PWD}/migrate.properties:/maven/migrate.properties \
            nexus3.acumos.org:10002/migrate-cms-to-cds:2.0.0
 
-Note that port 10002 in the registry URL refers to the docker "releases" registry. If the 
-migration-tool image is not found there, it may be necessary to pull a staged-for-release 
-Docker image from the staging registry by using the following URL instead::
+Note that port 10002 in the registry URL refers to the docker
+"releases" registry. If the migration-tool image is not found there,
+it may be necessary to pull a staged-for-release Docker image from the
+staging registry by using the following URL instead::
 
     nexus3.acumos.org:10004
 
@@ -157,10 +171,11 @@ When the tool is finished it reports statistics in this format::
 Troubleshooting
 ~~~~~~~~~~~~~~~
 
-In case of error, the tool can be run repeatedly on the same source and target.
-It will not re-migrate data to CDS nor Nexus for any item.
+In case of error, the tool can be run repeatedly on the same source
+and target.  It will not re-migrate data to CDS nor Nexus for any
+item.
 
-The migration tool requires every document to have a file suffix that indicates the
-type of document; e.g., ".doc" or ".xlsx".  A document without any suffix cannot be
-migrated.  Add a suffix to the document name to fix this problem, then re-run the
-migration process.
+The migration tool requires every document to have a file suffix that
+indicates the type of document; e.g., ".doc" or ".xlsx".  A document
+without any suffix cannot be migrated.  Add a suffix to the document
+name to fix this problem, then re-run the migration process.
