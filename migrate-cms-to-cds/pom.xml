@@ -151,10 +151,7 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<classifier>spring-boot</classifier>
-							<mainClass>
-								org.acumos.cds.migrate.MigrateCmsToCdsApp
-							</mainClass>
+							<mainClass>org.acumos.cds.migrate.MigrateCmsToCdsApp</mainClass>
 						</configuration>
 					</execution>
 				</executions>
