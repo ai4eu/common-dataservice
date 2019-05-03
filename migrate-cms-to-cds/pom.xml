@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<!--
+	<!--<![CDATA[
 	===============LICENSE_START=======================================================
 	Acumos
 	===================================================================================
-	Copyright (C) 2018 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+	Copyright (C) 2017 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
 	===================================================================================
 	This Acumos software file is distributed by AT&T and Tech Mahindra
 	under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 	===============LICENSE_END=========================================================
-	-->
+	]]>-->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.acumos.common-dataservice</groupId>
 	<artifactId>migrate-cms-to-cds</artifactId>
@@ -29,8 +29,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<!-- Supplied by Jenkins -->
 		<build.number>${env.BUILD_NUMBER}</build.number>
+		<!-- Not supplied to all jobs; e.g., Javadoc -->
+		<docker.pull.registry>nexus3.acumos.org:10001</docker.pull.registry>
+		<!-- Supplied by Jenkins -->
+		<docker.push.registry>${env.NEXUS3_PUSH_REGISTRY}</docker.push.registry>
 		<!-- Begin extract of POM file spring-boot-dependencies -->
 		<httpclient.version>4.5.5</httpclient.version>
 		<jackson.version>2.8.11</jackson.version>
@@ -38,14 +43,6 @@
 		<spring.version>4.3.18.RELEASE</spring.version>
 		<!-- End extract of POM file spring-boot-dependencies -->
 	</properties>
-	<repositories>
-		<!-- This is not built at LF, so supply repositories manually -->
-		<repository>
-			<id>Acumos releases</id>
-			<url>https://nexus.acumos.org/content/repositories/releases</url>
-			<layout>default</layout>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.acumos.common-dataservice</groupId>
@@ -144,54 +141,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<!-- Generate javadoc jar; see profile for Java 8 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Generate source jar -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
-				<executions>
-					<execution>
-						<id>default-prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -207,6 +156,44 @@
 								org.acumos.cds.migrate.MigrateCmsToCdsApp
 							</mainClass>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.28.0</version>
+				<configuration>
+					<verbose>true</verbose>
+					<!-- docker runs on the LF build minion so the default value is ok -->
+					<!-- LF <dockerHost>unix:///var/run/docker.sock</dockerHost> LF -->
+					<pullRegistry>${docker.pull.registry}</pullRegistry>
+					<pushRegistry>${docker.push.registry}</pushRegistry>
+					<!-- LF credentials are not supplied here -->
+					<images>
+						<image>
+							<!-- Specify a tag to avoid default tag "latest" -->
+							<name>${project.artifactId}:${project.version}</name>
+							<build>
+								<from>openjdk:8-jre-slim</from>
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+								<entryPoint>
+									<!-- CDATA prevents Eclipse formatter from breaking line -->
+									<shell><![CDATA[cd /maven; java -Xms128m -Xmx1024m -Djava.security.egd=file:/dev/./urandom -jar ${project.artifactId}-${project.version}.${project.packaging}]]></shell>
+								</entryPoint>
+							</build>
+						</image>
+					</images>
+				</configuration>
+				<!-- build Docker images in install phase, push in deploy phase -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

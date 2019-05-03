@@ -78,10 +78,11 @@ public class MigrateCmsToCdsApp {
 	private static final String specialCharRegex = "[!@#$%^&*()<>{}|:?+=.\\s]+";
 
 	/**
-	 * Migrates data.
+	 * Migrates data. Accepts (but does not require) path to migration properties
+	 * file as the sole argument.
 	 * 
 	 * @param args
-	 *                 Ignored
+	 *                 Name of file with migration properties
 	 */
 	public static void main(String[] args) {
 
@@ -94,9 +95,10 @@ public class MigrateCmsToCdsApp {
 
 		MigrateProperties props = null;
 		try {
-			props = new MigrateProperties();
+			props = args.length == 1 ? new MigrateProperties(args[0]) : new MigrateProperties();
 		} catch (Exception ex) {
-			logger.error("Failed to read properties, stopping.");
+			System.err.println("Failed to read properties: " + ex.toString());
+			return;
 		}
 
 		final String dataType = props.getProperty(MigrateProperties.MIGRATE_DATA_TYPE);
