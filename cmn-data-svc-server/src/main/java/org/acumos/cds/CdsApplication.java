@@ -22,10 +22,13 @@ package org.acumos.cds;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.InetAddress;
 
 import org.acumos.cds.domain.MLPSolution;
+import org.acumos.cds.logging.AcumosLogConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -57,6 +60,8 @@ public class CdsApplication implements ApplicationContextAware {
 	 *                         If JSON is present but cannot be parsed
 	 */
 	public static void main(String[] args) throws IOException {
+		// Set server name up front so it appears in all log entries
+		MDC.put(AcumosLogConstants.MDCs.SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
 		final String springApplicationJson = System.getenv(CONFIG_ENV_VAR_NAME);
 		if (springApplicationJson != null && springApplicationJson.contains("{")) {
 			final ObjectMapper mapper = new ObjectMapper();

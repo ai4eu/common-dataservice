@@ -20,7 +20,6 @@
 
 package org.acumos.cds.config;
 
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,7 +49,7 @@ public class LoggingHandlerInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		addKey(AcumosLogConstants.MDCs.SERVER_FQDN, InetAddress.getLocalHost().getCanonicalHostName());
+		// The server FQDN is set at application launch
 		addKey(AcumosLogConstants.MDCs.CLIENT_IP_ADDRESS, request.getRemoteAddr());
 		addKey(AcumosLogConstants.MDCs.SERVICE_NAME, request.getRequestURI());
 		String requestId = request.getHeader(AcumosLogConstants.Headers.REQUEST_ID);
