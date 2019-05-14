@@ -27,6 +27,7 @@ available as a Docker image in the Acumos/LF Docker registry.
 Version 2.2.3, 14 May 2019
 --------------------------
 * Adjust logging for server FQDN (`ACUMOS-2456 <https://jira.acumos.org/browse/ACUMOS-2456>`_)
+* Drop site content in database creation scripts (`ACUMOS-2723 <https://jira.acumos.org/browse/ACUMOS-2723>`_)
 * Repair DML script for C_ROLE insert (`ACUMOS-2891 <https://jira.acumos.org/browse/ACUMOS-2891>`_)
 * Requires database schema version 2.2
 
