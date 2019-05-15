@@ -72,7 +72,7 @@ public class MLPPeerSubscription extends MLPTimestampedEntity implements Seriali
 
 	@Column(name = "SELECTOR", columnDefinition = "VARCHAR(1024)")
 	@Size(max = 1024)
-	@ApiModelProperty(value = "Selector as JSON", example = "{ \"modelTypeCode\" : \"CL\" }")
+	@ApiModelProperty(value = "Selector as JSON", example = "{ \"catalogId\" : \"e4ba5b2b-0ef2-45fb-8d2e-8c3f0baade54\" }")
 	private String selector;
 
 	@Column(name = "OPTIONS", columnDefinition = "VARCHAR(1024)")
