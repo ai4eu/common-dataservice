@@ -30,6 +30,7 @@ Version 2.2.3, 15 May 2019
 * Drop site content in database creation scripts (`ACUMOS-2723 <https://jira.acumos.org/browse/ACUMOS-2723>`_)
 * Repair DML script for C_ROLE insert (`ACUMOS-2891 <https://jira.acumos.org/browse/ACUMOS-2891>`_)
 * Repair federation subscription selector example (`ACUMOS-2899 <https://jira.acumos.org/browse/ACUMOS-2899>`_)
+* Check for null key or value in query parameter map in search methods
 * Requires database schema version 2.2
 
 Version 2.2.2, 22 Apr 2019

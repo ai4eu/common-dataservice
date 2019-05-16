@@ -155,8 +155,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPSolution> findSolutionsBySearchTerm(String searchTerm, RestPageRequest pageRequest);
 
 	/**
-	 * Searches for solutions with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for solutions with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -630,13 +630,13 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPArtifact> findArtifactsBySearchTerm(String searchTerm, RestPageRequest pageRequest);
 
 	/**
-	 * Searches for artifacts with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for artifacts with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
 	 *                            query criteria. Accepts these field names:
-	 *                            artifactTypeCode, name, uri, version, userId
+	 *                            artifactTypeCode, name, uri, version, userId.
 	 * @param isOr
 	 *                            If true, finds matches on any field-value pair
 	 *                            (conditions are OR-ed together); otherwise finds
@@ -999,8 +999,8 @@ public interface ICommonDataServiceRestClient {
 	long getRoleCount();
 
 	/**
-	 * Searches for roles with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for roles with attributes matching the non-null values specified as
+	 * query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -1136,8 +1136,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPPeer> getPeers(RestPageRequest pageRequest);
 
 	/**
-	 * Searches for peers with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for peers with attributes matching the non-null values specified as
+	 * query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -2308,14 +2308,14 @@ public interface ICommonDataServiceRestClient {
 	List<String> getCatalogPublishers();
 
 	/**
-	 * Searches for catalogs with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for catalogs with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
 	 *                            query criteria. Accepts these field names:
 	 *                            accessTypeCode, selfPublish, description, name,
-	 *                            origin, publisher, url
+	 *                            origin, publisher, url.
 	 * @param isOr
 	 *                            If true, finds matches on any field-value pair
 	 *                            (conditions are OR-ed together); otherwise finds
@@ -2446,8 +2446,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPTask> getTasks(RestPageRequest pageRequest);
 
 	/**
-	 * Searches for tasks with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for tasks with attributes matching the non-null values specified as
+	 * query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -2725,8 +2725,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPProject> getProjects(RestPageRequest pageRequest);
 
 	/**
-	 * Searches for projects with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for projects with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -2871,8 +2871,8 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPNotebook> getNotebooks(RestPageRequest pageRequest);
 
 	/**
-	 * Searches for notebooks with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for notebooks with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
@@ -2941,14 +2941,14 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPPipeline> getPipelines(RestPageRequest pageRequest);
 
 	/**
-	 * Searches for pipelines with attributes matching the values specified as query
-	 * parameters.
+	 * Searches for pipelines with attributes matching the non-null values specified
+	 * as query parameters.
 	 * 
 	 * @param queryParameters
 	 *                            Map of field-name, field-value pairs to use as
 	 *                            query criteria. Accepts these field names: name,
 	 *                            active, userId, version, serviceStatus,
-	 *                            repositoryUrl, serviceUrl
+	 *                            repositoryUrl, serviceUrl.
 	 * @param isOr
 	 *                            If true, finds matches on any field-value pair
 	 *                            (conditions are OR-ed together); otherwise finds

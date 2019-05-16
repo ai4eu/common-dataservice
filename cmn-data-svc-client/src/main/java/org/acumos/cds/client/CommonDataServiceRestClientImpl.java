@@ -348,16 +348,16 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 
 	/**
 	 * Builds URI by adding specified path segments and query parameters to the base
-	 * URL. Converts an array of values to a series of parameters with the same
-	 * name; e.g., "find foo in list [a,b]" becomes request parameters
+	 * URL. Converts an array of non-null values to a series of parameters with the
+	 * same name; e.g., "find foo in list [a,b]" becomes request parameters
 	 * "foo=a&amp;foo=b".
 	 * 
 	 * @param path
 	 *                        Array of path segments
 	 * @param queryParams
-	 *                        key-value pairs; ignored if null or empty. Gives
-	 *                        special treatment to Date-type values, Array values,
-	 *                        and null values inside arrays.
+	 *                        Map of non-null key-value pairs; ignored if null or
+	 *                        empty. Gives special treatment to Date-type values,
+	 *                        Array values, and null values inside arrays.
 	 * @param pageRequest
 	 *                        page, size and sort specification; ignored if null.
 	 * @return URI with the specified path segments and query parameters
@@ -366,12 +366,14 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(this.baseUrl);
 		for (int p = 0; p < path.length; ++p) {
 			if (path[p] == null)
-				throw new IllegalArgumentException("Unexpected null at index " + Integer.toString(p));
+				throw new IllegalArgumentException("Unexpected null at path index " + Integer.toString(p));
 			builder.pathSegment(path[p]);
 		}
 		if (queryParams != null && queryParams.size() > 0) {
 			for (Map.Entry<String, ? extends Object> entry : queryParams.entrySet()) {
-				if (entry.getValue() instanceof Instant) {
+				if (entry.getKey() == null || entry.getValue() == null) {
+					throw new IllegalArgumentException("Unexpected null key or value");
+				} else if (entry.getValue() instanceof Instant) {
 					// Server expects point-in-time as Long (not String)
 					builder.queryParam(entry.getKey(), ((Instant) entry.getValue()).toEpochMilli());
 				} else if (entry.getValue().getClass().isArray()) {
