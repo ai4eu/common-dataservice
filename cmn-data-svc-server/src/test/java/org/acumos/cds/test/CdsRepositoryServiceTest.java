@@ -276,6 +276,7 @@ public class CdsRepositoryServiceTest {
 			cu.setLoginPassExpire(Instant.now());
 			cu = userRepository.save(cu);
 			Instant originalCreated = cu.getCreated();
+			Instant originalModified = cu.getModified();
 			Assert.assertNotNull(cu.getUserId());
 			Assert.assertNotNull(cu.getCreated());
 			Assert.assertNotNull(cu.getModified());
@@ -290,6 +291,7 @@ public class CdsRepositoryServiceTest {
 			cu = userRepository.save(cu);
 			// Check hibernate behavior on timestamps
 			Assert.assertEquals(originalCreated, cu.getCreated());
+			Assert.assertNotEquals(originalModified, cu.getModified());
 			Assert.assertNotEquals(cu.getCreated(), cu.getModified());
 			Assert.assertEquals(lastLogin, cu.getLastLogin());
 			// The created-date field accepts updates, unfortunately
