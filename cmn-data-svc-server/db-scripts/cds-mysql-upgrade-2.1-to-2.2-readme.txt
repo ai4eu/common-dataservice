@@ -44,6 +44,8 @@ c) However, to avoid inadvertent disclosure of information, solutions
 Instructions
 ------------
 
+Section A (Applicable for first time migration):
+
 The script cds-mysql-upgrade-2.1-to-2.2.sql cannot be used as
 provided; it must first be edited as follows:
 
@@ -53,7 +55,8 @@ provided; it must first be edited as follows:
    https://www.uuidgenerator.net/.
 
    Find this line:
-    ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
+    ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 
+    'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
 
    Perform a GLOBAL SEARCH AND REPLACE on all 4 occurrences of
    pppppppp-pppp-pppp-pppp-pppppppppppp with the new ID that you
@@ -63,7 +66,8 @@ provided; it must first be edited as follows:
 a second UUID with 'uuidgen' etc.
 
    Find this line:
-    ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
+    ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 
+    'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
 
    Perform a GLOBAL SEARCH AND REPLACE on all 5 occurrences of
    rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr with the new ID that you
@@ -83,3 +87,36 @@ the command line:
     % mysql
     > use cds22m;
     > source cds-mysql-upgrade-2.1-to-2.2.sql;
+
+Section B (Applicable if you have already run 
+cds-mysql-upgrade-2.1-to-2.2.sql script, published before 07/01/19, 
+and now troubleshooting):
+
+If you are left with a DB state where solutions which have all revisions
+at PUBLIC or all revisions at COMPANY visibility level are migrated to 
+public or restricted catalog respectively, but solutions with revisions 
+across multiple visibility levels are not yet migrated, then carry out 
+the following steps:
+
+1. On CDS 2.1 DB  run the following query:
+SELECT solution_id
+   FROM c_solution_rev
+   GROUP BY solution_id
+   HAVING COUNT(distinct access_type_cd) > 1;
+
+2. Lets say answer to the query in 1. yields S1, S2, ...Sn. Then on 
+CDS 2.2 DB, run as per the following query template:
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct '<restricted-catalog-id>', c_solution_rev.solution_id, NOW()
+FROM c_solution_rev, c_solution
+WHERE c_solution_rev.solution_id = c_solution.solution_id
+      AND c_solution.ACTIVE_YN = 'Y'
+      AND c_solution_rev.solution_id IN (S1, S2, ...Sn);
+
+   Replace <restricted-catalog-id> with UUID of the existent catalog whose
+   access type code is 'RS' and replace (S1, S2, ..Sn) with the list of solution
+   ids from step 1.       
+
+The final state of CDS 2.2 DB will give you the fully migrated catalog with 
+solutions having both pure and mixed access type revisions.

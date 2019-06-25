@@ -145,20 +145,38 @@ CREATE TABLE C_REV_CAT_DOC_MAP (
   CONSTRAINT C_REV_CAT_DOC_MAP_C_REV_DOC FOREIGN KEY (DOCUMENT_ID) REFERENCES C_DOCUMENT (DOCUMENT_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Migrate the RESTRICTED solutions
+-- Migrate the RESTRICTED and MIXED (OR and PB access type) solutions
 
 INSERT INTO c_rev_cat_desc (CATALOG_ID, REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE)
 SELECT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', REVISION_ID, DESCRIPTION, CREATED_DATE, MODIFIED_DATE
 FROM c_revision_desc WHERE ACCESS_TYPE_CD = 'OR';
 
-INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
-SELECT distinct 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', c_solution_rev.solution_id, NOW() FROM c_solution_rev, c_solution 
-WHERE c_solution_rev.solution_id = c_solution.solution_id AND c_solution.ACTIVE_YN = 'Y' AND 
-c_solution_rev.solution_id NOT IN (SELECT solution_id FROM c_solution_rev WHERE access_type_cd IN ('PB','PR'));
-
-INSERT INTO C_REV_CAT_DOC_MAP (CATALOG_ID, REVISION_ID, DOCUMENT_ID)
+INSERT INTO c_rev_cat_doc_map (CATALOG_ID, REVISION_ID, DOCUMENT_ID)
 SELECT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', REVISION_ID, DOCUMENT_ID
-FROM C_SOL_REV_DOC_MAP WHERE ACCESS_TYPE_CD = 'OR';
+FROM c_sol_rev_doc_map WHERE ACCESS_TYPE_CD = 'OR';
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', c_solution_rev.solution_id, NOW()
+FROM c_solution_rev, c_solution
+WHERE c_solution_rev.solution_id = c_solution.solution_id
+      AND c_solution.ACTIVE_YN = 'Y'
+      AND c_solution_rev.solution_id NOT IN
+  (SELECT solution_id
+   FROM c_solution_rev
+   WHERE access_type_cd IN ('PB','PR')
+  );
+
+INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
+SELECT distinct 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', c_solution_rev.solution_id, NOW()
+FROM c_solution_rev, c_solution
+WHERE c_solution_rev.solution_id = c_solution.solution_id
+      AND c_solution.ACTIVE_YN = 'Y'
+      AND c_solution_rev.solution_id IN
+  (SELECT solution_id
+   FROM c_solution_rev
+   GROUP BY solution_id
+   HAVING COUNT(distinct access_type_cd) > 1
+   );
 
 -- Migrate the PUBLIC solutions
 
@@ -167,9 +185,15 @@ SELECT 'pppppppp-pppp-pppp-pppp-pppppppppppp', REVISION_ID, DESCRIPTION, CREATED
 FROM c_revision_desc WHERE ACCESS_TYPE_CD = 'PB';
 
 INSERT INTO c_cat_sol_map (CATALOG_ID, SOLUTION_ID, CREATED_DATE)
-SELECT distinct 'pppppppp-pppp-pppp-pppp-pppppppppppp', c_solution_rev.solution_id, NOW() FROM c_solution_rev, c_solution  
-WHERE c_solution_rev.solution_id = c_solution.solution_id AND c_solution.ACTIVE_YN = 'Y' AND 
-c_solution_rev.solution_id NOT IN (SELECT solution_id FROM c_solution_rev WHERE access_type_cd  IN ('PR','OR'));
+SELECT distinct 'pppppppp-pppp-pppp-pppp-pppppppppppp', c_solution_rev.solution_id, NOW()
+FROM c_solution_rev, c_solution
+WHERE c_solution_rev.solution_id = c_solution.solution_id
+      AND c_solution.ACTIVE_YN = 'Y'
+      AND c_solution_rev.solution_id NOT IN
+  (SELECT solution_id
+   FROM c_solution_rev
+   WHERE access_type_cd  IN ('PR','OR')
+  );
 
 INSERT INTO C_REV_CAT_DOC_MAP (CATALOG_ID, REVISION_ID, DOCUMENT_ID)
 SELECT 'pppppppp-pppp-pppp-pppp-pppppppppppp', REVISION_ID, DOCUMENT_ID
