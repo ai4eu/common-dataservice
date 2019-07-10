@@ -303,15 +303,6 @@ public class CdsControllerTest {
 			Assert.assertNull(cu.getVerifyTokenHash());
 			logger.info("Created user {}", cu);
 
-			// Update last login manually
-			Instant lastLogin = Instant.now();
-			cu.setLastLogin(lastLogin);
-			client.updateUser(cu);
-			cu = client.getUser(cu.getUserId());
-			// The instant is not returned from Mysql perfectly, off by millis, why?
-			long diff = Math.abs(lastLogin.getEpochSecond() - cu.getLastLogin().getEpochSecond());
-			Assert.assertTrue(diff < 100);
-
 			MLPUser inactiveUser = new MLPUser("inactiveUser", "email@address.org", false);
 			inactiveUser.setLoginHash("cleartext");
 			inactiveUser = client.createUser(inactiveUser);
@@ -328,10 +319,22 @@ public class CdsControllerTest {
 			for (MLPUser u : users.getContent())
 				logger.info("Fetched user: " + u);
 
+			MLPUser preLogin = client.getUser(cu.getUserId());
+			Assert.assertNull(preLogin.getLastLogin());
 			MLPUser loggedIn = client.loginUser(loginName, loginPass);
 			Assert.assertNotNull(loggedIn);
+			Assert.assertNotNull(loggedIn.getLastLogin());
 			logger.info("Logged in successfully, password expires {}", loggedIn.getLoginPassExpire());
 			Assert.assertArrayEquals(fakePicture, loggedIn.getPicture());
+
+			// manual update of last login should not be necessary
+			Instant lastLogin = Instant.now();
+			cu.setLastLogin(lastLogin);
+			client.updateUser(cu);
+			cu = client.getUser(cu.getUserId());
+			// The instant is not returned from Mysql perfectly, off by millis, why?
+			long diff = Math.abs(lastLogin.getEpochSecond() - cu.getLastLogin().getEpochSecond());
+			Assert.assertTrue(diff < 100);
 
 			MLPUser apiUser = client.loginApiUser(loginName, apiToken);
 			Assert.assertNotNull(apiUser);
@@ -340,6 +343,8 @@ public class CdsControllerTest {
 
 			MLPUser verifyUser = client.verifyUser(loginName, verifyToken);
 			Assert.assertNotNull(verifyUser);
+			// Last-login should be updated yet again here
+			Assert.assertTrue(loggedIn.getLastLogin().compareTo(verifyUser.getLastLogin()) < 0);
 			logger.info("Verified successfully via verification token");
 
 			try {
