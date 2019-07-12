@@ -596,8 +596,8 @@ INSERT INTO C_USER_ROLE_MAP (USER_ID, ROLE_ID) VALUES ('12345678-abcd-90ab-cdef-
 
 -- Create two catalogs
 INSERT INTO C_CATALOG (CATALOG_ID, ACCESS_TYPE_CD, SELF_PUBLISH_YN, NAME, PUBLISHER, URL, CREATED_DATE, MODIFIED_DATE) VALUES
-  (UUID(), 'PB', 'N', 'My Public Models',   'My Organization', 'http://acumos.my.org/public',   NOW(), NOW()),
-  (UUID(), 'RS', 'Y', 'My Internal Models', 'My Organization', 'http://acumos.my.org/internal', NOW(), NOW());
+  (UUID(), 'PB', 'N', 'Public Models',  'My Company', 'http://catalog.my.org/public',  NOW(), NOW()),
+  (UUID(), 'RS', 'Y', 'Company Models', 'My Company', 'http://catalog.my.org/company', NOW(), NOW());
 
 -- Default configuration of Portal/Marketplace features.
 -- Unfortunately JSON does not allow embedded newlines.

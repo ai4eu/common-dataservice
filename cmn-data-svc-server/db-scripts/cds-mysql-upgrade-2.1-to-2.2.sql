@@ -107,8 +107,8 @@ ALTER TABLE C_CATALOG MODIFY COLUMN PUBLISHER VARCHAR(64) NOT NULL;
 
 -- Create RESTRICTED and PUBLIC catalogs
 INSERT INTO C_CATALOG (CATALOG_ID, ACCESS_TYPE_CD, NAME, PUBLISHER, URL, CREATED_DATE, MODIFIED_DATE) VALUES
-  ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'MY PUBLIC MODELS', 'MY COMPANY', 'http://catalog.my.org/public', NOW(), NOW()),
-  ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'MY COMPANY MODELS', 'MY COMPANY', 'http://catalog.my.org/company', NOW(), NOW());
+  ('pppppppp-pppp-pppp-pppp-pppppppppppp', 'PB', 'Public Models', 'My Company', 'http://catalog.my.org/public', NOW(), NOW()),
+  ('rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr', 'RS', 'Company Models', 'My Company', 'http://catalog.my.org/company', NOW(), NOW());
 
 ALTER TABLE C_PUBLISH_REQUEST ADD COLUMN CATALOG_ID CHAR(36) NOT NULL DEFAULT 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr';
 ALTER TABLE C_PUBLISH_REQUEST ADD CONSTRAINT C_PUB_REQ_C_CATALOG FOREIGN KEY (CATALOG_ID) REFERENCES C_CATALOG (CATALOG_ID);
