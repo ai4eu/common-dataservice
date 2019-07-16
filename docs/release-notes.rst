@@ -27,6 +27,8 @@ available as a Docker image in the Acumos/LF Docker registry.
 Version 2.2.5, 16 July 2019
 ---------------------------
 * Add headers to discover texts (`ACUMOS-2992 <https://jira.acumos.org/browse/ACUMOS-2992>`_)
+* Add kernel type CC (`ACUMOS-3147 <https://jira.acumos.org/browse/ACUMOS-3147>`_)
+* Add kernel type JS (`ACUMOS-3148 <https://jira.acumos.org/browse/ACUMOS-3148>`_)
 
 Version 2.2.4, 23 May 2019
 --------------------------
