@@ -3011,6 +3011,20 @@ public interface ICommonDataServiceRestClient {
 	List<String> getPeerAccessCatalogIds(String peerId);
 
 	/**
+	 * Gets the peers that were granted access to the specified catalog. The catalog
+	 * must have a restricted access-type code.
+	 * 
+	 * @param catalogId
+	 *                      Catalog ID
+	 * @return List of peers, which may be empty
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response
+	 *                                         body; is thrown if the catalog is not
+	 *                                         restricted
+	 */
+	List<MLPPeer> getCatalogAccessPeers(String catalogId) throws RestClientResponseException;
+
+	/**
 	 * Add read access to the specified catalog for the specified peer. The catalog
 	 * must have a restricted access-type code.
 	 * 

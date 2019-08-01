@@ -29,6 +29,7 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
+import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -179,6 +180,22 @@ public class AccessController extends AbstractController {
 	public Iterable<String> getPeerAccessCatalogIds(@PathVariable("peerId") String peerId) {
 		logger.debug("getPeerAccessCatalogIds peerId {}", peerId);
 		return peerCatAccMapRepository.findCatalogIdsByPeerId(peerId);
+	}
+
+	@ApiOperation(value = "Gets the list of peers with access to the specified restricted catalog; empty if none are found.", //
+			response = MLPPeer.class, responseContainer = "List")
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = CCDSConstants.CATALOG_PATH + "/{catalogId}/"
+			+ CCDSConstants.PEER_PATH, method = RequestMethod.GET)
+	public Object getCatalogAccessPeers(@PathVariable("catalogId") String catalogId, HttpServletResponse response) {
+		logger.debug("getCatalogAccessPeers catalogId {}", catalogId);
+		Optional<MLPCatalog> cat = catalogRepository.findById(catalogId);
+		if (!cat.isPresent() || !"RS".equals(cat.get().getAccessTypeCode())) {
+			logger.warn("getCatalogAccessPeers failed on catalogId ID {}", catalogId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
+		}
+		return peerCatAccMapRepository.findPeersByCatalogId(catalogId);
 	}
 
 	@ApiOperation(value = "Checks if the specified peer can read the specified catalog. Returns non-zero if yes, zero if no.", //

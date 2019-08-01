@@ -931,8 +931,8 @@ public class CdsControllerTest {
 			Assert.assertNotNull(modWithCat);
 			Assert.assertNotEquals(0, modWithCat.getNumberOfElements());
 			logger.info("Found published solutions by cat and date: " + modWithCat.getContent().size());
-			RestPageResponse<MLPSolution> modNoCat = client.findPublishedSolutionsByDate(
-					null, anHourAgo, new RestPageRequest(0, 1));
+			RestPageResponse<MLPSolution> modNoCat = client.findPublishedSolutionsByDate(null, anHourAgo,
+					new RestPageRequest(0, 1));
 			Assert.assertNotNull(modNoCat);
 			Assert.assertNotEquals(0, modNoCat.getNumberOfElements());
 			logger.info("Found published solutions by modified date only: " + modNoCat.getContent().size());
@@ -1962,6 +1962,7 @@ public class CdsControllerTest {
 		MLPPeer pr;
 		MLPSolution cs;
 		MLPCatalog ca;
+		MLPCatalog catRes;
 
 		try {
 			cu = null;
@@ -1990,6 +1991,11 @@ public class CdsControllerTest {
 			ca.setDescription("Catalog description");
 			client.updateCatalog(ca);
 
+			catRes = client.createCatalog(
+					new MLPCatalog("RS", false, "restricted catalog name", "them", "http://private.acumos.org"));
+			Assert.assertNotNull("Catalog ID", catRes.getCatalogId());
+			logger.info("Created catalog {}", catRes);
+
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
 			Assert.assertNotEquals(0, catalogs.getNumberOfElements());
@@ -2007,7 +2013,9 @@ public class CdsControllerTest {
 			Assert.assertEquals(ca, c2);
 
 			Assert.assertTrue(client.isPeerAccessToCatalog(pr.getPeerId(), ca.getCatalogId()));
+			Assert.assertFalse(client.isPeerAccessToCatalog(pr.getPeerId(), catRes.getCatalogId()));
 			Assert.assertFalse(client.isPeerAccessToSolution(pr.getPeerId(), cs.getSolutionId()));
+
 			client.addSolutionToCatalog(cs.getSolutionId(), ca.getCatalogId());
 			Assert.assertTrue(client.isPeerAccessToSolution(pr.getPeerId(), cs.getSolutionId()));
 
@@ -2020,9 +2028,11 @@ public class CdsControllerTest {
 			Assert.assertNotNull(cats);
 			Assert.assertEquals(1, cats.size());
 
-			client.addPeerAccessCatalog(pr.getPeerId(), ca.getCatalogId());
+			client.addPeerAccessCatalog(pr.getPeerId(), catRes.getCatalogId());
 			List<String> peerAcc = client.getPeerAccessCatalogIds(pr.getPeerId());
 			Assert.assertEquals(1, peerAcc.size());
+			List<MLPPeer> accessPeers = client.getCatalogAccessPeers(catRes.getCatalogId());
+			Assert.assertEquals(1, accessPeers.size());
 
 			client.addUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
 			List<String> userFavs = client.getUserFavoriteCatalogIds(cu.getUserId());
@@ -2128,13 +2138,14 @@ public class CdsControllerTest {
 			logger.info("drop user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
 		}
 
-		client.dropPeerAccessCatalog(pr.getPeerId(), ca.getCatalogId());
+		client.dropPeerAccessCatalog(pr.getPeerId(), catRes.getCatalogId());
 		Assert.assertEquals(0, client.getPeerAccessCatalogIds(cu.getUserId()).size());
 		client.dropUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
 		Assert.assertEquals(0, client.getUserFavoriteCatalogIds(cu.getUserId()).size());
 		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
 		Assert.assertEquals(0, client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() }, new RestPageRequest())
 				.getNumberOfElements());
+		client.deleteCatalog(catRes.getCatalogId());
 		client.deleteCatalog(ca.getCatalogId());
 		client.deleteSolution(cs.getSolutionId());
 		client.deletePeer(pr.getPeerId());

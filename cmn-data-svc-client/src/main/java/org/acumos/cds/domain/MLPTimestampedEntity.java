@@ -49,7 +49,8 @@ public abstract class MLPTimestampedEntity implements MLPDomainModel {
 
 	@UpdateTimestamp
 	@Column(name = "MODIFIED_DATE", nullable = false, columnDefinition = "TIMESTAMP")
-	// Must NOT annotate "updatable = false" because that blocks Hibernate from updating the field!
+	// Must NOT annotate "updatable = false" because that blocks Hibernate from
+	// updating the field!
 	// REST clients should not send this property
 	@ApiModelProperty(accessMode = AccessMode.READ_ONLY, value = "Modified timestamp set by system", example = "2018-12-16T12:34:56.789Z")
 	private Instant modified;

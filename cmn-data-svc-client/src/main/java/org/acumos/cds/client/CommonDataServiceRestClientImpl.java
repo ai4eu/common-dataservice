@@ -2783,6 +2783,17 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
+	public List<MLPPeer> getCatalogAccessPeers(String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.CATALOG_PATH, catalogId,
+				CCDSConstants.PEER_PATH }, null, null);
+		logger.debug("getCatalogAccessPeers: uri {}", uri);
+		ResponseEntity<List<MLPPeer>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPPeer>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
 	public void addPeerAccessCatalog(String peerId, String catalogId) {
 		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.PEER_PATH, peerId,
 				CCDSConstants.CATALOG_PATH, catalogId }, null, null);

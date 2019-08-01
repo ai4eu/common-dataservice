@@ -20,6 +20,7 @@
 
 package org.acumos.cds.repository;
 
+import org.acumos.cds.domain.MLPPeer;
 import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -40,9 +41,10 @@ public interface PeerCatAccMapRepository extends CrudRepository<MLPPeerCatAccMap
 	Iterable<String> findCatalogIdsByPeerId(@Param("peerId") String peerId);
 
 	/**
-	 * Gets the count of catalogs to which the peer has been granted access and
-	 * contain the specified solution. The access-type code on the catalog is
-	 * SUPPOSED to be restricted ('RS') but that's not checked here.
+	 * Gets the count of catalogs to which the peer has been granted access in the
+	 * access-map relation AND contain the specified solution. The access-type code
+	 * on the catalog is SUPPOSED to be restricted ('RS') but that's not checked
+	 * here.
 	 * 
 	 * @param peerId
 	 *                       Peer ID
@@ -55,5 +57,19 @@ public interface PeerCatAccMapRepository extends CrudRepository<MLPPeerCatAccMap
 			+ "    AND pcm.peerId = :peerId" //
 			+ "    AND csm.catalogId = pcm.catalogId ")
 	long countCatalogsByPeerAccessAndSolution(@Param("peerId") String peerId, @Param("solutionId") String solutionId);
+
+	/**
+	 * Gets the peers with access to the specified catalog defined in the access-map
+	 * relation. The access-type code on the catalog is SUPPOSED to be restricted
+	 * ('RS') but that's not checked here.
+	 * 
+	 * @param catalogId
+	 *                      Catalog ID
+	 * @return Iterable of MLPPeer
+	 */
+	@Query(value = "select p FROM MLPPeer p, MLPPeerCatAccMap m " //
+			+ " WHERE p.peerId = m.peerId " //
+			+ "   AND m.catalogId = :catalogId")
+	Iterable<MLPPeer> findPeersByCatalogId(@Param("catalogId") String catalogId);
 
 }

@@ -583,8 +583,8 @@ public class CdsRepositoryServiceTest {
 			Assert.assertTrue(taggedSol.getTags().contains(solTag1) && taggedSol.getTags().contains(solTag2));
 
 			String[] kw = { "Big", "Data" };
-			Page<MLPSolution> kwSearchResult = solutionSearchService.findPublishedSolutionsByKwAndTags(kw, active, userIds,
-					modelTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
+			Page<MLPSolution> kwSearchResult = solutionSearchService.findPublishedSolutionsByKwAndTags(kw, active,
+					userIds, modelTypeCodes, searchTags, null, null, PageRequest.of(0, 2, Direction.ASC, "name"));
 			Assert.assertNotEquals(0, kwSearchResult.getNumberOfElements());
 			logger.info("Found models by kw total " + kwSearchResult.getTotalElements());
 
@@ -1420,6 +1420,8 @@ public class CdsRepositoryServiceTest {
 
 		Iterable<String> peerCatIds = peerCatAccMapRepository.findCatalogIdsByPeerId(pr.getPeerId());
 		Assert.assertFalse(peerCatIds.iterator().hasNext());
+		Iterable<MLPPeer> accessPeers = peerCatAccMapRepository.findPeersByCatalogId(caRst.getCatalogId());
+		Assert.assertFalse(accessPeers.iterator().hasNext());
 
 		long accRst = peerCatAccMapRepository.countCatalogsByPeerAccessAndSolution(pr.getPeerId(), cs2.getSolutionId());
 		Assert.assertEquals(0L, accRst);
@@ -1430,6 +1432,8 @@ public class CdsRepositoryServiceTest {
 
 		peerCatIds = peerCatAccMapRepository.findCatalogIdsByPeerId(pr.getPeerId());
 		Assert.assertTrue(peerCatIds.iterator().hasNext());
+		accessPeers = peerCatAccMapRepository.findPeersByCatalogId(caRst.getCatalogId());
+		Assert.assertTrue(accessPeers.iterator().hasNext());
 
 		MLPUserCatFavMap ucfm = new MLPUserCatFavMap(cu.getUserId(), caPub.getCatalogId());
 		userCatFavMapRepository.save(ucfm);

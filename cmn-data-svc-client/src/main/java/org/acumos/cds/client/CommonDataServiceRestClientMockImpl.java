@@ -230,6 +230,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private boolean peerAccessToCatalog;
 	private List<String> catalogPublishers;
 	private RestPageResponse<MLPSolution> publishedSolutionsByDate;
+	private List<MLPPeer> catalogAccessPeers;
 
 	/**
 	 * No-argument constructor.
@@ -2083,6 +2084,15 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public List<String> getPeerAccessCatalogIds(String peerId) {
 		return this.peerAccessCatalogIds;
+	}
+
+	public void setCatalogAccessPeers(List<MLPPeer> peers) {
+		this.catalogAccessPeers = peers;
+	}
+
+	@Override
+	public List<MLPPeer> getCatalogAccessPeers(String catalogId) {
+		return this.catalogAccessPeers;
 	}
 
 	@Override
