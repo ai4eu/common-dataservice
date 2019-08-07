@@ -40,6 +40,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
@@ -2879,6 +2880,52 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		URI uri = buildUri(new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.SOLUTION_PATH, solutionId,
 				CCDSConstants.USER_PATH, userId, }, null, null);
 		logger.debug("dropSolutionUserAccess: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public RestPageResponse<MLPLicenseProfileTemplate> getLicenseProfileTemplates(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.LICENSE_PATH, CCDSConstants.TEMPLATE_PATH }, null, pageRequest);
+		logger.debug("getLicenseProfileTemplates: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPLicenseProfileTemplate>> response = restTemplate.exchange(uri,
+				HttpMethod.GET, null, new ParameterizedTypeReference<RestPageResponse<MLPLicenseProfileTemplate>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPLicenseProfileTemplate getLicenseProfileTemplate(long templateId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.LICENSE_PATH, CCDSConstants.TEMPLATE_PATH, Long.toString(templateId) },
+				null, null);
+		logger.debug("getLicenseProfileTemplate: uri {}", uri);
+		ResponseEntity<MLPLicenseProfileTemplate> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPLicenseProfileTemplate>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPLicenseProfileTemplate createLicenseProfileTemplate(MLPLicenseProfileTemplate licenseTemplate) {
+		URI uri = buildUri(new String[] { CCDSConstants.LICENSE_PATH, CCDSConstants.TEMPLATE_PATH }, null, null);
+		logger.debug("createLicenseProfileTemplate: url {}", uri);
+		return restTemplate.postForObject(uri, licenseTemplate, MLPLicenseProfileTemplate.class);
+	}
+
+	@Override
+	public void updateLicenseProfileTemplate(MLPLicenseProfileTemplate licenseTemplate) {
+		URI uri = buildUri(new String[] { CCDSConstants.LICENSE_PATH, CCDSConstants.TEMPLATE_PATH,
+				Long.toString(licenseTemplate.getTemplateId()) }, null, null);
+		logger.debug("updateLicenseProfileTemplate: uri {}", uri);
+		restTemplate.put(uri, licenseTemplate);
+	}
+
+	@Override
+	public void deleteLicenseProfileTemplate(long templateId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.LICENSE_PATH, CCDSConstants.TEMPLATE_PATH, Long.toString(templateId) },
+				null, null);
+		logger.debug("deleteLicenseProfileTemplate: url {}", uri);
 		restTemplate.delete(uri);
 	}
 

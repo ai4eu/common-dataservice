@@ -2,6 +2,8 @@
 
 This project has a Spring-Boot application that implements the Common Data Service in the Acumos machine-learning platform.
 
+Please see the configuration files in the local "config" folder.
+
 Please see the documentation in the parent project's "docs" folder.
 
 ## License

@@ -36,6 +36,7 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
 import org.acumos.cds.domain.MLPNotification;
@@ -80,6 +81,7 @@ import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.CommentRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
+import org.acumos.cds.repository.LicenseProfileTemplateRepository;
 import org.acumos.cds.repository.NotebookRepository;
 import org.acumos.cds.repository.NotifUserMapRepository;
 import org.acumos.cds.repository.NotificationRepository;
@@ -162,6 +164,8 @@ public class CdsRepositoryServiceTest {
 	private CommentRepository commentRepository;
 	@Autowired
 	private CompSolMapRepository compSolMapRepository;
+	@Autowired
+	private LicenseProfileTemplateRepository licProTemRepository;
 	@Autowired
 	private NotificationRepository notificationRepository;
 	@Autowired
@@ -1546,6 +1550,28 @@ public class CdsRepositoryServiceTest {
 			userRepository.delete(cu);
 		} catch (Exception ex) {
 			logger.error("testWorkbenchArtifacts failed", ex);
+			throw ex;
+		}
+	}
+
+	@Test
+	public void testLicenseStuff() throws Exception {
+		try {
+			MLPUser cu = null;
+			cu = new MLPUser();
+			cu.setActive(true);
+			cu.setLoginName("lum_user");
+			cu.setEmail("testLumUser@acumos.org");
+			cu = userRepository.save(cu);
+			Assert.assertNotNull(cu.getUserId());
+			MLPLicenseProfileTemplate templ = new MLPLicenseProfileTemplate("lic name", " { \"foo\":\"bar\" }", 1,
+					cu.getUserId());
+			templ = licProTemRepository.save(templ);
+			Assert.assertNotNull(templ.getTemplateId());
+			licProTemRepository.deleteById(templ.getTemplateId());
+			userRepository.delete(cu);
+		} catch (Exception ex) {
+			logger.error("testLicenseStuff failed", ex);
 			throw ex;
 		}
 	}

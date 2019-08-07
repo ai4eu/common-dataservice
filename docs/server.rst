@@ -64,15 +64,15 @@ The default test configuration for the server uses an in-memory Derby database, 
 Testing with an external database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A properties file "application-mariadb.properties" is provided that configures the server to use an
-external MariaDB database running on the local host at port 3306.  Direct Spring-Boot to use that
-properties file during a test with this invocation::
+A properties file "config/application-mariadb.properties" is provided that configures the server to 
+use an external MariaDB database running on the local host at port 3306.  Direct Spring-Boot to use 
+that properties file during a test with this invocation::
 
     mvn -Dspring.config.name=application-mariadb test
 
 The server can be configured to use a different external database as follows:
 
-    1. Copy the local application.properties file to a new file "application-mydb.properties"
+    1. Copy the config/application.properties file to a new file "application-mydb.properties"
     2. Revise the new "mydb" properties file to have suitable server coordinates and credentials
     3. Ensure the newly configured database server is reachable at the expected port
     4. Check that the database tables have been created and populated
@@ -114,15 +114,17 @@ First the database must be created or upgraded, depending on the situation,
 using scripts in the "db-scripts" directory.  Please note version numbers are
 mostly written here as "M.N" because actual version numbers change regularly.
 
-- cmn-data-svc-user-mysql.sql: This file is a TEMPLATE can be used to
+- cmn-data-svc-base-mysql.sql: This file is a TEMPLATE can be used to
   create a Mysql/MariaDB database, to create a user, and to grant the
   user permission on the database.  The values in CAPITALS shown in
   the file must be adjusted for each use.
-- cmn-data-svc-ddl-dml-mysql-M-N.sql: This file has the data-definition and
-  data-modeling language statements that create new tables and
+- cmn-data-svc-ddl-dml-M-N-revX.sql: This file has the data-definition 
+  and data-modeling language statements that create new tables and
   populate them.
-- cds-mysql-upgrade-M.N-to-M.N+1.sql: If an existing system needs to be upgraded,
-  these files have the required SQL statements to perform the upgrade.
+- cmn-data-svc-dml-opt-M-N-revX.sql: This file has some optional images
+  that can be loaded into the site configuration.
+- cmn-data-svc-upgrade-M.N-to-M.N+1.sql: If an existing system needs to be 
+  upgraded, these files have the required SQL statements for that.
 
 Next, configuration parameters must be specified.  A template with
 default values can be found in the top level of this project named
@@ -152,7 +154,7 @@ be done in a docker-compose configuration file.  For example::
 
       SPRING_APPLICATION_JSON: '{
           "server" : {
-              "port" : 8002
+              "port" : 8000
           },
           "security" : {
               "user" : {
@@ -242,25 +244,25 @@ This documents the steps required to upgrade an installation to a new(er) versio
 1. Create a new database. If needed, create a new user and grant access to the database for the new user.  Example commands to do this are in script "cmn-data-svc-basemysql.sql" and are something like this::
 
     % sudo mysql
-    > create database cds118;
+    > create database cds22;
     > create user 'CDS_USER'@'%' identified by 'CDS_PASS';
-    > grant all on cds118.* to 'CDS_USER'@'%';
+    > grant all on cds22.* to 'CDS_USER'@'%';
 
 2. Migrate the old database to the new database.  For example, if working on the Mysql/Mariadb database server the command is something like the following, depending on system configuration and user privileges::
 
-    sudo mysqldump cds117 | sudo mysql cds118
+    sudo mysqldump cds21 | sudo mysql cds22
 
 3. Upgrade the new database to the latest structure by running the appropriate upgrade script.  For example, the command sequence may be something like this::
 
     % sudo mysql
-    > use cds118;
-    > source cds-mysql-upgrade-1-17-to-1-18.sql;
+    > use cds21
+    > source cds-mysql-upgrade-2-21-to-2-22.sql;
 
 4. Configure the docker image for the new version.  Assuming that the docker compose is being used, revise the appropriate docker-compose file to have an entry for the new version, using an available network port.
 
 5. Use an appropriate docker-compose start script (varies by environment) to start the new image, for example::
 
-    docker-compose up -d common-dataservice-1181
+    docker-compose up -d common-dataservice-22
 
 Troubleshooting
 ---------------
@@ -277,3 +279,13 @@ Spring-Boot throws a confusing exception if the database connection fails, somet
     Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment]
 
 If you see this exception, first check the database configuration carefully.
+
+A database connection may fail due to the following error::
+
+    java.sql.SQLException: The server time_zone 'CDT' cannot be parsed
+
+If this happens, modify the jdbc-url configuration to have this parameter::
+
+    &serverTimezone=GMT-05:00
+
+This tells the client which timezone to use for the server. Adjust the "-05:00" appropriately for your server's locale.

@@ -24,7 +24,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.acumos.common-dataservice</groupId>
 	<artifactId>cmn-data-svc-client</artifactId>
-	<version>2.2.6-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<name>Acumos Common Data Service Client</name>
 	<description>Client library for the Acumos Common Data Service</description>
 	<properties>
@@ -33,15 +33,15 @@
 		<!-- Supplied by Jenkins -->
 		<build.number>${env.BUILD_NUMBER}</build.number>
 		<springfox.version>2.9.2</springfox.version>
-		<swagger.version>1.5.21</swagger.version>
+		<swagger.version>1.5.22</swagger.version>
 		<!-- Begin extract of POM file spring-boot-dependencies -->
-		<hibernate.version>5.3.7.Final</hibernate.version>
+		<hibernate.version>5.3.10.Final</hibernate.version>
 		<hibernate-validator.version>5.3.6.Final</hibernate-validator.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<jackson.version>2.9.7</jackson.version>
 		<javax-validation.version>1.1.0.Final</javax-validation.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<spring.version>5.1.2.RELEASE</spring.version>
+		<spring.version>5.1.8.RELEASE</spring.version>
 		<hibernate-jpamodelgen.version>5.3.7.Final</hibernate-jpamodelgen.version>
 		<!-- End extract of POM file spring-boot-dependencies -->
 		<!-- These versions come from spring-data-releasetrain.version -->

@@ -38,6 +38,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
@@ -2587,6 +2588,74 @@ public class CdsControllerTest {
 		Assert.assertNull(client.getNotebook(cnb.getNotebookId()));
 		client.deleteProject(cpr.getProjectId());
 		Assert.assertNull(client.getProject(cpr.getProjectId()));
+		client.deleteUser(cu.getUserId());
+	}
+
+	@Test
+	public void testLicenseArtifacts() throws Exception {
+		MLPUser cu;
+		MLPLicenseProfileTemplate templ;
+		try {
+			// Need a user to create anything
+			cu = null;
+			cu = new MLPUser();
+			cu.setEmail("testrtu@abc.com");
+			cu.setActive(true);
+			cu.setLoginName("rtuuser");
+			cu = client.createUser(cu);
+			Assert.assertNotNull("User ID", cu.getUserId());
+			logger.info("Created user {}", cu);
+			RestPageResponse<MLPLicenseProfileTemplate> templs = client
+					.getLicenseProfileTemplates(new RestPageRequest(0, 5));
+			Assert.assertTrue(templs.isEmpty());
+			templ = new MLPLicenseProfileTemplate("lic name", " { \"foo\":\"bar\" }", 1, cu.getUserId());
+			templ = client.createLicenseProfileTemplate(templ);
+			Assert.assertNotNull(templ.getTemplateId());
+			templs = client.getLicenseProfileTemplates(new RestPageRequest(0, 5));
+			Assert.assertFalse(templs.isEmpty());
+			long prio = 7;
+			templ.setPriority(prio);
+			client.updateLicenseProfileTemplate(templ);
+			templ = client.getLicenseProfileTemplate(templ.getTemplateId());
+			Assert.assertEquals(prio, templ.getPriority());
+			templs = client.getLicenseProfileTemplates(new RestPageRequest(0, 5));
+			Assert.assertNotEquals(0, templs.getNumberOfElements());
+		} catch (HttpStatusCodeException ex) {
+			logger.error("testLicenseArtifacts failed", ex.getResponseBodyAsString());
+			throw ex;
+		}
+
+		try {
+			client.createLicenseProfileTemplate(new MLPLicenseProfileTemplate());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on empty as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.createLicenseProfileTemplate(
+					new MLPLicenseProfileTemplate("name", " { \"tag\" : \"value\" } ", 1, "bogusUserId"));
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("create failed on missing user as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			MLPLicenseProfileTemplate t = new MLPLicenseProfileTemplate("name", " { \"tag\" : \"value\" } ", 1,
+					"bogusUserId");
+			t.setTemplateId(999L);
+			client.updateLicenseProfileTemplate(t);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("update failed on missing as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.deleteLicenseProfileTemplate(0L);
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("delete failed on missing as expected: {}", ex.getResponseBodyAsString());
+		}
+
+		client.deleteLicenseProfileTemplate(templ.getTemplateId());
+		Assert.assertNull(client.getLicenseProfileTemplate(templ.getTemplateId()));
 		client.deleteUser(cu.getUserId());
 	}
 

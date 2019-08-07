@@ -30,6 +30,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
 import org.acumos.cds.domain.MLPPasswordChangeRequest;
@@ -3151,5 +3152,51 @@ public interface ICommonDataServiceRestClient {
 	 *                                         Error message is in the response body
 	 */
 	void dropSolutionUserAccess(String solutionId, String userId) throws RestClientResponseException;
+
+	/**
+	 * Gets a page of license profile templates.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of license profile templates, which may be empty
+	 */
+	RestPageResponse<MLPLicenseProfileTemplate> getLicenseProfileTemplates(RestPageRequest pageRequest);
+
+	/**
+	 * Gets the license profile template with the specified ID.
+	 * 
+	 * @param templateId
+	 *                       License profile template ID
+	 * @return license profile template object
+	 */
+	MLPLicenseProfileTemplate getLicenseProfileTemplate(long templateId);
+
+	/**
+	 * Creates a new license profile template. Generates a new ID.
+	 * 
+	 * @param template
+	 *                     License profile template
+	 * @return Complete object
+	 */
+	MLPLicenseProfileTemplate createLicenseProfileTemplate(MLPLicenseProfileTemplate template);
+
+	/**
+	 * Updates an existing license profile template with the supplied data. Answers
+	 * bad request if the ID is not known.
+	 * 
+	 * @param template
+	 *                     License profile template
+	 */
+	void updateLicenseProfileTemplate(MLPLicenseProfileTemplate template);
+
+	/**
+	 * Deletes the license profile template with the specified ID. Answers bad
+	 * request if the ID is not known.
+	 * 
+	 * @param templateId
+	 *                       license profile template ID
+	 */
+	void deleteLicenseProfileTemplate(long templateId);
 
 }
