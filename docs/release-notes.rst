@@ -24,8 +24,8 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 2.2.6, 1 August 2019
-----------------------------
+Version 2.2.6, 7 Aug 2019
+-------------------------
 * Add query method to get peers for a restricted catalog (`ACUMOS-3298 <https://jira.acumos.org/browse/ACUMOS-3298>`_)
 * Requires database schema version 2.2
 
