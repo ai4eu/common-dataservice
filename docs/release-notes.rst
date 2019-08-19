@@ -24,11 +24,12 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
-Version 3.0.0, 9 Aug 2019
--------------------------
+Version 3.0.0, 19 Aug 2019
+--------------------------
 * Add support for license profiles (`ACUMOS-3160 <https://jira.acumos.org/browse/ACUMOS-3160>`_)
 * Split DDL/DML scripts for image size (`ACUMOS-3321 <https://jira.acumos.org/browse/ACUMOS-3321>`_)
 * Define new DDL/DML scripts for creating a new, or upgrading to, version 3.0 database
+* Compile and run with Java 11, but keep client library compliance level at Java 8.
 * Requires database schema version 3.0
 
 Version 2.2.6, 7 Aug 2019
