@@ -274,7 +274,7 @@
 					<images>
 						<image>
 							<!-- Specify a tag to avoid default tag "latest" -->
-							<name>common-dataservice:${project.version}</name>
+							<name>acumos/common-dataservice:${project.version}</name>
 							<build>
 								<from>openjdk:${java.version}-jre-slim</from>
 								<tags>
