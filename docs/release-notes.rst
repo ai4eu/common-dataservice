@@ -24,6 +24,11 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 3.0.1, 4 Oct 2019
+-------------------------
+* Add task type "DP" - Deployment (`ACUMOS-3467 <https://jira.acumos.org/browse/ACUMOS-3467>`_)
+* Requires database schema version 3.0
+
 Version 3.0.0, 02 Oct 2019
 --------------------------
 * Update license profile templates data to include $schema & rtuRequired (`ACUMOS-3510 <https://jira.acumos.org/browse/ACUMOS-3510>`_)
