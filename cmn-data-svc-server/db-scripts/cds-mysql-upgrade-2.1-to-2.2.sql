@@ -205,5 +205,13 @@ ALTER TABLE C_SOLUTION_REV DROP COLUMN ACCESS_TYPE_CD;
 DROP TABLE C_SOL_REV_DOC_MAP;
 DROP TABLE C_REVISION_DESC;
 
+-- Add html markup around the titles per ACUMOS-3392
+REPLACE INTO C_SITE_CONTENT (CONTENT_KEY, CONTENT_VAL, MIME_TYPE, CREATED_DATE, MODIFIED_DATE) VALUES
+  ('global.discoverAcumos.marketPlace','<h5>Marketplace</h5><p>Acumos is the go-to site for data-powered decision making. With an intuitive easy-to-use Marketplace and Design Studio, Acumos brings AI into the mainstream.</p>','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.designStudio','<h5>Design Studio</h5><p>Because Acumos converts models to microservices, you can apply them to different problems and data sources.</p>','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.sdnOnap','<h5>SDN &amp; ONAP</h5><p>Many Marketplace solutions originated in the ONAP SDN community and are configured to be directly deployed to SDC.</p>','text/plain', NOW(),NOW()),
+  ('global.discoverAcumos.preferredToolkit','<h5>On-Board with your Preferred Toolkit</h5><p>With a focus on interoperability, Acumos supports diverse Al toolkits. Onboarding tools are available for TensorFlow, SciKitLearn, RCloud,  H2O and generic Java.</p>','text/plain', NOW(), NOW()),
+  ('global.discoverAcumos.teamUp','<h5>Team Up!</h5><p>Share, experiment and collaborate in an open source ecosystem of people, solutions and ideas.</p>','text/plain', NOW(), NOW());
+
 -- Record this action in the history
 INSERT INTO C_HISTORY (COMMENT, CREATED_DATE) VALUES ('cds-mysql-upgrade-2.1-to-2.2', NOW());
