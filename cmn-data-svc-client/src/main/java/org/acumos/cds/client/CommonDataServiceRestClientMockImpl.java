@@ -43,10 +43,8 @@ import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevCatDescription;
-import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
-import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolution;
@@ -204,11 +202,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPTask> tasks;
 	private RestPageResponse<MLPTask> searchTasks;
 	private MLPTask task;
-	private MLPRightToUse rightToUse;
-	private RestPageResponse<MLPRightToUse> rightToUses;
-	private List<MLPRightToUse> rightToUseList;
-	private RestPageResponse<MLPRtuReference> refs;
-	private MLPRtuReference ref;
 	private RestPageResponse<MLPSiteConfig> siteConfigs;
 	private RestPageResponse<MLPSiteContent> siteContents;
 	private RestPageResponse<MLPProject> projects;
@@ -225,7 +218,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPPipeline> searchPipelines;
 	private List<String> peerAccessCatalogIds;
 	private List<String> userFavoriteCatalogIds;
-	private List<MLPRightToUse> rtusByReference;
 	private boolean peerAccessToSolution;
 	private boolean userAccessToSolution;
 	private boolean peerAccessToCatalog;
@@ -1792,111 +1784,6 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void deleteTask(long taskId) {
 		this.task = null;
-	}
-
-	public void setRtuReferences(RestPageResponse<MLPRtuReference> refs) {
-		this.refs = refs;
-	}
-
-	@Override
-	public RestPageResponse<MLPRtuReference> getRtuReferences(RestPageRequest pageRequest) {
-		return refs;
-	}
-
-	public void setRtuReference(MLPRtuReference ref) {
-		this.ref = ref;
-	}
-
-	@Override
-	public MLPRtuReference createRtuReference(MLPRtuReference ref) {
-		return this.ref;
-	}
-
-	@Override
-	public void deleteRtuReference(MLPRtuReference ref) {
-		this.ref = null;
-	}
-
-	public void setRightToUse(MLPRightToUse rtu) {
-		this.rightToUse = rtu;
-	}
-
-	@Override
-	public MLPRightToUse getRightToUse(Long rtuId) {
-		return this.rightToUse;
-	}
-
-	public void setRightToUses(RestPageResponse<MLPRightToUse> rtus) {
-		this.rightToUses = rtus;
-	}
-
-	@Override
-	public RestPageResponse<MLPRightToUse> getRightToUses(RestPageRequest pageRequest) {
-		return this.rightToUses;
-	}
-
-	@Override
-	public RestPageResponse<MLPRightToUse> searchRightToUses(Map<String, Object> queryParameters, boolean isOr,
-			RestPageRequest pageRequest) {
-		return this.rightToUses;
-	}
-
-	public void setRightToUseList(List<MLPRightToUse> rtus) {
-		this.rightToUseList = rtus;
-	}
-
-	@Override
-	public List<MLPRightToUse> getRightToUses(String solutionId, String userId) {
-		return this.rightToUseList;
-	}
-
-	@Override
-	public MLPRightToUse createRightToUse(MLPRightToUse rightToUse) {
-		return this.rightToUse;
-	}
-
-	@Override
-	public void updateRightToUse(MLPRightToUse rightToUse) {
-		this.rightToUse = rightToUse;
-	}
-
-	@Override
-	public void deleteRightToUse(Long rtuId) {
-		this.rightToUse = null;
-	}
-
-	@Override
-	public void addRefToRtu(String refId, Long rtuId) {
-		// How to mock?
-	}
-
-	@Override
-	public void dropRefFromRtu(String refId, Long rtuId) {
-		// How to mock?
-	}
-
-	@Override
-	public void addUserToRtu(String userId, Long rtuId) {
-		// How to mock?
-	}
-
-	@Override
-	public void dropUserFromRtu(String userId, Long rtuId) {
-		// How to mock?
-	}
-
-	public void setRtusByReference(List<MLPRightToUse> list) {
-		this.rtusByReference = list;
-	}
-
-	@Override
-	public List<MLPRightToUse> getRtusByReference(String referenceId) {
-		return this.rtusByReference;
-	}
-
-	@Override
-	public List<MLPUser> getRtuUsers(long rtuId) {
-		return Collections.emptyList();
 	}
 
 	public void setProjects(RestPageResponse<MLPProject> results) {

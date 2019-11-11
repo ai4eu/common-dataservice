@@ -40,7 +40,6 @@ import org.acumos.cds.domain.MLPPeerSubscription;
 import org.acumos.cds.domain.MLPPipeline;
 import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
-import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
@@ -1076,58 +1075,6 @@ public class ClientMethodTest {
 		}
 		try {
 			client.getCatalogAccessPeers("catalogId");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getRightToUse(0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getRightToUses(new RestPageRequest());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getRightToUses("solId", "userId");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.createRightToUse(new MLPRightToUse());
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			MLPRightToUse rtu = new MLPRightToUse();
-			rtu.setRtuId(0L);
-			client.updateRightToUse(rtu);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.deleteRightToUse(0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.addUserToRtu("userId", 0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getRtusByReference("refId");
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.getRtuUsers(0L);
-		} catch (ResourceAccessException ex) {
-			logger.info("Client failed as expected: {}", ex.toString());
-		}
-		try {
-			client.dropUserFromRtu("userId", 0L);
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}

@@ -24,6 +24,12 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 3.1.0, 15 Nov 2019
+--------------------------
+* Drop Right To Use entities and controller (`ACUMOS-3460 <https://jira.acumos.org/browse/ACUMOS-3460>`_)
+* Upgrade to Spring-Boot version 2.1.10.RELEASE
+* Requires database schema version 3.1
+
 Version 3.0.1, 29 Oct 2019
 --------------------------
 * Add database script to set password expiration date (`ACUMOS-3605 <https://jira.acumos.org/browse/ACUMOS-3605>`_)

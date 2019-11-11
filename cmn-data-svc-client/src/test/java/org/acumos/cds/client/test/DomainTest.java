@@ -46,10 +46,8 @@ import org.acumos.cds.domain.MLPProject;
 import org.acumos.cds.domain.MLPPublishRequest;
 import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRevCatDocMap;
-import org.acumos.cds.domain.MLPRightToUse;
 import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
-import org.acumos.cds.domain.MLPRtuReference;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolRevArtMap;
@@ -888,68 +886,6 @@ public class DomainTest extends AbstractModelTest {
 		}
 	}
 
-	private void checkMLPRightToUse(MLPRightToUse m) {
-		Assert.assertEquals(t1, m.getCreated());
-		Assert.assertEquals(t2, m.getModified());
-		Assert.assertEquals(l1, m.getRtuId());
-		Assert.assertEquals(s1, m.getSolutionId());
-		Assert.assertEquals(b1, m.isSite());
-		Assert.assertEquals(1, m.getRtuReferences().size());
-	}
-
-	@Test
-	public void testMLPRightToUse() {
-		MLPRightToUse m = new MLPRightToUse(s1, b1);
-		m = new MLPRightToUse();
-		m.setCreated(t1);
-		m.setModified(t2);
-		m.setRtuId(l1);
-		m.setSolutionId(s1);
-		m.setSite(b1);
-		m.getRtuReferences().add(new MLPRtuReference("ref"));
-		checkMLPRightToUse(m);
-		m = new MLPRightToUse(m);
-		checkMLPRightToUse(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			new MLPRightToUse(null, true);
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null arg is rejected
-		}
-	}
-
-	private void checkMLPRtuReference(MLPRtuReference m) {
-		Assert.assertEquals(s1, m.getRef());
-	}
-
-	@Test
-	public void testMLPRtuReference() {
-		MLPRtuReference m = new MLPRtuReference(s1);
-		m = new MLPRtuReference();
-		m.setRef(s1);
-		checkMLPRtuReference(m);
-		m = new MLPRtuReference(m);
-		checkMLPRtuReference(m);
-		Assert.assertFalse(m.equals(null));
-		Assert.assertFalse(m.equals(new Object()));
-		Assert.assertTrue(m.equals(m));
-		Assert.assertNotNull(m.hashCode());
-		logger.info(m.toString());
-		try {
-			String n = null;
-			new MLPRtuReference(n);
-			new MLPRtuReference("");
-			Assert.assertTrue("Unexpected success", false);
-		} catch (IllegalArgumentException iae) {
-			// null or empty arg is rejected
-		}
-	}
-
 	private void checkMLPRole(MLPRole m) {
 		Assert.assertEquals(t1, m.getCreated());
 		Assert.assertEquals(t2, m.getModified());
@@ -1633,7 +1569,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(s4, m.getFirstName());
 		Assert.assertEquals(t2, m.getLastLogin());
 		Assert.assertEquals(s5, m.getLastName());
-		Assert.assertEquals(new Short((short) 0), m.getLoginFailCount());
+		Assert.assertEquals(Short.valueOf((short)0), m.getLoginFailCount());
 		Assert.assertEquals(t3, m.getLoginFailDate());
 		Assert.assertEquals(s6, m.getLoginHash());
 		Assert.assertEquals(s7, m.getLoginName());
