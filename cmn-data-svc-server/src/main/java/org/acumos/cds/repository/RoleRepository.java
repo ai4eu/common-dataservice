@@ -28,6 +28,18 @@ import org.springframework.data.repository.query.Param;
 public interface RoleRepository extends PagingAndSortingRepository<MLPRole, String> {
 
 	/**
+	 * Finds all roles for the specified catalogId.
+	 * 
+	 * @param catalogId
+	 *                      Catalog ID
+	 * @return Iterable of role objects
+	 */
+	@Query(value = "select r from MLPRole r, MLPCatRoleMap m" //
+			+ " where r.roleId =  m.roleId " //
+			+ " and m.catalogId = :catalogId")
+	Iterable<MLPRole> findByCatalog(@Param("catalogId") String catalogId);
+
+	/**
 	 * Finds all roles for the specified userId.
 	 * 
 	 * @param userId

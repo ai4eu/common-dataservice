@@ -35,6 +35,7 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.PublishRequestStatusCode;
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatRoleMap;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
@@ -76,12 +77,12 @@ import org.acumos.cds.domain.MLPUserNotifPref;
 import org.acumos.cds.domain.MLPUserNotification;
 import org.acumos.cds.domain.MLPUserRoleMap;
 import org.acumos.cds.logging.AcumosLogConstants;
+import org.acumos.cds.transport.BatchIdRoleRequest;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.LoginTransport;
 import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
-import org.acumos.cds.transport.UsersRoleRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -1110,7 +1111,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public void addUsersInRole(List<String> userIds, String roleId) {
 		URI uri = buildUri(new String[] { CCDSConstants.USER_PATH, CCDSConstants.ROLE_PATH, roleId }, null, null);
 		logger.debug("addUsersInRole: uri {}", uri);
-		UsersRoleRequest request = new UsersRoleRequest(true, userIds, roleId);
+		BatchIdRoleRequest request = new BatchIdRoleRequest(true, userIds, roleId);
 		restTemplate.put(uri, request);
 	}
 
@@ -1118,7 +1119,7 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	public void dropUsersInRole(List<String> userIds, String roleId) {
 		URI uri = buildUri(new String[] { CCDSConstants.USER_PATH, CCDSConstants.ROLE_PATH, roleId }, null, null);
 		logger.debug("dropUsersInRole: uri {}", uri);
-		UsersRoleRequest request = new UsersRoleRequest(false, userIds, roleId);
+		BatchIdRoleRequest request = new BatchIdRoleRequest(false, userIds, roleId);
 		restTemplate.put(uri, request);
 	}
 
@@ -1132,6 +1133,17 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				new ParameterizedTypeReference<CountTransport>() {
 				});
 		return response.getBody().getCount();
+	}
+
+	@Override
+	public RestPageResponse<MLPUser> getRoleUsers(String roleId, RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.USER_PATH, CCDSConstants.ROLE_PATH, roleId }, null,
+				pageRequest);
+		logger.debug("getRoleUsers: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPUser>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPUser>>() {
+				});
+		return response.getBody();
 	}
 
 	@Override
@@ -2774,6 +2786,91 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 				null, null);
 		logger.debug("deleteLicenseProfileTemplate: url {}", uri);
 		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<MLPRole> getCatalogRoles(String catalogId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.ROLE_PATH }, null, null);
+		logger.debug("getCatalogRoles: uri {}", uri);
+		ResponseEntity<List<MLPRole>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPRole>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addCatalogRole(String catalogId, String roleId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.ROLE_PATH, roleId },
+				null, null);
+		logger.debug("addCatalogRole: uri {}", uri);
+		MLPCatRoleMap map = new MLPCatRoleMap(catalogId, roleId);
+		restTemplate.postForObject(uri, map, SuccessTransport.class);
+	}
+
+	@Override
+	public void updateCatalogRoles(String catalogId, List<String> roleIds) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.ROLE_PATH }, null, null);
+		logger.debug("updateCatalogRoles: uri {}", uri);
+		restTemplate.put(uri, roleIds);
+	}
+
+	@Override
+	public void dropCatalogRole(String catalogId, String roleId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, catalogId, CCDSConstants.ROLE_PATH, roleId },
+				null, null);
+		logger.debug("dropCatalogRole: uri {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public void addCatalogsInRole(List<String> catalogIds, String roleId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.ROLE_PATH, roleId }, null, null);
+		logger.debug("addCatalogsInRole: uri {}", uri);
+		BatchIdRoleRequest request = new BatchIdRoleRequest(true, catalogIds, roleId);
+		restTemplate.put(uri, request);
+	}
+
+	@Override
+	public void dropCatalogsInRole(List<String> catalogIds, String roleId) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.ROLE_PATH, roleId }, null, null);
+		logger.debug("dropCatalogsInRole: uri {}", uri);
+		BatchIdRoleRequest request = new BatchIdRoleRequest(false, catalogIds, roleId);
+		restTemplate.put(uri, request);
+	}
+
+	@Override
+	public long getRoleCatalogsCount(String roleId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.ROLE_PATH, roleId, CCDSConstants.COUNT_PATH },
+				null, null);
+		logger.debug("getRoleCatalogsCount: uri {}", uri);
+		ResponseEntity<CountTransport> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<CountTransport>() {
+				});
+		return response.getBody().getCount();
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> getRoleCatalogs(String roleId, RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.CATALOG_PATH, CCDSConstants.ROLE_PATH, roleId }, null,
+				pageRequest);
+		logger.debug("getRoleCatalogs: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPCatalog>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public List<String> getUserAccessCatalogIds(String userId) {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.USER_PATH, userId, CCDSConstants.CATALOG_PATH },
+				null, null);
+		logger.debug("getUserAccessCatalogIds: uri {}", uri);
+		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<String>>() {
+				});
+		return response.getBody();
 	}
 
 }

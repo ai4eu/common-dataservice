@@ -1242,6 +1242,10 @@ public class CdsControllerTest {
 			Assert.assertEquals(1, role2count);
 			logger.info("Count of users in role 2: {}", role2count);
 
+			RestPageResponse<MLPUser> role2Users = client.getRoleUsers(cr2.getRoleId(), new RestPageRequest());
+			Assert.assertEquals(1, role2Users.getNumberOfElements());
+			logger.info("Size of user list in role 2: {}", role2Users.getNumberOfElements());
+
 			addedRoles = client.getUserRoles(cu.getUserId());
 			Assert.assertNotNull(addedRoles);
 			Assert.assertEquals(2, addedRoles.size());
@@ -1304,9 +1308,9 @@ public class CdsControllerTest {
 			no.setUrl("http://notify1.me");
 			no.setMsgSeverityCode("LO");
 			// An hour ago
-			no.setStart(Instant.now().minusSeconds(60 * 60));
+			no.setStart(Instant.now().minusSeconds(61 * 60));
 			// An hour from now
-			no.setEnd(Instant.now().plusSeconds(60 * 60));
+			no.setEnd(Instant.now().plusSeconds(61 * 60));
 			no = client.createNotification(no);
 			Assert.assertNotNull(no.getNotificationId());
 
@@ -1959,12 +1963,25 @@ public class CdsControllerTest {
 
 		MLPUser cu;
 		MLPPeer pr;
+		MLPRole cr;
+		MLPRole cr2;
 		MLPSolution cs;
 		MLPCatalog ca;
 		MLPCatalog catRes;
 
 		try {
-			cu = null;
+			cr = new MLPRole();
+			cr.setName("something or the other");
+			cr = client.createRole(cr);
+			Assert.assertNotNull(cr.getRoleId());
+			logger.info("Created role: {}", cr);
+
+			cr2 = new MLPRole();
+			cr2.setName("second string");
+			cr2 = client.createRole(cr2);
+			Assert.assertNotNull(cr2.getRoleId());
+			logger.info("Created role: {}", cr2);
+
 			cu = new MLPUser();
 			cu.setEmail("testcatalog@abc.com");
 			cu.setActive(true);
@@ -1972,6 +1989,10 @@ public class CdsControllerTest {
 			cu = client.createUser(cu);
 			Assert.assertNotNull("User ID", cu.getUserId());
 			logger.info("Created user {}", cu);
+
+			client.addUserRole(cu.getUserId(), cr.getRoleId());
+			List<MLPRole> addedRoles = client.getUserRoles(cu.getUserId());
+			Assert.assertEquals(1, addedRoles.size());
 
 			pr = new MLPPeer("Peer-Name-Test-Cat", "cat.fqdn.subject.name.a.b.c", "http://peer-api", true, false,
 					"contact", "AC");
@@ -1994,6 +2015,35 @@ public class CdsControllerTest {
 					new MLPCatalog("RS", false, "restricted catalog name", "them", "http://private.acumos.org"));
 			Assert.assertNotNull("Catalog ID", catRes.getCatalogId());
 			logger.info("Created catalog {}", catRes);
+
+			List<MLPRole> catRoles = client.getCatalogRoles(catRes.getCatalogId());
+			Assert.assertTrue(catRoles.isEmpty());
+			client.addCatalogRole(catRes.getCatalogId(), cr.getRoleId());
+			catRoles = client.getCatalogRoles(catRes.getCatalogId());
+			Assert.assertFalse(catRoles.isEmpty());
+
+			logger.info("Adding role 2 for catalog");
+			List<String> ids = new ArrayList<>();
+			ids.add(ca.getCatalogId());
+			client.addCatalogsInRole(ids, cr2.getRoleId());
+
+			logger.info("Dropping role 2 for catalog");
+			client.dropCatalogsInRole(ids, cr2.getRoleId());
+
+			long roleCatCount = client.getRoleCatalogsCount(cr.getRoleId());
+			Assert.assertEquals(1L, roleCatCount);
+
+			RestPageResponse<MLPCatalog> roleCats = client.getRoleCatalogs(cr.getRoleId(), new RestPageRequest(0, 2));
+			Assert.assertEquals(1L, roleCats.getNumberOfElements());
+
+			List<String> updRoles = new ArrayList<>();
+			updRoles.add(cr.getRoleId());
+			updRoles.add(cr2.getRoleId());
+			client.updateCatalogRoles(catRes.getCatalogId(), updRoles);
+			catRoles = client.getCatalogRoles(catRes.getCatalogId());
+			Assert.assertEquals(2, catRoles.size());
+			List<String> accessibleCatIds = client.getUserAccessCatalogIds(cu.getUserId());
+			Assert.assertEquals(1, accessibleCatIds.size());
 
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
@@ -2136,6 +2186,24 @@ public class CdsControllerTest {
 		} catch (HttpStatusCodeException ex) {
 			logger.info("drop user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
 		}
+		try {
+			client.addCatalogRole("BOGUS", cr.getRoleId());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add catalog role failed on bad cat ID as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.addCatalogRole(ca.getCatalogId(), "bogus");
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("add catalog role failed on bad role as expected: {}", ex.getResponseBodyAsString());
+		}
+		try {
+			client.updateCatalogRoles("bogus", new ArrayList<String>());
+			throw new Exception("Unexpected success");
+		} catch (HttpStatusCodeException ex) {
+			logger.info("drop catalog role failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
+		}
 
 		client.dropPeerAccessCatalog(pr.getPeerId(), catRes.getCatalogId());
 		Assert.assertEquals(0, client.getPeerAccessCatalogIds(cu.getUserId()).size());
@@ -2144,11 +2212,15 @@ public class CdsControllerTest {
 		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
 		Assert.assertEquals(0, client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() }, new RestPageRequest())
 				.getNumberOfElements());
+		client.dropCatalogRole(catRes.getCatalogId(), cr2.getRoleId());
+		client.dropCatalogRole(catRes.getCatalogId(), cr.getRoleId());
 		client.deleteCatalog(catRes.getCatalogId());
 		client.deleteCatalog(ca.getCatalogId());
 		client.deleteSolution(cs.getSolutionId());
 		client.deletePeer(pr.getPeerId());
 		client.deleteUser(cu.getUserId());
+		client.deleteRole(cr2.getRoleId());
+		client.deleteRole(cr.getRoleId());
 	}
 
 	@Test
@@ -2162,9 +2234,9 @@ public class CdsControllerTest {
 			// Need a user to create anything
 			cu = null;
 			cu = new MLPUser();
-			cu.setEmail("testrtu@abc.com");
+			cu.setEmail("testWorkbenchArtifacts@abc.com");
 			cu.setActive(true);
-			cu.setLoginName("rtuuser");
+			cu.setLoginName("workbenchuser");
 			cu = client.createUser(cu);
 			Assert.assertNotNull("User ID", cu.getUserId());
 			logger.info("Created user {}", cu);
@@ -2442,15 +2514,14 @@ public class CdsControllerTest {
 			// Need a user to create anything
 			cu = null;
 			cu = new MLPUser();
-			cu.setEmail("testrtu@abc.com");
+			cu.setEmail("testLicenseArtifacts@abc.com");
 			cu.setActive(true);
-			cu.setLoginName("rtuuser");
+			cu.setLoginName("licuser");
 			cu = client.createUser(cu);
 			Assert.assertNotNull("User ID", cu.getUserId());
 			logger.info("Created user {}", cu);
 			RestPageResponse<MLPLicenseProfileTemplate> templs = client
 					.getLicenseProfileTemplates(new RestPageRequest(0, 5));
-			Assert.assertTrue(templs.isEmpty());
 			templ = new MLPLicenseProfileTemplate("lic name", " { \"foo\":\"bar\" }", 1, cu.getUserId());
 			templ = client.createLicenseProfileTemplate(templ);
 			Assert.assertNotNull(templ.getTemplateId());

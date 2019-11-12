@@ -34,6 +34,7 @@ import org.acumos.cds.domain.MLPPeerCatAccMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPUser;
+import org.acumos.cds.repository.CatRoleMapRepository;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.PeerCatAccMapRepository;
@@ -81,6 +82,8 @@ public class AccessController extends AbstractController {
 
 	@Autowired
 	private CatalogRepository catalogRepository;
+	@Autowired
+	private CatRoleMapRepository catRoleMapRepository;
 	@Autowired
 	private CatSolMapRepository catSolMapRepository;
 	@Autowired
@@ -271,6 +274,15 @@ public class AccessController extends AbstractController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropPeerAccessCatalog failed", ex);
 		}
+	}
+
+	@ApiOperation(value = "Gets the list of catalog IDs accessible to the specified user via role mapping; empty if none are found.", //
+			response = String.class, responseContainer = "List")
+	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/"
+			+ CCDSConstants.CATALOG_PATH, method = RequestMethod.GET)
+	public Iterable<String> getUserAccessCatalogIds(@PathVariable("userId") String userId) {
+		logger.debug("getUserAccessCatalogIds userId {}", userId);
+		return catRoleMapRepository.findCatalogIdsByUserId(userId);
 	}
 
 }

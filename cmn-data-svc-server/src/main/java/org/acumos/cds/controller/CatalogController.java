@@ -23,6 +23,7 @@ package org.acumos.cds.controller;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,19 +32,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.CodeNameType;
 import org.acumos.cds.MLPResponse;
+import org.acumos.cds.domain.MLPCatRoleMap;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCatalog_;
+import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPUserCatFavMap;
+import org.acumos.cds.repository.CatRoleMapRepository;
 import org.acumos.cds.repository.CatSolMapRepository;
 import org.acumos.cds.repository.CatalogRepository;
 import org.acumos.cds.repository.RevCatDescriptionRepository;
 import org.acumos.cds.repository.RevCatDocMapRepository;
+import org.acumos.cds.repository.RoleRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.UserCatFavMapRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.service.CatalogSearchService;
+import org.acumos.cds.transport.BatchIdRoleRequest;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -89,6 +95,8 @@ public class CatalogController extends AbstractController {
 	@Autowired
 	private CatalogRepository catalogRepository;
 	@Autowired
+	private CatRoleMapRepository catalogRoleMapRepository;
+	@Autowired
 	private CatalogSearchService catalogSearchService;
 	@Autowired
 	private CatSolMapRepository catSolMapRepository;
@@ -98,6 +106,8 @@ public class CatalogController extends AbstractController {
 	private RevCatDescriptionRepository revCatDescRepository;
 	@Autowired
 	private RevCatDocMapRepository revCatDocMapRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -376,4 +386,135 @@ public class CatalogController extends AbstractController {
 		}
 	}
 
+	@ApiOperation(value = "Gets the count of catalogs with the specified role.", response = CountTransport.class)
+	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}/"
+			+ CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
+	public CountTransport getRoleCatalogsCount(@PathVariable("roleId") String roleId) {
+		logger.debug("getRoleCatalogsCount: roleId {}", roleId);
+		long count = catalogRoleMapRepository.countRoleCatalogs(roleId);
+		return new CountTransport(count);
+	}
+
+	@ApiOperation(value = "Gets a page of catalogs with the specified role. Answers empty if none are found.", response = MLPCatalog.class, responseContainer = "Page")
+	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.GET)
+	public Page<MLPCatalog> getRoleCatalogs(@PathVariable("roleId") String roleId, Pageable pageRequest) {
+		logger.debug("getRoleCatalogs: roleId {}", roleId);
+		return catalogRoleMapRepository.findCatalogsByRoleId(roleId, pageRequest);
+	}
+
+	@ApiOperation(value = "Gets all roles assigned to the specified catalog ID. Answers empty if none are found.", response = MLPRole.class, responseContainer = "List")
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.ROLE_PATH, method = RequestMethod.GET)
+	public Iterable<MLPRole> getCatalogRoles(@PathVariable("catalogId") String catalogId) {
+		logger.debug("getCatalogRoles: catalogId {}", catalogId);
+		return roleRepository.findByCatalog(catalogId);
+	}
+
+	@ApiOperation(value = "Adds the specified role to the specified catalog's roles. Returns bad request if an ID is not found.", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.POST)
+	public MLPTransportModel addCatalogRole(@PathVariable("catalogId") String catalogId,
+			@PathVariable("roleId") String roleId, HttpServletResponse response) {
+		logger.debug("addCatalogRole: catalogId {}, roleId {}", catalogId, roleId);
+		if (!catalogRepository.findById(catalogId).isPresent()) {
+			logger.warn("addCatalogRole unknown catalog ID {}", catalogId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
+		} else if (!roleRepository.findById(roleId).isPresent()) {
+			logger.warn("addCatalogRole unknown role ID {}", roleId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
+		}
+		catalogRoleMapRepository.save(new MLPCatRoleMap(catalogId, roleId));
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
+	}
+
+	@ApiOperation(value = "Assigns the specified roles to the specified catalog after dropping any existing assignments. Returns bad request if an Id is not found", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.ROLE_PATH, method = RequestMethod.PUT)
+	public MLPTransportModel updateCatalogRoles(@PathVariable("catalogId") String catalogId,
+			@RequestBody List<String> roleIds, HttpServletResponse response) {
+		logger.debug("updateCatalogRoles: catalog {}, roles {}", catalogId, roleIds);
+		if (!catalogRepository.findById(catalogId).isPresent()) {
+			logger.warn("updateCatalogRoles unknown catalog ID {}", catalogId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
+		}
+		for (String roleId : roleIds) {
+			if (!roleRepository.findById(roleId).isPresent()) {
+				logger.warn("updateCatalogRoles unknown role ID {}", roleId);
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
+			}
+		}
+		// Remove all existing role assignments
+		Iterable<MLPCatRoleMap> existing = catalogRoleMapRepository.findByCatalogId(catalogId);
+		catalogRoleMapRepository.deleteAll(existing);
+		// Create new ones
+		for (String roleId : roleIds) {
+			catalogRoleMapRepository.save(new MLPCatRoleMap(catalogId, roleId));
+		}
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
+	}
+
+	@ApiOperation(value = "Removes the specified role from the specified catalog's roles.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{catalogId}/" + CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.DELETE)
+	public MLPTransportModel dropCatalogRole(@PathVariable("catalogId") String catalogId,
+			@PathVariable("roleId") String roleId) {
+		logger.debug("dropCatalogRole: catalogId {} roleId {}", catalogId, roleId);
+		catalogRoleMapRepository.delete(new MLPCatRoleMap(catalogId, roleId));
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
+	}
+
+	@ApiOperation(value = "Adds or removes the specified role for every specified catalog. Returns bad request if an ID is not found.", //
+			response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = CCDSConstants.ROLE_PATH + "/{roleId}", method = RequestMethod.PUT)
+	public MLPTransportModel addOrDropCatalogsInRole(@PathVariable("roleId") String roleId,
+			@RequestBody BatchIdRoleRequest catalogsRoleRequest, HttpServletResponse response) {
+		if (logger.isDebugEnabled())
+			logger.debug("addOrDropCatalogsInRole: role {} catalogs {}", roleId,
+					String.join(", ", catalogsRoleRequest.getIds()));
+		// Validate entire request before making any change
+		if (!roleRepository.findById(roleId).isPresent()) {
+			logger.warn("addOrDropCatalogsInRole unknown role ID {}", roleId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + roleId, null);
+		}
+		if (catalogsRoleRequest.getIds().isEmpty()) {
+			logger.warn("addOrDropCatalogsInRole empty catalog ids");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "No catalogs", null);
+		}
+		for (String catalogId : catalogsRoleRequest.getIds()) {
+			if (!catalogRepository.findById(catalogId).isPresent()) {
+				logger.warn("addOrDropCatalogsInRole unknown catalog ID {}", catalogId);
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + catalogId, null);
+			}
+		}
+		for (String catalogId : catalogsRoleRequest.getIds()) {
+			MLPCatRoleMap.CatalogRoleMapPK pk = new MLPCatRoleMap.CatalogRoleMapPK(catalogId, roleId);
+			boolean exists = catalogRoleMapRepository.findById(pk).isPresent();
+			if (exists && catalogsRoleRequest.isAdd()) {
+				logger.warn("addOrDropCatalogsInRole catalog {} in role", catalogId);
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Catalog already in role " + catalogId,
+						null);
+			} else if (!exists && !catalogsRoleRequest.isAdd()) {
+				logger.warn("addOrDropCatalogsInRole catalog {} not in role", catalogId);
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "Catalog not in role " + catalogId, null);
+			}
+		}
+		for (String catalogId : catalogsRoleRequest.getIds()) {
+			if (catalogsRoleRequest.isAdd())
+				catalogRoleMapRepository.save(new MLPCatRoleMap(catalogId, roleId));
+			else
+				catalogRoleMapRepository.deleteById(new MLPCatRoleMap.CatalogRoleMapPK(catalogId, roleId));
+		}
+		return new SuccessTransport(HttpServletResponse.SC_OK, null);
+	}
 }

@@ -92,7 +92,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * https://jira.spring.io/browse/DATACMNS-1061
  * 
  * @param <T>
- *            Wrapped model class
+ *                Wrapped model class
  */
 public class RestPageResponse<T> extends PageImpl<T> {
 

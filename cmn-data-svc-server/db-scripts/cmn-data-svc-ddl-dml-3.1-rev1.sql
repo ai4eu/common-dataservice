@@ -555,6 +555,14 @@ CREATE TABLE C_LICENSE_PROFILE_TEMPLATE (
   CONSTRAINT C_LICENSE_PROFILE_TEMPLATE_C_USER FOREIGN KEY (USER_ID) REFERENCES C_USER (USER_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE C_CAT_ROLE_MAP (
+  CATALOG_ID CHAR(36) NOT NULL,
+  ROLE_ID CHAR(36) NOT NULL,
+  PRIMARY KEY (CATALOG_ID, ROLE_ID),
+  CONSTRAINT FK_C_CAT_ROLE_MAP_C_CATALOG FOREIGN KEY (CATALOG_ID) REFERENCES C_CATALOG (CATALOG_ID),
+  CONSTRAINT FK_C_CAT_ROLE_MAP_C_ROLE FOREIGN KEY (ROLE_ID) REFERENCES C_ROLE (ROLE_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- For tracking create/upgrade/downgrade; no Java entity
 CREATE TABLE C_HISTORY (
   ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -605,4 +613,4 @@ INSERT INTO C_LICENSE_PROFILE_TEMPLATE (TEMPLATE_NAME, PRIORITY, USER_ID, CREATE
  ('Company-B-Proprietary', 2, '12345678-abcd-90ab-cdef-1234567890ab', NOW(), NOW(), '{ "$schema": "https://raw.githubusercontent.com/acumos/license-manager/master/license-manager-client-library/src/main/resources/schema/1.0.0/license-profile.json", "keyword": "Company-B-Proprietary", "licenseName": "Company B Proprietary License", "copyright": { "year": 2019, "company": "Company B", "suffix": "All Rights Reserved" }, "softwareType": "Machine Learning Model", "companyName": "Company B", "contact": { "name": "Company B Team Member", "URL": "http://Company-B.com", "email": "support@Company-B.com" }, "additionalInfo": "http://Company-B.com/licenses/Company-B-Proprietary", "rtuRequired": true}');
 
 -- Record this action in the history
-INSERT INTO C_HISTORY (COMMENT, CREATED_DATE) VALUES ('cmn-data-svc-ddl-dml-3.0-rev3', NOW());
+INSERT INTO C_HISTORY (COMMENT, CREATED_DATE) VALUES ('cmn-data-svc-ddl-dml-3.1-rev1', NOW());

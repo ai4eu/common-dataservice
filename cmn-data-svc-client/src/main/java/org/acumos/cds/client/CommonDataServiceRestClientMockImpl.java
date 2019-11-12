@@ -117,7 +117,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private MLPUser userById = new MLPUser();
 	private MLPUser user = new MLPUser();
 	private List<MLPRole> userRoles;
-	private long roleUsersCount = 0;
+	private RestPageResponse<MLPUser> roleUsers;
 	private MLPUserLoginProvider userLoginProviderById = new MLPUserLoginProvider();
 	private List<MLPUserLoginProvider> userLoginProviders;
 	private MLPUserLoginProvider userLoginProvider = new MLPUserLoginProvider();
@@ -226,6 +226,9 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<MLPPeer> catalogAccessPeers;
 	private RestPageResponse<MLPLicenseProfileTemplate> licenseTemplates;
 	private MLPLicenseProfileTemplate licenseTemplate;
+	private List<MLPRole> catalogRoles;
+	private RestPageResponse<MLPCatalog> roleCatalogs;
+	private List<String> userAccessCatalogIds;
 
 	/**
 	 * No-argument constructor.
@@ -678,13 +681,18 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		// How to mock?
 	}
 
-	public void setRoleUsersCount(long count) {
-		this.roleUsersCount = count;
+	@Override
+	public long getRoleUsersCount(String roleId) {
+		return roleUsers.getNumberOfElements();
+	}
+
+	public void setRoleUsers(RestPageResponse<MLPUser> page) {
+		this.roleUsers = page;
 	}
 
 	@Override
-	public long getRoleUsersCount(String roleId) {
-		return roleUsersCount;
+	public RestPageResponse<MLPUser> getRoleUsers(String roleId, RestPageRequest pageRequest) {
+		return roleUsers;
 	}
 
 	public void setUserLoginProviderById(MLPUserLoginProvider provider) {
@@ -2066,6 +2074,63 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void deleteLicenseProfileTemplate(long licenseId) {
 		// How to mock?
+	}
+
+	public void setCatalogRoles(List<MLPRole> roles) {
+		this.catalogRoles = roles;
+	}
+
+	@Override
+	public List<MLPRole> getCatalogRoles(String catalogId) {
+		return catalogRoles;
+	}
+
+	@Override
+	public void addCatalogRole(String catalogId, String roleId) {
+		// How to mock?
+	}
+
+	@Override
+	public void updateCatalogRoles(String catalogId, List<String> roleIds) {
+		// How to mock?
+	}
+
+	@Override
+	public void dropCatalogRole(String catalogId, String roleId) {
+		// How to mock?
+	}
+
+	@Override
+	public void addCatalogsInRole(List<String> catalogIds, String roleId) {
+		// How to mock?
+	}
+
+	@Override
+	public void dropCatalogsInRole(List<String> catalogIds, String roleId) {
+		// How to mock?
+	}
+
+	public void setRoleCatalogs(RestPageResponse<MLPCatalog> page) {
+		this.roleCatalogs = page;
+	}
+
+	@Override
+	public long getRoleCatalogsCount(String roleId) {
+		return roleCatalogs.getNumberOfElements();
+	}
+
+	@Override
+	public RestPageResponse<MLPCatalog> getRoleCatalogs(String roleId, RestPageRequest pageRequest) {
+		return roleCatalogs;
+	}
+
+	public void setUserAccessCatalogIds(List<String> ids) {
+		this.userAccessCatalogIds = ids;
+	}
+
+	@Override
+	public List<String> getUserAccessCatalogIds(String userId) {
+		return this.userAccessCatalogIds;
 	}
 
 }

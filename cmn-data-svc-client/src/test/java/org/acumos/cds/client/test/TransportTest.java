@@ -26,13 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.acumos.cds.transport.BatchIdRoleRequest;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.LoginTransport;
 import org.acumos.cds.transport.RestPageRequest;
 import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
-import org.acumos.cds.transport.UsersRoleRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -130,18 +130,23 @@ public class TransportTest extends AbstractModelTest {
 		logger.info(t.toString());
 	}
 
+	private final List<String> idList = new ArrayList<>();
+
+	private void checkBatchIdRoleRequest(BatchIdRoleRequest r) {
+		Assert.assertEquals(b1, r.isAdd());
+		Assert.assertEquals(idList, r.getIds());
+		Assert.assertEquals(s1, r.getRoleId());
+	}
+
 	@Test
-	public void testUsersRoleRequest() {
-		UsersRoleRequest t = new UsersRoleRequest();
-		List<String> l = new ArrayList<>();
-		t = new UsersRoleRequest(true, l, s1);
-		t.setAdd(false);
-		t.setRoleId(s1);
-		t.setUserIds(l);
-		Assert.assertEquals(false, t.isAdd());
-		Assert.assertEquals(s1, t.getRoleId());
-		Assert.assertEquals(l, t.getUserIds());
-		logger.info(t.toString());
+	public void testBatchIdRoleRequest() {
+		BatchIdRoleRequest r = new BatchIdRoleRequest(true, idList, s1);
+		r = new BatchIdRoleRequest();
+		r.setAdd(b1);
+		r.setIds(idList);
+		r.setRoleId(s1);
+		checkBatchIdRoleRequest(r);
+		logger.info(r.toString());
 	}
 
 }

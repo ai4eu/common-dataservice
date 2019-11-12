@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.acumos.cds.domain.MLPArtifact;
+import org.acumos.cds.domain.MLPCatRoleMap;
 import org.acumos.cds.domain.MLPCatSolMap;
 import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
@@ -173,6 +174,40 @@ public class DomainTest extends AbstractModelTest {
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
 		}
+	}
+
+	private void checkMLPCatRoleMap(MLPCatRoleMap m) {
+		Assert.assertEquals(s1, m.getCatalogId());
+		Assert.assertEquals(s2, m.getRoleId());
+	}
+
+	@Test
+	public void testMLPCatRoleMap() {
+		MLPCatRoleMap m = new MLPCatRoleMap(s1, s1);
+		m = new MLPCatRoleMap();
+		m.setCatalogId(s1);
+		m.setRoleId(s2);
+		checkMLPCatRoleMap(m);
+		m = new MLPCatRoleMap(m);
+		checkMLPCatRoleMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPCatRoleMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		MLPCatRoleMap.CatalogRoleMapPK pk = new MLPCatRoleMap.CatalogRoleMapPK();
+		pk = new MLPCatRoleMap.CatalogRoleMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
 	}
 
 	private void checkMLPCatSolMap(MLPCatSolMap m) {
@@ -1569,7 +1604,7 @@ public class DomainTest extends AbstractModelTest {
 		Assert.assertEquals(s4, m.getFirstName());
 		Assert.assertEquals(t2, m.getLastLogin());
 		Assert.assertEquals(s5, m.getLastName());
-		Assert.assertEquals(Short.valueOf((short)0), m.getLoginFailCount());
+		Assert.assertEquals(Short.valueOf((short) 0), m.getLoginFailCount());
 		Assert.assertEquals(t3, m.getLoginFailDate());
 		Assert.assertEquals(s6, m.getLoginHash());
 		Assert.assertEquals(s7, m.getLoginName());

@@ -222,8 +222,9 @@ public class MockClientTest {
 		client.addUsersInRole(stringList, "role");
 		client.dropUsersInRole(stringList, "role");
 
-		client.setRoleUsersCount(count);
-		Assert.assertTrue(count == client.getRoleUsersCount("role"));
+		RestPageResponse<MLPUser> roleUsersList = new RestPageResponse<>();
+		client.setRoleUsers(roleUsersList);
+		Assert.assertEquals(0, client.getRoleUsersCount("role"));
 
 		MLPUserLoginProvider userLoginProvider = new MLPUserLoginProvider();
 		client.setUserLoginProviderById(userLoginProvider);
@@ -611,6 +612,20 @@ public class MockClientTest {
 		client.createLicenseProfileTemplate(template);
 		client.updateLicenseProfileTemplate(template);
 		client.deleteLicenseProfileTemplate(1L);
+
+		List<MLPRole> catRoleList = new ArrayList<>();
+		client.setCatalogRoles(catRoleList);
+		Assert.assertTrue(catRoleList == client.getCatalogRoles("id"));
+		client.addCatalogRole("id", "id");
+		client.updateCatalogRoles("id", stringList);
+		client.dropCatalogRole("user", "role");
+
+		RestPageResponse<MLPCatalog> roleCatalogsList = new RestPageResponse<>();
+		client.setRoleCatalogs(roleCatalogsList);
+		Assert.assertEquals(0, client.getRoleCatalogsCount("role"));
+
+		client.setUserAccessCatalogIds(catalogIds);
+		Assert.assertEquals(catalogIds, client.getUserAccessCatalogIds("userId"));
 	}
 
 }

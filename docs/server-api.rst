@@ -27,10 +27,17 @@ at a URL like the following, but check the server configuration for the exact po
 
     http://localhost:8000/ccds/swagger-ui.html
 
+CDS APIs in Clio Release
+------------------------
+
+This section lists the methods in version 3.0.1, which is the last version in the Clio release.
+
+.. swaggerv2doc:: api/cds-api-docs-3.0.1.json
+
 CDS APIs in Boreas Release
 --------------------------
 
-This section lists the methods in version 2.2.2, which is the third and last version in the Boreas release.
+This section lists the methods in version 2.2.2, which is the last version in the Boreas release.
 
 .. swaggerv2doc:: api/cds-api-docs-2.2.2.json
 

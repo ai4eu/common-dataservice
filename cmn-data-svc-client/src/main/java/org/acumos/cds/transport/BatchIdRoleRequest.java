@@ -23,18 +23,18 @@ package org.acumos.cds.transport;
 import java.util.List;
 
 /**
- * Model for message sent as bulk-modification request.
+ * Model for message sent as role bulk-modification request.
  */
-public class UsersRoleRequest implements MLPTransportModel {
+public class BatchIdRoleRequest implements MLPTransportModel {
 
 	private boolean isAdd;
 	private String roleId;
-	private List<String> userIds;
+	private List<String> ids;
 
 	/**
 	 * Builds an empty object.
 	 */
-	public UsersRoleRequest() {
+	public BatchIdRoleRequest() {
 		// no-arg constructor
 	}
 
@@ -42,15 +42,15 @@ public class UsersRoleRequest implements MLPTransportModel {
 	 * Builds an object with the specified values.
 	 * 
 	 * @param isAdd
-	 *                    If true, add users to role; if false, remove from role.
-	 * @param userIds
-	 *                    List of users to update
+	 *                   If true, add IDs to role; if false, remove from role.
+	 * @param ids
+	 *                   List of IDs to update
 	 * @param roleId
-	 *                    Role ID
+	 *                   Role ID
 	 */
-	public UsersRoleRequest(boolean isAdd, List<String> userIds, String roleId) {
+	public BatchIdRoleRequest(boolean isAdd, List<String> ids, String roleId) {
 		this.isAdd = isAdd;
-		this.userIds = userIds;
+		this.ids = ids;
 		this.roleId = roleId;
 	}
 
@@ -70,17 +70,17 @@ public class UsersRoleRequest implements MLPTransportModel {
 		this.roleId = roleId;
 	}
 
-	public List<String> getUserIds() {
-		return userIds;
+	public List<String> getIds() {
+		return ids;
 	}
 
-	public void setUserIds(List<String> userIds) {
-		this.userIds = userIds;
+	public void setIds(List<String> ids) {
+		this.ids = ids;
 	}
 
 	@Override
 	public String toString() {
-		return this.getClass().getName() + "[add=" + isAdd() + ", roleId=" + roleId + ", userIds=" + userIds + "]";
+		return this.getClass().getName() + "[add=" + isAdd() + ", roleId=" + roleId + ", ids=" + ids + "]";
 	}
 
 }

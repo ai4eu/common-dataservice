@@ -937,6 +937,18 @@ public interface ICommonDataServiceRestClient {
 	long getRoleUsersCount(String roleId);
 
 	/**
+	 * Gets a page of users assigned to the specified role.
+	 * 
+	 * @param roleId
+	 *                        role ID
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of users, which may be empty
+	 */
+	RestPageResponse<MLPUser> getRoleUsers(String roleId, RestPageRequest pageRequest);
+
+	/**
 	 * Gets the login provider for the specified user, provider code and provider
 	 * login.
 	 * 
@@ -3013,5 +3025,107 @@ public interface ICommonDataServiceRestClient {
 	 *                       license profile template ID
 	 */
 	void deleteLicenseProfileTemplate(long templateId);
+
+	/**
+	 * Gets all roles assigned to the specified catalog ID.
+	 * 
+	 * @param catalogId
+	 *                      catalog ID
+	 * @return List of roles, which may be empty
+	 */
+	List<MLPRole> getCatalogRoles(String catalogId);
+
+	/**
+	 * Adds the specified role to the specified catalog's roles.
+	 * 
+	 * @param catalogId
+	 *                      catalog ID
+	 * @param roleId
+	 *                      role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addCatalogRole(String catalogId, String roleId) throws RestClientResponseException;
+
+	/**
+	 * Assigns the specified roles to the specified catalog after dropping any
+	 * existing role assignments.
+	 * 
+	 * @param catalogId
+	 *                      catalog ID
+	 * @param roleIds
+	 *                      List of role IDs
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void updateCatalogRoles(String catalogId, List<String> roleIds) throws RestClientResponseException;
+
+	/**
+	 * Removes the specified role from the specified catalog's roles.
+	 * 
+	 * @param catalogId
+	 *                      catalog ID
+	 * @param roleId
+	 *                      role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropCatalogRole(String catalogId, String roleId) throws RestClientResponseException;
+
+	/**
+	 * Adds the specified role to every specified catalog's roles.
+	 * 
+	 * @param catalogIds
+	 *                       List of catalog IDs
+	 * @param roleId
+	 *                       role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addCatalogsInRole(List<String> catalogIds, String roleId) throws RestClientResponseException;
+
+	/**
+	 * Removes the specified role from every specified catalog's roles.
+	 * 
+	 * @param catalogIds
+	 *                       List of catalog IDs
+	 * @param roleId
+	 *                       role ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropCatalogsInRole(List<String> catalogIds, String roleId) throws RestClientResponseException;
+
+	/**
+	 * Gets count of catalogs with the specified role.
+	 * 
+	 * @param roleId
+	 *                   role ID
+	 * @return Count of catalogs mapped to that role
+	 */
+	long getRoleCatalogsCount(String roleId);
+
+	/**
+	 * Gets a page of catalogs assigned to the specified role.
+	 * 
+	 * @param roleId
+	 *                        role ID
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of catalogs, which may be empty
+	 */
+	RestPageResponse<MLPCatalog> getRoleCatalogs(String roleId, RestPageRequest pageRequest);
+
+	/**
+	 * Gets the list of catalog IDs readable by the specified user via one or more
+	 * roles assigned to both the catalog and the user. The catalogs are expected to
+	 * have restricted access-type codes.
+	 * 
+	 * @param userId
+	 *                   User ID
+	 * @return List of catalog IDs, which may be empty
+	 */
+	List<String> getUserAccessCatalogIds(String userId);
 
 }
