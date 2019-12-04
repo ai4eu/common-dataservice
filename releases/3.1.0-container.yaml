@@ -1,0 +1,10 @@
+---
+distribution_type: container
+container_release_tag: 3.1.0
+container_pull_registry: nexus3.acumos.org:10004
+container_push_registry: nexus3.acumos.org:10002
+project: common-dataservice
+ref: 1c82fdce262ae0b4f158e4b7e859e4bae5e0eb79
+containers:
+    - name: common-dataservice
+      version: 3.1.0
