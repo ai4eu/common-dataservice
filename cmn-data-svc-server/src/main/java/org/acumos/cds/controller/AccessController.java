@@ -276,13 +276,14 @@ public class AccessController extends AbstractController {
 		}
 	}
 
-	@ApiOperation(value = "Gets the list of catalog IDs accessible to the specified user via role mapping; empty if none are found.", //
-			response = String.class, responseContainer = "List")
+	@ApiOperation(value = "Gets a page of catalogs accessible to the specified user, which includes public catalogs and restricted catalogs via catalog-role and user-role mappings; empty if none are found.", //
+			response = MLPCatalog.class, responseContainer = "Page")
+	@ApiPageable
 	@RequestMapping(value = CCDSConstants.USER_PATH + "/{userId}/"
 			+ CCDSConstants.CATALOG_PATH, method = RequestMethod.GET)
-	public Iterable<String> getUserAccessCatalogIds(@PathVariable("userId") String userId) {
-		logger.debug("getUserAccessCatalogIds userId {}", userId);
-		return catRoleMapRepository.findCatalogIdsByUserId(userId);
+	public Page<MLPCatalog> getUserAccessCatalogs(@PathVariable("userId") String userId, Pageable pageable) {
+		logger.debug("getUserAccessCatalogs: user {}", userId);
+		return catRoleMapRepository.findCatalogsByUserId(userId, pageable);
 	}
 
 }

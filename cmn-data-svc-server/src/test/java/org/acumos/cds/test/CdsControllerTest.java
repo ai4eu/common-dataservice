@@ -1172,12 +1172,12 @@ public class CdsControllerTest {
 			logger.info("Created user with ID {}", cu.getUserId());
 
 			MLPRole cr = new MLPRole();
-			cr.setName("something or the other");
+			cr.setName("test role and functions role");
 			cr = client.createRole(cr);
 			Assert.assertNotNull(cr.getRoleId());
 			logger.info("Created role: {}", cr);
 
-			final String roleName = "My test role";
+			final String roleName = "test roleFn name updated";
 			cr.setName(roleName);
 			client.updateRole(cr);
 
@@ -1963,25 +1963,13 @@ public class CdsControllerTest {
 
 		MLPUser cu;
 		MLPPeer pr;
-		MLPRole cr;
+		MLPRole cr1;
 		MLPRole cr2;
 		MLPSolution cs;
-		MLPCatalog ca;
-		MLPCatalog catRes;
+		MLPCatalog pubCat;
+		MLPCatalog resCat;
 
 		try {
-			cr = new MLPRole();
-			cr.setName("something or the other");
-			cr = client.createRole(cr);
-			Assert.assertNotNull(cr.getRoleId());
-			logger.info("Created role: {}", cr);
-
-			cr2 = new MLPRole();
-			cr2.setName("second string");
-			cr2 = client.createRole(cr2);
-			Assert.assertNotNull(cr2.getRoleId());
-			logger.info("Created role: {}", cr2);
-
 			cu = new MLPUser();
 			cu.setEmail("testcatalog@abc.com");
 			cu.setActive(true);
@@ -1990,7 +1978,19 @@ public class CdsControllerTest {
 			Assert.assertNotNull("User ID", cu.getUserId());
 			logger.info("Created user {}", cu);
 
-			client.addUserRole(cu.getUserId(), cr.getRoleId());
+			cr1 = new MLPRole();
+			cr1.setName("test catalogs role 1");
+			cr1 = client.createRole(cr1);
+			Assert.assertNotNull(cr1.getRoleId());
+			logger.info("Created role: {}", cr1);
+
+			cr2 = new MLPRole();
+			cr2.setName("test cats role 2");
+			cr2 = client.createRole(cr2);
+			Assert.assertNotNull(cr2.getRoleId());
+			logger.info("Created role: {}", cr2);
+
+			client.addUserRole(cu.getUserId(), cr1.getRoleId());
 			List<MLPRole> addedRoles = client.getUserRoles(cu.getUserId());
 			Assert.assertEquals(1, addedRoles.size());
 
@@ -2005,45 +2005,16 @@ public class CdsControllerTest {
 			Assert.assertNotNull("Solution ID", cs.getSolutionId());
 			logger.info("Created solution {}", cs);
 
-			ca = client.createCatalog(new MLPCatalog("PB", true, "unicorn", "publ", "http://pub.org"));
-			Assert.assertNotNull("Catalog ID", ca.getCatalogId());
-			logger.info("Created catalog {}", ca);
-			ca.setDescription("Catalog description");
-			client.updateCatalog(ca);
+			pubCat = client.createCatalog(new MLPCatalog("PB", true, "public for cat test", "publ", "http://pub.org"));
+			Assert.assertNotNull("Catalog ID", pubCat.getCatalogId());
+			logger.info("Created catalog {}", pubCat);
+			pubCat.setDescription("Catalog description");
+			client.updateCatalog(pubCat);
 
-			catRes = client.createCatalog(
-					new MLPCatalog("RS", false, "restricted catalog name", "them", "http://private.acumos.org"));
-			Assert.assertNotNull("Catalog ID", catRes.getCatalogId());
-			logger.info("Created catalog {}", catRes);
-
-			List<MLPRole> catRoles = client.getCatalogRoles(catRes.getCatalogId());
-			Assert.assertTrue(catRoles.isEmpty());
-			client.addCatalogRole(catRes.getCatalogId(), cr.getRoleId());
-			catRoles = client.getCatalogRoles(catRes.getCatalogId());
-			Assert.assertFalse(catRoles.isEmpty());
-
-			logger.info("Adding role 2 for catalog");
-			List<String> ids = new ArrayList<>();
-			ids.add(ca.getCatalogId());
-			client.addCatalogsInRole(ids, cr2.getRoleId());
-
-			logger.info("Dropping role 2 for catalog");
-			client.dropCatalogsInRole(ids, cr2.getRoleId());
-
-			long roleCatCount = client.getRoleCatalogsCount(cr.getRoleId());
-			Assert.assertEquals(1L, roleCatCount);
-
-			RestPageResponse<MLPCatalog> roleCats = client.getRoleCatalogs(cr.getRoleId(), new RestPageRequest(0, 2));
-			Assert.assertEquals(1L, roleCats.getNumberOfElements());
-
-			List<String> updRoles = new ArrayList<>();
-			updRoles.add(cr.getRoleId());
-			updRoles.add(cr2.getRoleId());
-			client.updateCatalogRoles(catRes.getCatalogId(), updRoles);
-			catRoles = client.getCatalogRoles(catRes.getCatalogId());
-			Assert.assertEquals(2, catRoles.size());
-			List<String> accessibleCatIds = client.getUserAccessCatalogIds(cu.getUserId());
-			Assert.assertEquals(1, accessibleCatIds.size());
+			resCat = client.createCatalog(
+					new MLPCatalog("RS", false, "restr for cat test", "them", "http://restr.acumos.org"));
+			Assert.assertNotNull("Catalog ID", resCat.getCatalogId());
+			logger.info("Created catalog {}", resCat);
 
 			RestPageResponse<MLPCatalog> catalogs = client.getCatalogs(new RestPageRequest(0, 2, "name"));
 			Assert.assertNotNull(catalogs);
@@ -2053,22 +2024,22 @@ public class CdsControllerTest {
 			Assert.assertFalse(catPubs.isEmpty());
 
 			HashMap<String, Object> queryParameters = new HashMap<>();
-			queryParameters.put("name", ca.getName());
+			queryParameters.put("name", pubCat.getName());
 			RestPageResponse<MLPCatalog> searchCatalogs = client.searchCatalogs(queryParameters, true,
 					new RestPageRequest(0, 2, "name"));
 			Assert.assertEquals(1, searchCatalogs.getNumberOfElements());
 
-			MLPCatalog c2 = client.getCatalog(ca.getCatalogId());
-			Assert.assertEquals(ca, c2);
+			MLPCatalog c2 = client.getCatalog(pubCat.getCatalogId());
+			Assert.assertEquals(pubCat, c2);
 
-			Assert.assertTrue(client.isPeerAccessToCatalog(pr.getPeerId(), ca.getCatalogId()));
-			Assert.assertFalse(client.isPeerAccessToCatalog(pr.getPeerId(), catRes.getCatalogId()));
+			Assert.assertTrue(client.isPeerAccessToCatalog(pr.getPeerId(), pubCat.getCatalogId()));
+			Assert.assertFalse(client.isPeerAccessToCatalog(pr.getPeerId(), resCat.getCatalogId()));
 			Assert.assertFalse(client.isPeerAccessToSolution(pr.getPeerId(), cs.getSolutionId()));
 
-			client.addSolutionToCatalog(cs.getSolutionId(), ca.getCatalogId());
+			client.addSolutionToCatalog(cs.getSolutionId(), pubCat.getCatalogId());
 			Assert.assertTrue(client.isPeerAccessToSolution(pr.getPeerId(), cs.getSolutionId()));
 
-			RestPageResponse<MLPSolution> sols = client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() },
+			RestPageResponse<MLPSolution> sols = client.getSolutionsInCatalogs(new String[] { pubCat.getCatalogId() },
 					new RestPageRequest());
 			Assert.assertNotNull(sols);
 			Assert.assertEquals(1, sols.getNumberOfElements());
@@ -2077,16 +2048,57 @@ public class CdsControllerTest {
 			Assert.assertNotNull(cats);
 			Assert.assertEquals(1, cats.size());
 
-			client.addPeerAccessCatalog(pr.getPeerId(), catRes.getCatalogId());
+			client.addPeerAccessCatalog(pr.getPeerId(), resCat.getCatalogId());
 			List<String> peerAcc = client.getPeerAccessCatalogIds(pr.getPeerId());
 			Assert.assertEquals(1, peerAcc.size());
-			List<MLPPeer> accessPeers = client.getCatalogAccessPeers(catRes.getCatalogId());
+			List<MLPPeer> accessPeers = client.getCatalogAccessPeers(resCat.getCatalogId());
 			Assert.assertEquals(1, accessPeers.size());
 
-			client.addUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
+			client.addUserFavoriteCatalog(cu.getUserId(), pubCat.getCatalogId());
 			List<String> userFavs = client.getUserFavoriteCatalogIds(cu.getUserId());
 			Assert.assertEquals(1, userFavs.size());
 
+			List<MLPRole> catRoles = client.getCatalogRoles(resCat.getCatalogId());
+			Assert.assertTrue(catRoles.isEmpty());
+
+			logger.info("Adding role 1 for restr catalog");
+			client.addCatalogRole(resCat.getCatalogId(), cr1.getRoleId());
+			catRoles = client.getCatalogRoles(resCat.getCatalogId());
+			Assert.assertTrue(catRoles.contains(cr1));
+
+			logger.info("Adding role 2 for restr catalog");
+			List<String> ids = new ArrayList<>();
+			ids.add(resCat.getCatalogId());
+			client.addCatalogsInRole(ids, cr2.getRoleId());
+			catRoles = client.getCatalogRoles(resCat.getCatalogId());
+			Assert.assertTrue(catRoles.contains(cr2));
+
+			logger.info("Dropping role 2 for restr catalog");
+			client.dropCatalogsInRole(ids, cr2.getRoleId());
+			catRoles = client.getCatalogRoles(resCat.getCatalogId());
+			Assert.assertFalse(catRoles.contains(cr2));
+
+			long roleCatCount = client.getRoleCatalogsCount(cr1.getRoleId());
+			Assert.assertEquals(1L, roleCatCount);
+
+			RestPageResponse<MLPCatalog> roleCats = client.getRoleCatalogs(cr1.getRoleId(), new RestPageRequest(0, 2));
+			Assert.assertTrue(roleCats.getContent().contains(resCat));
+
+			logger.info("Updating restr catalog role");
+			List<String> updRoles = new ArrayList<>();
+			updRoles.add(cr1.getRoleId());
+			updRoles.add(cr2.getRoleId());
+			client.updateCatalogRoles(resCat.getCatalogId(), updRoles);
+			catRoles = client.getCatalogRoles(resCat.getCatalogId());
+			Assert.assertTrue(catRoles.contains(cr1));
+			Assert.assertTrue(catRoles.contains(cr2));
+
+			// MariaDB has several accessible catalogs, not just the two created here
+			RestPageResponse<MLPCatalog> accessibleCats = client.getUserAccessCatalogs(cu.getUserId(),
+					new RestPageRequest(0, 5));
+			logger.info("User acc catalog count {}", accessibleCats.getContent().size());
+			Assert.assertTrue(accessibleCats.getContent().contains(pubCat));
+			Assert.assertTrue(accessibleCats.getContent().contains(resCat));
 		} catch (HttpStatusCodeException ex) {
 			logger.error("testCatalogs failed {}", ex.getResponseBodyAsString());
 			throw ex;
@@ -2102,7 +2114,7 @@ public class CdsControllerTest {
 		}
 		try {
 			MLPCatalog c = new MLPCatalog("PB", false, "name", "IDK", "http://pub.org");
-			c.setCatalogId(ca.getCatalogId());
+			c.setCatalogId(pubCat.getCatalogId());
 			client.createCatalog(c);
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
@@ -2131,7 +2143,7 @@ public class CdsControllerTest {
 			logger.info("update missing catalog failed as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			MLPCatalog c = new MLPCatalog(ca);
+			MLPCatalog c = new MLPCatalog(pubCat);
 			c.setAccessTypeCode("bogus");
 			client.updateCatalog(c);
 			throw new Exception("Unexpected success");
@@ -2139,7 +2151,7 @@ public class CdsControllerTest {
 			logger.info("update catalog failed on bad acc type as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.addSolutionToCatalog("bogus", ca.getCatalogId());
+			client.addSolutionToCatalog("bogus", pubCat.getCatalogId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add solution to catalog failed on bad sol id as expected: {}", ex.getResponseBodyAsString());
@@ -2151,7 +2163,7 @@ public class CdsControllerTest {
 			logger.info("add solution to catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.addPeerAccessCatalog("bogus", ca.getCatalogId());
+			client.addPeerAccessCatalog("bogus", pubCat.getCatalogId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add peer access catalog failed on bad peer id as expected: {}", ex.getResponseBodyAsString());
@@ -2163,13 +2175,13 @@ public class CdsControllerTest {
 			logger.info("add peer access catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.dropPeerAccessCatalog("bogus", ca.getCatalogId());
+			client.dropPeerAccessCatalog("bogus", pubCat.getCatalogId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("drop peer access catalog failed on bad id as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.addUserFavoriteCatalog("bogus", ca.getCatalogId());
+			client.addUserFavoriteCatalog("bogus", pubCat.getCatalogId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
@@ -2181,19 +2193,19 @@ public class CdsControllerTest {
 			logger.info("add user fave catalog failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.dropUserFavoriteCatalog("bogus", ca.getCatalogId());
+			client.dropUserFavoriteCatalog("bogus", pubCat.getCatalogId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("drop user fave catalog failed on bad user id as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.addCatalogRole("BOGUS", cr.getRoleId());
+			client.addCatalogRole("BOGUS", cr1.getRoleId());
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add catalog role failed on bad cat ID as expected: {}", ex.getResponseBodyAsString());
 		}
 		try {
-			client.addCatalogRole(ca.getCatalogId(), "bogus");
+			client.addCatalogRole(pubCat.getCatalogId(), "bogus");
 			throw new Exception("Unexpected success");
 		} catch (HttpStatusCodeException ex) {
 			logger.info("add catalog role failed on bad role as expected: {}", ex.getResponseBodyAsString());
@@ -2205,22 +2217,23 @@ public class CdsControllerTest {
 			logger.info("drop catalog role failed on bad cat id as expected: {}", ex.getResponseBodyAsString());
 		}
 
-		client.dropPeerAccessCatalog(pr.getPeerId(), catRes.getCatalogId());
+		client.dropPeerAccessCatalog(pr.getPeerId(), resCat.getCatalogId());
 		Assert.assertEquals(0, client.getPeerAccessCatalogIds(cu.getUserId()).size());
-		client.dropUserFavoriteCatalog(cu.getUserId(), ca.getCatalogId());
+		client.dropUserFavoriteCatalog(cu.getUserId(), pubCat.getCatalogId());
 		Assert.assertEquals(0, client.getUserFavoriteCatalogIds(cu.getUserId()).size());
-		client.dropSolutionFromCatalog(cs.getSolutionId(), ca.getCatalogId());
-		Assert.assertEquals(0, client.getSolutionsInCatalogs(new String[] { ca.getCatalogId() }, new RestPageRequest())
-				.getNumberOfElements());
-		client.dropCatalogRole(catRes.getCatalogId(), cr2.getRoleId());
-		client.dropCatalogRole(catRes.getCatalogId(), cr.getRoleId());
-		client.deleteCatalog(catRes.getCatalogId());
-		client.deleteCatalog(ca.getCatalogId());
+		client.dropSolutionFromCatalog(cs.getSolutionId(), pubCat.getCatalogId());
+		Assert.assertEquals(0,
+				client.getSolutionsInCatalogs(new String[] { pubCat.getCatalogId() }, new RestPageRequest())
+						.getNumberOfElements());
+		client.dropCatalogRole(resCat.getCatalogId(), cr2.getRoleId());
+		client.dropCatalogRole(resCat.getCatalogId(), cr1.getRoleId());
+		client.deleteCatalog(resCat.getCatalogId());
+		client.deleteCatalog(pubCat.getCatalogId());
 		client.deleteSolution(cs.getSolutionId());
 		client.deletePeer(pr.getPeerId());
 		client.deleteUser(cu.getUserId());
 		client.deleteRole(cr2.getRoleId());
-		client.deleteRole(cr.getRoleId());
+		client.deleteRole(cr1.getRoleId());
 	}
 
 	@Test

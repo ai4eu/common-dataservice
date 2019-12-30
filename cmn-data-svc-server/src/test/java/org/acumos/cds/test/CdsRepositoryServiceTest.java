@@ -1144,11 +1144,6 @@ public class CdsRepositoryServiceTest {
 	@Test
 	public void testRoleAndFunctions() throws Exception {
 		try {
-			MLPCatalog cat = new MLPCatalog("RS", true, "name", "pname", "http://pub.org");
-			cat = catalogRepository.save(cat);
-			Assert.assertNotNull("Catalog ID", cat.getCatalogId());
-			logger.info("Created restricted catalog {}", cat);
-
 			MLPUser cu = null;
 			cu = new MLPUser();
 			cu.setActive(true);
@@ -1156,13 +1151,31 @@ public class CdsRepositoryServiceTest {
 			cu.setEmail("testrolefnrepouser@abc.com");
 			cu = userRepository.save(cu);
 			Assert.assertNotNull(cu.getUserId());
+			logger.info("Created test user {}", cu);
 
-			logger.info("Creating test role");
 			MLPRole cr = new MLPRole();
-			cr.setName("My test role");
+			cr.setName("test role and fn role");
 			cr.setActive(true);
 			cr = roleRepository.save(cr);
 			Assert.assertNotNull(cr.getRoleId());
+			logger.info("Created test role {}", cr);
+
+			MLPCatalog pubCat = new MLPCatalog("PB", true, "pub cat name", "publisher 1", "http://pub.org");
+			pubCat = catalogRepository.save(pubCat);
+			Assert.assertNotNull("Catalog ID", pubCat.getCatalogId());
+			logger.info("Created public catalog {}", pubCat);
+
+			// This one SHOULD be accessible to the user via a role
+			MLPCatalog rsCat1 = new MLPCatalog("RS", true, "restr cat name 1", "publisher 2", "http://one.restr.org");
+			rsCat1 = catalogRepository.save(rsCat1);
+			Assert.assertNotNull("Catalog ID", rsCat1.getCatalogId());
+			logger.info("Created restricted catalog 1 {}", rsCat1);
+
+			// This one should not be accessible to the user
+			MLPCatalog rsCat2 = new MLPCatalog("RS", true, "restr cat name 2", "publisher 2", "http://two.restr.org");
+			rsCat2 = catalogRepository.save(rsCat2);
+			Assert.assertNotNull("Catalog ID", rsCat2.getCatalogId());
+			logger.info("Created restricted catalog 2 {}", rsCat2);
 
 			logger.info("Searching for role");
 			Page<MLPRole> searchRoles = roleSearchService.findRoles(cr.getName(), Boolean.TRUE, false,
@@ -1188,9 +1201,9 @@ public class CdsRepositoryServiceTest {
 			MLPRoleFunction roleFuncOne = resrf.iterator().next();
 			Assert.assertEquals(roleFuncName, roleFuncOne.getName());
 
-			logger.info("Assigning role to catalog");
-			catalogRoleMapRepository.save(new MLPCatRoleMap(cat.getCatalogId(), cr.getRoleId()));
-			Iterable<MLPRole> catRoles = roleRepository.findByCatalog(cat.getCatalogId());
+			logger.info("Assigning role to restricted catalog");
+			catalogRoleMapRepository.save(new MLPCatRoleMap(rsCat1.getCatalogId(), cr.getRoleId()));
+			Iterable<MLPRole> catRoles = roleRepository.findByCatalog(rsCat1.getCatalogId());
 			Assert.assertTrue(catRoles.iterator().hasNext());
 
 			logger.info("Assigning role to user");
@@ -1202,27 +1215,28 @@ public class CdsRepositoryServiceTest {
 			Assert.assertNotEquals(0, catalogsInRoleCount);
 			logger.info("Count of catalogs in role: {}", catalogsInRoleCount);
 
+			logger.info("Finding catalogs by role");
 			Page<MLPCatalog> catalogsInRole = catalogRoleMapRepository.findCatalogsByRoleId(cr.getRoleId(),
 					PageRequest.of(0, 5));
-			Assert.assertNotEquals(0, catalogsInRole.getNumberOfElements());
+			Assert.assertEquals(catalogsInRoleCount, catalogsInRole.getNumberOfElements());
 
-			logger.info("Removing catalog from role");
-			catalogRoleMapRepository.deleteById(new MLPCatRoleMap.CatalogRoleMapPK(cat.getCatalogId(), cr.getRoleId()));
+			logger.info("Checking that user has access to one PB and one RS catalog");
+			Page<MLPCatalog> catalogsForUser = catalogRoleMapRepository.findCatalogsByUserId(cu.getUserId(),
+					PageRequest.of(0, 10)); // database has extra catalogs so leave room in the page
+			Assert.assertTrue(catalogsForUser.getContent().contains(pubCat));
+			Assert.assertTrue(catalogsForUser.getContent().contains(rsCat1));
+			Assert.assertFalse(catalogsForUser.getContent().contains(rsCat2));
 
-			logger.info("Removing user from role");
+			logger.info("Cleaning up user, catalog, roles etc.");
+			catalogRoleMapRepository
+					.deleteById(new MLPCatRoleMap.CatalogRoleMapPK(rsCat1.getCatalogId(), cr.getRoleId()));
 			userRoleMapRepository.deleteById(new MLPUserRoleMap.UserRoleMapPK(cu.getUserId(), cr.getRoleId()));
-
-			logger.info("Deleting test user");
-			userRepository.deleteById(cu.getUserId());
-
-			logger.info("Deleting test catalog");
-			catalogRepository.deleteById(cat.getCatalogId());
-
-			logger.info("Deleting test role function");
+			catalogRepository.deleteById(rsCat2.getCatalogId());
+			catalogRepository.deleteById(rsCat1.getCatalogId());
+			catalogRepository.deleteById(pubCat.getCatalogId());
 			roleFunctionRepository.delete(roleFuncOne);
-
-			logger.info("Deleting test role");
 			roleRepository.deleteById(cr.getRoleId());
+			userRepository.deleteById(cu.getUserId());
 		} catch (Exception ex) {
 			logger.error("testRoleAndFunctions failed", ex);
 			throw ex;
@@ -1244,10 +1258,10 @@ public class CdsRepositoryServiceTest {
 			no.setMessage("notif msg");
 			no.setUrl("http://notify.me");
 			no.setMsgSeverityCode("HI");
-			// Start an hour ago
-			no.setStart(Instant.now().minusSeconds(60 * 60));
-			// End an hour from now
-			no.setEnd(Instant.now().plusSeconds(60 * 60));
+			// Start two hours ago
+			no.setStart(Instant.now().minusSeconds(2 * 60 * 60));
+			// End two hours from now
+			no.setEnd(Instant.now().plusSeconds(2 * 60 * 60));
 			no = notificationRepository.save(no);
 			Assert.assertNotNull(no.getNotificationId());
 

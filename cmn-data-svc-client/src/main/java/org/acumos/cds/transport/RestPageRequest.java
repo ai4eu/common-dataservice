@@ -25,7 +25,8 @@ import java.util.Map;
 
 /**
  * Pagination and sorting information that can be transmitted via GET query
- * parameters.
+ * parameters. A sort criterion is technically optional but for reproducible
+ * results one (or more) should always be specified.
  */
 public class RestPageRequest {
 
@@ -41,8 +42,11 @@ public class RestPageRequest {
 	}
 
 	/**
-	 * Convenience constructor that sets the field-to-direction map to null.
+	 * Convenience constructor that sets the field-to-direction map to null. This
+	 * should only be used in special cases, because a field should always be
+	 * specified to avoid random ordering of results.
 	 * 
+	 * @see #RestPageRequest(int, int, String...)
 	 * @param page
 	 *                 Page to fetch indexed from zero
 	 * @param size
@@ -79,7 +83,7 @@ public class RestPageRequest {
 	 * @param size
 	 *                          Size of page
 	 * @param fieldToDirMap
-	 *                          Sort fields and direction ("ASC" or "DESC")
+	 *                          Map of sort fields and direction ("ASC" or "DESC")
 	 */
 	public RestPageRequest(int page, int size, Map<String, String> fieldToDirMap) {
 		this.page = page;
@@ -103,12 +107,25 @@ public class RestPageRequest {
 		this.size = size;
 	}
 
+	/**
+	 * Gets the field-to-direction map. This is initially null.
+	 * 
+	 * @return Map of sort field names and direction ("ASC" or "DESC")
+	 * 
+	 */
 	public Map<String, String> getFieldToDirectionMap() {
 		return fieldToDirectionMap;
 	}
 
-	public void setFieldToDirectionMap(Map<String, String> fieldToDirectionMap) {
-		this.fieldToDirectionMap = fieldToDirectionMap;
+	/**
+	 * Sets the field-to-direction map.
+	 * 
+	 * @param fieldToDirMap
+	 *                          Map of sort field names and direction ("ASC" or
+	 *                          "DESC")
+	 */
+	public void setFieldToDirectionMap(Map<String, String> fieldToDirMap) {
+		this.fieldToDirectionMap = fieldToDirMap;
 	}
 
 }

@@ -3118,14 +3118,17 @@ public interface ICommonDataServiceRestClient {
 	RestPageResponse<MLPCatalog> getRoleCatalogs(String roleId, RestPageRequest pageRequest);
 
 	/**
-	 * Gets the list of catalog IDs readable by the specified user via one or more
-	 * roles assigned to both the catalog and the user. The catalogs are expected to
-	 * have restricted access-type codes.
+	 * Gets a page of catalogs accessible to the specified user, which includes
+	 * public catalogs and restricted catalogs via catalog-role and user-role
+	 * mappings.
 	 * 
 	 * @param userId
-	 *                   User ID
-	 * @return List of catalog IDs, which may be empty
+	 *                        user ID
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of catalogs, which may be empty
 	 */
-	List<String> getUserAccessCatalogIds(String userId);
+	RestPageResponse<MLPCatalog> getUserAccessCatalogs(String userId, RestPageRequest pageRequest);
 
 }

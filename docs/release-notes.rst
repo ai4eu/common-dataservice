@@ -27,6 +27,7 @@ available as a Docker image in the Acumos/LF Docker registry.
 Version 3.1.1, 31 Dec 2019
 --------------------------
 * Add artifact-type code CO (`ACUMOS-3778 <https://jira.acumos.org/browse/ACUMOS-3778>`_)
+* Revise methods to get user-accessible catalogs (`ACUMOS-3878 <https://jira.acumos.org/browse/ACUMOS-3878>`_)
 * Requires database schema version 3.1
 
 Version 3.1.0, 3 Dec 2019

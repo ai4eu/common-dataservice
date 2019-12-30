@@ -67,19 +67,23 @@ public interface CatRoleMapRepository extends CrudRepository<MLPCatRoleMap, MLPC
 	Iterable<MLPCatRoleMap> findByCatalogId(@Param("catalogId") String catalogId);
 
 	/**
-	 * 
-	 * Gets IDs for catalogs with access specially granted to the user. These are
-	 * expected to be restricted.
-	 * 
-	 * Maybe this doesn't quite fit in this repository, but where else?
+	 * Gets a page of all catalogs accessible to the specified user by joining on
+	 * the catalog-role and user-role mapping tables. This includes catalogs with
+	 * access type code PB; i.e., unrestricted.
 	 * 
 	 * @param userId
-	 *                   User ID
-	 * @return Iterable of String
+	 *                     User ID
+	 * @param pageable
+	 *                     Page and sort criteria
+	 * @return Page of MLPCatalog
 	 */
-	@Query(value = " SELECT crm.catalogId FROM MLPCatRoleMap crm, MLPUserRoleMap urm "
-			+ "  WHERE crm.roleId = urm.roleId " //
+	@Query(value = "SELECT DISTINCT c from MLPCatalog c, MLPCatRoleMap crm, MLPUserRoleMap urm " //
+			+ "  WHERE c.accessTypeCode = 'PB'" //
+			+ "    OR " //
+			+ "        c.accessTypeCode != 'PB' " //
+			+ "    AND c.catalogId = crm.catalogId " //
+			+ "    AND crm.roleId = urm.roleId " //
 			+ "    AND urm.userId = :userId")
-	Iterable<String> findCatalogIdsByUserId(@Param("userId") String userId);
+	Page<MLPCatalog> findCatalogsByUserId(@Param("userId") String userId, Pageable pageable);
 
 }

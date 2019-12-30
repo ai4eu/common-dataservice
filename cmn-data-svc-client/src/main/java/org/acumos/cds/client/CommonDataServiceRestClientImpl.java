@@ -2862,13 +2862,13 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 	}
 
 	@Override
-	public List<String> getUserAccessCatalogIds(String userId) {
+	public RestPageResponse<MLPCatalog> getUserAccessCatalogs(String userId, RestPageRequest pageRequest) {
 		URI uri = buildUri(
 				new String[] { CCDSConstants.ACCESS_PATH, CCDSConstants.USER_PATH, userId, CCDSConstants.CATALOG_PATH },
-				null, null);
-		logger.debug("getUserAccessCatalogIds: uri {}", uri);
-		ResponseEntity<List<String>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<String>>() {
+				null, pageRequest);
+		logger.debug("getUserAccessCatalogs: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPCatalog>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPCatalog>>() {
 				});
 		return response.getBody();
 	}

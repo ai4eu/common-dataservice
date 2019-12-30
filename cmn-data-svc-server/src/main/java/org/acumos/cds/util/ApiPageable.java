@@ -42,6 +42,7 @@ import io.swagger.annotations.ApiImplicitParams;
 		@ApiImplicitParam(name = "sort", allowMultiple = true, dataType = "string", paramType = "query", //
 				value = "Sorting criteria in the format: property(,asc|desc). " //
 						+ "Default sort order is ascending. " //
+						+ "Always specify a sort property to avoid random order! " //
 						+ "Multiple sort criteria are supported.") })
 public @interface ApiPageable {
 }

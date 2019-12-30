@@ -1271,10 +1271,11 @@ public class ClientMethodTest {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
 		try {
-			client.getUserAccessCatalogIds("userId");
+			client.getUserAccessCatalogs("userId", new RestPageRequest());
 		} catch (ResourceAccessException ex) {
 			logger.info("Client failed as expected: {}", ex.toString());
 		}
+
 	}
 
 }

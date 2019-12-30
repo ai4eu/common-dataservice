@@ -624,8 +624,9 @@ public class MockClientTest {
 		client.setRoleCatalogs(roleCatalogsList);
 		Assert.assertEquals(0, client.getRoleCatalogsCount("role"));
 
-		client.setUserAccessCatalogIds(catalogIds);
-		Assert.assertEquals(catalogIds, client.getUserAccessCatalogIds("userId"));
+		RestPageResponse<MLPCatalog> userCatalogPage = new RestPageResponse<>();
+		client.setUserAccessCatalog(userCatalogPage);
+		Assert.assertEquals(userCatalogPage, client.getUserAccessCatalogs("userId", new RestPageRequest()));
 	}
 
 }

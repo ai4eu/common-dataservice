@@ -228,7 +228,7 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private MLPLicenseProfileTemplate licenseTemplate;
 	private List<MLPRole> catalogRoles;
 	private RestPageResponse<MLPCatalog> roleCatalogs;
-	private List<String> userAccessCatalogIds;
+	private RestPageResponse<MLPCatalog> userAccessCatalogs;
 
 	/**
 	 * No-argument constructor.
@@ -2124,13 +2124,13 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		return roleCatalogs;
 	}
 
-	public void setUserAccessCatalogIds(List<String> ids) {
-		this.userAccessCatalogIds = ids;
+	public void setUserAccessCatalog(RestPageResponse<MLPCatalog> page) {
+		this.userAccessCatalogs = page;
 	}
 
 	@Override
-	public List<String> getUserAccessCatalogIds(String userId) {
-		return this.userAccessCatalogIds;
+	public RestPageResponse<MLPCatalog> getUserAccessCatalogs(String userId, RestPageRequest pageRequest) {
+		return this.userAccessCatalogs;
 	}
 
 }
