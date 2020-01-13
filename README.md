@@ -9,8 +9,9 @@ Please see the documentation in the "docs" folder.
 
 ## Running
 
-For development and testing purposes, working from this source tree you can start an
-instance of the CDS server that uses an in-memory database like this:
+For development and testing purposes, working in the cmn-data-svc directory of this
+source tree you can start an instance of the CDS server that uses an in-memory
+database like this:
 
     cd cmn-data-svc-client
     mvn install
@@ -31,7 +32,7 @@ path in *both* the client and server projects.
 
 ## License
 
-Copyright (C) 2017--2019 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
+Copyright (C) 2017--2020 AT&T Intellectual Property & Tech Mahindra. All rights reserved.
 Acumos is distributed by AT&T and Tech Mahindra under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

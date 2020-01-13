@@ -30,8 +30,8 @@
 	<name>Acumos Common Data Service Project</name>
 	<modules>
 		<!-- Child modules do NOT name this parent. -->
-		<module>cmn-data-svc-server</module>
 		<module>cmn-data-svc-client</module>
+		<module>cmn-data-svc-server</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
