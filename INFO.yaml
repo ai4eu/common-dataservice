@@ -34,11 +34,6 @@ repositories:
     - 'common-dataservice'
 committers:
     - <<: *acumos_common-dataservice_ptl
-    - name: 'Aimee Ukasick'
-      email: 'aimeeu@research.att.com'
-      company: 'ATT'
-      id: 'aimeeu'
-      timezone: 'America/Chicago'
     - name: 'Anandarup Sarkar'
       email: 'asarkar@research.att.com'
       company: 'ATT'
