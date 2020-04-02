@@ -24,6 +24,10 @@ The client and server are released together.  The client is available
 as a jar file in the Acumos/LF Nexus repository. The server is
 available as a Docker image in the Acumos/LF Docker registry.
 
+Version 3.1.1, 29 Apr 2020
+--------------------------
+* Revise database scripts to add license admin role (`ACUMOS-4081 <https://jira.acumos.org/browse/ACUMOS-4081>`_)
+
 Version 3.1.1, 31 Dec 2019
 --------------------------
 * Add artifact-type code CO (`ACUMOS-3778 <https://jira.acumos.org/browse/ACUMOS-3778>`_)
