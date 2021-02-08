@@ -234,6 +234,9 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private RestPageResponse<MLPHyperlink> hyperlinks;
 	private MLPHyperlink hyperlinkById = new MLPHyperlink();
 	private MLPHyperlink hyperlink = new MLPHyperlink();
+	private List<MLPHyperlink> solutionRevisionHyperlinks;
+	private List<MLPSolutionRevision> solutionRevisionTargetSolutionRevisions;
+	private List<MLPSolutionRevision> solutionRevisionSourceSolutionRevisions;
 
 	/**
 	 * No-argument constructor.
@@ -2165,5 +2168,81 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	@Override
 	public void deleteHyperlink(String hyperlinkId) throws RestClientResponseException {
 		this.hyperlink = null;
+	}
+	
+	public List<MLPHyperlink> getSolutionRevisionHyperlinks() {
+		return solutionRevisionHyperlinks;
+	}
+
+	public void setSolutionRevisionHyperlinks(List<MLPHyperlink> solutionRevisionHyperlinks) {
+		this.solutionRevisionHyperlinks = solutionRevisionHyperlinks;
+	}
+
+	@Override
+	public List<MLPHyperlink> getSolutionRevisionHyperlinks(String revisionId) {
+		return solutionRevisionHyperlinks;
+	}
+
+	@Override
+	public void addSolutionRevisionHyperlink(String revisionId, String hyperlinkId) throws RestClientResponseException {
+		// Empty
+	}
+
+	@Override
+	public void dropSolutionRevisionHyperlink(String revisionId, String hyperlinkId)
+			throws RestClientResponseException {
+		// Empty
+	}
+
+	public List<MLPSolutionRevision> getSolutionRevisionTargetSolutionRevisions() {
+		return solutionRevisionTargetSolutionRevisions;
+	}
+
+	public void setSolutionRevisionTargetSolutionRevisions(
+			List<MLPSolutionRevision> solutionRevisionTargetSolutionRevisions) {
+		this.solutionRevisionTargetSolutionRevisions = solutionRevisionTargetSolutionRevisions;
+	}
+
+	@Override
+	public List<MLPSolutionRevision> getSolutionRevisionTargetSolutionRevisions(String revisionId) {
+		return solutionRevisionTargetSolutionRevisions;
+	}
+
+	@Override
+	public void addSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException {
+		// Empty
+	}
+
+	@Override
+	public void dropSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException {
+		// Empty
+	}
+
+	public List<MLPSolutionRevision> getSolutionRevisionSourceSolutionRevisions() {
+		return solutionRevisionSourceSolutionRevisions;
+	}
+
+	public void setSolutionRevisionSourceSolutionRevisions(
+			List<MLPSolutionRevision> solutionRevisionSourceSolutionRevisions) {
+		this.solutionRevisionSourceSolutionRevisions = solutionRevisionSourceSolutionRevisions;
+	}
+
+	@Override
+	public List<MLPSolutionRevision> getSolutionRevisionSourceSolutionRevisions(String revisionId) {
+		return solutionRevisionSourceSolutionRevisions;
+	}
+
+	@Override
+	public void addSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException {
+		// Empty
+	}
+
+	@Override
+	public void dropSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException {
+		// Empty
 	}
 }

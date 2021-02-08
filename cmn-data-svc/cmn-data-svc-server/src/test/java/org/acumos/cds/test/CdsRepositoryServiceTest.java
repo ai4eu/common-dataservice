@@ -37,6 +37,7 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
@@ -55,6 +56,7 @@ import org.acumos.cds.domain.MLPRole;
 import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevHyperlinkMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -79,6 +81,7 @@ import org.acumos.cds.repository.CatRoleMapRepository;
 import org.acumos.cds.repository.CommentRepository;
 import org.acumos.cds.repository.CompSolMapRepository;
 import org.acumos.cds.repository.DocumentRepository;
+import org.acumos.cds.repository.HyperlinkRepository;
 import org.acumos.cds.repository.LicenseProfileTemplateRepository;
 import org.acumos.cds.repository.NotebookRepository;
 import org.acumos.cds.repository.NotifUserMapRepository;
@@ -97,6 +100,7 @@ import org.acumos.cds.repository.RoleFunctionRepository;
 import org.acumos.cds.repository.RoleRepository;
 import org.acumos.cds.repository.SiteConfigRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
+import org.acumos.cds.repository.SolRevHyperlinkMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionDownloadRepository;
@@ -115,6 +119,7 @@ import org.acumos.cds.repository.UserRoleMapRepository;
 import org.acumos.cds.service.ArtifactSearchService;
 import org.acumos.cds.service.CatalogSearchService;
 import org.acumos.cds.service.CodeNameService;
+import org.acumos.cds.service.HyperlinkService;
 import org.acumos.cds.service.PeerSearchService;
 import org.acumos.cds.service.PublishRequestSearchService;
 import org.acumos.cds.service.RoleSearchService;
@@ -244,6 +249,12 @@ public class CdsRepositoryServiceTest {
 	private PeerCatAccMapRepository peerCatAccMapRepository;
 	@Autowired
 	private UserCatFavMapRepository userCatFavMapRepository;
+	@Autowired
+	private HyperlinkRepository hyperlinkRepository;
+	@Autowired
+	private HyperlinkService hyperlinkService;
+	@Autowired
+	private SolRevHyperlinkMapRepository solRevHyperlinkMapRepository;
 
 	@Test
 	public void testRepositories() throws Exception {
@@ -823,6 +834,32 @@ public class CdsRepositoryServiceTest {
 					throw new Exception("Found a deleted user: " + cu.getUserId());
 			}
 
+			logger.info("Creating hyperlinks");
+			MLPHyperlink ch = new MLPHyperlink();
+			ch.setName("test hyperlink name");
+			ch.setUri("http://data/resource");
+			ch = hyperlinkRepository.save(ch);
+			MLPHyperlink ch2 = new MLPHyperlink();
+			ch2.setName("test hyperlink name");
+			ch2.setUri("http://data/resource");
+			ch2 = hyperlinkRepository.save(ch2);
+			long originalHyperlinkRepositorySize = hyperlinkRepository.count();
+			Assert.assertTrue(hyperlinkRepository.count() >= 2);
+
+			MLPSolRevHyperlinkMap map = new MLPSolRevHyperlinkMap(cr.getRevisionId(), ch.getHyperlinkId());
+			solRevHyperlinkMapRepository.save(map);
+			long originalsolRevHyperlinkMapRepositorySize = solRevHyperlinkMapRepository.count();
+			Assert.assertTrue(solRevHyperlinkMapRepository.count() >= 1);
+
+			hyperlinkService.deleteOrphanHyperlink(ch.getHyperlinkId());
+			Assert.assertTrue(hyperlinkRepository.count() == originalHyperlinkRepositorySize);
+
+			hyperlinkService.deleteOrphanHyperlink(ch2.getHyperlinkId());
+			Assert.assertTrue(hyperlinkRepository.count() == originalHyperlinkRepositorySize - 1);
+
+			hyperlinkService.deleteHyperlink(ch.getHyperlinkId());
+			Assert.assertTrue(hyperlinkRepository.count() == originalHyperlinkRepositorySize - 2);
+			Assert.assertTrue(solRevHyperlinkMapRepository.count() == originalsolRevHyperlinkMapRepositorySize - 1);
 		} catch (Exception ex) {
 			logger.error("Failed", ex);
 			throw ex;

@@ -2915,4 +2915,96 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		logger.debug("deleteHyperlink: uri {}", uri);
 		restTemplate.delete(uri);
 	}
+
+	@Override
+	public List<MLPHyperlink> getSolutionRevisionHyperlinks(String revisionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.HYPERLINK_PATH }, null,
+				null);
+		logger.debug("getSolutionRevisionHyperlinks: uri {}", uri);
+		ResponseEntity<List<MLPHyperlink>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPHyperlink>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addSolutionRevisionHyperlink(String revisionId, String hyperlinkId) throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.HYPERLINK_PATH, hyperlinkId }, null,
+				null);
+		logger.debug("addSolutionRevisionHyperlink: url {}", uri);
+		restTemplate.postForLocation(uri, null);
+	}
+
+	@Override
+	public void dropSolutionRevisionHyperlink(String revisionId, String hyperlinkId)
+			throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.HYPERLINK_PATH, hyperlinkId }, null,
+				null);
+		logger.debug("dropSolutionRevisionHyperlink: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<MLPSolutionRevision> getSolutionRevisionTargetSolutionRevisions(String revisionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.TARGET_REVISION_PATH }, null,
+				null);
+		logger.debug("getSolutionRevisionTargetSolutionRevisions: uri {}", uri);
+		ResponseEntity<List<MLPSolutionRevision>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPSolutionRevision>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.TARGET_REVISION_PATH, targetRevisionId }, null,
+				null);
+		logger.debug("addSolutionRevisionTargetSolutionRevision: url {}", uri);
+		restTemplate.postForLocation(uri, null);
+	}
+
+	@Override
+	public void dropSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.TARGET_REVISION_PATH, targetRevisionId }, null,
+				null);
+		logger.debug("dropSolutionRevisionTargetSolutionRevision: url {}", uri);
+		restTemplate.delete(uri);
+	}
+
+	@Override
+	public List<MLPSolutionRevision> getSolutionRevisionSourceSolutionRevisions(String revisionId) {
+		URI uri = buildUri(new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.SOURCE_REVISION_PATH }, null,
+				null);
+		logger.debug("getSolutionRevisionSourceSolutionRevisions: uri {}", uri);
+		ResponseEntity<List<MLPSolutionRevision>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<MLPSolutionRevision>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public void addSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.SOURCE_REVISION_PATH, sourceRevisionId }, null,
+				null);
+		logger.debug("addSolutionRevisionSourceSolutionRevision: url {}", uri);
+		restTemplate.postForLocation(uri, null);
+	}
+
+	@Override
+	public void dropSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException {
+		URI uri = buildUri(
+				new String[] { CCDSConstants.REVISION_PATH, revisionId, CCDSConstants.SOURCE_REVISION_PATH, sourceRevisionId }, null,
+				null);
+		logger.debug("dropSolutionRevisionSourceSolutionRevision: url {}", uri);
+		restTemplate.delete(uri);
+	}
 }

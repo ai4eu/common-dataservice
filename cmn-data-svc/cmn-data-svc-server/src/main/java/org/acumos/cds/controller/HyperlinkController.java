@@ -30,7 +30,7 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.repository.HyperlinkRepository;
-import org.acumos.cds.repository.SolRevHyperlinkMapRepository;
+import org.acumos.cds.service.HyperlinkService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
@@ -65,6 +65,8 @@ public class HyperlinkController extends AbstractController {
 
 	@Autowired
 	private HyperlinkRepository hyperlinkRepository;
+	@Autowired
+	private HyperlinkService hyperlinkService;
 
 	@ApiOperation(value = "Gets the count of hyperlinks.", response = CountTransport.class)
 	@RequestMapping(value = "/" + CCDSConstants.COUNT_PATH, method = RequestMethod.GET)
@@ -167,8 +169,7 @@ public class HyperlinkController extends AbstractController {
 		logger.debug("deleteHyperlink: ID {}", hyperlinkId);
 		try {
 			// Manually cascade the delete
-			// TODO
-			hyperlinkRepository.deleteById(hyperlinkId);
+			hyperlinkService.deleteHyperlink(hyperlinkId);
 			return new SuccessTransport(HttpServletResponse.SC_OK, null);
 		} catch (Exception ex) {
 			// The most likely failure here is invalid/missing ID.

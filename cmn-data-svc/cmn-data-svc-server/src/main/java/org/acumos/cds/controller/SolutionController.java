@@ -38,6 +38,7 @@ import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevHyperlinkMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolution;
 import org.acumos.cds.domain.MLPSolutionDeployment;
@@ -54,6 +55,7 @@ import org.acumos.cds.repository.DocumentRepository;
 import org.acumos.cds.repository.RevCatDescriptionRepository;
 import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
+import org.acumos.cds.repository.SolRevHyperlinkMapRepository;
 import org.acumos.cds.repository.SolTagMapRepository;
 import org.acumos.cds.repository.SolUserAccMapRepository;
 import org.acumos.cds.repository.SolutionDeploymentRepository;
@@ -63,9 +65,11 @@ import org.acumos.cds.repository.SolutionPictureRepository;
 import org.acumos.cds.repository.SolutionRatingRepository;
 import org.acumos.cds.repository.SolutionRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
+import org.acumos.cds.repository.SourceRevTargetRevMapRepository;
 import org.acumos.cds.repository.TaskRepository;
 import org.acumos.cds.repository.UserRepository;
 import org.acumos.cds.service.ArtifactService;
+import org.acumos.cds.service.HyperlinkService;
 import org.acumos.cds.service.SolutionSearchService;
 import org.acumos.cds.transport.CountTransport;
 import org.acumos.cds.transport.ErrorTransport;
@@ -150,6 +154,12 @@ public class SolutionController extends AbstractController {
 	private TaskRepository taskRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private HyperlinkService hyperlinkService;
+	@Autowired
+	private SolRevHyperlinkMapRepository solRevHyperlinkMapRepository;
+	@Autowired
+	private SourceRevTargetRevMapRepository sourceRevTargetRevMapRepository;
 
 	/**
 	 * Updates the cached value(s) for solution ratings.
@@ -629,6 +639,12 @@ public class SolutionController extends AbstractController {
 		revisionDescRepository.deleteByRevisionId(revisionId);
 		revCatDocMapRepository.deleteByRevisionId(revisionId);
 		solutionRevisionRepository.deleteById(revisionId);
+		// Get a list of hyperlinks associated with this revision
+		Iterable<MLPSolRevHyperlinkMap> hyperlinks = solRevHyperlinkMapRepository.findByRevisionId(revisionId);
+		solRevHyperlinkMapRepository.deleteByRevisionId(revisionId);
+		// Get a list of source and target revisions associated with this revision
+		sourceRevTargetRevMapRepository.deleteBySourceId(revisionId);
+		sourceRevTargetRevMapRepository.deleteByTargetId(revisionId);
 		// If an artifact is not associated with any other revisions, delete it.
 		for (MLPSolRevArtMap artMap : arts) {
 			Iterable<MLPSolRevArtMap> revs = solRevArtMapRepository.findByArtifactId(artMap.getArtifactId());
@@ -640,6 +656,10 @@ public class SolutionController extends AbstractController {
 			Iterable<MLPRevCatDocMap> revs = revCatDocMapRepository.findByDocumentId(docMap.getDocumentId());
 			if (!revs.iterator().hasNext())
 				documentRepository.deleteById(docMap.getDocumentId());
+		}
+		// If a hyperlink is not associated with any other entities (not only revisions), delete it
+		for (MLPSolRevHyperlinkMap hyperlinkMap : hyperlinks) {
+			hyperlinkService.deleteOrphanHyperlink(hyperlinkMap.getHyperlinkId());
 		}
 	}
 

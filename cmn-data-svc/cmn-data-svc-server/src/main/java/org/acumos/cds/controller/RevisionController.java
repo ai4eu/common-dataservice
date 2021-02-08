@@ -29,15 +29,22 @@ import org.acumos.cds.CCDSConstants;
 import org.acumos.cds.MLPResponse;
 import org.acumos.cds.domain.MLPArtifact;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPRevCatDescription;
 import org.acumos.cds.domain.MLPRevCatDocMap;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevHyperlinkMap;
+import org.acumos.cds.domain.MLPSolutionRevision;
+import org.acumos.cds.domain.MLPSourceRevTargetRevMap;
 import org.acumos.cds.repository.ArtifactRepository;
 import org.acumos.cds.repository.CatalogRepository;
+import org.acumos.cds.repository.HyperlinkRepository;
 import org.acumos.cds.repository.RevCatDescriptionRepository;
 import org.acumos.cds.repository.RevCatDocMapRepository;
 import org.acumos.cds.repository.SolRevArtMapRepository;
+import org.acumos.cds.repository.SolRevHyperlinkMapRepository;
 import org.acumos.cds.repository.SolutionRevisionRepository;
+import org.acumos.cds.repository.SourceRevTargetRevMapRepository;
 import org.acumos.cds.transport.ErrorTransport;
 import org.acumos.cds.transport.MLPTransportModel;
 import org.acumos.cds.transport.SuccessTransport;
@@ -87,6 +94,12 @@ public class RevisionController extends AbstractController {
 	private RevCatDocMapRepository revCatDocMapRepository;
 	@Autowired
 	private SolRevArtMapRepository solRevArtMapRepository;
+	@Autowired
+	private HyperlinkRepository hyperlinkRepository;
+	@Autowired
+	private SolRevHyperlinkMapRepository solRevHyperlinkMapRepository;
+	@Autowired
+	private SourceRevTargetRevMapRepository sourceRevTargetRevMapRepository;
 
 	@ApiOperation(value = "Gets the artifacts for the specified solution revision. Answers empty if none are found.", response = MLPArtifact.class, responseContainer = "List")
 	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.ARTIFACT_PATH, method = RequestMethod.GET)
@@ -268,5 +281,161 @@ public class RevisionController extends AbstractController {
 				documentId);
 		revCatDocMapRepository.deleteById(new MLPRevCatDocMap.RevCatDocMapPK(revisionId, catalogId, documentId));
 		return new SuccessTransport(HttpServletResponse.SC_OK, null);
+	}
+	
+	@ApiOperation(value = "Gets the hyperlinks for the specified solution revision. Answers empty if none are found.", response = MLPHyperlink.class, responseContainer = "List")
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.HYPERLINK_PATH, method = RequestMethod.GET)
+	public Iterable<MLPHyperlink> getSolutionRevisionHyperlinks(@PathVariable("revisionId") String revisionId) {
+		logger.debug("getSolutionRevisionHyperlinks: revisionId {}", revisionId);
+		return hyperlinkRepository.findByRevisionId(revisionId);
+	}
+
+	@ApiOperation(value = "Adds the specified hyperlink to the specified solution revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.HYPERLINK_PATH
+			+ "/{hyperlinkId}", method = RequestMethod.POST)
+	public MLPTransportModel addSolutionRevisionHyperlink(@PathVariable("revisionId") String revisionId,
+			@PathVariable("hyperlinkId") String hyperlinkId, HttpServletResponse response) {
+		logger.debug("addSolutionRevisionArtifact: revisionId {} hyperlinkId {}", revisionId, hyperlinkId);
+		if (!revisionRepository.findById(revisionId).isPresent()) {
+			logger.warn("addSolutionRevisionHyperlink failed on rev ID {}", revisionId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
+		}
+		if (!hyperlinkRepository.findById(hyperlinkId).isPresent()) {
+			logger.warn("addSolutionRevisionHyperlink failed on hyperlink ID {}", hyperlinkId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + hyperlinkId, null);
+		}
+		try {
+			MLPSolRevHyperlinkMap map = new MLPSolRevHyperlinkMap(revisionId, hyperlinkId);
+			solRevHyperlinkMapRepository.save(map);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("addSolutionRevisionHyperlink failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "addSolutionRevisionHyperlink failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Removes the specified hyperlink from the specified solution revision.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.HYPERLINK_PATH
+			+ "/{hyperlinkId}", method = RequestMethod.DELETE)
+	public MLPTransportModel dropSolutionRevisionHyperlink(@PathVariable("revisionId") String revisionId,
+			@PathVariable("hyperlinkId") String hyperlinkId, HttpServletResponse response) {
+		logger.debug("dropSolutionRevisionHyperlink: revisionId {} hyperlinkId {}", revisionId, hyperlinkId);
+		try {
+			solRevHyperlinkMapRepository.deleteById(new MLPSolRevHyperlinkMap.SolRevHyperlinkMapPK(revisionId, hyperlinkId));
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("dropSolutionRevisionHyperlink failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropSolutionRevisionHyperlink failed", ex);
+		}
+	}
+	
+	@ApiOperation(value = "Gets the target  solution revisions for the specified solution revision. Answers empty if none are found.", response = MLPSolutionRevision.class, responseContainer = "List")
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.TARGET_REVISION_PATH, method = RequestMethod.GET)
+	public Iterable<MLPSolutionRevision> getSolutionRevisionTargets(@PathVariable("revisionId") String revisionId) {
+		logger.debug("getSolutionRevisionTargets: revisionId {}", revisionId);
+		return revisionRepository.findBySourceId(revisionId);
+	}
+
+	@ApiOperation(value = "Adds the specified target solution revision to the specified solution revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.TARGET_REVISION_PATH
+			+ "/{targetId}", method = RequestMethod.POST)
+	public MLPTransportModel addSolutionRevisionTarget(@PathVariable("revisionId") String revisionId,
+			@PathVariable("targetId") String targetId, HttpServletResponse response) {
+		logger.debug("addSolutionRevisionArtifact: revisionId {} targetId {}", revisionId, targetId);
+		if (!revisionRepository.findById(revisionId).isPresent()) {
+			logger.warn("addSolutionRevisionTarget failed on rev ID {}", revisionId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
+		}
+		if (!revisionRepository.findById(targetId).isPresent()) {
+			logger.warn("addSolutionRevisionTarget failed on target ID {}", targetId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + targetId, null);
+		}
+		try {
+			MLPSourceRevTargetRevMap map = new MLPSourceRevTargetRevMap(revisionId, targetId);
+			sourceRevTargetRevMapRepository.save(map);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("addSolutionRevisionTarget failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "addSolutionRevisionTarget failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Removes the specified target solution revision from the specified solution revision.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.TARGET_REVISION_PATH
+			+ "/{targetId}", method = RequestMethod.DELETE)
+	public MLPTransportModel dropSolutionRevisionTarget(@PathVariable("revisionId") String revisionId,
+			@PathVariable("targetId") String targetId, HttpServletResponse response) {
+		logger.debug("dropSolutionRevisionTarget: revisionId {} targetId {}", revisionId, targetId);
+		try {
+			sourceRevTargetRevMapRepository.deleteById(new MLPSourceRevTargetRevMap.SourceRevTargetRevMapPK(revisionId, targetId));
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("dropSolutionRevisionTarget failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropSolutionRevisionTarget failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Gets the source solution revisions for the specified solution revision. Answers empty if none are found.", response = MLPSolutionRevision.class, responseContainer = "List")
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.SOURCE_REVISION_PATH, method = RequestMethod.GET)
+	public Iterable<MLPSolutionRevision> getSolutionRevisionSources(@PathVariable("revisionId") String revisionId) {
+		logger.debug("getSolutionRevisionSources: revisionId {}", revisionId);
+		return revisionRepository.findByTargetId(revisionId);
+	}
+
+	@ApiOperation(value = "Adds the specified source solution revision to the specified solution revision. Returns bad request on constraint violation etc.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.SOURCE_REVISION_PATH
+			+ "/{sourceId}", method = RequestMethod.POST)
+	public MLPTransportModel addSolutionRevisionSource(@PathVariable("revisionId") String revisionId,
+			@PathVariable("sourceId") String sourceId, HttpServletResponse response) {
+		logger.debug("addSolutionRevisionArtifact: revisionId {} sourceId {}", revisionId, sourceId);
+		if (!revisionRepository.findById(revisionId).isPresent()) {
+			logger.warn("addSolutionRevisionSource failed on rev ID {}", revisionId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + revisionId, null);
+		}
+		if (!revisionRepository.findById(sourceId).isPresent()) {
+			logger.warn("addSolutionRevisionSource failed on source ID {}", sourceId);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, NO_ENTRY_WITH_ID + sourceId, null);
+		}
+		try {
+			MLPSourceRevTargetRevMap map = new MLPSourceRevTargetRevMap(sourceId, revisionId);
+			sourceRevTargetRevMapRepository.save(map);
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("addSolutionRevisionSource failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "addSolutionRevisionSource failed", ex);
+		}
+	}
+
+	@ApiOperation(value = "Removes the specified source solution revision from the specified solution revision.", response = SuccessTransport.class)
+	@ApiResponses({ @ApiResponse(code = 400, message = "Bad request", response = ErrorTransport.class) })
+	@RequestMapping(value = "/{revisionId}/" + CCDSConstants.SOURCE_REVISION_PATH
+			+ "/{sourceId}", method = RequestMethod.DELETE)
+	public MLPTransportModel dropSolutionRevisionSource(@PathVariable("revisionId") String revisionId,
+			@PathVariable("sourceId") String sourceId, HttpServletResponse response) {
+		logger.debug("dropSolutionRevisionSource: revisionId {} sourceId {}", revisionId, sourceId);
+		try {
+			sourceRevTargetRevMapRepository.deleteById(new MLPSourceRevTargetRevMap.SourceRevTargetRevMapPK(sourceId, revisionId));
+			return new SuccessTransport(HttpServletResponse.SC_OK, null);
+		} catch (Exception ex) {
+			logger.warn("dropSolutionRevisionSource failed: {}", ex.toString());
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return new ErrorTransport(HttpServletResponse.SC_BAD_REQUEST, "dropSolutionRevisionSource failed", ex);
+		}
 	}
 }

@@ -3185,5 +3185,110 @@ public interface ICommonDataServiceRestClient {
 	 *                                         Error message is in the response body
 	 */
 	void deleteHyperlink(String hyperlinkId) throws RestClientResponseException;
+	
+	/**
+	 * Gets the hyperlinks for the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       revision ID
+	 * @return List of hyperlinks, which may be empty
+	 */
+	List<MLPHyperlink> getSolutionRevisionHyperlinks(String revisionId);
 
+	/**
+	 * Adds the specified hyperlink to the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param hyperlinkId
+	 *                       Hyperlink ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addSolutionRevisionHyperlink(String revisionId, String hyperlinkId)
+			throws RestClientResponseException;
+
+	/**
+	 * Removes the specified hyperlink from the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param hyperlinkId
+	 *                       Hyperlink ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropSolutionRevisionHyperlink(String revisionId, String hyperlinkId)
+			throws RestClientResponseException;
+	
+	/**
+	 * Gets the target solution revisions for the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @return List of target solution revisions, which may be empty
+	 */
+	List<MLPSolutionRevision> getSolutionRevisionTargetSolutionRevisions(String revisionId);
+
+	/**
+	 * Adds the specified target solution revision to the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param targetRevisionId
+	 *                       Target revision ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException;
+
+	/**
+	 * Removes the specified target solution revision from the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param targetRevisionId
+	 *                       Target revision ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropSolutionRevisionTargetSolutionRevision(String revisionId, String targetRevisionId)
+			throws RestClientResponseException;
+
+	/**
+	 * Gets the source solution revisions for the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @return List of source solution revisions, which may be empty
+	 */
+	List<MLPSolutionRevision> getSolutionRevisionSourceSolutionRevisions(String revisionId);
+
+	/**
+	 * Adds the specified source solution revision to the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param sourceRevisionId
+	 *                       Source revision ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void addSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException;
+
+	/**
+	 * Removes the specified source solution revision from the specified solution revision.
+	 * 
+	 * @param revisionId
+	 *                       Revision ID
+	 * @param sourceRevisionId
+	 *                       Source revision ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void dropSolutionRevisionSourceSolutionRevision(String revisionId, String sourceRevisionId)
+			throws RestClientResponseException;
+	
 }

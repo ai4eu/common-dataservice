@@ -56,4 +56,39 @@ public interface SolutionRevisionRepository extends PagingAndSortingRepository<M
 			+ " and m.artifactId = :artifactId")
 	Iterable<MLPSolutionRevision> findByArtifactId(@Param("artifactId") String artifactId);
 
+	/**
+	 * Gets all solution revisions associated with the specified hyperlink.
+	 *  
+	 * @param hyperlinkId
+	 *                       Hyperlink ID
+	 * @return Iterable of MLPSolutionRevision
+	 */
+	@Query(value = "select r from MLPSolutionRevision r, MLPSolRevHyperlinkMap m " //
+			+ " where r.revisionId =  m.revisionId " //
+			+ " and m.hyperlinkId = :hyperlinkId")
+	Iterable<MLPSolutionRevision> findByHyperlinkId(@Param("hyperlinkId") String hyperlinkId);
+
+	/**
+	 * Gets all solution revisions associated with the specified source solution revision id.
+	 * 
+	 * @param sourceId
+	 *                       Source solution revision ID
+	 * @return Iterable of MLPSolutionRevision
+	 */
+	@Query(value = "select r from MLPSolutionRevision r, MLPSourceRevTargetRevMap m " //
+			+ " where r.revisionId =  m.targetId " //
+			+ " and m.sourceId = :sourceId")
+	Iterable<MLPSolutionRevision> findBySourceId(@Param("sourceId") String sourceId);
+
+	/**
+	 * Gets all solution revisions associated with the specified target solution revision id.
+	 * 
+	 * @param targetId
+	 *                       Target solution revision ID
+	 * @return Iterable of MLPSolutionRevision
+	 */
+	@Query(value = "select r from MLPSolutionRevision r, MLPSourceRevTargetRevMap m " //
+			+ " where r.revisionId =  m.sourceId " //
+			+ " and m.targetId = :targetId")
+	Iterable<MLPSolutionRevision> findByTargetId(@Param("targetId") String targetId);
 }

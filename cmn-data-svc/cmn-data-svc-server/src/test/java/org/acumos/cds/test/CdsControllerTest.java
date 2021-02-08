@@ -38,6 +38,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
@@ -3799,4 +3800,98 @@ public class CdsControllerTest {
 		}
 	}
 
+	@Test
+	public void testHyperlinksSourceTargetRevisions() throws Exception {
+		try {
+			MLPUser cu = new MLPUser("user_login1", "login1user@abc.com", true);
+			cu.setLoginHash("user_pass");
+			cu.setFirstName("First Name");
+			cu.setLastName("Last Name");
+			cu.setEmail(cu.getLoginName() + "@nowhere.com");
+			cu = client.createUser(cu);
+			logger.info("Created user {}", cu);
+
+			MLPSolution cs = new MLPSolution("solution name", cu.getUserId(), true);
+			cs.setModelTypeCode("CL");
+			cs.setToolkitTypeCode("CP");
+			cs = client.createSolution(cs);
+			logger.info("Created solution {}", cs);
+
+			MLPSolutionRevision cr = new MLPSolutionRevision(cs.getSolutionId(), "1.0R", cu.getUserId());
+			cr.setPublisher("Big Data Org");
+			cr = client.createSolutionRevision(cr);
+			logger.info("Created solution revision {}", cr);
+
+			MLPArtifact ca = new MLPArtifact("1.0A", "DI", "artifact name", "http://nexus/artifact", cu.getUserId(), 1);
+			ca = client.createArtifact(ca);
+			logger.info("Created artifact {}", ca);
+
+			logger.info("Adding artifact to revision");
+			client.addSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
+
+			MLPHyperlink ch = new MLPHyperlink("custom_dataset", "http://custom/dataset");
+			ch = client.createHyperlink(ch);
+			Assert.assertNotNull(ch);
+			Assert.assertNotNull(ch.getHyperlinkId());
+			logger.info("Created hyperlink {}", ch);
+
+			logger.info("Adding hyperlink to revision");
+			client.addSolutionRevisionHyperlink(cr.getRevisionId(), ch.getHyperlinkId());
+
+			logger.info("Searching for hyperlinks of revision {}", cr);
+			List<MLPHyperlink> hyperlinks = client.getSolutionRevisionHyperlinks(cr.getRevisionId());
+			Assert.assertFalse(hyperlinks.isEmpty());
+			Assert.assertNotNull(hyperlinks.get(0));
+			Assert.assertNotNull(hyperlinks.get(0).getHyperlinkId());
+			Assert.assertEquals(ch.getHyperlinkId(), hyperlinks.get(0).getHyperlinkId());
+			logger.info("Hyperlink found: {}", hyperlinks.get(0));
+
+			MLPSolutionRevision cr2 = new MLPSolutionRevision(cs.getSolutionId(), "2.0R", cu.getUserId());
+			cr2.setPublisher("Big Data Org");
+			cr2 = client.createSolutionRevision(cr2);
+			logger.info("Created solution revision {}", cr2);
+
+			MLPSolutionRevision cr3 = new MLPSolutionRevision(cs.getSolutionId(), "3.0R", cu.getUserId());
+			cr3.setPublisher("Big Data Org");
+			cr3 = client.createSolutionRevision(cr3);
+			logger.info("Created solution revision {}", cr3);
+
+			client.addSolutionRevisionTargetSolutionRevision(cr.getRevisionId(), cr2.getRevisionId());
+			logger.info("Created relationship source revision {} to target revision {}", cr, cr2);
+
+			logger.info("Searching for targets of revision {}", cr);
+			List<MLPSolutionRevision> targets = client.getSolutionRevisionTargetSolutionRevisions(cr.getRevisionId());
+			Assert.assertFalse(targets.isEmpty());
+			Assert.assertNotNull(targets.get(0));
+			Assert.assertNotNull(targets.get(0).getRevisionId());
+			Assert.assertEquals(cr2.getRevisionId(), targets.get(0).getRevisionId());
+			logger.info("Target revision: {}", targets.get(0));
+
+			client.addSolutionRevisionSourceSolutionRevision(cr3.getRevisionId(), cr2.getRevisionId());
+			logger.info("Created relationship source revision {} to target revision {}", cr2, cr3);
+
+			logger.info("Searching for sources of revision {}", cr3);
+			List<MLPSolutionRevision> sources = client.getSolutionRevisionSourceSolutionRevisions(cr3.getRevisionId());
+			Assert.assertFalse(sources.isEmpty());
+			Assert.assertNotNull(sources.get(0));
+			Assert.assertNotNull(sources.get(0).getRevisionId());
+			Assert.assertEquals(cr2.getRevisionId(), sources.get(0).getRevisionId());
+			logger.info("Source revision: {}", sources.get(0));
+
+			logger.info("Deleting objects");
+			client.dropSolutionRevisionArtifact(cs.getSolutionId(), cr.getRevisionId(), ca.getArtifactId());
+			client.deleteArtifact(ca.getArtifactId());
+			client.deleteHyperlink(ch.getHyperlinkId());
+			client.dropSolutionRevisionTargetSolutionRevision(cr.getRevisionId(), cr2.getRevisionId());
+			client.dropSolutionRevisionSourceSolutionRevision(cr3.getRevisionId(), cr2.getRevisionId());
+			client.deleteSolutionRevision(cs.getSolutionId(), cr.getRevisionId());
+			client.deleteSolutionRevision(cs.getSolutionId(), cr2.getRevisionId());
+			client.deleteSolutionRevision(cs.getSolutionId(), cr3.getRevisionId());
+			client.deleteSolution(cs.getSolutionId());
+			client.deleteUser(cu.getUserId());
+		} catch (HttpStatusCodeException ex) {
+			logger.error("testHyperlinksSourceTargetRevisions failed: " + ex.getResponseBodyAsString(), ex);
+			throw ex;
+		}
+	}
 }

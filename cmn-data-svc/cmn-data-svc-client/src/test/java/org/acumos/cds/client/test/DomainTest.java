@@ -32,6 +32,7 @@ import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPCompSolMap;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
@@ -52,6 +53,7 @@ import org.acumos.cds.domain.MLPRoleFunction;
 import org.acumos.cds.domain.MLPSiteConfig;
 import org.acumos.cds.domain.MLPSiteContent;
 import org.acumos.cds.domain.MLPSolRevArtMap;
+import org.acumos.cds.domain.MLPSolRevHyperlinkMap;
 import org.acumos.cds.domain.MLPSolTagMap;
 import org.acumos.cds.domain.MLPSolUserAccMap;
 import org.acumos.cds.domain.MLPSolution;
@@ -60,6 +62,7 @@ import org.acumos.cds.domain.MLPSolutionDownload;
 import org.acumos.cds.domain.MLPSolutionFavorite;
 import org.acumos.cds.domain.MLPSolutionRating;
 import org.acumos.cds.domain.MLPSolutionRevision;
+import org.acumos.cds.domain.MLPSourceRevTargetRevMap;
 import org.acumos.cds.domain.MLPTag;
 import org.acumos.cds.domain.MLPTask;
 import org.acumos.cds.domain.MLPTaskStepResult;
@@ -366,6 +369,45 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(m.toString());
 		try {
 			new MLPDocument(null, null, 0, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		try {
+			m.setUri("http://");
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException ex) {
+			// bogus URI is rejected
+		}
+	}
+
+	private void checkMLPHyperlink(MLPHyperlink m) {
+		Assert.assertEquals(s1, m.getHyperlinkId());
+		Assert.assertEquals(s2, m.getName());
+		Assert.assertEquals(t1, m.getCreated());
+		Assert.assertEquals(t2, m.getModified());
+		Assert.assertEquals(u1, m.getUri());
+	}
+
+	@Test
+	public void testMLPHyperlink() {
+		MLPHyperlink m = new MLPHyperlink(s1, u1);
+		m = new MLPHyperlink();
+		m.setHyperlinkId(s1);
+		m.setCreated(t1);
+		m.setName(s2);
+		m.setUri(u1);
+		m.setModified(t2);
+		checkMLPHyperlink(m);
+		m = new MLPHyperlink(m);
+		checkMLPHyperlink(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPHyperlink(null, null);
 			Assert.assertTrue("Unexpected success", false);
 		} catch (IllegalArgumentException iae) {
 			// null arg is rejected
@@ -1121,6 +1163,40 @@ public class DomainTest extends AbstractModelTest {
 		logger.info(pk.toString());
 	}
 
+	private void checkMLPSolRevHyperlinkMap(MLPSolRevHyperlinkMap m) {
+		Assert.assertEquals(s1, m.getHyperlinkId());
+		Assert.assertEquals(s2, m.getRevisionId());
+	}
+
+	@Test
+	public void testMLPSolRevHyperlinkMap() {
+		MLPSolRevHyperlinkMap m = new MLPSolRevHyperlinkMap(s1, s1);
+		m = new MLPSolRevHyperlinkMap();
+		m.setHyperlinkId(s1);
+		m.setRevisionId(s2);
+		checkMLPSolRevHyperlinkMap(m);
+		m = new MLPSolRevHyperlinkMap(m);
+		checkMLPSolRevHyperlinkMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPSolRevHyperlinkMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		MLPSolRevHyperlinkMap.SolRevHyperlinkMapPK pk = new MLPSolRevHyperlinkMap.SolRevHyperlinkMapPK();
+		pk = new MLPSolRevHyperlinkMap.SolRevHyperlinkMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
+	}
+
 	private void checkMLPSolTagMap(MLPSolTagMap m) {
 		Assert.assertEquals(s1, m.getSolutionId());
 		Assert.assertEquals(s2, m.getTag());
@@ -1458,6 +1534,40 @@ public class DomainTest extends AbstractModelTest {
 		} catch (IllegalArgumentException iae) {
 			// characters are rejected
 		}
+	}
+
+	private void checkMLPSourceRevTargetRevMap(MLPSourceRevTargetRevMap m) {
+		Assert.assertEquals(s1, m.getSourceId());
+		Assert.assertEquals(s2, m.getTargetId());
+	}
+
+	@Test
+	public void testMLPSourceRevTargetRevMap() {
+		MLPSourceRevTargetRevMap m = new MLPSourceRevTargetRevMap(s1, s1);
+		m = new MLPSourceRevTargetRevMap();
+		m.setSourceId(s1);
+		m.setTargetId(s2);
+		checkMLPSourceRevTargetRevMap(m);
+		m = new MLPSourceRevTargetRevMap(m);
+		checkMLPSourceRevTargetRevMap(m);
+		Assert.assertFalse(m.equals(null));
+		Assert.assertFalse(m.equals(new Object()));
+		Assert.assertTrue(m.equals(m));
+		Assert.assertNotNull(m.hashCode());
+		logger.info(m.toString());
+		try {
+			new MLPSourceRevTargetRevMap(null, null);
+			Assert.assertTrue("Unexpected success", false);
+		} catch (IllegalArgumentException iae) {
+			// null arg is rejected
+		}
+		MLPSourceRevTargetRevMap.SourceRevTargetRevMapPK pk = new MLPSourceRevTargetRevMap.SourceRevTargetRevMapPK();
+		pk = new MLPSourceRevTargetRevMap.SourceRevTargetRevMapPK(s1, s2);
+		Assert.assertFalse(pk.equals(null));
+		Assert.assertFalse(pk.equals(new Object()));
+		Assert.assertTrue(pk.equals(pk));
+		Assert.assertFalse(pk.hashCode() == 0);
+		logger.info(pk.toString());
 	}
 
 	private void checkMLPTaskStepResult(MLPTaskStepResult m) {

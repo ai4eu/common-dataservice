@@ -47,4 +47,19 @@ public interface HyperlinkRepository extends JpaRepository<MLPHyperlink, String>
 	@Query("SELECT h FROM MLPHyperlink h " //
 			+ " WHERE LOWER(h.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
 	Page<MLPHyperlink> findBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageRequest);
+
+	/**
+	 * Gets all hyperlinks associated with the specified solution revision.
+	 * 
+	 * This does not accept a pageable parameter because the number of hyperlinks for
+	 * a single revision is expected to be modest.
+	 *
+	 * @param revisionId
+	 *                       solution revision ID
+	 * @return Iterable of MLPHyperlink
+	 */
+	@Query(value = "select a from MLPHyperlink a, MLPSolRevHyperlinkMap m " //
+			+ " where a.hyperlinkId =  m.hyperlinkId " //
+			+ " and m.revisionId = :revisionId")
+	Iterable<MLPHyperlink> findByRevisionId(@Param("revisionId") String revisionId);
 }
