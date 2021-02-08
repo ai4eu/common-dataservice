@@ -30,6 +30,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
@@ -3130,5 +3131,59 @@ public interface ICommonDataServiceRestClient {
 	 * @return Page of catalogs, which may be empty
 	 */
 	RestPageResponse<MLPCatalog> getUserAccessCatalogs(String userId, RestPageRequest pageRequest);
+	
+	/**
+	 * Gets a page of hyperlinks.
+	 * 
+	 * @param pageRequest
+	 *                        Page index, page size and sort information; defaults
+	 *                        to page 0 of size 20 if null.
+	 * @return Page of hyperlinks, which may be empty
+	 */
+	RestPageResponse<MLPHyperlink> getHyperlinks(RestPageRequest pageRequest);
+	
+	/**
+	 * Gets the hyperlink with the specified ID.
+	 * 
+	 * @param hyperlinkId
+	 *                       hyperlink ID
+	 * @return Hyperlink object
+	 */
+	MLPHyperlink getHyperlink(String hyperlinkId);
+
+	/**
+	 * Creates a new hyperlink and generates an ID if needed.
+	 * 
+	 * @param hyperlink
+	 *                     Hyperlink data. If the ID field is null a new value is
+	 *                     generated; otherwise the ID value is used if valid and
+	 *                     not already known.
+	 * @return Complete object, with generated information such as ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	MLPHyperlink createHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException;
+
+	/**
+	 * Updates an existing hyperlink with the supplied data.
+	 * 
+	 * @param hyperlink
+	 *                     Hyperlink data
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void updateHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException;
+
+	/**
+	 * Deletes the hyperlink with the specified ID. Cascades the delete to
+	 * revision-hyperlink records. Answers bad request if
+	 * the ID is not known.
+	 * 
+	 * @param hyperlinkId
+	 *                       hyperlink ID
+	 * @throws RestClientResponseException
+	 *                                         Error message is in the response body
+	 */
+	void deleteHyperlink(String hyperlinkId) throws RestClientResponseException;
 
 }

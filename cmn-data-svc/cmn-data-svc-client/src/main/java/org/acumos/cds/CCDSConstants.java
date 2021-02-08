@@ -81,6 +81,7 @@ public class CCDSConstants {
 	public static final String VIEW_PATH = "view";
 	public static final String UNREAD_PATH = "unread";
 	public static final String WORKBENCH_PATH = "wkbn";
+	public static final String HYPERLINK_PATH = "hyperlink";
 
 	// Code-name pairs
 	public static final String CODE_PATH = "code";

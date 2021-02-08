@@ -33,6 +33,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotification;
@@ -66,6 +67,7 @@ import org.acumos.cds.transport.RestPageResponse;
 import org.acumos.cds.transport.SuccessTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -229,6 +231,9 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 	private List<MLPRole> catalogRoles;
 	private RestPageResponse<MLPCatalog> roleCatalogs;
 	private RestPageResponse<MLPCatalog> userAccessCatalogs;
+	private RestPageResponse<MLPHyperlink> hyperlinks;
+	private MLPHyperlink hyperlinkById = new MLPHyperlink();
+	private MLPHyperlink hyperlink = new MLPHyperlink();
 
 	/**
 	 * No-argument constructor.
@@ -2133,4 +2138,32 @@ public class CommonDataServiceRestClientMockImpl implements ICommonDataServiceRe
 		return this.userAccessCatalogs;
 	}
 
+	public void setHyperlinks(RestPageResponse<MLPHyperlink> hyperlinks) {
+		this.hyperlinks = hyperlinks;
+	}
+	
+	@Override
+	public RestPageResponse<MLPHyperlink> getHyperlinks(RestPageRequest pageRequest) {
+		return hyperlinks;
+	}
+
+	@Override
+	public MLPHyperlink getHyperlink(String hyperlinkId) {
+		return hyperlinkById;
+	}
+
+	@Override
+	public MLPHyperlink createHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException {
+		return this.hyperlink;
+	}
+
+	@Override
+	public void updateHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException {
+		this.hyperlink = hyperlink;
+	}
+
+	@Override
+	public void deleteHyperlink(String hyperlinkId) throws RestClientResponseException {
+		this.hyperlink = null;
+	}
 }
