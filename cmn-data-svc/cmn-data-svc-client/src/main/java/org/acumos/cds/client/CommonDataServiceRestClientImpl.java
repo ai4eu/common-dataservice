@@ -41,6 +41,7 @@ import org.acumos.cds.domain.MLPCatalog;
 import org.acumos.cds.domain.MLPCodeNamePair;
 import org.acumos.cds.domain.MLPComment;
 import org.acumos.cds.domain.MLPDocument;
+import org.acumos.cds.domain.MLPHyperlink;
 import org.acumos.cds.domain.MLPLicenseProfileTemplate;
 import org.acumos.cds.domain.MLPNotebook;
 import org.acumos.cds.domain.MLPNotifUserMap;
@@ -99,6 +100,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -2873,4 +2875,44 @@ public class CommonDataServiceRestClientImpl implements ICommonDataServiceRestCl
 		return response.getBody();
 	}
 
+	@Override
+	public RestPageResponse<MLPHyperlink> getHyperlinks(RestPageRequest pageRequest) {
+		URI uri = buildUri(new String[] { CCDSConstants.HYPERLINK_PATH }, null, pageRequest);
+		logger.debug("getHyperlinks: uri {}", uri);
+		ResponseEntity<RestPageResponse<MLPHyperlink>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<RestPageResponse<MLPHyperlink>>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPHyperlink getHyperlink(String hyperlinkId) {
+		URI uri = buildUri(new String[] { CCDSConstants.HYPERLINK_PATH, hyperlinkId }, null, null);
+		logger.debug("getHyperlink: uri {}", uri);
+		ResponseEntity<MLPHyperlink> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<MLPHyperlink>() {
+				});
+		return response.getBody();
+	}
+
+	@Override
+	public MLPHyperlink createHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException {
+		URI uri = buildUri(new String[] { CCDSConstants.HYPERLINK_PATH }, null, null);
+		logger.debug("createHyperlink: uri {}", uri);
+		return restTemplate.postForObject(uri, hyperlink, MLPHyperlink.class);
+	}
+
+	@Override
+	public void updateHyperlink(MLPHyperlink hyperlink) throws RestClientResponseException {
+		URI uri = buildUri(new String[] { CCDSConstants.HYPERLINK_PATH, hyperlink.getHyperlinkId() }, null, null);
+		logger.debug("updateHyperlink: url {}", uri);
+		restTemplate.put(uri, hyperlink);
+	}
+
+	@Override
+	public void deleteHyperlink(String hyperlinkId) throws RestClientResponseException {
+		URI uri = buildUri(new String[] { CCDSConstants.HYPERLINK_PATH, hyperlinkId }, null, null);
+		logger.debug("deleteHyperlink: uri {}", uri);
+		restTemplate.delete(uri);
+	}
 }
